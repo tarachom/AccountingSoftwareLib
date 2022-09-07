@@ -1,0 +1,144 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AccountingSoftware
+{
+	class Test
+	{
+		void A()
+		{
+
+			//TestSelect TS = new TestSelect();
+			//TS.QueryConstructor.
+			//TS.Select();
+
+			//while (TS.Read())
+			//{
+			//	//TS.
+			//}
+			
+			
+
+			//TestObjest TObj = TS.DirectoryPointers[0].GetDirectoryObject();
+
+			//TestATablePartRecord record = new TestATablePartRecord();
+			//record.Desc = "";
+
+			//TObj.ATablePart.RecordCollection.Add(record);
+		}
+	}
+
+	class TestObjest : DirectoryObject
+	{
+		public TestObjest()
+		{
+			ATablePart = new TestATablePart(this);
+		}
+
+		public TestPointer GetDirectoryPointer()
+		{
+			TestPointer TestPointerItem = new TestPointer();
+			TestPointerItem.Init(base.UID);
+
+			return TestPointerItem;
+		}
+
+		public void Save()
+		{
+
+		}
+
+		public TestPointer Field1 { get; set; }
+
+		public TestPointer Field2 { get; set; }
+
+		public TestPointer Field3 { get; set; }
+
+		public string Field4 { get; set; }
+
+		public TestATablePart ATablePart { get; }
+	}
+
+	class TestPointer : DirectoryPointer
+	{
+		public TestObjest GetDirectoryObject()
+		{
+			//Запрос в базу по base.UID
+			TestObjest TestObjestItem = new TestObjest();
+
+			TestObjestItem.Init(base.UID);
+
+			TestObjestItem.Code = "1";
+			TestObjestItem.Name = "1 Name";
+
+			return TestObjestItem;
+		}
+
+		
+	}
+
+	class TestSelect : DirectorySelect
+	{
+		public TestSelect()
+		{
+			
+		}
+
+		////Крок 1. Вибірка
+		//public void Select()
+		//{
+		//	List<DirectoryPointer> list = base.BaseSelect();
+
+		//	foreach (DirectoryPointer el in list)
+		//	{
+		//		//Console.WriteLine(el.UID.UID);
+
+		//		foreach (FieldValue field in el.Fields)
+		//		{
+		//			Console.WriteLine(field.Name + "=" + field.Value);
+		//		}
+		//	}
+		//}
+
+		////Крок 2. Зчитування
+		//public bool Read()
+		//{
+		//	//Потрібно опрацювати
+
+		//	return true;
+		//}
+
+		//public List<TestPointer> DirectoryPointers { get; private set; }
+	}
+
+	class TestATablePart : DirectoryTablePart
+	{
+		public TestATablePart(TestObjest owner)
+		{
+			Owner = owner;
+		}
+
+		public TestObjest Owner { get; }
+
+		public void Read()
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				TestATablePartRecord record = new TestATablePartRecord();
+				RecordCollection.Add(record);
+			}
+		}
+
+		public List<TestATablePartRecord> RecordCollection { get; }
+	}
+
+	class TestATablePartRecord : DirectoryTablePartRecord
+	{
+		public string Name { get; set; }
+		public string Desc { get; set; }
+		public int Info { get; set; }
+	}
+}
