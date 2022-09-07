@@ -34,7 +34,10 @@ namespace AccountingSoftware
 		public DirectoryPointer()
 		{
 			UnigueID = new UnigueID(Guid.Empty);
-		}
+			Table = "";
+			Kernel = new Kernel();
+			Fields = new Dictionary<string, object>();
+        }
 
 		public DirectoryPointer(Kernel kernel, string table) : this()
 		{
