@@ -33,9 +33,8 @@ namespace AccountingSoftware
 		public DocumentPointer()
 		{
 			UnigueID = new UnigueID(Guid.Empty);
-			Table = "";
-			TypeDocument = "";
-			Kernel = null;
+			Table = TypeDocument = "";
+			Kernel = new Kernel();
             Fields = new Dictionary<string, object>();
         }
 
