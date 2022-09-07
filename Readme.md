@@ -1,2 +1,2 @@
-# Бібліотека AccountingSoftware
+# Бібліотека
     
