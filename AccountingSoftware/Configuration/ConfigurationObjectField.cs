@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поле
 		/// </summary>
-		public ConfigurationObjectField() 
+		public ConfigurationObjectField()
 		{
 			Name = "";
 			NameInTable = "";
@@ -48,7 +48,7 @@ namespace AccountingSoftware
 		/// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
 		/// <param name="pointer">Вказівник</param>
 		/// <param name="desc">Опис</param>
-		public ConfigurationObjectField(string name, string nameInTable, string type, string pointer, string desc = "", bool isPresentation = false, bool isIndex=false)
+		public ConfigurationObjectField(string name, string nameInTable, string type, string pointer, string desc = "", bool isPresentation = false, bool isIndex = false)
 		{
 			Name = name;
 			NameInTable = nameInTable;

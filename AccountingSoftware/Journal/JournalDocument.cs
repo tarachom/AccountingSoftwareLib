@@ -35,12 +35,12 @@ namespace AccountingSoftware
 			DocName = "";
 			DocNomer = "";
 			DocDate = "";
-        }
+		}
 
-        /// <summary>
-        /// Назва як задано в конфігураторі
-        /// </summary>
-        public string TypeDocument { get; set; }
+		/// <summary>
+		/// Назва як задано в конфігураторі
+		/// </summary>
+		public string TypeDocument { get; set; }
 
 		/// <summary>
 		/// Унікальний ідентифікатор запису

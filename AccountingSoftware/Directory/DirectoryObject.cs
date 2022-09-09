@@ -149,7 +149,7 @@ namespace AccountingSoftware
 				Kernel.DataBase.DeleteDirectoryTablePartRecords(UnigueID, tablePartsTable);
 
 			Kernel.DataBase.CommitTransaction();
-						
+
 			BaseClear();
 		}
 	}

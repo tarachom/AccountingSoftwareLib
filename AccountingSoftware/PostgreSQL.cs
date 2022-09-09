@@ -27,14 +27,14 @@ namespace AccountingSoftware
 {
 	public class PostgreSQL : IDataBase
 	{
-		public PostgreSQL() 
+		public PostgreSQL()
 		{
 			Connection = new NpgsqlConnection();
-        }
+		}
 
-        #region Connect
+		#region Connect
 
-        private NpgsqlConnection Connection { get; set; }
+		private NpgsqlConnection Connection { get; set; }
 
 		public void Open(string connectionString)
 		{
@@ -422,12 +422,12 @@ CREATE TYPE uuidtext AS
 			{
 				Dictionary<string, object> fields = new Dictionary<string, object>();
 
-                if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+				if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
 				{
 					foreach (string field in QuerySelect.Field)
 						fields.Add(field, reader[field]);
 
-					foreach(NameValue<string> field in QuerySelect.FieldAndAlias)
+					foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
 						fields.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 				}
 
@@ -465,13 +465,13 @@ CREATE TYPE uuidtext AS
 		}
 
 		/// <summary>
-        /// Вибирає значення полів по вказівнику для представлення
-        /// </summary>
-        /// <param name="QuerySelect">Запит</param>
-        /// <param name="fieldPresentation">Поля які використовуються для представлення</param>
-        /// <returns></returns>
+		/// Вибирає значення полів по вказівнику для представлення
+		/// </summary>
+		/// <param name="QuerySelect">Запит</param>
+		/// <param name="fieldPresentation">Поля які використовуються для представлення</param>
+		/// <returns></returns>
 		public string GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
-        {
+		{
 			string query = QuerySelect.Construct();
 
 			NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
@@ -1163,9 +1163,9 @@ CREATE TYPE uuidtext AS
 			return informationSchema;
 		}
 
-        #endregion
+		#endregion
 
-        #region SQL
+		#region SQL
 
 		/// <summary>
 		/// Вставка даних. Невідомо чи функція використовується.
@@ -1173,8 +1173,8 @@ CREATE TYPE uuidtext AS
 		/// <param name="table">Таблиця</param>
 		/// <param name="paramQuery">Поля і значення</param>
 		/// <returns></returns>
-        public int InsertSQL(string table, Dictionary<string, object> paramQuery)
-        {
+		public int InsertSQL(string table, Dictionary<string, object> paramQuery)
+		{
 			string query_field = "";
 			string query_values = "";
 
@@ -1267,7 +1267,7 @@ CREATE TYPE uuidtext AS
 		/// <param name="paramQuery">Параметри запиту</param>
 		/// <param name="columnsName">Масив стовпців даних</param>
 		/// <param name="listRow">Список рядочків даних</param>
-		public void SelectRequest(string selectQuery, Dictionary<string, object> paramQuery, out string[] columnsName, out List<Dictionary<string,object>> listRow)
+		public void SelectRequest(string selectQuery, Dictionary<string, object> paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
 		{
 			NpgsqlCommand Command = new NpgsqlCommand(selectQuery, Connection);
 

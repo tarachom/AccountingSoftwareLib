@@ -40,7 +40,7 @@ namespace AccountingSoftware
 			Desc = "";
 			Type = "";
 			Pointer = "";
-        }
+		}
 
 		/// <summary>
 		/// Константа

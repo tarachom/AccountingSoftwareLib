@@ -69,7 +69,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Значення додаткових полів
 		/// </summary>
-		public Dictionary<string, Dictionary<string,string>> JoinValue { get; private set; }
+		public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
 
 		/// <summary>
 		/// Очистка вн. списків
@@ -93,9 +93,9 @@ namespace AccountingSoftware
 
 			//Якщо задані додаткові поля з псевдонімами, їх потрібно зчитати в список JoinValue
 			if (QuerySelect.FieldAndAlias.Count > 0)
-            {
+			{
 				foreach (Dictionary<string, object> fieldValue in FieldValueList)
-                {
+				{
 					Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
 					JoinValue.Add(fieldValue["uid"]?.ToString() ?? "", joinFieldValue);
 

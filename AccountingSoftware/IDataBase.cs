@@ -28,20 +28,20 @@ namespace AccountingSoftware
 	/// </summary>
 	public interface IDataBase
 	{
-        #region Open
+		#region Open
 
-        void Open(string connectionString);
+		void Open(string connectionString);
 		void Close();
 
 		bool Open2(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
 		bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
 		bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase);
 
-        #endregion
+		#endregion
 
-        #region Transaction
+		#region Transaction
 
-        void BeginTransaction();
+		void BeginTransaction();
 		void CommitTransaction();
 		void RollbackTransaction();
 
@@ -97,7 +97,7 @@ namespace AccountingSoftware
 
 		#region Journal
 
-		void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer, 
+		void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
 			DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null);
 
 		#endregion
@@ -129,11 +129,11 @@ namespace AccountingSoftware
 		bool IfExistsTable(string tableName);
 		bool IfExistsColumn(string tableName, string columnName);
 
-        #endregion
+		#endregion
 
-        #region SQL
+		#region SQL
 
-        int InsertSQL(string table, Dictionary<string, object> paramQuery);
+		int InsertSQL(string table, Dictionary<string, object> paramQuery);
 		int ExecuteSQL(string sqlQuery);
 		int ExecuteSQL(string sqlQuery, Dictionary<string, object> paramQuery);
 		void SelectRequest(string selectQuery, Dictionary<string, object> paramQuery, out string[] columnsName, out List<object[]> listRow);

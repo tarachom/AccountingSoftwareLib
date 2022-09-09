@@ -30,7 +30,7 @@ namespace AccountingSoftware
 	/// </summary>
 	public class UuidAndText
 	{
-		public UuidAndText() 
+		public UuidAndText()
 		{
 			Text = "";
 		}
@@ -38,8 +38,8 @@ namespace AccountingSoftware
 		public UuidAndText(Guid uuid)
 		{
 			Uuid = uuid;
-            Text = "";
-        }
+			Text = "";
+		}
 
 		public UuidAndText(Guid uuid, string text)
 		{
@@ -52,7 +52,7 @@ namespace AccountingSoftware
 		/// </summary>
 		[PgName("uuid")]
 		public Guid Uuid { get; set; }
-				
+
 		/// <summary>
 		/// Додаткова інформація
 		/// </summary>
@@ -64,7 +64,7 @@ namespace AccountingSoftware
 		/// </summary>
 		/// <returns></returns>
 		public string ToXml()
-        {
+		{
 			return $"<uuid>{Uuid}</uuid><text>{Text}</text>";
 		}
 

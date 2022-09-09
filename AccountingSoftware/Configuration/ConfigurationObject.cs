@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Об'єкт конфігурації
 	/// </summary>
-	public abstract class ConfigurationObject 
+	public abstract class ConfigurationObject
 	{
 		public ConfigurationObject()
 		{
@@ -34,12 +34,12 @@ namespace AccountingSoftware
 			Name = "";
 			Table = "";
 			Desc = "";
-        }
+		}
 
-        /// <summary>
-        /// Унікальний ключ обєкту
-        /// </summary>
-        public string UID { get; set; }
+		/// <summary>
+		/// Унікальний ключ обєкту
+		/// </summary>
+		public string UID { get; set; }
 
 		/// <summary>
 		/// Назва

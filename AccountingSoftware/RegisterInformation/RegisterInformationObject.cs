@@ -151,7 +151,7 @@ namespace AccountingSoftware
 			Kernel.DataBase.BeginTransaction();
 			Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
 			Kernel.DataBase.CommitTransaction();
-			
+
 			BaseClear();
 		}
 	}

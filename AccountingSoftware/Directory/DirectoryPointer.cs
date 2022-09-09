@@ -34,7 +34,7 @@ namespace AccountingSoftware
 			Table = "";
 			Kernel = new Kernel();
 			Fields = new Dictionary<string, object>();
-        }
+		}
 
 		public DirectoryPointer(Kernel kernel, string table) : this()
 		{
@@ -95,7 +95,7 @@ namespace AccountingSoftware
 			{
 				Query query = new Query(Table);
 				query.Field.AddRange(fieldPresentation);
-				
+
 				query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
 				return Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);

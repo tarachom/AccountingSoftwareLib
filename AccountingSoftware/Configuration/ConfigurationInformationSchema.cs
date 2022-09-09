@@ -23,7 +23,7 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-    /// <summary>
+	/// <summary>
 	/// Структура таблиць і стовбців бази даних
 	/// </summary>
 	public class ConfigurationInformationSchema
@@ -62,7 +62,7 @@ namespace AccountingSoftware
 		/// <param name="table">Таблиця</param>
 		/// <param name="index">Індекс</param>
 		public void AppendIndex(string table, string index)
-        {
+		{
 			if (!Tables.ContainsKey(table))
 				Tables.Add(table, new ConfigurationInformationSchema_Table(table));
 
@@ -148,7 +148,7 @@ namespace AccountingSoftware
 	/// </summary>
 	public class ConfigurationInformationSchema_Index
 	{
-		public ConfigurationInformationSchema_Index() 
+		public ConfigurationInformationSchema_Index()
 		{
 			IndexName = "";
 		}

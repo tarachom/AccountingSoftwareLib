@@ -61,7 +61,7 @@ namespace AccountingSoftware
 	/// в масив типу string[]
 	/// </summary>
 	public static class ArrayToXml
-    {
+	{
 		/// <summary>
 		/// Функція перетоврення стрічки ХМЛ в масив
 		/// </summary>

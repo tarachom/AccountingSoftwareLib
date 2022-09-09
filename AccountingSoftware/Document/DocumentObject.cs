@@ -36,7 +36,7 @@ namespace AccountingSoftware
 			FieldArray = fieldsArray;
 			UnigueID = new UnigueID(Guid.Empty);
 
-            FieldValue = new Dictionary<string, object>();
+			FieldValue = new Dictionary<string, object>();
 
 			foreach (string field in FieldArray)
 				FieldValue.Add(field, new object());
@@ -163,7 +163,7 @@ namespace AccountingSoftware
 		}
 
 		protected void BaseSpend(bool spend, DateTime spend_date)
-        {
+		{
 			Spend = spend;
 			SpendDate = spend_date;
 

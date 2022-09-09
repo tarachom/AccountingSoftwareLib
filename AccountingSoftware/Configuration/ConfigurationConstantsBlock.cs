@@ -36,7 +36,7 @@ namespace AccountingSoftware
 			Constants = new Dictionary<string, ConfigurationConstants>();
 			BlockName = "";
 			Desc = "";
-        }
+		}
 
 		/// <summary>
 		/// Назва блоку констант

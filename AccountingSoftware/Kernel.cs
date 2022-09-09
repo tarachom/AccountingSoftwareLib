@@ -28,7 +28,7 @@ namespace AccountingSoftware
 	/// </summary>
 	public class Kernel
 	{
-		public Kernel() 
+		public Kernel()
 		{
 			Conf = new Configuration();
 			DataBase = new PostgreSQL();
@@ -37,7 +37,7 @@ namespace AccountingSoftware
 			DataBase_UserId = "";
 			DataBase_Port = "";
 			DataBase_BaseName = "";
-        }
+		}
 
 		/// <summary>
 		/// Перевірити підключення до сервера
@@ -99,10 +99,10 @@ namespace AccountingSoftware
 				Configuration.Load(PathToXmlFileConfiguration, out conf);
 				Conf = conf;
 			}
-            catch
-            {
+			catch
+			{
 				return false;
-            }
+			}
 
 			Conf.PathToXmlFileConfiguration = PathToXmlFileConfiguration;
 
@@ -120,7 +120,7 @@ namespace AccountingSoftware
 		/// <param name="exception"Помилка></param>
 		/// <returns>True якщо підключення відбулось нормально</returns>
 		public bool OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
-        {
+		{
 			DataBase = new PostgreSQL();
 			bool flagConnect = DataBase.Open2(Server, UserId, Password, Port, Database, out exception);
 
@@ -157,6 +157,6 @@ namespace AccountingSoftware
 		public string DataBase_Port { get; private set; }
 		public string DataBase_BaseName { get; private set; }
 
-        #endregion
-    }
+		#endregion
+	}
 }

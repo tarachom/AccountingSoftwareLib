@@ -28,6 +28,6 @@ namespace AccountingSoftware
 	/// </summary>
 	public abstract class Directory
 	{
-		
+
 	}
 }

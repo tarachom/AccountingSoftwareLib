@@ -67,10 +67,10 @@ namespace AccountingSoftware
 		public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
 
 		public ConfigurationDirectories Copy()
-        {
+		{
 			ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.Table, this.Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
 				confDirCopy.Fields.Add(fields.Key, fields.Value);
 
 			foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)

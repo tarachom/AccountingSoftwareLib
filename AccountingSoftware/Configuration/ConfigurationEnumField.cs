@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поле перелічення
 		/// </summary>
-		public ConfigurationEnumField() 
+		public ConfigurationEnumField()
 		{
 			Name = "";
 			Desc = "";

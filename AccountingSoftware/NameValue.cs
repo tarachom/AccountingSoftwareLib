@@ -38,7 +38,7 @@ namespace AccountingSoftware
 	/// </example>
 	public class NameValue<T>
 	{
-		public NameValue() 
+		public NameValue()
 		{
 			Name = "";
 		}
@@ -53,12 +53,12 @@ namespace AccountingSoftware
 
 		public T? Value { get; set; }
 
-        public bool Equals(T value)
-        {
+		public bool Equals(T value)
+		{
 			return Value?.ToString() == value?.ToString();
 		}
 
-        public override string ToString()
+		public override string ToString()
 		{
 			return Name;
 		}

@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Запис регістра
 	/// </summary>
-	public abstract class RegisterInformationRecord: RegisterRecord
+	public abstract class RegisterInformationRecord : RegisterRecord
 	{
 
 	}

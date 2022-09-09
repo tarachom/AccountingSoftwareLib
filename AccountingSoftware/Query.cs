@@ -137,7 +137,7 @@ namespace AccountingSoftware
 			}
 
 			if (FieldAndAlias.Count > 0)
-            {
+			{
 				foreach (NameValue<string> field in FieldAndAlias)
 					query += ", " + field.Name + " AS " + field.Value;
 			}
@@ -145,7 +145,7 @@ namespace AccountingSoftware
 			query += "\nFROM " + Table;
 
 			if (Joins.Count > 0)
-            {
+			{
 				foreach (Join join in Joins)
 				{
 					query += "\n";
@@ -157,7 +157,7 @@ namespace AccountingSoftware
 					else if (join.JoinType == JoinType.INNER)
 						query += "INNER ";
 
-					query += "JOIN " + join.JoinTable + (join.JoinTableAlias != "" ? " AS " + join.JoinTableAlias : "") + " ON " + 
+					query += "JOIN " + join.JoinTable + (join.JoinTableAlias != "" ? " AS " + join.JoinTableAlias : "") + " ON " +
 						join.ParentTable + "." + join.JoinField + " = " + (join.JoinTableAlias != "" ? join.JoinTableAlias : join.JoinTable) + ".uid ";
 				}
 			}
@@ -279,7 +279,7 @@ namespace AccountingSoftware
 
 		//Очистка колекцій
 		public void Clear()
-        {
+		{
 			FieldAndAlias = new List<NameValue<string>>();
 			Joins = new List<Join>();
 			Where = new List<Where>();
@@ -381,9 +381,9 @@ namespace AccountingSoftware
 	/// Приєднання таблиці
 	/// </summary>
 	public class Join
-    {
+	{
 		public Join()
-        {
+		{
 			JoinType = JoinType.LEFT;
 
 			JoinTable = "";
@@ -439,11 +439,11 @@ namespace AccountingSoftware
 	/// Тип приєднання
 	/// </summary>
 	public enum JoinType
-    {
+	{
 		LEFT,
 		INNER,
 		RIGHT
-    }
+	}
 
 	/// <summary>
 	/// Тип порівняння

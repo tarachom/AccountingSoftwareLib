@@ -33,8 +33,8 @@ namespace AccountingSoftware
 			UnigueID = new UnigueID(Guid.Empty);
 			Table = TypeDocument = "";
 			Kernel = new Kernel();
-            Fields = new Dictionary<string, object>();
-        }
+			Fields = new Dictionary<string, object>();
+		}
 
 		public DocumentPointer(Kernel kernel, string table, string typeDocument) : this()
 		{
@@ -65,7 +65,7 @@ namespace AccountingSoftware
 		/// Таблиця
 		/// </summary>
 		private string Table { get; set; }
-		
+
 		/// <summary>
 		/// Назва як задано в конфігураторі
 		/// </summary>

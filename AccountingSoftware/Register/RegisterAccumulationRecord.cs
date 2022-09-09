@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Запис регістра
 	/// </summary>
-	public abstract class RegisterAccumulationRecord: RegisterRecord
+	public abstract class RegisterAccumulationRecord : RegisterRecord
 	{
 		/// <summary>
 		/// Прибуток true, Витрата false

@@ -55,7 +55,7 @@ namespace AccountingSoftware
 		public Dictionary<string, ConfigurationObjectField> Fields { get; }
 
 		public ConfigurationObjectTablePart Copy()
-        {
+		{
 			ConfigurationObjectTablePart confObjectTablePart = new ConfigurationObjectTablePart(this.Name, this.Table, this.Desc);
 
 			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
