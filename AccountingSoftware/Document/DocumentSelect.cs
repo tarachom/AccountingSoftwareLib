@@ -133,13 +133,5 @@ namespace AccountingSoftware
 			return Count() > 0;
 		}
 
-		public void Dispose()
-		{
-			QuerySelect = null;
-			Kernel = null;
-			DocumentPointerPosition = null;
-			BaseSelectList = null;
-			Position = 0;
-		}
 	}
 }

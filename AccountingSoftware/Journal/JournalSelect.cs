@@ -98,7 +98,7 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				Current = null;
+				Current = new JournalDocument();
 				return false;
 			}
 		}
@@ -112,20 +112,12 @@ namespace AccountingSoftware
 		public bool Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
 		{
 			Position = 0;
-			Current = null;
+			Current = new JournalDocument();
 			BaseSelectList.Clear();
 
 			Kernel.DataBase.SelectJournalDocumentPointer(Tables, TypeDocuments, BaseSelectList, periodStart, periodEnd, typeDocSelect);
 
 			return Count() > 0;
-		}
-
-		public void Dispose()
-		{
-			Kernel = null;
-			Current = null;
-			BaseSelectList = null;
-			Position = 0;
 		}
 	}
 }

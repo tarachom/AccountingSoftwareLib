@@ -48,7 +48,7 @@ namespace AccountingSoftware
 
 		public bool Open2(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
 		{
-			exception = null;
+			exception = new Exception();
 
 			string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
 
@@ -73,13 +73,11 @@ namespace AccountingSoftware
 			string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
 
 			Connection = new NpgsqlConnection(conString);
-
-			exception = null;
+			exception = new Exception();
 
 			try
 			{
 				Connection.Open();
-
 				return true;
 			}
 			catch (Exception e)
@@ -91,7 +89,7 @@ namespace AccountingSoftware
 
 		public bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase)
 		{
-			exception = null;
+			exception = new Exception();
 			IsExistsDatabase = false;
 
 			string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};SSLMode=Prefer;";
@@ -118,7 +116,7 @@ namespace AccountingSoftware
 
 			try
 			{
-				IsExistsDatabase = resultSql = (bool)nCommand.ExecuteScalar();
+				IsExistsDatabase = resultSql = Boolean.Parse(nCommand?.ExecuteScalar()?.ToString() ?? "false");
 			}
 			catch (Exception e)
 			{
@@ -178,7 +176,7 @@ CREATE TYPE uuidtext AS
 
 		#region Transaction
 
-		private NpgsqlTransaction Transaction { get; set; }
+		private NpgsqlTransaction? Transaction { get; set; }
 
 		public void BeginTransaction()
 		{
@@ -187,12 +185,12 @@ CREATE TYPE uuidtext AS
 
 		public void CommitTransaction()
 		{
-			Transaction.Commit();
+			Transaction?.Commit();
 		}
 
 		public void RollbackTransaction()
 		{
-			Transaction.Rollback();
+			Transaction?.Rollback();
 		}
 
 		#endregion
@@ -594,7 +592,7 @@ CREATE TYPE uuidtext AS
 				spend_date = (DateTime)reader["spend_date"];
 
 				if (fieldValue != null)
-					foreach (string field in fieldArray)
+					foreach (string field in fieldArray!)
 						fieldValue[field] = reader[field];
 			}
 			reader.Close();

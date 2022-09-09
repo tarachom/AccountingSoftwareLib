@@ -180,15 +180,6 @@ namespace AccountingSoftware
 			return directoryPointerList;
 		}
 
-		public void Dispose()
-		{
-			QuerySelect = null;
-			Kernel = null;
-			DirectoryPointerPosition = null;
-			BaseSelectList = null;
-			Position = 0;
-		}
-
 		public void DeleteTempTable()
 		{
 			Kernel.DataBase.DeleteDirectoryTempTable(this);

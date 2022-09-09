@@ -140,7 +140,6 @@ namespace AccountingSoftware
 		public void Close()
 		{
 			DataBase.Close();
-			Conf = null;
 		}
 
 		/// <summary>
