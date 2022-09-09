@@ -457,7 +457,7 @@ CREATE TYPE uuidtext AS
 			if (reader.Read())
 			{
 				isFind = true;
-				directoryPointer.Init(new UnigueID((Guid)reader["uid"], ""), null);
+				directoryPointer.Init(new UnigueID(reader["uid"]), null);
 			}
 			reader.Close();
 
@@ -676,7 +676,7 @@ CREATE TYPE uuidtext AS
 				}
 
 				DocumentPointer elementPointer = new DocumentPointer();
-				elementPointer.Init(new UnigueID((Guid)reader["uid"], ""), fields);
+				elementPointer.Init(new UnigueID(reader["uid"]), fields);
 
 				listDocumentPointer.Add(elementPointer);
 			}
@@ -845,7 +845,7 @@ CREATE TYPE uuidtext AS
 			{
 				JournalDocument document = new JournalDocument()
 				{
-					UnigueID = new UnigueID((Guid)reader["uid"], ""),
+					UnigueID = new UnigueID(reader["uid"]),
 					DocName = reader["docname"]?.ToString() ?? "",
 					DocDate = reader["docdate"]?.ToString() ?? "",
 					DocNomer = reader["docnomer"]?.ToString() ?? "",

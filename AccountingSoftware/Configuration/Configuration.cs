@@ -1742,13 +1742,17 @@ namespace AccountingSoftware
 			string сonfigurationFileName, string secondConfigurationFileName)
 		{
 			XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
-			xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
+
+            xsltCodeGnerator.Load(pathToTemplate,  new XsltSettings(true, true), null);
 
 			XsltArgumentList xsltArgumentList = new XsltArgumentList();
 			xsltArgumentList.AddParam("Configuration", "", сonfigurationFileName);
 			xsltArgumentList.AddParam("SecondConfiguration", "", secondConfigurationFileName);
 
-			FileStream fileStream = new FileStream(pathToSaveXml, FileMode.Create);
+			Console.WriteLine(сonfigurationFileName);
+            Console.WriteLine(secondConfigurationFileName);
+
+            FileStream fileStream = new FileStream(pathToSaveXml, FileMode.Create);
 
 			xsltCodeGnerator.Transform(pathToInformationSchemaXML, xsltArgumentList, fileStream);
 
