@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System;
 using System.Xml;
 using System.Xml.XPath;
 
