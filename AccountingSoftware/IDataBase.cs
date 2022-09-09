@@ -101,7 +101,7 @@ namespace AccountingSoftware
 		#region Journal
 
 		void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer, 
-			DateTime periodStart, DateTime periodEnd, string[] typeDocSelect = null);
+			DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null);
 
 		#endregion
 

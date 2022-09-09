@@ -30,7 +30,16 @@ namespace AccountingSoftware
 	/// </summary>
 	public class Kernel
 	{
-		public Kernel() { /**/ }
+		public Kernel() 
+		{
+			Conf = new Configuration();
+			DataBase = new PostgreSQL();
+
+			DataBase_Server = "";
+			DataBase_UserId = "";
+			DataBase_Port = "";
+			DataBase_BaseName = "";
+        }
 
 		/// <summary>
 		/// Перевірити підключення до сервера

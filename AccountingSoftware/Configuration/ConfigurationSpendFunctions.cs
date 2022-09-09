@@ -30,6 +30,12 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationSpendFunctions
     {
+        public ConfigurationSpendFunctions()
+        {
+            Spend = "";
+            ClearSpend = "";
+        }
+
         /// <summary>
         /// Обробка проведення документу
         /// </summary>

@@ -38,6 +38,8 @@ namespace AccountingSoftware
 
 			QuerySelect = new Query(table);
 			BaseSelectList = new List<DirectoryPointer>();
+
+			DirectoryPointerPosition = new DirectoryPointer();
 		}
 
 		/// <summary>
@@ -102,7 +104,7 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				DirectoryPointerPosition = null;
+				DirectoryPointerPosition = new DirectoryPointer();
 				return false;
 			}
 		}
@@ -114,7 +116,7 @@ namespace AccountingSoftware
 		protected bool BaseSelect()
 		{
 			Position = 0;
-			DirectoryPointerPosition = null;
+			DirectoryPointerPosition = new DirectoryPointer();
 			BaseSelectList.Clear();
 
 			Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);

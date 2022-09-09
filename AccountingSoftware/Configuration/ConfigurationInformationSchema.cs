@@ -109,7 +109,12 @@ namespace AccountingSoftware
 	/// </summary>
 	public class ConfigurationInformationSchema_Column
 	{
-		public ConfigurationInformationSchema_Column() { }
+		public ConfigurationInformationSchema_Column()
+		{
+			ColumnName = "";
+			DataType = "";
+			UdtName = "";
+		}
 
 		/// <summary>
 		/// Стовпчик
@@ -145,7 +150,10 @@ namespace AccountingSoftware
 	/// </summary>
 	public class ConfigurationInformationSchema_Index
 	{
-		public ConfigurationInformationSchema_Index() { }
+		public ConfigurationInformationSchema_Index() 
+		{
+			IndexName = "";
+		}
 
 		/// <summary>
 		/// Індекс

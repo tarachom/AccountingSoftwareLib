@@ -30,6 +30,13 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTriggerFunctions
     {
+        public ConfigurationTriggerFunctions()
+        {
+            BeforeSave = "";
+            AfterSave = "";
+            BeforeDelete = "";
+        }
+
         /// <summary>
         /// Перед записом
         /// </summary>

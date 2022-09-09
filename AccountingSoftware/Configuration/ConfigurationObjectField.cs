@@ -31,7 +31,14 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поле
 		/// </summary>
-		public ConfigurationObjectField() { /*..*/ }
+		public ConfigurationObjectField() 
+		{
+			Name = "";
+			NameInTable = "";
+			Type = "";
+			Pointer = "";
+			Desc = "";
+		}
 
 		/// <summary>
 		/// Поле

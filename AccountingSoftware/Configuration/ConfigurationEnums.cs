@@ -36,6 +36,8 @@ namespace AccountingSoftware
 		public ConfigurationEnums()
 		{
 			Fields = new Dictionary<string, ConfigurationEnumField>();
+			Name = "";
+			Desc = "";
 		}
 
 		/// <summary>

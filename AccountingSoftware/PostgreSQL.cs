@@ -29,7 +29,10 @@ namespace AccountingSoftware
 {
 	public class PostgreSQL : IDataBase
 	{
-		public PostgreSQL() { }
+		public PostgreSQL() 
+		{
+			Connection = new NpgsqlConnection();
+        }
 
         #region Connect
 
@@ -155,7 +158,7 @@ namespace AccountingSoftware
 		{
 			string query = "SELECT 'Exist' FROM pg_type WHERE typname = 'uuidtext'";
 			NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
-			object result = nCommand.ExecuteScalar();
+			object? result = nCommand.ExecuteScalar();
 
 			if (!(result != null && result.ToString() == "Exist"))
 			{
@@ -421,17 +424,15 @@ CREATE TYPE uuidtext AS
 			NpgsqlDataReader reader = nCommand.ExecuteReader();
 			while (reader.Read())
 			{
-				Dictionary<string, object> fields = null;
+				Dictionary<string, object> fields = new Dictionary<string, object>();
 
-				if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+                if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
 				{
-					fields = new Dictionary<string, object>();
-
 					foreach (string field in QuerySelect.Field)
 						fields.Add(field, reader[field]);
 
 					foreach(NameValue<string> field in QuerySelect.FieldAndAlias)
-						fields.Add(field.Value, reader[field.Value]);
+						fields.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 				}
 
 				DirectoryPointer elementPointer = new DirectoryPointer();
@@ -667,17 +668,15 @@ CREATE TYPE uuidtext AS
 			NpgsqlDataReader reader = nCommand.ExecuteReader();
 			while (reader.Read())
 			{
-				Dictionary<string, object> fields = null;
+				Dictionary<string, object> fields = new Dictionary<string, object>();
 
 				if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
 				{
-					fields = new Dictionary<string, object>();
-
 					foreach (string field in QuerySelect.Field)
 						fields.Add(field, reader[field]);
 
 					foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-						fields.Add(field.Value, reader[field.Value]);
+						fields.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 				}
 
 				DocumentPointer elementPointer = new DocumentPointer();
@@ -762,7 +761,7 @@ CREATE TYPE uuidtext AS
 					fieldValue.Add(field, reader[field]);
 
 				foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-					fieldValue.Add(field.Value, reader[field.Value]);
+					fieldValue.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 			}
 			reader.Close();
 		}
@@ -805,7 +804,7 @@ CREATE TYPE uuidtext AS
 		#region Journal
 
 		public void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
-			DateTime periodStart, DateTime periodEnd, string[] typeDocSelect = null)
+			DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
 		{
 			string query = "";
 			int counter = 0;
@@ -851,12 +850,12 @@ CREATE TYPE uuidtext AS
 				JournalDocument document = new JournalDocument()
 				{
 					UnigueID = new UnigueID((Guid)reader["uid"], ""),
-					DocName = reader["docname"].ToString(),
-					DocDate = reader["docdate"].ToString(),
-					DocNomer = reader["docnomer"].ToString(),
+					DocName = reader["docname"]?.ToString() ?? "",
+					DocDate = reader["docdate"]?.ToString() ?? "",
+					DocNomer = reader["docnomer"]?.ToString() ?? "",
 					Spend = (bool)reader["spend"],
 					SpendDate = (DateTime)reader["spend_date"],
-					TypeDocument = reader["type_doc"].ToString()
+					TypeDocument = reader["type_doc"]?.ToString() ?? ""
 				};
 
 				listJournalDocument.Add(document);
@@ -892,7 +891,7 @@ CREATE TYPE uuidtext AS
 					fieldValue.Add(field, reader[field]);
 
 				foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-					fieldValue.Add(field.Value, reader[field.Value]);
+					fieldValue.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 			}
 			reader.Close();
 		}
@@ -1043,7 +1042,7 @@ CREATE TYPE uuidtext AS
 					fieldValue.Add(field, reader[field]);
 
 				foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-					fieldValue.Add(field.Value, reader[field.Value]);
+					fieldValue.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
 			}
 			reader.Close();
 		}
@@ -1142,10 +1141,10 @@ CREATE TYPE uuidtext AS
 			while (reader.Read())
 			{
 				informationSchema.Append(
-					reader["table_name"].ToString().ToLower(),
-					reader["column_name"].ToString().ToLower(),
-					reader["data_type"].ToString(),
-					reader["udt_name"].ToString());
+					reader["table_name"]?.ToString()?.ToLower() ?? "",
+					reader["column_name"]?.ToString()?.ToLower() ?? "",
+					reader["data_type"]?.ToString() ?? "",
+					reader["udt_name"]?.ToString() ?? "");
 			}
 			reader.Close();
 
@@ -1160,8 +1159,8 @@ CREATE TYPE uuidtext AS
 			while (reader.Read())
 			{
 				informationSchema.AppendIndex(
-					reader["tablename"].ToString().ToLower(),
-					reader["indexname"].ToString().ToLower());
+					reader["tablename"]?.ToString()?.ToLower() ?? "",
+					reader["indexname"]?.ToString()?.ToLower() ?? "");
 			}
 			reader.Close();
 

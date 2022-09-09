@@ -50,10 +50,12 @@ namespace AccountingSoftware
 		/// </summary>
 		/// <param name="uid">Унікальний ідентифікатор</param>
 		/// <param name="fields">Поля які потрібно додатково зчитати з бази даних</param>
-		public void Init(UnigueID uid, Dictionary<string, object> fields = null)
+		public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
 		{
 			UnigueID = uid;
-			Fields = fields;
+
+			if (fields != null)
+				Fields = fields;
 		}
 
 		/// <summary>

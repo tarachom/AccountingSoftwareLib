@@ -40,7 +40,7 @@ namespace AccountingSoftware
 			FieldValue = new Dictionary<string, object>();
 
 			foreach (string field in FieldArray)
-				FieldValue.Add(field, null);
+				FieldValue.Add(field, new object());
 
 			UnigueID = new UnigueID(Guid.Empty);
 		}
@@ -79,7 +79,7 @@ namespace AccountingSoftware
 		/// Новий елемент
 		/// </summary>
 		/// <param name="use_uid">01.09.2021 Добавив можливість вказувати uid для нових елементів довідника. Використовується для обміну</param>
-		public void New(UnigueID use_uid = null)
+		public void New(UnigueID? use_uid = null)
 		{
 			if (use_uid != null)
 				UnigueID = use_uid;
@@ -95,7 +95,7 @@ namespace AccountingSoftware
 		protected void BaseClear()
 		{
 			foreach (string field in FieldArray)
-				FieldValue[field] = null;
+				FieldValue[field] = new object();
 		}
 
 		/// <summary>

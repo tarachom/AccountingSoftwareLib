@@ -36,7 +36,13 @@ namespace AccountingSoftware
 		public ConfigurationConstants()
 		{
 			TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-		}
+			Block = new ConfigurationConstantsBlock();
+			Name = "";
+			NameInTable = "";
+			Desc = "";
+			Type = "";
+			Pointer = "";
+        }
 
 		/// <summary>
 		/// Константа

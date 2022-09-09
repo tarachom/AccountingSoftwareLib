@@ -37,6 +37,7 @@ namespace AccountingSoftware
 			Kernel = kernel;
 
 			BaseSelectList = new List<DocumentPointer>();
+			DocumentPointerPosition = new DocumentPointer();
 		}
 
 		/// <summary>
@@ -96,7 +97,7 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				DocumentPointerPosition = null;
+				DocumentPointerPosition = new DocumentPointer();
 				return false;
 			}
 		}
@@ -108,7 +109,7 @@ namespace AccountingSoftware
 		protected bool BaseSelect()
 		{
 			Position = 0;
-			DocumentPointerPosition = null;
+			DocumentPointerPosition = new DocumentPointer();
 			BaseSelectList.Clear();
 
 			Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);

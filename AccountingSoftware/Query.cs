@@ -44,6 +44,7 @@ namespace AccountingSoftware
 			Order = new Dictionary<string, SelectOrder>();
 
 			Table = table;
+			TempTable = "";
 		}
 
 		private static int _ParamGuidState { get; set; }
@@ -312,6 +313,7 @@ namespace AccountingSoftware
 			Value = value;
 			UsingSQLToValue = usingSQLToValue;
 			ComparisonNext = comparisonNext;
+			Alias = "";
 
 			Init();
 		}
@@ -332,6 +334,7 @@ namespace AccountingSoftware
 			Value = value;
 			UsingSQLToValue = usingSQLToValue;
 			ComparisonNext = Comparison.Empty;
+			Alias = "";
 
 			Init();
 		}
@@ -385,6 +388,11 @@ namespace AccountingSoftware
 		public Join()
         {
 			JoinType = JoinType.LEFT;
+
+			JoinTable = "";
+			JoinTableAlias = "";
+			JoinField = "";
+			ParentTable = "";
 		}
 
 		/// <summary>

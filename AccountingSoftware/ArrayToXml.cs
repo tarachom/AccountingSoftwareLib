@@ -51,7 +51,7 @@ namespace AccountingSoftware
 			}
 
 			foreach (T item in value)
-				XmlData += "<e>" + LeftCData + item.ToString() + RightCData + "</e>";
+				XmlData += "<e>" + LeftCData + item?.ToString() + RightCData + "</e>";
 
 			return XmlData;
 		}
@@ -75,15 +75,15 @@ namespace AccountingSoftware
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(xmlValue);
 
-			XPathNavigator xPathNavigator = xmlDocument.CreateNavigator();
-			XPathNodeIterator eNode = xPathNavigator.Select("root/e");
+			XPathNavigator? xPathNavigator = xmlDocument?.CreateNavigator();
+			XPathNodeIterator? eNode = xPathNavigator?.Select("root/e");
 
 			int counter = 0;
-			string[] stringValue = new string[eNode.Count];
+			string[] stringValue = new string[eNode?.Count ?? 0];
 
-			while (eNode.MoveNext())
+			while (eNode!.MoveNext())
 			{
-				stringValue[counter] = eNode.Current.Value;
+				stringValue[counter] = eNode?.Current?.Value ?? "";
 				counter++;
 			}
 
@@ -104,11 +104,11 @@ namespace AccountingSoftware
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(xmlValue);
 
-			XPathNavigator xPathNavigator = xmlDocument.CreateNavigator();
-			XPathNavigator root = xPathNavigator.SelectSingleNode("root");
+			XPathNavigator? xPathNavigator = xmlDocument?.CreateNavigator();
+			XPathNavigator? root = xPathNavigator?.SelectSingleNode("root");
 
-			Guid uuid = Guid.Parse(root.SelectSingleNode("uuid").Value);
-			string text = root.SelectSingleNode("text").Value;
+			Guid uuid = Guid.Parse(root?.SelectSingleNode("uuid")?.Value ?? Guid.Empty.ToString());
+			string text = root?.SelectSingleNode("text")?.Value ?? "";
 
 			return new UuidAndText(uuid, text);
 		}

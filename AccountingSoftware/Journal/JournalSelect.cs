@@ -36,6 +36,7 @@ namespace AccountingSoftware
 			Kernel = kernel;
 			Tables = table;
 			TypeDocuments = typeDocument;
+			Current = new JournalDocument();
 
 			BaseSelectList = new List<JournalDocument>();
 		}
@@ -108,7 +109,7 @@ namespace AccountingSoftware
 		/// Зчитати
 		/// </summary>
 		/// <returns></returns>
-		public bool Select(DateTime periodStart, DateTime periodEnd, string[] typeDocSelect = null)
+		public bool Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
 		{
 			Position = 0;
 			Current = null;

@@ -37,11 +37,12 @@ namespace AccountingSoftware
 			Table = table;
 			TypeDocument = typeDocument;
 			FieldArray = fieldsArray;
+			UnigueID = new UnigueID(Guid.Empty);
 
-			FieldValue = new Dictionary<string, object>();
+            FieldValue = new Dictionary<string, object>();
 
 			foreach (string field in FieldArray)
-				FieldValue.Add(field, null);
+				FieldValue.Add(field, new object());
 		}
 
 		/// <summary>
@@ -110,7 +111,7 @@ namespace AccountingSoftware
 		protected void BaseClear()
 		{
 			foreach (string field in FieldArray)
-				FieldValue[field] = null;
+				FieldValue[field] = new object();
 		}
 
 		/// <summary>
