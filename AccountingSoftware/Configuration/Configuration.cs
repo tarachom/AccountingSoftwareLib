@@ -48,21 +48,21 @@ namespace AccountingSoftware
 			ReservedUnigueTableName = new List<string>();
 			ReservedUnigueColumnName = new Dictionary<string, List<string>>();
 
-            Name = "";
-            NameSpace = "";
-            Author = "";
-            Desc = "";
-            PathToXmlFileConfiguration = "";
-            PathToCopyXmlFileConfiguration = "";
-            PathToTempXmlFileConfiguration = "";
-        }
+			Name = "";
+			NameSpace = "";
+			Author = "";
+			Desc = "";
+			PathToXmlFileConfiguration = "";
+			PathToCopyXmlFileConfiguration = "";
+			PathToTempXmlFileConfiguration = "";
+		}
 
-        #region Поля
+		#region Поля
 
-        /// <summary>
-        /// Назва конфігурації
-        /// </summary>
-        public string Name { get; set; }
+		/// <summary>
+		/// Назва конфігурації
+		/// </summary>
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Простір імен для конфігурації
@@ -124,16 +124,16 @@ namespace AccountingSoftware
 		/// </summary>
 		public Dictionary<string, ConfigurationRegistersAccumulation> RegistersAccumulation { get; }
 
-        #endregion
+		#endregion
 
-        #region Private_Function
+		#region Private_Function
 
-        /// <summary>
-        /// Список зарезервованих назв таблиць.
-        /// Довідка: коли створюється новий довідник, чи документ 
-        /// для нього резервується нова унікальна назва таблиці в базі даних. 
-        /// </summary>
-        private List<string> ReservedUnigueTableName { get; set; }
+		/// <summary>
+		/// Список зарезервованих назв таблиць.
+		/// Довідка: коли створюється новий довідник, чи документ 
+		/// для нього резервується нова унікальна назва таблиці в базі даних. 
+		/// </summary>
+		private List<string> ReservedUnigueTableName { get; set; }
 
 		/// <summary>
 		/// Список зарезервованих назв стовпців.
@@ -743,12 +743,12 @@ namespace AccountingSoftware
 			//Документи
 			foreach (ConfigurationDocuments documentItem in Documents.Values)
 			{
-                foreach (string register in documentItem.AllowRegisterAccumulation)
-                {
+				foreach (string register in documentItem.AllowRegisterAccumulation)
+				{
 					ConfigurationRegistersAccumulation confRegAccum = RegistersAccumulation[register];
 					if (!confRegAccum.AllowDocumentSpend.Contains(documentItem.Name))
 						confRegAccum.AllowDocumentSpend.Add(documentItem.Name);
-                }
+				}
 			}
 		}
 
@@ -825,10 +825,10 @@ namespace AccountingSoftware
 					string constType = constantsNodes?.Current?.SelectSingleNode("Type")?.Value ?? "";
 					string constDesc = constantsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    if (constName == null)
-                        throw new Exception("Не задана назва константи");
+					if (constName == null)
+						throw new Exception("Не задана назва константи");
 
-                    string constPointer = "";
+					string constPointer = "";
 					if (constType == "pointer" || constType == "enum")
 						constPointer = constantsNodes?.Current?.SelectSingleNode("Pointer")?.Value ?? "";
 
@@ -852,10 +852,10 @@ namespace AccountingSoftware
 				string table = directoryNodes?.Current?.SelectSingleNode("Table")?.Value ?? "";
 				string desc = directoryNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва довідника");
+				if (name == null)
+					throw new Exception("Не задана назва довідника");
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, table, desc);
+				ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, table, desc);
 				Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
 				LoadFields(ConfObjectDirectories.Fields, directoryNodes?.Current, "Directory");
@@ -876,10 +876,10 @@ namespace AccountingSoftware
 				string type = fieldNodes?.Current?.SelectSingleNode("Type")?.Value ?? "";
 				string desc = fieldNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва поля");
+				if (name == null)
+					throw new Exception("Не задана назва поля");
 
-                bool isPresentation = false;
+				bool isPresentation = false;
 				if (parentName == "Directory" || parentName == "Document")
 				{
 					string isPresentationString = fieldNodes?.Current?.SelectSingleNode("IsPresentation")?.Value ?? "";
@@ -910,10 +910,10 @@ namespace AccountingSoftware
 				string table = tablePartNodes?.Current?.SelectSingleNode("Table")?.Value ?? "";
 				string desc = tablePartNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва табличної частини");
+				if (name == null)
+					throw new Exception("Не задана назва табличної частини");
 
-                ConfigurationObjectTablePart ConfObjectTablePart = new ConfigurationObjectTablePart(name, table, desc);
+				ConfigurationObjectTablePart ConfObjectTablePart = new ConfigurationObjectTablePart(name, table, desc);
 
 				tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
 
@@ -922,16 +922,16 @@ namespace AccountingSoftware
 		}
 
 		private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
-        {
+		{
 			XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
 			while (allowRegisterAccumulationNodes!.MoveNext())
 			{
 				string? name = allowRegisterAccumulationNodes?.Current?.Value;
 
-                if (name == null)
-                    throw new Exception("Не задана назва доступного регістру");
+				if (name == null)
+					throw new Exception("Не задана назва доступного регістру");
 
-                allowRegisterAccumulation.Add(name);
+				allowRegisterAccumulation.Add(name);
 			}
 		}
 
@@ -939,18 +939,18 @@ namespace AccountingSoftware
 		{
 			XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
 
-            triggerFunctions.BeforeSave = nodeTriggerFunctions?.SelectSingleNode("BeforeSave")?.Value ?? "";
-            triggerFunctions.AfterSave = nodeTriggerFunctions?.SelectSingleNode("AfterSave")?.Value ?? "";
-            triggerFunctions.BeforeDelete = nodeTriggerFunctions?.SelectSingleNode("BeforeDelete")?.Value ?? "";
+			triggerFunctions.BeforeSave = nodeTriggerFunctions?.SelectSingleNode("BeforeSave")?.Value ?? "";
+			triggerFunctions.AfterSave = nodeTriggerFunctions?.SelectSingleNode("AfterSave")?.Value ?? "";
+			triggerFunctions.BeforeDelete = nodeTriggerFunctions?.SelectSingleNode("BeforeDelete")?.Value ?? "";
 		}
 
 		private static void LoadSpendFunctions(ConfigurationSpendFunctions spendFunctions, XPathNavigator? xPathDocNavigator)
 		{
 			XPathNavigator? nodeSpendFunctions = xPathDocNavigator?.SelectSingleNode("SpendFunctions");
 
-            spendFunctions.Spend = nodeSpendFunctions?.SelectSingleNode("Spend")?.Value ?? "";
-            spendFunctions.ClearSpend = nodeSpendFunctions?.SelectSingleNode("ClearSpend")?.Value ?? "";
-        }
+			spendFunctions.Spend = nodeSpendFunctions?.SelectSingleNode("Spend")?.Value ?? "";
+			spendFunctions.ClearSpend = nodeSpendFunctions?.SelectSingleNode("ClearSpend")?.Value ?? "";
+		}
 
 		public static void LoadEnums(Configuration Conf, XPathNavigator? xPathDocNavigator)
 		{
@@ -963,10 +963,10 @@ namespace AccountingSoftware
 				string serialNumberValue = enumsNodes?.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0";
 				int serialNumber = int.Parse(serialNumberValue);
 
-                if (name == null)
-                    throw new Exception("Не задана назва перелічення");
+				if (name == null)
+					throw new Exception("Не задана назва перелічення");
 
-                ConfigurationEnums configurationEnums = new ConfigurationEnums(name, serialNumber, desc);
+				ConfigurationEnums configurationEnums = new ConfigurationEnums(name, serialNumber, desc);
 				Conf.Enums.Add(configurationEnums.Name, configurationEnums);
 
 				XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
@@ -976,10 +976,10 @@ namespace AccountingSoftware
 					string valueField = enumFieldsNodes?.Current?.SelectSingleNode("Value")?.Value ?? "0";
 					string descField = enumFieldsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    if (nameField == null)
-                        throw new Exception("Не задана назва елементу перелічення");
+					if (nameField == null)
+						throw new Exception("Не задана назва елементу перелічення");
 
-                    configurationEnums.AppendField(new ConfigurationEnumField(nameField, int.Parse(valueField), descField));
+					configurationEnums.AppendField(new ConfigurationEnumField(nameField, int.Parse(valueField), descField));
 				}
 			}
 		}
@@ -994,10 +994,10 @@ namespace AccountingSoftware
 				string table = documentsNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
 				string desc = documentsNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва документу");
+				if (name == null)
+					throw new Exception("Не задана назва документу");
 
-                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, table, desc);
+				ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, table, desc);
 				Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
 				LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
@@ -1022,10 +1022,10 @@ namespace AccountingSoftware
 				string table = registerInformationNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
 				string desc = registerInformationNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва регістру відомостей");
+				if (name == null)
+					throw new Exception("Не задана назва регістру відомостей");
 
-                ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, table, desc);
+				ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, table, desc);
 				Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
 				XPathNavigator? dimensionFieldsNode = registerInformationNode?.Current?.SelectSingleNode("DimensionFields");
@@ -1052,10 +1052,10 @@ namespace AccountingSoftware
 			{
 				string? name = allowDocumentSpendNodes?.Current?.Value;
 
-                if (name == null)
-                    throw new Exception("Не задана назва доступного регістру");
+				if (name == null)
+					throw new Exception("Не задана назва доступного регістру");
 
-                allowDocumentSpend.Add(name);
+				allowDocumentSpend.Add(name);
 			}
 		}
 
@@ -1070,10 +1070,10 @@ namespace AccountingSoftware
 				string type = registerAccumulationNode?.Current?.SelectSingleNode("Type")?.Value ?? "";
 				string desc = registerAccumulationNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва регістру накопичення");
+				if (name == null)
+					throw new Exception("Не задана назва регістру накопичення");
 
-                TypeRegistersAccumulation typeRegistersAccumulation;
+				TypeRegistersAccumulation typeRegistersAccumulation;
 				if (type == "Residues")
 					typeRegistersAccumulation = TypeRegistersAccumulation.Residues;
 				else if (type == "Turnover")
@@ -1329,7 +1329,7 @@ namespace AccountingSoftware
 		}
 
 		private static void SaveAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
-        {
+		{
 			XmlElement nodeAllowRegisterAccumulation = xmlConfDocument.CreateElement("AllowRegisterAccumulation");
 			rootNode.AppendChild(nodeAllowRegisterAccumulation);
 
@@ -1594,7 +1594,7 @@ namespace AccountingSoftware
 
 				//Індекси
 				foreach (KeyValuePair<string, ConfigurationInformationSchema_Index> informationSchemaIndex in informationSchemaTable.Value.Indexes)
-                {
+				{
 					XmlElement nodeInformationSchemaIndex = xmlComparisonDocument.CreateElement("Index");
 					nodeInformationSchemaTable.AppendChild(nodeInformationSchemaIndex);
 
@@ -1656,10 +1656,10 @@ namespace AccountingSoftware
 			{
 				string? dirName = Path.GetDirectoryName(pathToConf);
 
-                if (dirName == null)
-                    throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
+				if (dirName == null)
+					throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
 
-                string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + "_tmp_" + Guid.NewGuid().ToString() + ".xml";
+				string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + "_tmp_" + Guid.NewGuid().ToString() + ".xml";
 				string pathToTempConf = Path.Combine(dirName, fileTempName);
 
 				if (!String.IsNullOrEmpty(oldTempConf))
@@ -1704,10 +1704,10 @@ namespace AccountingSoftware
 		{
 			string? dirName = Path.GetDirectoryName(pathToConf);
 
-            if (dirName == null)
-                throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
+			if (dirName == null)
+				throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
 
-            string pathToOldCopyConf = Path.Combine(dirName, pathToCopyConf);
+			string pathToOldCopyConf = Path.Combine(dirName, pathToCopyConf);
 
 			if (File.Exists(pathToOldCopyConf))
 				File.Delete(pathToOldCopyConf);
