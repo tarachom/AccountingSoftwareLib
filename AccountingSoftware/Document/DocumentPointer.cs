@@ -30,9 +30,8 @@ namespace AccountingSoftware
 	{
 		public DocumentPointer()
 		{
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 			Table = TypeDocument = "";
-			Kernel = new Kernel();
 			Fields = new Dictionary<string, object>();
 		}
 
@@ -51,15 +50,13 @@ namespace AccountingSoftware
 		public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
 		{
 			UnigueID = uid;
-
-			if (fields != null)
-				Fields = fields;
+			Fields = fields;
 		}
 
 		/// <summary>
 		/// Ядро
 		/// </summary>
-		private Kernel Kernel { get; set; }
+		private Kernel? Kernel { get; set; }
 
 		/// <summary>
 		/// Таблиця
@@ -79,7 +76,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поля які потрібно додатково зчитати
 		/// </summary>
-		public Dictionary<string, object> Fields { get; private set; }
+		public Dictionary<string, object>? Fields { get; private set; }
 
 		/// <summary>
 		/// Чи пустий ідентифікатор?
@@ -87,7 +84,7 @@ namespace AccountingSoftware
 		/// <returns></returns>
 		public bool IsEmpty()
 		{
-			return (UnigueID.UGuid == Guid.Empty);
+			return UnigueID.IsEmpty();
 		}
 
 		/// <summary>
@@ -106,19 +103,15 @@ namespace AccountingSoftware
 		/// <returns>Представлення обєкта</returns>
 		protected string BasePresentation(string[] fieldPresentation)
 		{
-			if (!IsEmpty() && fieldPresentation.Length != 0)
+			if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
 			{
 				Query query = new Query(Table);
 				query.Field.AddRange(fieldPresentation);
-
 				query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
-				string presentation = Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
-
-				return presentation;
+				return Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
 			}
-			else
-				return "";
+			else return "";
 		}
 	}
 }

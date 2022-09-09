@@ -34,8 +34,8 @@ namespace AccountingSoftware
 			Table = table;
 
 			QuerySelect = new Query(table);
-			BaseSelectList = new List<DirectoryPointer>();
 
+			BaseSelectList = new List<DirectoryPointer>();
 			DirectoryPointerPosition = new DirectoryPointer();
 		}
 

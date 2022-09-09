@@ -29,10 +29,18 @@ namespace AccountingSoftware
 	public class UnigueID
 	{
 		/// <summary>
-		/// Унікальний ідентифікатор
+		/// Пустий вказівник
 		/// </summary>
-		/// <param name="uGuid">Унікальний ідентифікатор</param>
-		public UnigueID(Guid uGuid)
+		public UnigueID()
+		{
+			UGuid = Guid.Empty;
+        }
+
+        /// <summary>
+        /// Унікальний ідентифікатор
+        /// </summary>
+        /// <param name="uGuid">Унікальний ідентифікатор</param>
+        public UnigueID(Guid uGuid)
 		{
 			UGuid = uGuid;
 		}
@@ -78,6 +86,11 @@ namespace AccountingSoftware
 		public void New()
 		{
 			UGuid = Guid.NewGuid();
+        }
+
+        public static UnigueID NewUnigueID()
+        {
+			return new UnigueID(Guid.NewGuid());
         }
 
         /// <summary>

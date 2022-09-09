@@ -34,7 +34,7 @@ namespace AccountingSoftware
 			Table = table;
 			TypeDocument = typeDocument;
 			FieldArray = fieldsArray;
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 
 			FieldValue = new Dictionary<string, object>();
 
@@ -92,7 +92,7 @@ namespace AccountingSoftware
 		/// </summary>
 		public void New()
 		{
-			UnigueID = new UnigueID(Guid.NewGuid());
+			UnigueID = new UnigueID();
 			IsNew = true;
 			IsSave = false;
 		}
@@ -151,7 +151,7 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				if (UnigueID != null)
+				if (!UnigueID.IsEmpty())
 					Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
 				else
 					throw new Exception("Спроба записати неіснуючий документ. Потрібно спочатку створити новий - функція New()");

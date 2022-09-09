@@ -39,7 +39,7 @@ namespace AccountingSoftware
 			foreach (string field in FieldArray)
 				FieldValue.Add(field, new object());
 
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 		}
 
 		/// <summary>
@@ -75,14 +75,9 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Новий елемент
 		/// </summary>
-		/// <param name="use_uid">01.09.2021 Добавив можливість вказувати uid для нових елементів довідника. Використовується для обміну</param>
-		public void New(UnigueID? use_uid = null)
+		public void New()
 		{
-			if (use_uid != null)
-				UnigueID = use_uid;
-			else
-				UnigueID = new UnigueID(Guid.NewGuid());
-
+			UnigueID = UnigueID.NewUnigueID();
 			IsNew = true;
 		}
 
@@ -102,12 +97,12 @@ namespace AccountingSoftware
 		/// <returns></returns>
 		protected bool BaseRead(UnigueID uid)
 		{
-			if (uid == null || uid.UGuid == Guid.Empty)
+			if (uid == null || uid.IsEmpty())
 				return false;
 
 			BaseClear();
 
-			if (Kernel.DataBase.SelectDirectoryObject(this, uid, Table, FieldArray, FieldValue))
+			if (Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue))
 			{
 				UnigueID = uid;
 				return true;
@@ -128,8 +123,11 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				Kernel.DataBase.UpdateDirectoryObject(this, Table, FieldArray, FieldValue);
-			}
+                if (!UnigueID.IsEmpty())
+                    Kernel.DataBase.UpdateDirectoryObject(this, Table, FieldArray, FieldValue);
+				else
+                    throw new Exception("Спроба записати неіснуючий елемент довідника. Потрібно спочатку створити новий - функція New()");
+            }
 
 			BaseClear();
 		}

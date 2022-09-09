@@ -129,6 +129,5 @@ namespace AccountingSoftware
 
 			return Count() > 0;
 		}
-
 	}
 }

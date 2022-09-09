@@ -30,10 +30,8 @@ namespace AccountingSoftware
 	{
 		public DirectoryPointer()
 		{
-			UnigueID = new UnigueID(Guid.Empty);
-			Table = "";
-			Kernel = new Kernel();
-			Fields = new Dictionary<string, object>();
+            Table = "";
+            UnigueID = new UnigueID();
 		}
 
 		public DirectoryPointer(Kernel kernel, string table) : this()
@@ -50,15 +48,13 @@ namespace AccountingSoftware
 		public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
 		{
 			UnigueID = uid;
-
-			if (fields != null)
-				Fields = fields;
+			Fields = fields;
 		}
 
 		/// <summary>
 		/// Ядро
 		/// </summary>
-		private Kernel Kernel { get; set; }
+		private Kernel? Kernel { get; set; }
 
 		/// <summary>
 		/// Таблиця
@@ -73,7 +69,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поля які потрібно додатково зчитати з бази даних 
 		/// </summary>
-		public Dictionary<string, object> Fields { get; private set; }
+		public Dictionary<string, object>? Fields { get; private set; }
 
 		/// <summary>
 		/// Чи це пустий ідентифікатор
@@ -81,7 +77,7 @@ namespace AccountingSoftware
 		/// <returns></returns>
 		public bool IsEmpty()
 		{
-			return (UnigueID.UGuid == Guid.Empty);
+			return UnigueID.IsEmpty();
 		}
 
 		/// <summary>
@@ -91,7 +87,7 @@ namespace AccountingSoftware
 		/// <returns></returns>
 		protected string BasePresentation(string[] fieldPresentation)
 		{
-			if (!IsEmpty() && fieldPresentation.Length != 0)
+			if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
 			{
 				Query query = new Query(Table);
 				query.Field.AddRange(fieldPresentation);
@@ -100,8 +96,7 @@ namespace AccountingSoftware
 
 				return Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
 			}
-			else
-				return "";
+			else return "";
 		}
 
 		/// <summary>

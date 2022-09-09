@@ -373,7 +373,7 @@ CREATE TYPE uuidtext AS
 			nCommand.ExecuteNonQuery();
 		}
 
-		public bool SelectDirectoryObject(DirectoryObject directoryObject/*??*/, UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+		public bool SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
 		{
 			string query = "SELECT uid ";
 
@@ -420,19 +420,21 @@ CREATE TYPE uuidtext AS
 			NpgsqlDataReader reader = nCommand.ExecuteReader();
 			while (reader.Read())
 			{
-				Dictionary<string, object> fields = new Dictionary<string, object>();
+				Dictionary<string, object>? fields = null;
 
 				if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
 				{
-					foreach (string field in QuerySelect.Field)
+					fields = new Dictionary<string, object>();
+
+                    foreach (string field in QuerySelect.Field)
 						fields.Add(field, reader[field]);
 
 					foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-						fields.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
+						fields.Add(field.Value ?? "", reader[field.Value ?? ""]);
 				}
 
 				DirectoryPointer elementPointer = new DirectoryPointer();
-				elementPointer.Init(new UnigueID((Guid)reader["uid"]), fields); //!!! Подумати як зробити Init protect
+				elementPointer.Init(new UnigueID((Guid)reader["uid"]), fields);
 
 				listDirectoryPointer.Add(elementPointer);
 			}
