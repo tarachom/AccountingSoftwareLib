@@ -1,3 +1,3 @@
-# Бібліотека (net6)
+# Бібліотека
 
-<img src="https://accounting.org.ua/images/configuration.png" /> <b>Ядро</b>
+<img src="https://accounting.org.ua/images/configuration.png" /> <b>Ядро</b> | net6
