@@ -33,7 +33,7 @@ namespace AccountingSoftware
 		/// </summary>
 		public EmptyPointer()
 		{
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 		}
 
 		/// <summary>

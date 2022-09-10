@@ -39,7 +39,7 @@ namespace AccountingSoftware
 			foreach (string field in FieldArray)
 				FieldValue.Add(field, new object());
 
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 			Period = DateTime.Now;
 			Owner = Guid.Empty;
 		}
@@ -120,7 +120,7 @@ namespace AccountingSoftware
 				return true;
 			else
 			{
-				UnigueID = new UnigueID(Guid.Empty);
+				UnigueID = new UnigueID();
 				return false;
 			}
 		}

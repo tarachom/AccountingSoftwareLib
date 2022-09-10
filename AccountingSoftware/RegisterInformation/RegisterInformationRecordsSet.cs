@@ -40,7 +40,6 @@ namespace AccountingSoftware
 
 			FieldValueList = new List<Dictionary<string, object>>();
 			JoinValue = new Dictionary<string, Dictionary<string, string>>();
-			//BaseFilter = new List<Where>();
 		}
 
 		/// <summary>
@@ -74,11 +73,6 @@ namespace AccountingSoftware
 		public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
 
 		/// <summary>
-		/// Відбір
-		/// </summary>
-		//protected List<Where> BaseFilter { get; }
-
-		/// <summary>
 		/// Очищення вн. списків
 		/// </summary>
 		protected void BaseClear()
@@ -95,9 +89,6 @@ namespace AccountingSoftware
 
 			JoinValue.Clear();
 
-			//QuerySelect.Where.Clear(); //???
-			//QuerySelect.Where.AddRange(BaseFilter);
-
 			Kernel.DataBase.SelectRegisterInformationRecords(QuerySelect, FieldValueList);
 
 			//Зчитування додаткових полів
@@ -106,10 +97,10 @@ namespace AccountingSoftware
 				foreach (Dictionary<string, object> fieldValue in FieldValueList)
 				{
 					Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
-					JoinValue.Add(fieldValue["uid"]?.ToString() ?? "", joinFieldValue);
+					JoinValue.Add(fieldValue["uid"].ToString() ?? "", joinFieldValue);
 
 					foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-						joinFieldValue.Add(fieldAndAlias?.Value ?? "", fieldValue[fieldAndAlias?.Value ?? ""]?.ToString() ?? "");
+						joinFieldValue.Add(fieldAndAlias.Value ?? "", fieldValue[fieldAndAlias.Value ?? ""].ToString() ?? "");
 				}
 			}
 		}

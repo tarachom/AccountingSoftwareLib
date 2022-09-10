@@ -1170,7 +1170,7 @@ CREATE TYPE uuidtext AS
 		#region SQL
 
 		/// <summary>
-		/// Вставка даних. Невідомо чи функція використовується.
+		/// Вставка даних.
 		/// </summary>
 		/// <param name="table">Таблиця</param>
 		/// <param name="paramQuery">Поля і значення</param>
