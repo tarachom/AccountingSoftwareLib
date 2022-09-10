@@ -21,7 +21,9 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -1731,42 +1733,97 @@ namespace AccountingSoftware
 		}
 
 		/// <summary>
-		/// Функція генерує ХМЛ файл на основі порівняння з базою даних та новою і старою конфігураціями
+		/// Створення одного файлу з декількох
 		/// </summary>
-		/// <param name="pathToInformationSchemaXML">Шлях до ХМЛ фалу схеми бази даних</param>
-		/// <param name="pathToTemplate">Шлях до шаблону</param>
-		/// <param name="pathToSaveXml">Шлях куди зберігати результати</param>
-		/// <param name="сonfigurationFileName">Назва файлу конфігурації</param>
-		/// <param name="secondConfigurationFileName">Назва попередньої копії конфігурації</param>
-		public static void Comparison(string pathToInformationSchemaXML, string pathToTemplate, string pathToSaveXml,
-			string сonfigurationFileName, string secondConfigurationFileName)
+		/// <param name="pathToInformationSchemaXML">Шлях до схеми бази даних</param>
+		/// <param name="сonfigurationFileName">Шлях до нової конфігурації</param>
+		/// <param name="secondConfigurationFileName">Шлях до старої конфігурації</param>
+		/// <param name="pathToSaveXml">Куди зберегти</param>
+		public static void CreateOneFileForComparison(string pathToInformationSchemaXML,
+			string сonfigurationFileName, string secondConfigurationFileName, string pathToSaveXml)
 		{
-			XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+			XmlWriterSettings settings = new XmlWriterSettings() { NewLineChars = "\r\n",  Indent = true, Encoding = Encoding.UTF8 };
 
-            xsltCodeGnerator.Load(pathToTemplate,  new XsltSettings(true, true), null);
+			XmlWriter xmlWriter = XmlWriter.Create(pathToSaveXml, settings);
+            xmlWriter.WriteStartDocument();
+			xmlWriter.WriteStartElement("root");
 
-			XsltArgumentList xsltArgumentList = new XsltArgumentList();
-			xsltArgumentList.AddParam("Configuration", "", сonfigurationFileName);
-			xsltArgumentList.AddParam("SecondConfiguration", "", secondConfigurationFileName);
+			//
+			//InformationSchema
+			//
 
-			Console.WriteLine(сonfigurationFileName);
-            Console.WriteLine(secondConfigurationFileName);
+			XmlDocument InformationSchemaDoc = new XmlDocument();
+			InformationSchemaDoc.Load(pathToInformationSchemaXML);
+
+			XmlNode? rootInformationSchema = InformationSchemaDoc.SelectSingleNode("InformationSchema");
+			string OuterXmlInformationSchema = rootInformationSchema?.OuterXml ?? "";
+
+			xmlWriter.WriteRaw(OuterXmlInformationSchema);
+			xmlWriter.Flush();
+
+            //
+            //сonfiguration
+            //
+
+            XmlDocument сonfigurationDoc = new XmlDocument();
+			сonfigurationDoc.Load(сonfigurationFileName);
+
+			XmlNode? rootConfiguration = сonfigurationDoc.SelectSingleNode("Configuration");
+			string OuterXmlConfiguration = rootConfiguration?.OuterXml ?? "";
+
+			xmlWriter.WriteStartElement("NewConfiguration");
+			xmlWriter.WriteRaw(OuterXmlConfiguration);
+			xmlWriter.WriteEndElement();
+			xmlWriter.Flush();
+
+			//
+			//secondConfiguration
+			//
+
+			XmlDocument secondConfigurationDoc = new XmlDocument();
+			secondConfigurationDoc.Load(secondConfigurationFileName);
+
+			XmlNode? rootSecondConfiguration = secondConfigurationDoc.SelectSingleNode("Configuration");
+			string OuterXmlSecondConfiguration = rootSecondConfiguration?.OuterXml ?? "";
+
+			xmlWriter.WriteStartElement("SecondConfiguration");
+			xmlWriter.WriteRaw(OuterXmlSecondConfiguration);
+			xmlWriter.WriteEndElement();
+			xmlWriter.Flush();
+
+            xmlWriter.WriteEndElement(); //root
+            xmlWriter.Close();
+        }
+
+        /// <summary>
+        /// Функція генерує ХМЛ файл на основі порівняння з базою даних та новою і старою конфігураціями
+        /// </summary>
+        /// <param name="pathOneFileForComparison">Шлях до ХМЛ згрупованого файлу</param>
+        /// <param name="pathToTemplate">Шаблон</param>
+        /// <param name="pathToSaveXml">Куди зберегти результати</param>
+        public static void Comparison(string pathOneFileForComparison, string pathToTemplate, string pathToSaveXml)
+        {
+            XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+
+            xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(false, false), null);
+
+            XsltArgumentList xsltArgumentList = new XsltArgumentList();
 
             FileStream fileStream = new FileStream(pathToSaveXml, FileMode.Create);
 
-			xsltCodeGnerator.Transform(pathToInformationSchemaXML, xsltArgumentList, fileStream);
+            xsltCodeGnerator.Transform(pathOneFileForComparison, xsltArgumentList, fileStream);
 
-			fileStream.Close();
-		}
+            fileStream.Close();
+        }
 
-		/// <summary>
-		/// Функція генерує ХМЛ файл з SQL запитами на основі файлу порівняння конфігурацій.
-		/// </summary>
-		/// <param name="pathToXML">Шлях до ХМЛ файлу, який згенерований функцією Comparison</param>
-		/// <param name="pathToTemplate">Шлях до шаблону</param>
-		/// <param name="pathToSaveCode">Шлях файлу куди буде збережений вихідний ХМЛ файл</param>
-		/// <param name="replacementColumn">Параметр для шаблону (чи потрібно заміщати стовпчики)</param>
-		public static void ComparisonAnalizeGeneration(string pathToXML, string pathToTemplate, string pathToSaveCode, string replacementColumn)
+        /// <summary>
+        /// Функція генерує ХМЛ файл з SQL запитами на основі файлу порівняння конфігурацій.
+        /// </summary>
+        /// <param name="pathToXML">Шлях до ХМЛ файлу, який згенерований функцією Comparison</param>
+        /// <param name="pathToTemplate">Шлях до шаблону</param>
+        /// <param name="pathToSaveCode">Шлях файлу куди буде збережений вихідний ХМЛ файл</param>
+        /// <param name="replacementColumn">Параметр для шаблону (чи потрібно заміщати стовпчики)</param>
+        public static void ComparisonAnalizeGeneration(string pathToXML, string pathToTemplate, string pathToSaveCode, string replacementColumn)
 		{
 			XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
 			xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
