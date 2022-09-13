@@ -89,7 +89,7 @@ namespace AccountingSoftware
 		/// </summary>
 		public void New()
 		{
-			UnigueID = new UnigueID(Guid.NewGuid());
+			UnigueID = UnigueID.NewUnigueID();
 			IsNew = true;
 		}
 
