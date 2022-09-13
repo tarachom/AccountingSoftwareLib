@@ -79,19 +79,19 @@ namespace AccountingSoftware
 			fieldTypes.Add(new FieldType("any_pointer", "[ any_pointer ] - Вказівник на різні елементи конфігурації"));
 			fieldTypes.Add(new FieldType("empty_pointer", "[ empty_pointer ] - Пустий вказівник"));
 			fieldTypes.Add(new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник + текст"));
-			//fieldTypes.Add(new FieldType("uuid[]",        "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));
-			fieldTypes.Add(new FieldType("string[]", "[ Текст1, Текст2, ... ] - [ string[] ] - Масив текстових даних"));
+            fieldTypes.Add(new FieldType("bytea", "[ byte ] - Бінарні дані"));
+            //fieldTypes.Add(new FieldType("uuid[]",        "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));
+            fieldTypes.Add(new FieldType("string[]", "[ Текст1, Текст2, ... ] - [ string[] ] - Масив текстових даних"));
 			fieldTypes.Add(new FieldType("integer[]", "[ Число1, Число2, ... ] - [ integer[] ] - Масив цілих чисел"));
 			fieldTypes.Add(new FieldType("numeric[]", "[ Число1.0, Число2.0, ... ] - [ numeric[] ] - Масив чисел з комою"));
+            
 
-			//character [ (n) ] - char [ (n) ] - fixed-length character string
-			//character varying [ (n) ] - varchar [ (n) ] - variable-length character string
-			//bytea - binary data (“byte array”)
-			//serial - autoincrementing four-byte integer
-			//xml
-			//uuid
+            //character [ (n) ] - char [ (n) ] - fixed-length character string
+            //character varying [ (n) ] - varchar [ (n) ] - variable-length character string
+            //serial - autoincrementing four-byte integer
+            //xml
 
-			return fieldTypes;
+            return fieldTypes;
 		}
 	}
 }
