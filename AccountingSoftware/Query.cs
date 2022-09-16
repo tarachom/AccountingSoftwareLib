@@ -263,7 +263,7 @@ namespace AccountingSoftware
 
 				foreach (KeyValuePair<string, SelectOrder> field in Order)
 				{
-					query += (count > 0 ? ", " : "") + (Joins.Count > 0 ? Table + "." : "") + field.Key + " " + field.Value;
+                    query += (count > 0 ? ", " : "") + /* (Joins.Count > 0 ? Table + "." : "") + */ field.Key + " " + field.Value;
 					count++;
 				}
 			}
