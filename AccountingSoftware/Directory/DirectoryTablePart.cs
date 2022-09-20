@@ -34,13 +34,22 @@ namespace AccountingSoftware
 			Table = table;
 			FieldArray = fieldsArray;
 
-			FieldValueList = new List<Dictionary<string, object>>();
-		}
+            QuerySelect = new Query(Table);
+            QuerySelect.Field.AddRange(fieldsArray);
 
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		private Kernel Kernel { get; set; }
+            FieldValueList = new List<Dictionary<string, object>>();
+            JoinValue = new Dictionary<string, Dictionary<string, string>>();
+        }
+
+        /// <summary>
+        /// Запит SELECT
+        /// </summary>
+        public Query QuerySelect { get; set; }
+
+        /// <summary>
+        /// Ядро
+        /// </summary>
+        private Kernel Kernel { get; set; }
 
 		/// <summary>
 		/// Таблиця
@@ -57,10 +66,15 @@ namespace AccountingSoftware
 		/// </summary>
 		protected List<Dictionary<string, object>> FieldValueList { get; private set; }
 
-		/// <summary>
-		/// Очистити вн. списки
-		/// </summary>
-		protected void BaseClear()
+        /// <summary>
+        /// Значення додаткових полів
+        /// </summary>
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
+
+        /// <summary>
+        /// Очистити вн. списки
+        /// </summary>
+        protected void BaseClear()
 		{
 			FieldValueList.Clear();
 		}
@@ -72,8 +86,27 @@ namespace AccountingSoftware
 		protected void BaseRead(UnigueID ownerUnigueID)
 		{
 			BaseClear();
-			Kernel.DataBase.SelectDirectoryTablePartRecords(ownerUnigueID, Table, FieldArray, FieldValueList);
-		}
+
+            JoinValue.Clear();
+
+            QuerySelect.Where.Clear();
+            QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
+
+            Kernel.DataBase.SelectDirectoryTablePartRecords(QuerySelect, FieldValueList);
+
+            //Якщо задані додаткові поля з псевдонімами, їх потрібно зчитати в список JoinValue
+            if (QuerySelect.FieldAndAlias.Count > 0)
+            {
+                foreach (Dictionary<string, object> fieldValue in FieldValueList)
+                {
+                    Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
+                    JoinValue.Add(fieldValue["uid"].ToString() ?? "", joinFieldValue);
+
+                    foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                        joinFieldValue.Add(fieldAndAlias.Value ?? "", fieldValue[fieldAndAlias.Value ?? ""].ToString() ?? "");
+                }
+            }
+        }
 
 		protected void BaseBeginTransaction()
 		{

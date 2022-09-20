@@ -72,7 +72,9 @@ namespace AccountingSoftware
 		void DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
 		void SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-		void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+		void SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+
+        void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
 		void DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table);
 
 		#endregion

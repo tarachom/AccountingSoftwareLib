@@ -532,7 +532,33 @@ CREATE TYPE uuidtext AS
 			reader.Close();
 		}
 
-		public void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        {
+            string query = QuerySelect.Construct();
+
+            NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
+
+            foreach (Where field in QuerySelect.Where)
+                nCommand.Parameters.Add(new NpgsqlParameter(field.Alias, field.Value));
+
+            NpgsqlDataReader reader = nCommand.ExecuteReader();
+            while (reader.Read())
+            {
+                Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                fieldValueList.Add(fieldValue);
+
+                fieldValue.Add("uid", reader["uid"]);
+
+                foreach (string field in QuerySelect.Field)
+                    fieldValue.Add(field, reader[field]);
+
+                foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
+                    fieldValue.Add(field?.Value ?? "", reader[field?.Value ?? ""]);
+            }
+            reader.Close();
+        }
+
+        public void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
 		{
 			string query_field = "uid, owner";
 			string query_values = "@uid, @owner";

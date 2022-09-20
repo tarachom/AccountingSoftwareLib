@@ -74,7 +74,7 @@ namespace AccountingSoftware
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(xmlValue);
 
-			XPathNavigator? xPathNavigator = xmlDocument?.CreateNavigator();
+			XPathNavigator? xPathNavigator = xmlDocument.CreateNavigator();
 			XPathNodeIterator? eNode = xPathNavigator?.Select("root/e");
 
 			int counter = 0;
@@ -103,7 +103,7 @@ namespace AccountingSoftware
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(xmlValue);
 
-			XPathNavigator? xPathNavigator = xmlDocument?.CreateNavigator();
+			XPathNavigator? xPathNavigator = xmlDocument.CreateNavigator();
 			XPathNavigator? root = xPathNavigator?.SelectSingleNode("root");
 
 			Guid uuid = Guid.Parse(root?.SelectSingleNode("uuid")?.Value ?? Guid.Empty.ToString());
