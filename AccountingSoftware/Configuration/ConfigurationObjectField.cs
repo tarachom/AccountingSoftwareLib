@@ -23,76 +23,78 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Поле
-	/// </summary>
-	public class ConfigurationObjectField
-	{
-		/// <summary>
-		/// Поле
-		/// </summary>
-		public ConfigurationObjectField()
-		{
-			Name = "";
-			NameInTable = "";
-			Type = "";
-			Pointer = "";
-			Desc = "";
-		}
+    /// <summary>
+    /// Поле
+    /// </summary>
+    public class ConfigurationObjectField
+    {
+        /// <summary>
+        /// Поле
+        /// </summary>
+        public ConfigurationObjectField()
+        {
+            Name = "";
+            NameInTable = "";
+            Type = "";
+            Pointer = "";
+            Desc = "";
+        }
 
-		/// <summary>
-		/// Поле
-		/// </summary>
-		/// <param name="name">Назва поля</param>
-		/// <param name="nameInTable">Назва колонки в базі даних</param>
-		/// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
-		/// <param name="pointer">Вказівник</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationObjectField(string name, string nameInTable, string type, string pointer, string desc = "", bool isPresentation = false, bool isIndex = false)
-		{
-			Name = name;
-			NameInTable = nameInTable;
-			Type = type;
-			Pointer = pointer;
-			Desc = desc;
-			IsPresentation = isPresentation;
-			IsIndex = isIndex;
-		}
+        /// <summary>Поле</summary>
+        /// <param name="name">Назва поля</param>
+        /// <param name="nameInTable">Назва колонки в базі даних</param>
+        /// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
+        /// <param name="pointer">Вказівник</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationObjectField(string name, string nameInTable, string type, string pointer, string desc = "", bool isPresentation = false, bool isIndex = false)
+        {
+            Name = name;
+            NameInTable = nameInTable;
+            Type = type;
+            Pointer = pointer;
+            Desc = desc;
+            IsPresentation = isPresentation;
+            IsIndex = isIndex;
+        }
 
-		/// <summary>
-		/// Назва поля в конфігурації
-		/// </summary>
-		public string Name { get; set; }
+        /// <summary>
+        /// Назва поля в конфігурації
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// Назва поля в базі даних
-		/// </summary>
-		public string NameInTable { get; set; }
+        /// <summary>
+        /// Назва поля в базі даних
+        /// </summary>
+        public string NameInTable { get; set; }
 
-		/// <summary>
-		/// Тип даних
-		/// </summary>
-		public string Type { get; set; }
+        /// <summary>
+        /// Тип даних
+        /// </summary>
+        public string Type { get; set; }
 
-		/// <summary>
-		/// Вказівник на об'єкт конфігурації
-		/// </summary>
-		public string Pointer { get; set; }
+        /// <summary>
+        /// Вказівник на об'єкт конфігурації
+        /// </summary>
+        public string Pointer { get; set; }
 
-		/// <summary>
-		/// Опис
-		/// </summary>
-		public string Desc { get; set; }
+        /// <summary>
+        /// Опис
+        /// </summary>
+        public string Desc { get; set; }
 
-		/// <summary>
-		/// Використовувати поле для презентації в списках і формах
-		/// </summary>
-		public bool IsPresentation { get; set; }
+        /// <summary>
+        /// Використовувати поле для презентації в списках і формах
+        /// </summary>
+        public bool IsPresentation { get; set; }
 
-		/// <summary>
-		/// Індексувати поле
-		/// </summary>
-		public bool IsIndex { get; set; }
+        /// <summary>
+        /// Індексувати поле
+        /// </summary>
+        public bool IsIndex { get; set; }
 
-	}
+        public ConfigurationObjectField Copy()
+        {
+            return new ConfigurationObjectField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex);
+        }
+    }
 }
