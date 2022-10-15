@@ -23,90 +23,99 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Константи
-	/// </summary>
-	public class ConfigurationConstants
-	{
-		/// <summary>
-		/// Константа
-		/// </summary>
-		public ConfigurationConstants()
-		{
-			TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-			Block = new ConfigurationConstantsBlock();
-			Name = "";
-			NameInTable = "";
-			Desc = "";
-			Type = "";
-			Pointer = "";
-		}
+    /// <summary>
+    /// Константи
+    /// </summary>
+    public class ConfigurationConstants
+    {
+        /// <summary>
+        /// Константа
+        /// </summary>
+        public ConfigurationConstants()
+        {
+            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
+            Block = new ConfigurationConstantsBlock();
+            Name = "";
+            NameInTable = "";
+            Desc = "";
+            Type = "";
+            Pointer = "";
+        }
 
-		/// <summary>
-		/// Константа
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="nameInTable">Назва в таблиці</param>
-		/// <param name="type">Тип даних</param>
-		/// <param name="block">Блок</param>
-		/// <param name="pointer">Вказівник</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationConstants(string name, string nameInTable, string type, ConfigurationConstantsBlock block, string pointer = "", string desc = "") : this()
-		{
-			Name = name;
-			NameInTable = nameInTable;
-			Type = type;
-			Block = block;
-			Pointer = pointer;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Константа
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="nameInTable">Назва в таблиці</param>
+        /// <param name="type">Тип даних</param>
+        /// <param name="block">Блок</param>
+        /// <param name="pointer">Вказівник</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationConstants(string name, string nameInTable, string type, ConfigurationConstantsBlock block, string pointer = "", string desc = "") : this()
+        {
+            Name = name;
+            NameInTable = nameInTable;
+            Type = type;
+            Block = block;
+            Pointer = pointer;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Блок
-		/// </summary>
-		public ConfigurationConstantsBlock Block { get; set; }
+        /// <summary>
+        /// Блок
+        /// </summary>
+        public ConfigurationConstantsBlock Block { get; set; }
 
-		/// <summary>
-		/// Назва
-		/// </summary>
-		public string Name { get; set; }
+        /// <summary>
+        /// Назва
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// Назва поля в базі даних
-		/// </summary>
-		public string NameInTable { get; set; }
+        /// <summary>
+        /// Назва поля в базі даних
+        /// </summary>
+        public string NameInTable { get; set; }
 
-		/// <summary>
-		/// Опис
-		/// </summary>
-		public string Desc { get; set; }
+        /// <summary>
+        /// Опис
+        /// </summary>
+        public string Desc { get; set; }
 
-		/// <summary>
-		/// Тип даних
-		/// </summary>
-		public string Type { get; set; }
+        /// <summary>
+        /// Тип даних
+        /// </summary>
+        public string Type { get; set; }
 
-		/// <summary>
-		/// Вказівник на об'єкт конфігурації
-		/// </summary>
-		public string Pointer { get; set; }
+        /// <summary>
+        /// Вказівник на об'єкт конфігурації
+        /// </summary>
+        public string Pointer { get; set; }
 
-		/// <summary>
-		/// Табличні частини
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        /// <summary>
+        /// Табличні частини
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
 
-		/// <summary>
-		/// Додати нову табличну частину
-		/// </summary>
-		/// <param name="tablePart">Нова таблична частина</param>
-		public void AppendTablePart(ConfigurationObjectTablePart tablePart)
-		{
-			TabularParts.Add(tablePart.Name, tablePart);
-		}
-	}
+        /// <summary>
+        /// Додати нову табличну частину
+        /// </summary>
+        /// <param name="tablePart">Нова таблична частина</param>
+        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        {
+            TabularParts.Add(tablePart.Name, tablePart);
+        }
+
+        public ConfigurationConstants Copy()
+        {
+            ConfigurationConstants newConst = new ConfigurationConstants(Name, NameInTable, Type, Block, Pointer, Desc);
+
+            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in TabularParts)
+                newConst.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+
+            return newConst;
+        }
+    }
 }
-
 /*
 
 Довідка.
