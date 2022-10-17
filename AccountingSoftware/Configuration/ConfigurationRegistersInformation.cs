@@ -23,66 +23,82 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Регістри відомостей
-	/// </summary>
-	public class ConfigurationRegistersInformation : ConfigurationObject
-	{
-		/// <summary>
-		/// Регістри відомостей
-		/// </summary>
-		public ConfigurationRegistersInformation()
-		{
-			DimensionFields = new Dictionary<string, ConfigurationObjectField>();
-			ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
-			PropertyFields = new Dictionary<string, ConfigurationObjectField>();
-		}
+    /// <summary>
+    /// Регістри відомостей
+    /// </summary>
+    public class ConfigurationRegistersInformation : ConfigurationObject
+    {
+        /// <summary>
+        /// Регістри відомостей
+        /// </summary>
+        public ConfigurationRegistersInformation()
+        {
+            DimensionFields = new Dictionary<string, ConfigurationObjectField>();
+            ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
+            PropertyFields = new Dictionary<string, ConfigurationObjectField>();
+        }
 
-		/// <summary>
-		/// Регістри відомостей
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="table">Таблиця в базі даних</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationRegistersInformation(string name, string table, string desc = "") : this()
-		{
-			Name = name;
-			Table = table;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Регістри відомостей
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationRegistersInformation(string name, string table, string desc = "") : this()
+        {
+            Name = name;
+            Table = table;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Виміри
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
+        /// <summary>
+        /// Виміри
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
 
-		/// <summary>
-		/// Русурси
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
+        /// <summary>
+        /// Русурси
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
 
-		/// <summary>
-		/// Реквізити
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
+        /// <summary>
+        /// Реквізити
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
 
-		#region Append
+        public ConfigurationRegistersInformation Copy()
+        {
+            ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.Table, this.Desc);
 
-		public void AppendDimensionField(ConfigurationObjectField field)
-		{
-			DimensionFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
+                confRegCopy.DimensionFields.Add(fields.Key, fields.Value);
 
-		public void AppendResourcesField(ConfigurationObjectField field)
-		{
-			ResourcesFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
+                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value);
 
-		public void AppendPropertyField(ConfigurationObjectField field)
-		{
-			PropertyFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
+                confRegCopy.PropertyFields.Add(fields.Key, fields.Value);
 
-		#endregion
-	}
+            return confRegCopy;
+        }
+
+        #region Append
+
+        public void AppendDimensionField(ConfigurationObjectField field)
+        {
+            DimensionFields.Add(field.Name, field);
+        }
+
+        public void AppendResourcesField(ConfigurationObjectField field)
+        {
+            ResourcesFields.Add(field.Name, field);
+        }
+
+        public void AppendPropertyField(ConfigurationObjectField field)
+        {
+            PropertyFields.Add(field.Name, field);
+        }
+
+        #endregion
+    }
 }

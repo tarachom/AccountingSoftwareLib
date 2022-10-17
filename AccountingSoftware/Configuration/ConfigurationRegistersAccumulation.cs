@@ -23,94 +23,110 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Регістер накопичення
-	/// </summary>
-	public class ConfigurationRegistersAccumulation : ConfigurationObject
-	{
-		/// <summary>
-		/// Регістри накопичення
-		/// </summary>
-		public ConfigurationRegistersAccumulation()
-		{
-			DimensionFields = new Dictionary<string, ConfigurationObjectField>();
-			ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
-			PropertyFields = new Dictionary<string, ConfigurationObjectField>();
-			AllowDocumentSpend = new List<string>();
-		}
+    /// <summary>
+    /// Регістер накопичення
+    /// </summary>
+    public class ConfigurationRegistersAccumulation : ConfigurationObject
+    {
+        /// <summary>
+        /// Регістри накопичення
+        /// </summary>
+        public ConfigurationRegistersAccumulation()
+        {
+            DimensionFields = new Dictionary<string, ConfigurationObjectField>();
+            ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
+            PropertyFields = new Dictionary<string, ConfigurationObjectField>();
+            AllowDocumentSpend = new List<string>();
+        }
 
-		/// <summary>
-		/// Регістри накопичення
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="table">Таблиця в базі даних</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationRegistersAccumulation(string name, string table, TypeRegistersAccumulation type, string desc = "") : this()
-		{
-			Name = name;
-			Table = table;
-			TypeRegistersAccumulation = type;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Регістри накопичення
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationRegistersAccumulation(string name, string table, TypeRegistersAccumulation type, string desc = "") : this()
+        {
+            Name = name;
+            Table = table;
+            TypeRegistersAccumulation = type;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Тип регістру
-		/// </summary>
-		public TypeRegistersAccumulation TypeRegistersAccumulation { get; set; }
+        /// <summary>
+        /// Тип регістру
+        /// </summary>
+        public TypeRegistersAccumulation TypeRegistersAccumulation { get; set; }
 
-		/// <summary>
-		/// Виміри
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
+        /// <summary>
+        /// Виміри
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
 
-		/// <summary>
-		/// Русурси
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
+        /// <summary>
+        /// Русурси
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
 
-		/// <summary>
-		/// Реквізити
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
+        /// <summary>
+        /// Реквізити
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
 
-		/// <summary>
-		/// Документи які роблять рухи по даному регістру
-		/// </summary>
-		public List<string> AllowDocumentSpend { get; }
+        /// <summary>
+        /// Документи які роблять рухи по даному регістру
+        /// </summary>
+        public List<string> AllowDocumentSpend { get; }
 
-		#region Append
+        public ConfigurationRegistersAccumulation Copy()
+        {
+            ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
 
-		public void AppendDimensionField(ConfigurationObjectField field)
-		{
-			DimensionFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
+                confRegCopy.DimensionFields.Add(fields.Key, fields.Value);
 
-		public void AppendResourcesField(ConfigurationObjectField field)
-		{
-			ResourcesFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
+                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value);
 
-		public void AppendPropertyField(ConfigurationObjectField field)
-		{
-			PropertyFields.Add(field.Name, field);
-		}
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
+                confRegCopy.PropertyFields.Add(fields.Key, fields.Value);
 
-		#endregion
-	}
+            return confRegCopy;
+        }
 
-	/// <summary>
-	/// Тип регістру
-	/// </summary>
-	public enum TypeRegistersAccumulation
-	{
-		/// <summary>
-		/// Залишки
-		/// </summary>
-		Residues = 1,
+        #region Append
 
-		/// <summary>
-		/// Обороти
-		/// </summary>
-		Turnover = 2
-	}
+        public void AppendDimensionField(ConfigurationObjectField field)
+        {
+            DimensionFields.Add(field.Name, field);
+        }
+
+        public void AppendResourcesField(ConfigurationObjectField field)
+        {
+            ResourcesFields.Add(field.Name, field);
+        }
+
+        public void AppendPropertyField(ConfigurationObjectField field)
+        {
+            PropertyFields.Add(field.Name, field);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Тип регістру
+    /// </summary>
+    public enum TypeRegistersAccumulation
+    {
+        /// <summary>
+        /// Залишки
+        /// </summary>
+        Residues = 1,
+
+        /// <summary>
+        /// Обороти
+        /// </summary>
+        Turnover = 2
+    }
 }
