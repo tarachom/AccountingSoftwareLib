@@ -23,63 +23,73 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Перелічення
-	/// </summary>
-	public class ConfigurationEnums
-	{
-		/// <summary>
-		/// Перелічення
-		/// </summary>
-		public ConfigurationEnums()
-		{
-			Fields = new Dictionary<string, ConfigurationEnumField>();
-			Name = "";
-			Desc = "";
-		}
+    /// <summary>
+    /// Перелічення
+    /// </summary>
+    public class ConfigurationEnums
+    {
+        /// <summary>
+        /// Перелічення
+        /// </summary>
+        public ConfigurationEnums()
+        {
+            Fields = new Dictionary<string, ConfigurationEnumField>();
+            Name = "";
+            Desc = "";
+        }
 
-		/// <summary>
-		/// Перелічення
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="serialNumber">Останній порядковий номер</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationEnums(string name, int serialNumber = 0, string desc = "") : this()
-		{
-			Name = name;
-			Desc = desc;
-			SerialNumber = serialNumber;
-		}
+        /// <summary>
+        /// Перелічення
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="serialNumber">Останній порядковий номер</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationEnums(string name, int serialNumber = 0, string desc = "") : this()
+        {
+            Name = name;
+            Desc = desc;
+            SerialNumber = serialNumber;
+        }
 
-		/// <summary>
-		/// Назва перелічення
-		/// </summary>
-		public string Name { get; set; }
+        /// <summary>
+        /// Назва перелічення
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// Опис
-		/// </summary>
-		public string Desc { get; set; }
+        /// <summary>
+        /// Опис
+        /// </summary>
+        public string Desc { get; set; }
 
-		/// <summary>
-		/// Останній порядковий номер використаний для поля перелічення.
-		/// Довідка: в базі даних перелічення зберігається як тип int4. Коли добавляється нове поле,
-		/// йому задається зразу значення. SerialNumber зберігає останнє значення.
-		/// </summary>
-		public int SerialNumber { get; set; }
+        /// <summary>
+        /// Останній порядковий номер використаний для поля перелічення.
+        /// Довідка: в базі даних перелічення зберігається як тип int4. Коли добавляється нове поле,
+        /// йому задається зразу значення. SerialNumber зберігає останнє значення.
+        /// </summary>
+        public int SerialNumber { get; set; }
 
-		/// <summary>
-		/// Поля перелічення
-		/// </summary>
-		public Dictionary<string, ConfigurationEnumField> Fields { get; }
+        /// <summary>
+        /// Поля перелічення
+        /// </summary>
+        public Dictionary<string, ConfigurationEnumField> Fields { get; }
 
-		/// <summary>
-		/// Додати нове поле в список полів перелічення
-		/// </summary>
-		/// <param name="field">Нове поле</param>
-		public void AppendField(ConfigurationEnumField field)
-		{
-			Fields.Add(field.Name, field);
-		}
-	}
+        public ConfigurationEnums Copy()
+        {
+            ConfigurationEnums newEnum = new ConfigurationEnums(this.Name, this.SerialNumber, this.Desc);
+
+            foreach (ConfigurationEnumField field in Fields.Values)
+                newEnum.AppendField(field.Copy());
+
+            return newEnum;
+        }
+
+        /// <summary>
+        /// Додати нове поле в список полів перелічення
+        /// </summary>
+        /// <param name="field">Нове поле</param>
+        public void AppendField(ConfigurationEnumField field)
+        {
+            Fields.Add(field.Name, field);
+        }
+    }
 }

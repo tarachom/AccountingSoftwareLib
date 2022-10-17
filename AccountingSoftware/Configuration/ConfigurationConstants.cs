@@ -109,8 +109,8 @@ namespace AccountingSoftware
         {
             ConfigurationConstants newConst = new ConfigurationConstants(Name, NameInTable, Type, Block, Pointer, Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in TabularParts)
-                newConst.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+            foreach (ConfigurationObjectTablePart tablePart in TabularParts.Values)
+                newConst.TabularParts.Add(tablePart.Name, tablePart.Copy());
 
             return newConst;
         }

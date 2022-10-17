@@ -23,46 +23,61 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Блок констант
-	/// </summary>
-	public class ConfigurationConstantsBlock
-	{
-		/// <summary>
-		/// Блок констант
-		/// </summary>
-		public ConfigurationConstantsBlock()
-		{
-			Constants = new Dictionary<string, ConfigurationConstants>();
-			BlockName = "";
-			Desc = "";
-		}
+    /// <summary>
+    /// Блок констант
+    /// </summary>
+    public class ConfigurationConstantsBlock
+    {
+        /// <summary>
+        /// Блок констант
+        /// </summary>
+        public ConfigurationConstantsBlock()
+        {
+            Constants = new Dictionary<string, ConfigurationConstants>();
+            BlockName = "";
+            Desc = "";
+        }
 
-		/// <summary>
-		/// Назва блоку констант
-		/// </summary>
-		/// <param name="blockName">Назва</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationConstantsBlock(string blockName, string desc = "") : this()
-		{
-			BlockName = blockName;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Назва блоку констант
+        /// </summary>
+        /// <param name="blockName">Назва</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationConstantsBlock(string blockName, string desc = "") : this()
+        {
+            BlockName = blockName;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Назва
-		/// </summary>
-		public string BlockName { get; set; }
+        /// <summary>
+        /// Назва
+        /// </summary>
+        public string BlockName { get; set; }
 
-		/// <summary>
-		/// Опис
-		/// </summary>
-		public string Desc { get; set; }
+        /// <summary>
+        /// Опис
+        /// </summary>
+        public string Desc { get; set; }
 
-		/// <summary>
-		/// <summary>
-		/// Константи
-		/// </summary>
-		public Dictionary<string, ConfigurationConstants> Constants { get; }
-	}
+        /// <summary>
+        /// <summary>
+        /// Константи
+        /// </summary>
+        public Dictionary<string, ConfigurationConstants> Constants { get; }
+
+        public void AppendConstant(ConfigurationConstants constant)
+        {
+            Constants.Add(constant.Name, constant);
+        }
+
+        public ConfigurationConstantsBlock Copy()
+        {
+            ConfigurationConstantsBlock newConstantsBlock = new ConfigurationConstantsBlock(this.BlockName, this.Desc);
+
+            foreach (ConfigurationConstants constant in Constants.Values)
+                newConstantsBlock.AppendConstant(constant.Copy());
+
+            return newConstantsBlock;
+        }
+    }
 }

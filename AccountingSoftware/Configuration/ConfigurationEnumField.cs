@@ -23,46 +23,51 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Поле перелічення
-	/// </summary>
-	public class ConfigurationEnumField
-	{
-		/// <summary>
-		/// Поле перелічення
-		/// </summary>
-		public ConfigurationEnumField()
-		{
-			Name = "";
-			Desc = "";
-		}
+    /// <summary>
+    /// Поле перелічення
+    /// </summary>
+    public class ConfigurationEnumField
+    {
+        /// <summary>
+        /// Поле перелічення
+        /// </summary>
+        public ConfigurationEnumField()
+        {
+            Name = "";
+            Desc = "";
+        }
 
-		/// <summary>
-		/// Поле перелічення 
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="value">Значення</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationEnumField(string name, int value, string desc = "")
-		{
-			Name = name;
-			Value = value;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Поле перелічення 
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="value">Значення</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationEnumField(string name, int value, string desc = "")
+        {
+            Name = name;
+            Value = value;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Назва
-		/// </summary>
-		public string Name { get; set; }
+        /// <summary>
+        /// Назва
+        /// </summary>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// Значення
-		/// </summary>
-		public int Value { get; set; }
+        /// <summary>
+        /// Значення
+        /// </summary>
+        public int Value { get; set; }
 
-		/// <summary>
-		/// Опис
-		/// </summary>
-		public string Desc { get; set; }
-	}
+        /// <summary>
+        /// Опис
+        /// </summary>
+        public string Desc { get; set; }
+
+        public ConfigurationEnumField Copy()
+        {
+            return new ConfigurationEnumField(this.Name, this.Value, this.Desc);
+        }
+    }
 }

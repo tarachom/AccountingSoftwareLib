@@ -147,7 +147,7 @@ namespace AccountingSoftware
 		/// Масив з бук анг. алфавіту. Використовується для задання назви таблиці або стовпчика в базі даних
 		/// </summary>
 		/// <returns></returns>
-		private static string[] GetEnglishAlphabet()
+		public static string[] GetEnglishAlphabet()
 		{
 			return new string[]
 			{
