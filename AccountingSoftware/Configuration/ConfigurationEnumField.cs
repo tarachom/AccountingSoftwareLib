@@ -65,9 +65,9 @@ namespace AccountingSoftware
         /// </summary>
         public string Desc { get; set; }
 
-        public ConfigurationEnumField Copy()
+        public ConfigurationEnumField Copy(int newValue)
         {
-            return new ConfigurationEnumField(this.Name, this.Value, this.Desc);
+            return new ConfigurationEnumField(this.Name, newValue, this.Desc);
         }
     }
 }
