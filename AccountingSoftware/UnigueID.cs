@@ -49,7 +49,7 @@ namespace AccountingSoftware
 		/// Унікальний ідентифікатор
 		/// </summary>
 		/// <param name="uGuid">Унікальний ідентифікатор як object</param>
-		public UnigueID(object uGuid)
+		public UnigueID(object? uGuid)
 		{
 			if (uGuid != null && uGuid != DBNull.Value)
 				UGuid = (Guid)uGuid;
