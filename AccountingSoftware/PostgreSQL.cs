@@ -1240,7 +1240,7 @@ CREATE TYPE uuidtext AS
 		/// <param name="sqlQuery">Запит</param>
 		/// <param name="paramQuery">Параметри</param>
 		/// <returns></returns>
-		public int ExecuteSQL(string sqlQuery, Dictionary<string, object> paramQuery)
+		public int ExecuteSQL(string sqlQuery, Dictionary<string, object>? paramQuery)
 		{
 			NpgsqlCommand Command = new NpgsqlCommand(sqlQuery, Connection);
 
@@ -1258,7 +1258,7 @@ CREATE TYPE uuidtext AS
 		/// <param name="paramQuery">Параметри запиту</param>
 		/// <param name="columnsName">Масив стовпців даних</param>
 		/// <param name="listRow">Список рядочків даних</param>
-		public void SelectRequest(string selectQuery, Dictionary<string, object> paramQuery, out string[] columnsName, out List<object[]> listRow)
+		public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow)
 		{
 			NpgsqlCommand Command = new NpgsqlCommand(selectQuery, Connection);
 
@@ -1295,7 +1295,7 @@ CREATE TYPE uuidtext AS
 		/// <param name="paramQuery">Параметри запиту</param>
 		/// <param name="columnsName">Масив стовпців даних</param>
 		/// <param name="listRow">Список рядочків даних</param>
-		public void SelectRequest(string selectQuery, Dictionary<string, object> paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
+		public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
 		{
 			NpgsqlCommand Command = new NpgsqlCommand(selectQuery, Connection);
 
