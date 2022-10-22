@@ -863,6 +863,8 @@ namespace AccountingSoftware
 
                 LoadTabularParts(ConfObjectDirectories.TabularParts, directoryNodes?.Current);
 
+                LoadTabularList(ConfObjectDirectories.TabularList, directoryNodes?.Current);
+
                 LoadTriggerFunctions(ConfObjectDirectories.TriggerFunctions, directoryNodes?.Current);
             }
         }
@@ -919,6 +921,34 @@ namespace AccountingSoftware
                 tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
 
                 LoadFields(ConfObjectTablePart.Fields, tablePartNodes?.Current, "TablePart");
+            }
+        }
+
+        private static void LoadTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
+            while (tabularListsNodes!.MoveNext())
+            {
+                string? name = tabularListsNodes?.Current?.SelectSingleNode("Name")?.Value;
+                string desc = tabularListsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                if (name == null)
+                    throw new Exception("Не задана назва табличного списку");
+
+                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                tabularLists.Add(ConfTabularList.Name, ConfTabularList);
+
+                XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
+                while (tabularListFieldNodes!.MoveNext())
+                {
+                    string? nameField = tabularListFieldNodes?.Current?.SelectSingleNode("Name")?.Value;
+
+                    if (nameField == null)
+                        throw new Exception("Не задана назва поля табличного списку");
+
+                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField);
+                    ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                }
             }
         }
 
@@ -1251,7 +1281,7 @@ namespace AccountingSoftware
 
                 SaveTabularParts(ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory);
 
-                //SaveViews(ConfDirectory.Value.Views, ConfDirectory.Value, xmlConfDocument, nodeDirectory);
+                SaveTabularList(ConfDirectory.Value.TabularList, xmlConfDocument, nodeDirectory);
 
                 SaveTriggerFunctions(ConfDirectory.Value.TriggerFunctions, xmlConfDocument, nodeDirectory);
             }
@@ -1326,6 +1356,39 @@ namespace AccountingSoftware
                 nodeTablePart.AppendChild(nodeTablePartDesc);
 
                 SaveFields(tablePart.Value.Fields, xmlConfDocument, nodeTablePart, "TablePart");
+            }
+        }
+
+        private static void SaveTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeTabularLists = xmlConfDocument.CreateElement("TabularLists");
+            rootNode.AppendChild(nodeTabularLists);
+
+            foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in tabularLists)
+            {
+                XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
+                nodeTabularLists.AppendChild(nodeTabularList);
+
+                XmlElement nodeTabularListName = xmlConfDocument.CreateElement("Name");
+                nodeTabularListName.InnerText = tabularList.Key;
+                nodeTabularList.AppendChild(nodeTabularListName);
+
+                XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
+                nodeTabularListDesc.InnerText = tabularList.Value.Desc;
+                nodeTabularList.AppendChild(nodeTabularListDesc);
+
+                XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
+                nodeTabularList.AppendChild(nodeTabularListFields);
+
+                foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
+                {
+                    XmlElement nodeTabularListField = xmlConfDocument.CreateElement("Field");
+                    nodeTabularListFields.AppendChild(nodeTabularListField);
+
+                    XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                    nodeName.InnerText = field.Key;
+                    nodeTabularListField.AppendChild(nodeName);
+                }
             }
         }
 
