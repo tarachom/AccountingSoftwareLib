@@ -47,6 +47,11 @@ namespace AccountingSoftware
 
         public Dictionary<string, ConfigurationTabularListField> Fields { get; }
 
+        public void AppendField(ConfigurationTabularListField field)
+        {
+            Fields.Add(field.Name, field);
+        }
+
         public ConfigurationTabularList Copy()
         {
             ConfigurationTabularList newTabularList = new ConfigurationTabularList(Name, Desc);
