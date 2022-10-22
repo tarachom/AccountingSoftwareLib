@@ -68,7 +68,7 @@ namespace AccountingSoftware
 
 			fieldTypes.Add(new FieldType("string", "[ string ] - Текст"));
 			fieldTypes.Add(new FieldType("integer", "[ integer ] - Ціле число")); //От -2 147 483 648 до 2 147 483 647
-																				  //fieldTypes.Add(new FieldType("long",            "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
+			//fieldTypes.Add(new FieldType("long",            "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
 			fieldTypes.Add(new FieldType("numeric", "[ numeric ] - Число з комою")); //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
 			fieldTypes.Add(new FieldType("boolean", "[ boolean ] - Логічне значення"));
 			fieldTypes.Add(new FieldType("date", "[ date ] - Дата"));

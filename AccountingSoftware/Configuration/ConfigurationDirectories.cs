@@ -23,80 +23,91 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Довідник
-	/// </summary>
-	public class ConfigurationDirectories : ConfigurationObject
-	{
-		/// <summary>
-		/// Довідник
-		/// </summary>
-		public ConfigurationDirectories()
-		{
-			Fields = new Dictionary<string, ConfigurationObjectField>();
-			TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-			TriggerFunctions = new ConfigurationTriggerFunctions();
-		}
+    /// <summary>
+    /// Довідник
+    /// </summary>
+    public class ConfigurationDirectories : ConfigurationObject
+    {
+        /// <summary>
+        /// Довідник
+        /// </summary>
+        public ConfigurationDirectories()
+        {
+            Fields = new Dictionary<string, ConfigurationObjectField>();
+            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
+            TriggerFunctions = new ConfigurationTriggerFunctions();
+            TabularList = new Dictionary<string, ConfigurationTabularList>();
+        }
 
-		/// <summary>
-		/// Довідник
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="table">Таблиця в базі даних</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationDirectories(string name, string table, string desc = "") : this()
-		{
-			Name = name;
-			Table = table;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Довідник
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationDirectories(string name, string table, string desc = "") : this()
+        {
+            Name = name;
+            Table = table;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Поля
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> Fields { get; }
+        /// <summary>
+        /// Поля
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> Fields { get; }
 
-		/// <summary>
-		/// Табличні частини
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        /// <summary>
+        /// Табличні частини
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
 
-		/// <summary>
-		/// Тригери
-		/// </summary>
-		public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
+        /// <summary>
+        /// Тригери
+        /// </summary>
+        public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
 
-		public ConfigurationDirectories Copy()
-		{
-			ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.Table, this.Desc);
+        /// <summary>
+        /// Табличні списки
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
-			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-				confDirCopy.Fields.Add(fields.Key, fields.Value);
+        public ConfigurationDirectories Copy()
+        {
+            ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.Table, this.Desc);
 
-			foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
-				confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+                confDirCopy.Fields.Add(fields.Key, fields.Value);
 
-			confDirCopy.TriggerFunctions = this.TriggerFunctions;
+            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+                confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-			return confDirCopy;
-		}
+            confDirCopy.TriggerFunctions = this.TriggerFunctions;
 
-		/// <summary>
-		/// Додати нове поле
-		/// </summary>
-		/// <param name="field">Нове поле</param>
-		public void AppendField(ConfigurationObjectField field)
-		{
-			Fields.Add(field.Name, field);
-		}
+            return confDirCopy;
+        }
 
-		/// <summary>
-		/// Додати нову табличну частину
-		/// </summary>
-		/// <param name="tablePart">Нова таблична частина</param>
-		public void AppendTablePart(ConfigurationObjectTablePart tablePart)
-		{
-			TabularParts.Add(tablePart.Name, tablePart);
-		}
-	}
+        /// <summary>
+        /// Додати нове поле
+        /// </summary>
+        /// <param name="field">Нове поле</param>
+        public void AppendField(ConfigurationObjectField field)
+        {
+            Fields.Add(field.Name, field);
+        }
+
+        /// <summary>
+        /// Додати нову табличну частину
+        /// </summary>
+        /// <param name="tablePart">Нова таблична частина</param>
+        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        {
+            TabularParts.Add(tablePart.Name, tablePart);
+        }
+
+        public void AppendTableList(ConfigurationTabularList tabularList)
+        {
+            TabularList.Add(tabularList.Name, tabularList);
+        }
+    }
 }
