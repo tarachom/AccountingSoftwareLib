@@ -942,11 +942,12 @@ namespace AccountingSoftware
                 while (tabularListFieldNodes!.MoveNext())
                 {
                     string? nameField = tabularListFieldNodes?.Current?.SelectSingleNode("Name")?.Value;
+                    string captionField = tabularListFieldNodes?.Current?.SelectSingleNode("Caption")?.Value ?? "";
 
                     if (nameField == null)
                         throw new Exception("Не задана назва поля табличного списку");
 
-                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField);
+                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField);
                     ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                 }
             }
@@ -1388,6 +1389,10 @@ namespace AccountingSoftware
                     XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                     nodeName.InnerText = field.Key;
                     nodeTabularListField.AppendChild(nodeName);
+
+                    XmlElement nodeCaption = xmlConfDocument.CreateElement("Caption");
+                    nodeCaption.InnerText = field.Value.Caption;
+                    nodeTabularListField.AppendChild(nodeCaption);
                 }
             }
         }

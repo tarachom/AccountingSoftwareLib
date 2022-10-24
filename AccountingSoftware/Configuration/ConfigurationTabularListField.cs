@@ -31,8 +31,7 @@ namespace AccountingSoftware
         public ConfigurationTabularListField()
         {
             Name = "";
-            ColumnName = "";
-            ColumnSize = 0;
+            Caption = "";
         }
 
         public ConfigurationTabularListField(string name) : this()
@@ -40,10 +39,14 @@ namespace AccountingSoftware
             Name = name;
         }
 
+        public ConfigurationTabularListField(string name, string caption) : this()
+        {
+            Name = name;
+            Caption = caption;
+        }
+
         public string Name { get; set; }
 
-        public string ColumnName { get; set; }
-
-        public int ColumnSize { get; set; }
+        public string Caption { get; set; }
     }
 }
