@@ -39,14 +39,20 @@ namespace AccountingSoftware
             Name = name;
         }
 
-        public ConfigurationTabularListField(string name, string caption) : this()
+        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = -1) : this()
         {
             Name = name;
             Caption = caption;
+            Size = size;
+            SortNum = sortNum;
         }
 
         public string Name { get; set; }
 
         public string Caption { get; set; }
+
+        public uint Size { get; set; }
+
+        public int SortNum { get; set; }
     }
 }

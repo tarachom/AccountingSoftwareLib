@@ -943,11 +943,13 @@ namespace AccountingSoftware
                 {
                     string? nameField = tabularListFieldNodes?.Current?.SelectSingleNode("Name")?.Value;
                     string captionField = tabularListFieldNodes?.Current?.SelectSingleNode("Caption")?.Value ?? "";
+                    uint sizeField = uint.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                    int sortNumField = int.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("SortNum")?.Value ?? "-1");
 
                     if (nameField == null)
                         throw new Exception("Не задана назва поля табличного списку");
 
-                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField);
+                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField);
                     ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                 }
             }
@@ -1035,6 +1037,8 @@ namespace AccountingSoftware
                 LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
 
                 LoadTabularParts(configurationDocuments.TabularParts, documentsNode?.Current);
+
+                LoadTabularList(configurationDocuments.TabularList, documentsNode?.Current);
 
                 LoadAllowRegisterAccumulation(configurationDocuments.AllowRegisterAccumulation, documentsNode?.Current);
 
@@ -1393,6 +1397,14 @@ namespace AccountingSoftware
                     XmlElement nodeCaption = xmlConfDocument.CreateElement("Caption");
                     nodeCaption.InnerText = field.Value.Caption;
                     nodeTabularListField.AppendChild(nodeCaption);
+
+                    XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
+                    nodeSize.InnerText = field.Value.Size.ToString();
+                    nodeTabularListField.AppendChild(nodeSize);
+
+                    XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
+                    nodeSortNum.InnerText = field.Value.SortNum.ToString();
+                    nodeTabularListField.AppendChild(nodeSortNum);
                 }
             }
         }
@@ -1512,6 +1524,8 @@ namespace AccountingSoftware
                 SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 
                 SaveTabularParts(ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument);
+
+                SaveTabularList(ConfDocument.Value.TabularList, xmlConfDocument, nodeDocument);
 
                 SaveAllowRegisterAccumulation(ConfDocument.Value.AllowRegisterAccumulation, xmlConfDocument, nodeDocument);
 

@@ -23,94 +23,105 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Документ
-	/// </summary>
-	public class ConfigurationDocuments : ConfigurationObject
-	{
-		/// <summary>
-		/// Документ
-		/// </summary>
-		public ConfigurationDocuments()
-		{
-			Fields = new Dictionary<string, ConfigurationObjectField>();
-			TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-			AllowRegisterAccumulation = new List<string>();
-			TriggerFunctions = new ConfigurationTriggerFunctions();
-			SpendFunctions = new ConfigurationSpendFunctions();
-		}
+    /// <summary>
+    /// Документ
+    /// </summary>
+    public class ConfigurationDocuments : ConfigurationObject
+    {
+        /// <summary>
+        /// Документ
+        /// </summary>
+        public ConfigurationDocuments()
+        {
+            Fields = new Dictionary<string, ConfigurationObjectField>();
+            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
+            AllowRegisterAccumulation = new List<string>();
+            TriggerFunctions = new ConfigurationTriggerFunctions();
+            SpendFunctions = new ConfigurationSpendFunctions();
+            TabularList = new Dictionary<string, ConfigurationTabularList>();
+        }
 
-		/// <summary>
-		/// Документ
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="table">Таблиця в базі даних</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationDocuments(string name, string table, string desc = "") : this()
-		{
-			Name = name;
-			Table = table;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Документ
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationDocuments(string name, string table, string desc = "") : this()
+        {
+            Name = name;
+            Table = table;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Поля
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> Fields { get; }
+        /// <summary>
+        /// Поля
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> Fields { get; }
 
-		/// <summary>
-		/// Табличні частини
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        /// <summary>
+        /// Табличні частини
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
 
-		/// <summary>
-		/// Регістри накопичення по яких може робити рухи документ
-		/// </summary>
-		public List<string> AllowRegisterAccumulation { get; private set; }
+        /// <summary>
+        /// Регістри накопичення по яких може робити рухи документ
+        /// </summary>
+        public List<string> AllowRegisterAccumulation { get; private set; }
 
-		/// <summary>
-		/// Тригери
-		/// </summary>
-		public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
+        /// <summary>
+        /// Тригери
+        /// </summary>
+        public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
 
-		/// <summary>
-		/// Функції (проведення/очищення проводок) документу
-		/// </summary>
-		public ConfigurationSpendFunctions SpendFunctions { get; set; }
+        /// <summary>
+        /// Функції (проведення/очищення проводок) документу
+        /// </summary>
+        public ConfigurationSpendFunctions SpendFunctions { get; set; }
 
-		public ConfigurationDocuments Copy()
-		{
-			ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.Table, this.Desc);
+        /// <summary>
+        /// Табличні списки
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
-			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-				confDocCopy.Fields.Add(fields.Key, fields.Value);
+        public ConfigurationDocuments Copy()
+        {
+            ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.Table, this.Desc);
 
-			foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
-				confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+                confDocCopy.Fields.Add(fields.Key, fields.Value);
 
-			confDocCopy.TriggerFunctions = this.TriggerFunctions;
+            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+                confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-			confDocCopy.SpendFunctions = this.SpendFunctions;
+            confDocCopy.TriggerFunctions = this.TriggerFunctions;
 
-			return confDocCopy;
-		}
+            confDocCopy.SpendFunctions = this.SpendFunctions;
 
-		/// <summary>
-		/// Додати нове поле в список полів
-		/// </summary>
-		/// <param name="field">Нове поле</param>
-		public void AppendField(ConfigurationObjectField field)
-		{
-			Fields.Add(field.Name, field);
-		}
+            return confDocCopy;
+        }
 
-		/// <summary>
-		/// Додати нову табличну частину
-		/// </summary>
-		/// <param name="tablePart">Нова таблична частина</param>
-		public void AppendTablePart(ConfigurationObjectTablePart tablePart)
-		{
-			TabularParts.Add(tablePart.Name, tablePart);
-		}
-	}
+        /// <summary>
+        /// Додати нове поле в список полів
+        /// </summary>
+        /// <param name="field">Нове поле</param>
+        public void AppendField(ConfigurationObjectField field)
+        {
+            Fields.Add(field.Name, field);
+        }
+
+        /// <summary>
+        /// Додати нову табличну частину
+        /// </summary>
+        /// <param name="tablePart">Нова таблична частина</param>
+        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        {
+            TabularParts.Add(tablePart.Name, tablePart);
+        }
+
+		public void AppendTableList(ConfigurationTabularList tabularList)
+        {
+            TabularList.Add(tabularList.Name, tabularList);
+        }
+    }
 }
