@@ -944,12 +944,13 @@ namespace AccountingSoftware
                     string? nameField = tabularListFieldNodes?.Current?.SelectSingleNode("Name")?.Value;
                     string captionField = tabularListFieldNodes?.Current?.SelectSingleNode("Caption")?.Value ?? "";
                     uint sizeField = uint.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("Size")?.Value ?? "0");
-                    int sortNumField = int.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("SortNum")?.Value ?? "-1");
+                    int sortNumField = int.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
+                    bool sortField = bool.Parse(tabularListFieldNodes?.Current?.SelectSingleNode("SortField")?.Value ?? "False");
 
                     if (nameField == null)
                         throw new Exception("Не задана назва поля табличного списку");
 
-                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField);
+                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField);
                     ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                 }
             }
@@ -1384,9 +1385,6 @@ namespace AccountingSoftware
                 nodeTabularListDesc.InnerText = tabularList.Value.Desc;
                 nodeTabularList.AppendChild(nodeTabularListDesc);
 
-                //Таблиці які треба приєднати
-                //List<string> JoinTable = new List<string>();
-
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
 
@@ -1414,6 +1412,10 @@ namespace AccountingSoftware
                         XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
                         nodeSortNum.InnerText = field.Value.SortNum.ToString();
                         nodeTabularListField.AppendChild(nodeSortNum);
+
+                        XmlElement nodeSortField = xmlConfDocument.CreateElement("SortField");
+                        nodeSortField.InnerText = field.Value.SortField.ToString();
+                        nodeTabularListField.AppendChild(nodeSortField);
 
                         //
                         // ObjField Info
@@ -1445,7 +1447,7 @@ namespace AccountingSoftware
                                         if (directoryPointerFields.Count != 0)
                                         {
                                             XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                            nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>";;
+                                            nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
                                             nodeTabularListField.AppendChild(nodeJoinTable);
 
                                             bool isExistPresentation = false;
@@ -1481,7 +1483,7 @@ namespace AccountingSoftware
                                         if (documentPointerFields.Count != 0)
                                         {
                                             XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                            nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>";;
+                                            nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
                                             nodeTabularListField.AppendChild(nodeJoinTable);
 
                                             bool isExistPresentation = false;
@@ -1493,7 +1495,7 @@ namespace AccountingSoftware
                                                     XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                     nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
                                                     nodeTabularListField.AppendChild(nodeFieldAndAlias);
-                                                    
+
                                                     isExistPresentation = true;
                                                 }
                                             }
@@ -1513,11 +1515,6 @@ namespace AccountingSoftware
                         }
                     }
                 }
-
-                // foreach (string table in JoinTable)
-                // {
-
-                // }
             }
         }
 

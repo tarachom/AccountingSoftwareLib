@@ -39,12 +39,13 @@ namespace AccountingSoftware
             Name = name;
         }
 
-        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = -1) : this()
+        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false) : this()
         {
             Name = name;
             Caption = caption;
             Size = size;
             SortNum = sortNum;
+            SortField = sortField;
         }
 
         public string Name { get; set; }
@@ -54,5 +55,7 @@ namespace AccountingSoftware
         public uint Size { get; set; }
 
         public int SortNum { get; set; }
+
+        public bool SortField { get; set; }
     }
 }
