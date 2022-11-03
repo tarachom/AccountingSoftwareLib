@@ -88,12 +88,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Шлях до копії хмл файлу конфігурації
         /// </summary>
-        public string PathToCopyXmlFileConfiguration { get; set; } //???
+        public string PathToCopyXmlFileConfiguration { get; set; }
 
         /// <summary>
         /// Шлях до тимчасового хмл файлу конфігурації
         /// </summary>
-        public string PathToTempXmlFileConfiguration { get; set; } //???
+        public string PathToTempXmlFileConfiguration { get; set; }
 
         /// <summary>
         /// Блоки констант
