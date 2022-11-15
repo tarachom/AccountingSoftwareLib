@@ -133,14 +133,6 @@ namespace AccountingSoftware
 		}
 
 		/// <summary>
-		/// Закрити підключення
-		/// </summary>
-		public void Close()
-		{
-			DataBase.Close();
-		}
-
-		/// <summary>
 		/// Конфігурація
 		/// </summary>
 		public Configuration Conf { get; set; }
