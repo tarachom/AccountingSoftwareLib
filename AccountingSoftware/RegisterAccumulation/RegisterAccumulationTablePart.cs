@@ -29,7 +29,7 @@ namespace AccountingSoftware
 	public abstract class RegisterAccumulationTablePart
 	{
 		/// <summary>
-		/// Константа Таблична частина
+		/// Таблична частина
 		/// </summary>
 		/// <param name="kernel">Ядро</param>
 		/// <param name="table">Таблиця</param>
