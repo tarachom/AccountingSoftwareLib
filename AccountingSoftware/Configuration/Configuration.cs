@@ -1139,6 +1139,8 @@ namespace AccountingSoftware
                     LoadFields(configurationRegistersAccumulation.PropertyFields, propertyFieldsNode, "RegisterAccumulation");
 
                 LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode?.Current);
+
+                LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
             }
         }
 
@@ -1738,6 +1740,8 @@ namespace AccountingSoftware
                 SaveFields(ConfRegisterAccml.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterAccumulation");
 
                 SaveAllowDocumentSpendRegisterAccumulation(ConfRegisterAccml.Value.AllowDocumentSpend, xmlConfDocument, nodeRegister);
+
+                SaveTabularParts(ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
             }
         }
 

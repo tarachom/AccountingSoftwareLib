@@ -1087,6 +1087,62 @@ CREATE TYPE uuidtext AS
             nCommand.ExecuteNonQuery();
         }
 
+        public void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        {
+            string query = "SELECT uid";
+
+            foreach (string field in fieldArray)
+                query += ", " + field;
+
+            query += " FROM " + table;
+
+            NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
+
+            NpgsqlDataReader reader = nCommand.ExecuteReader();
+            while (reader.Read())
+            {
+                Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                fieldValueList.Add(fieldValue);
+
+                fieldValue.Add("uid", reader["uid"]);
+
+                foreach (string field in fieldArray)
+                    fieldValue.Add(field, reader[field]);
+            }
+            reader.Close();
+        }
+
+        public void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        {
+            string query_field = "uid";
+            string query_values = "@uid";
+
+            foreach (string field in fieldArray)
+            {
+                query_field += ", " + field;
+                query_values += ", @" + field;
+            }
+
+            string query = "INSERT INTO " + table + " (" + query_field + ") VALUES (" + query_values + ")";
+
+            NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
+            nCommand.Parameters.Add(new NpgsqlParameter("uid", UID));
+
+            foreach (string field in fieldArray)
+                nCommand.Parameters.Add(new NpgsqlParameter(field, fieldValue[field]));
+
+            nCommand.ExecuteNonQuery();
+        }
+
+        public void DeleteRegisterAccumulationTablePartRecords(string table)
+        {
+            string query = "DELETE FROM " + table;
+
+            NpgsqlCommand nCommand = new NpgsqlCommand(query, Connection);
+
+            nCommand.ExecuteNonQuery();
+        }
+
         #endregion
 
         #region InformationShema

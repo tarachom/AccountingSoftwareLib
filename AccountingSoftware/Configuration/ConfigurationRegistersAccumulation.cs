@@ -37,6 +37,7 @@ namespace AccountingSoftware
             ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
             PropertyFields = new Dictionary<string, ConfigurationObjectField>();
             AllowDocumentSpend = new List<string>();
+            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
         }
 
         /// <summary>
@@ -78,6 +79,11 @@ namespace AccountingSoftware
         /// </summary>
         public List<string> AllowDocumentSpend { get; }
 
+        /// <summary>
+        /// Табличні частини
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+
         public ConfigurationRegistersAccumulation Copy()
         {
             ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
@@ -90,6 +96,9 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
                 confRegCopy.PropertyFields.Add(fields.Key, fields.Value);
+
+            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+                confRegCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
             return confRegCopy;
         }
@@ -109,6 +118,15 @@ namespace AccountingSoftware
         public void AppendPropertyField(ConfigurationObjectField field)
         {
             PropertyFields.Add(field.Name, field);
+        }
+
+        /// <summary>
+        /// Додати нову табличну частину
+        /// </summary>
+        /// <param name="tablePart">Нова таблична частина</param>
+        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        {
+            TabularParts.Add(tablePart.Name, tablePart);
         }
 
         #endregion
