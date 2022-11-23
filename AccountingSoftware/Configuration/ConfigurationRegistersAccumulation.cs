@@ -38,7 +38,7 @@ namespace AccountingSoftware
             PropertyFields = new Dictionary<string, ConfigurationObjectField>();
             AllowDocumentSpend = new List<string>();
             TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-            QueryList = new List<ConfigurationObjectQuery>();
+            QueryBlockList = new Dictionary<string, ConfigurationObjectQueryBlock>();
         }
 
         /// <summary>
@@ -86,9 +86,9 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
 
         /// <summary>
-        /// Список запитів
+        /// Блоки запитів
         /// </summary>
-        public List<ConfigurationObjectQuery> QueryList { get; }
+        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; }
 
         public ConfigurationRegistersAccumulation Copy()
         {
@@ -106,8 +106,8 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confRegCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-            foreach (ConfigurationObjectQuery query in this.QueryList)
-                confRegCopy.QueryList.Add(query);
+            foreach (KeyValuePair<string, ConfigurationObjectQueryBlock> query in this.QueryBlockList)
+                confRegCopy.QueryBlockList.Add(query.Key, query.Value.Copy());
 
             return confRegCopy;
         }
@@ -136,6 +136,11 @@ namespace AccountingSoftware
         public void AppendTablePart(ConfigurationObjectTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
+        }
+
+        public void AppendQueryBlockList(ConfigurationObjectQueryBlock queryBlock)
+        {
+            QueryBlockList.Add(queryBlock.Name, queryBlock);
         }
 
         #endregion

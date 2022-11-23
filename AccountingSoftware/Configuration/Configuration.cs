@@ -1142,17 +1142,22 @@ namespace AccountingSoftware
 
                 LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
 
-                LoadQueryList(configurationRegistersAccumulation.QueryList, registerAccumulationNode?.Current);
+                LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
             }
         }
 
-        private static void LoadQueryList(List<ConfigurationObjectQuery> queryList, XPathNavigator? xPathDocNavigator)
+        private static void LoadQueryList(Dictionary<string, ConfigurationObjectQueryBlock> queryBlockList, XPathNavigator? xPathDocNavigator)
         {
-            XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryList/QueryBlock");
+            XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryBlockList/QueryBlock");
             while (nodeQueryBlock!.MoveNext())
             {
-                ConfigurationObjectQuery QueryBlock = new ConfigurationObjectQuery();
-                queryList.Add(QueryBlock);
+                string? name = nodeQueryBlock?.Current?.SelectSingleNode("Name")?.Value;
+
+                if (name == null)
+                    throw new Exception("Не задана назва регістру накопичення");
+
+                ConfigurationObjectQueryBlock QueryBlock = new ConfigurationObjectQueryBlock(name);
+                queryBlockList.Add(QueryBlock.Name, QueryBlock);
 
                 XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
                 while (nodeQuery!.MoveNext())
@@ -1764,19 +1769,23 @@ namespace AccountingSoftware
 
                 SaveTabularParts(ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
 
-                SaveQueryList(ConfRegisterAccml.Value.QueryList, xmlConfDocument, nodeRegister);
+                SaveQueryBlockList(ConfRegisterAccml.Value.QueryBlockList, xmlConfDocument, nodeRegister);
             }
         }
 
-        private static void SaveQueryList(List<ConfigurationObjectQuery> queryList, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveQueryBlockList(Dictionary<string, ConfigurationObjectQueryBlock> queryBlockList, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
-            XmlElement nodeQueryList = xmlConfDocument.CreateElement("QueryList");
-            rootNode.AppendChild(nodeQueryList);
+            XmlElement nodeQueryBlockList = xmlConfDocument.CreateElement("QueryBlockList");
+            rootNode.AppendChild(nodeQueryBlockList);
 
-            foreach (ConfigurationObjectQuery queryBlock in queryList)
+            foreach (ConfigurationObjectQueryBlock queryBlock in queryBlockList.Values)
             {
                 XmlElement nodeQueryBlock = xmlConfDocument.CreateElement("QueryBlock");
-                nodeQueryList.AppendChild(nodeQueryBlock);
+                nodeQueryBlockList.AppendChild(nodeQueryBlock);
+
+                XmlElement nodeQueryBlockName = xmlConfDocument.CreateElement("Name");
+                nodeQueryBlockName.InnerText = queryBlock.Name;
+                nodeQueryBlock.AppendChild(nodeQueryBlockName);
 
                 foreach (KeyValuePair<int, string> query in queryBlock.Query)
                 {

@@ -26,13 +26,30 @@ namespace AccountingSoftware
     /// <summary>
     /// Запити
     /// </summary>
-    public class ConfigurationObjectQuery
+    public class ConfigurationObjectQueryBlock
     {
-        public ConfigurationObjectQuery()
+        public ConfigurationObjectQueryBlock()
         {
             Query = new Dictionary<int, string>();
         }
 
+        public ConfigurationObjectQueryBlock(string name) : this()
+        {
+            Name = name;
+        }
+
         public Dictionary<int, string> Query { get; }
+
+        public string Name { get; set; } = "";
+
+        public ConfigurationObjectQueryBlock Copy()
+        {
+            ConfigurationObjectQueryBlock newQueryBlock = new ConfigurationObjectQueryBlock(Name);
+
+            foreach (KeyValuePair<int, string> item in Query)
+                newQueryBlock.Query.Add(item.Key, item.Value);
+
+            return newQueryBlock;
+        }
     }
 }
