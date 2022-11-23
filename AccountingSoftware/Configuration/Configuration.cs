@@ -1162,10 +1162,11 @@ namespace AccountingSoftware
                 XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
                 while (nodeQuery!.MoveNext())
                 {
-                    int position = int.Parse(nodeQuery?.Current?.GetAttribute("position", "") ?? "0");
+                    //int position = int.Parse(nodeQuery?.Current?.GetAttribute("position", "") ?? "0");
+                    string key = nodeQuery?.Current?.GetAttribute("key", "") ?? "";
                     string query = nodeQuery?.Current?.Value ?? "";
 
-                    QueryBlock.Query.Add(position, query);
+                    QueryBlock.Query.Add(key, query);
                 }
             }
         }
@@ -1787,10 +1788,13 @@ namespace AccountingSoftware
                 nodeQueryBlockName.InnerText = queryBlock.Name;
                 nodeQueryBlock.AppendChild(nodeQueryBlockName);
 
-                foreach (KeyValuePair<int, string> query in queryBlock.Query)
+                int position = 0;
+
+                foreach (KeyValuePair<string, string> query in queryBlock.Query)
                 {
                     XmlElement nodeQuery = xmlConfDocument.CreateElement("Query");
-                    nodeQuery.SetAttribute("position", query.Key.ToString());
+                    nodeQuery.SetAttribute("position", position++.ToString());
+                    nodeQuery.SetAttribute("key", query.Key);
                     nodeQuery.InnerText = query.Value;
                     nodeQueryBlock.AppendChild(nodeQuery);
                 }

@@ -30,7 +30,7 @@ namespace AccountingSoftware
     {
         public ConfigurationObjectQueryBlock()
         {
-            Query = new Dictionary<int, string>();
+            Query = new Dictionary<string, string>();
         }
 
         public ConfigurationObjectQueryBlock(string name) : this()
@@ -38,7 +38,7 @@ namespace AccountingSoftware
             Name = name;
         }
 
-        public Dictionary<int, string> Query { get; }
+        public Dictionary<string, string> Query { get; }
 
         public string Name { get; set; } = "";
 
@@ -46,7 +46,7 @@ namespace AccountingSoftware
         {
             ConfigurationObjectQueryBlock newQueryBlock = new ConfigurationObjectQueryBlock(Name);
 
-            foreach (KeyValuePair<int, string> item in Query)
+            foreach (KeyValuePair<string, string> item in Query)
                 newQueryBlock.Query.Add(item.Key, item.Value);
 
             return newQueryBlock;
