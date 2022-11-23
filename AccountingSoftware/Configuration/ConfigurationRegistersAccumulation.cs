@@ -38,6 +38,7 @@ namespace AccountingSoftware
             PropertyFields = new Dictionary<string, ConfigurationObjectField>();
             AllowDocumentSpend = new List<string>();
             TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
+            QueryList = new List<ConfigurationObjectQuery>();
         }
 
         /// <summary>
@@ -84,6 +85,11 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
 
+        /// <summary>
+        /// Список запитів
+        /// </summary>
+        public List<ConfigurationObjectQuery> QueryList { get; }
+
         public ConfigurationRegistersAccumulation Copy()
         {
             ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
@@ -99,6 +105,9 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confRegCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+
+            foreach (ConfigurationObjectQuery query in this.QueryList)
+                confRegCopy.QueryList.Add(query);
 
             return confRegCopy;
         }

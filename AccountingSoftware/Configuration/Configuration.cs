@@ -1141,6 +1141,27 @@ namespace AccountingSoftware
                 LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode?.Current);
 
                 LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
+
+                LoadQueryList(configurationRegistersAccumulation.QueryList, registerAccumulationNode?.Current);
+            }
+        }
+
+        private static void LoadQueryList(List<ConfigurationObjectQuery> queryList, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryList/QueryBlock");
+            while (nodeQueryBlock!.MoveNext())
+            {
+                ConfigurationObjectQuery QueryBlock = new ConfigurationObjectQuery();
+                queryList.Add(QueryBlock);
+
+                XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
+                while (nodeQuery!.MoveNext())
+                {
+                    int position = int.Parse(nodeQuery?.Current?.GetAttribute("position", "") ?? "0");
+                    string query = nodeQuery?.Current?.Value ?? "";
+
+                    QueryBlock.Query.Add(position, query);
+                }
             }
         }
 
@@ -1742,6 +1763,28 @@ namespace AccountingSoftware
                 SaveAllowDocumentSpendRegisterAccumulation(ConfRegisterAccml.Value.AllowDocumentSpend, xmlConfDocument, nodeRegister);
 
                 SaveTabularParts(ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
+
+                SaveQueryList(ConfRegisterAccml.Value.QueryList, xmlConfDocument, nodeRegister);
+            }
+        }
+
+        private static void SaveQueryList(List<ConfigurationObjectQuery> queryList, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeQueryList = xmlConfDocument.CreateElement("QueryList");
+            rootNode.AppendChild(nodeQueryList);
+
+            foreach (ConfigurationObjectQuery queryBlock in queryList)
+            {
+                XmlElement nodeQueryBlock = xmlConfDocument.CreateElement("QueryBlock");
+                nodeQueryList.AppendChild(nodeQueryBlock);
+
+                foreach (KeyValuePair<int, string> query in queryBlock.Query)
+                {
+                    XmlElement nodeQuery = xmlConfDocument.CreateElement("Query");
+                    nodeQuery.SetAttribute("position", query.Key.ToString());
+                    nodeQuery.InnerText = query.Value;
+                    nodeQueryBlock.AppendChild(nodeQuery);
+                }
             }
         }
 
