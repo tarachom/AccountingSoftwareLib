@@ -23,44 +23,47 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Використовується для елементів ComboBox, коли потрібно задати відображення для обєкта
-	/// </summary>
-	/// <typeparam name="T">Тип обєкта для якого задається відображення</typeparam>
-	/// <example>
-	/// comboBoxRegisterType.Items.Add(new NameValue<TypeRegistersAccumulation>("Залишки", TypeRegistersAccumulation.Residues));
-	/// comboBoxRegisterType.Items.Add(new NameValue<TypeRegistersAccumulation>("Обороти", TypeRegistersAccumulation.Turnover));
-	///	comboBoxRegisterType.SelectedItem = comboBoxRegisterType.Items[0];
-	///	
-	/// ...
-	/// 
-	/// var a = ((NameValue<TypeRegistersAccumulation>)comboBoxRegisterType.SelectedItem).Value
-	/// </example>
-	public class NameValue<T>
-	{
-		public NameValue()
-		{
-			Name = "";
-		}
+    /// <summary>
+    /// Використовується для елементів ComboBox, коли потрібно задати відображення для обєкта
+    /// </summary>
+    /// <typeparam name="T">Тип обєкта для якого задається відображення</typeparam>
+    /// <example>
+    /// comboBoxRegisterType.Items.Add(new NameValue<TypeRegistersAccumulation>("Залишки", TypeRegistersAccumulation.Residues));
+    /// comboBoxRegisterType.Items.Add(new NameValue<TypeRegistersAccumulation>("Обороти", TypeRegistersAccumulation.Turnover));
+    ///	comboBoxRegisterType.SelectedItem = comboBoxRegisterType.Items[0];
+    ///	
+    /// ...
+    /// 
+    /// var a = ((NameValue<TypeRegistersAccumulation>)comboBoxRegisterType.SelectedItem).Value
+    /// </example>
+    public class NameValue<T>
+    {
+        public NameValue()
+        {
+            Name = "";
+        }
 
-		public NameValue(string name, T value)
-		{
-			Name = name;
-			Value = value;
-		}
+        public NameValue(string name, T value)
+        {
+            Name = name;
+            Value = value;
+        }
 
-		public string Name { get; set; }
+        public string Name { get; set; }
 
-		public T? Value { get; set; }
+        public T? Value { get; set; }
 
-		public bool Equals(T value)
-		{
-			return Value?.ToString() == value?.ToString();
-		}
+        public bool Equals(T value)
+        {
+            if (Value == null || value == null)
+                return false;
+            else
+                return Value.ToString() == value.ToString();
+        }
 
-		public override string ToString()
-		{
-			return Name;
-		}
-	}
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
 }
