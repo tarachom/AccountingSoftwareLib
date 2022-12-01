@@ -161,21 +161,88 @@ CREATE TYPE uuidtext AS
 
         #region Transaction
 
-        private NpgsqlTransaction? Transaction { get; set; }
+        //private NpgsqlTransaction? Transaction { get; set; }
 
-        public void BeginTransaction()
+        private readonly object loсked = new Object();
+        private Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
+        private volatile byte TransactionCounter = 0;
+
+        public byte BeginTransaction()
         {
-            Transaction = Connection?.BeginTransaction();
+            if (DataSource != null)
+            {
+                lock (loсked)
+                {
+                    if (TransactionCounter >= byte.MaxValue)
+                        TransactionCounter = 0;
+                }
+
+                byte TransactionID = 0;
+                NpgsqlTransaction Transaction = DataSource.OpenConnection().BeginTransaction();
+
+                lock (loсked)
+                {
+                    TransactionID = ++TransactionCounter;
+                    OpenTransaction.Add(TransactionID, Transaction);
+                }
+
+                return TransactionID;
+            }
+            else
+                return 0;
         }
 
-        public void CommitTransaction()
+        public void CommitTransaction(byte transactionID)
         {
-            Transaction?.Commit();
+            if (transactionID == 0)
+                throw new IndexOutOfRangeException("Не задана транзація");
+
+            if (OpenTransaction.ContainsKey(transactionID))
+            {
+                NpgsqlTransaction Transaction = OpenTransaction[transactionID];
+
+                lock (loсked)
+                {
+                    OpenTransaction.Remove(transactionID);
+                }
+
+                Transaction?.Commit();
+                Transaction?.Connection?.Close();
+            }
+            else
+                throw new IndexOutOfRangeException("Невірний номер транзації");
         }
 
-        public void RollbackTransaction()
+        public void RollbackTransaction(byte transactionID)
         {
-            Transaction?.Rollback();
+            if (transactionID == 0)
+                throw new IndexOutOfRangeException("Не задана транзація");
+
+            if (OpenTransaction.ContainsKey(transactionID))
+            {
+                NpgsqlTransaction Transaction = OpenTransaction[transactionID];
+
+                lock (loсked)
+                {
+                    OpenTransaction.Remove(transactionID);
+                }
+
+                Transaction?.Rollback();
+                Transaction?.Connection?.Close();
+            }
+            else
+                throw new IndexOutOfRangeException("Невірний номер транзації");
+        }
+
+        private NpgsqlTransaction? GetTransactionByID(byte transactionID)
+        {
+            if (transactionID == 0)
+                return null;
+
+            if (OpenTransaction.ContainsKey(transactionID))
+                return OpenTransaction[transactionID];
+            else
+                return null;
         }
 
         #endregion
@@ -266,7 +333,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -281,7 +348,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
 
                 foreach (string field in fieldArray)
@@ -291,14 +362,18 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteConstantsTablePartRecords(string table)
+        public void DeleteConstantsTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table}";
 
-                NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.ExecuteNonQuery();
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
+                command.ExecuteNonQuery();
             }
         }
 
@@ -381,13 +456,17 @@ CREATE TYPE uuidtext AS
                 return false;
         }
 
-        public void DeleteDirectoryObject(UnigueID unigueID, string table)
+        public void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE uid = @uid";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 command.ExecuteNonQuery();
@@ -559,7 +638,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -574,7 +653,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -585,16 +668,20 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table)
+        public void DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
-                NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
 
-                nCommand.ExecuteNonQuery();
+                command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+
+                command.ExecuteNonQuery();
             }
         }
 
@@ -685,13 +772,17 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteDocumentObject(UnigueID unigueID, string table)
+        public void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE uid = @uid";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 command.ExecuteNonQuery();
@@ -822,7 +913,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -837,7 +928,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -848,13 +943,17 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table)
+        public void DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
                 command.ExecuteNonQuery();
@@ -964,7 +1063,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -979,7 +1078,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
@@ -991,13 +1094,17 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteRegisterInformationRecords(string table, Guid owner)
+        public void DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("owner", owner);
 
                 command.ExecuteNonQuery();
@@ -1137,7 +1244,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1152,7 +1259,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("income", income);
@@ -1165,13 +1276,17 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteRegisterAccumulationRecords(string table, Guid owner)
+        public void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("owner", owner);
 
                 command.ExecuteNonQuery();
@@ -1206,7 +1321,7 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1221,7 +1336,11 @@ CREATE TYPE uuidtext AS
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("uid", UID);
 
                 foreach (string field in fieldArray)
@@ -1231,13 +1350,17 @@ CREATE TYPE uuidtext AS
             }
         }
 
-        public void DeleteRegisterAccumulationTablePartRecords(string table)
+        public void DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"DELETE FROM {table}";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.ExecuteNonQuery();
             }
         }
@@ -1348,7 +1471,7 @@ CREATE TYPE uuidtext AS
         /// <param name="table">Таблиця</param>
         /// <param name="paramQuery">Поля і значення</param>
         /// <returns></returns>
-        public int InsertSQL(string table, Dictionary<string, object> paramQuery)
+        public int InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1359,7 +1482,10 @@ CREATE TYPE uuidtext AS
 
                 string insertQuery = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})"; ;
 
-                NpgsqlCommand command = DataSource.CreateCommand(insertQuery);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(insertQuery, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(insertQuery);
 
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
@@ -1375,11 +1501,15 @@ CREATE TYPE uuidtext AS
         /// </summary>
         /// <param name="sqlQuery">Запит</param>
         /// <returns></returns>
-        public int ExecuteSQL(string sqlQuery)
+        public int ExecuteSQL(string query, byte transactionID = 0)
         {
             if (DataSource != null)
             {
-                NpgsqlCommand command = DataSource.CreateCommand(sqlQuery);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 return command.ExecuteNonQuery();
             }
             else
@@ -1392,11 +1522,14 @@ CREATE TYPE uuidtext AS
         /// <param name="sqlQuery">Запит</param>
         /// <param name="paramQuery">Параметри</param>
         /// <returns></returns>
-        public int ExecuteSQL(string sqlQuery, Dictionary<string, object>? paramQuery)
+        public int ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
         {
             if (DataSource != null)
             {
-                NpgsqlCommand command = DataSource.CreateCommand(sqlQuery);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)

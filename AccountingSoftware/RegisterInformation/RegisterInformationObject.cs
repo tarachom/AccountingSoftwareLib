@@ -23,136 +23,133 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Обєкт запис регістру інформації
-	/// </summary>
-	public abstract class RegisterInformationObject
-	{
-		public RegisterInformationObject(Kernel kernel, string table, string[] fieldsArray)
-		{
-			Kernel = kernel;
-			Table = table;
-			FieldArray = fieldsArray;
+    /// <summary>
+    /// Обєкт запис регістру інформації
+    /// </summary>
+    public abstract class RegisterInformationObject
+    {
+        public RegisterInformationObject(Kernel kernel, string table, string[] fieldsArray)
+        {
+            Kernel = kernel;
+            Table = table;
+            FieldArray = fieldsArray;
 
-			FieldValue = new Dictionary<string, object>();
+            FieldValue = new Dictionary<string, object>();
 
-			foreach (string field in FieldArray)
-				FieldValue.Add(field, new object());
+            foreach (string field in FieldArray)
+                FieldValue.Add(field, new object());
 
-			UnigueID = new UnigueID();
-			Period = DateTime.Now;
-			Owner = Guid.Empty;
-		}
+            UnigueID = new UnigueID();
+            Period = DateTime.Now;
+            Owner = Guid.Empty;
+        }
 
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		private Kernel Kernel { get; set; }
+        /// <summary>
+        /// Ядро
+        /// </summary>
+        private Kernel Kernel { get; set; }
 
-		/// <summary>
-		/// Назва таблиці
-		/// </summary>
-		private string Table { get; set; }
+        /// <summary>
+        /// Назва таблиці
+        /// </summary>
+        private string Table { get; set; }
 
-		/// <summary>
-		/// Масив назв полів
-		/// </summary>
-		private string[] FieldArray { get; set; }
+        /// <summary>
+        /// Масив назв полів
+        /// </summary>
+        private string[] FieldArray { get; set; }
 
-		/// <summary>
-		/// Значення полів
-		/// </summary>
-		protected Dictionary<string, object> FieldValue { get; set; }
+        /// <summary>
+        /// Значення полів
+        /// </summary>
+        protected Dictionary<string, object> FieldValue { get; set; }
 
-		/// <summary>
-		/// Унікальний ідентифікатор запису
-		/// </summary>
-		public UnigueID UnigueID { get; private set; }
+        /// <summary>
+        /// Унікальний ідентифікатор запису
+        /// </summary>
+        public UnigueID UnigueID { get; private set; }
 
-		/// <summary>
-		/// Період
-		/// </summary>
-		public DateTime Period { get; set; }
+        /// <summary>
+        /// Період
+        /// </summary>
+        public DateTime Period { get; set; }
 
-		/// <summary>
-		/// Власник
-		/// </summary>
-		public Guid Owner { get; set; }
+        /// <summary>
+        /// Власник
+        /// </summary>
+        public Guid Owner { get; set; }
 
-		/// <summary>
-		/// Чи це новий запис?
-		/// </summary>
-		public bool IsNew { get; private set; }
+        /// <summary>
+        /// Чи це новий запис?
+        /// </summary>
+        public bool IsNew { get; private set; }
 
-		/// <summary>
-		/// Новий елемент
-		/// </summary>
-		public void New()
-		{
-			UnigueID = UnigueID.NewUnigueID();
-			IsNew = true;
-		}
+        /// <summary>
+        /// Новий елемент
+        /// </summary>
+        public void New()
+        {
+            UnigueID = UnigueID.NewUnigueID();
+            IsNew = true;
+        }
 
-		/// <summary>
-		/// Очистка вн. масивів
-		/// </summary>
-		protected void BaseClear()
-		{
-			foreach (string field in FieldArray)
-				FieldValue[field] = new object();
-		}
+        /// <summary>
+        /// Очистка вн. масивів
+        /// </summary>
+        protected void BaseClear()
+        {
+            foreach (string field in FieldArray)
+                FieldValue[field] = new object();
+        }
 
-		/// <summary>
-		/// Зчитування полів обєкту з бази даних
-		/// </summary>
-		/// <param name="uid">Унікальний ідентифікатор обєкту</param>
-		/// <returns></returns>
-		protected bool BaseRead(UnigueID uid)
-		{
-			if (uid == null || uid.UGuid == Guid.Empty)
-				return false;
+        /// <summary>
+        /// Зчитування полів обєкту з бази даних
+        /// </summary>
+        /// <param name="uid">Унікальний ідентифікатор обєкту</param>
+        /// <returns></returns>
+        protected bool BaseRead(UnigueID uid)
+        {
+            if (uid == null || uid.UGuid == Guid.Empty)
+                return false;
 
-			BaseClear();
+            BaseClear();
 
-			UnigueID = uid;
+            UnigueID = uid;
 
-			if (Kernel.DataBase.SelectRegisterInformationObject(this, Table, FieldArray, FieldValue))
-				return true;
-			else
-			{
-				UnigueID = new UnigueID();
-				return false;
-			}
-		}
+            if (Kernel.DataBase.SelectRegisterInformationObject(this, Table, FieldArray, FieldValue))
+                return true;
+            else
+            {
+                UnigueID = new UnigueID();
+                return false;
+            }
+        }
 
-		/// <summary>
-		/// Збереження даних в базу даних
-		/// </summary>
-		protected void BaseSave()
-		{
-			if (IsNew)
-			{
-				Kernel.DataBase.InsertRegisterInformationObject(this, Table, FieldArray, FieldValue);
-				IsNew = false;
-			}
-			else
-			{
-				Kernel.DataBase.UpdateRegisterInformationObject(this, Table, FieldArray, FieldValue);
-			}
+        /// <summary>
+        /// Збереження даних в базу даних
+        /// </summary>
+        protected void BaseSave()
+        {
+            if (IsNew)
+            {
+                Kernel.DataBase.InsertRegisterInformationObject(this, Table, FieldArray, FieldValue);
+                IsNew = false;
+            }
+            else
+            {
+                Kernel.DataBase.UpdateRegisterInformationObject(this, Table, FieldArray, FieldValue);
+            }
 
-			BaseClear();
-		}
+            BaseClear();
+        }
 
-		/// <summary>
-		/// Видалення з бази даних
-		/// </summary>
-		protected void BaseDelete()
-		{
-			Kernel.DataBase.BeginTransaction();
-			Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
-			Kernel.DataBase.CommitTransaction();
-
-			BaseClear();
-		}
-	}
+        /// <summary>
+        /// Видалення з бази даних
+        /// </summary>
+        protected void BaseDelete()
+        {
+            Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
+            BaseClear();
+        }
+    }
 }
