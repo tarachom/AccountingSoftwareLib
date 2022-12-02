@@ -564,6 +564,12 @@ namespace AccountingSoftware
                     else
                         continue;
 
+                    //
+                    // !!! Не ефективний код
+                    // потрібно один раз вибрати список таблиць і тоді перевіряти
+                    // а не кожен раз звертатись до сервера
+                    //
+                    
                     if (!Kernel.DataBase.IfExistsTable(tabNewName))
                     {
                         noExistInBase = true;

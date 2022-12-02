@@ -24,7 +24,7 @@ limitations under the License.
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Константа Таблична частина
+    /// Таблична частина
     /// </summary>
     public abstract class RegisterAccumulationTablePart
     {
