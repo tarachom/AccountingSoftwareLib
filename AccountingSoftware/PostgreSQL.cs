@@ -161,8 +161,6 @@ CREATE TYPE uuidtext AS
 
         #region Transaction
 
-        //private NpgsqlTransaction? Transaction { get; set; }
-
         private readonly object loсked = new Object();
         private Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
         private volatile byte TransactionCounter = 0;

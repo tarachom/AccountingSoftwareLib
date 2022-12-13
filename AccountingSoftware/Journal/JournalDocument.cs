@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		public JournalDocument()
 		{
 			TypeDocument = "";
-			UnigueID = new UnigueID(Guid.Empty);
+			UnigueID = new UnigueID();
 			DocName = "";
 			DocNomer = "";
 			DocDate = "";
