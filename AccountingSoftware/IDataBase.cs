@@ -38,6 +38,12 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region SpetialTable
+
+        void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName);
+
+        #endregion
+
         #region Transaction
 
         byte BeginTransaction();

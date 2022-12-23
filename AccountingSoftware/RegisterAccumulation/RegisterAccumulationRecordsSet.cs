@@ -147,5 +147,16 @@ namespace AccountingSoftware
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, FieldArray, fieldValue, TransactionID);
         }
+
+        /// <summary>
+        /// Запис даних в системну таблицю
+        /// </summary>
+        /// <param name="period">Період - дата запису або дата документу</param>
+        /// <param name="owner">Власник запису</param>
+        /// <param name="regAccumName">Назва регістру</param>
+        protected void BaseSpetialTableRegAccumTrigerAdd(DateTime period, Guid owner, string regAccumName)
+        {
+            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, regAccumName);
+        }
     }
 }

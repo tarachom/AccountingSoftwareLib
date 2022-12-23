@@ -154,7 +154,64 @@ CREATE TYPE uuidtext AS
 )");
                     DataSource.OpenConnection().ReloadTypes();
                 }
+
+                //
+                // Системні таблиці
+                //
+
+                /*
+                Таблиця для запису інформації про зміни в регістрах накопичення.
+                На основі цієї інформації мають розраховуватися віртуальні таблиці регістрів (Залишки, Обороти, Залишки і Обороти)
+                */
+
+                ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
+(
+    uid uuid NOT NULL,
+    datewrite time without time zone NOT NULL,
+    period time without time zone NOT NULL,
+    regname text NOT NULL,
+    document uuid NOT NULL,
+    execute boolean NOT NULL,
+    PRIMARY KEY(uid)
+)");
+
             }
+        }
+
+        #endregion
+
+        #region SpetialTable
+
+        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName)
+        {
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+            paramQuery.Add("uid", Guid.NewGuid());
+            paramQuery.Add("datewrite", DateTime.Now);
+            paramQuery.Add("period", period);
+            paramQuery.Add("regname", regAccumName);
+            paramQuery.Add("document", document);
+            paramQuery.Add("execute", false);
+
+            ExecuteSQL($@"
+INSERT INTO {SpecialTables.RegAccumTriger} 
+(
+    uid,
+    datewrite,
+    period,
+    regname,
+    document,
+    execute
+)
+VALUES
+(
+    @uid,
+    @datewrite,
+    @period,
+    @regname,
+    @document,
+    @execute
+)", paramQuery);
         }
 
         #endregion
