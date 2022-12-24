@@ -218,6 +218,30 @@ VALUES
 )", paramQuery);
         }
 
+        public void SelectSpetialTableRegAccumTriger()
+        {
+            string query = @$"
+SELECT
+    uid,
+    date_trunc('day', period::timestamp) AS period,
+    regname
+FROM {SpecialTables.RegAccumTriger}";
+
+
+        }
+
+        public void DeleteSpetialTableRegAccumTriger(Guid[] uidArray)
+        {
+            if (uidArray.Length != 0)
+            {
+                string query = @$"
+DELETE FROM {SpecialTables.RegAccumTriger}
+WHERE uid IN ('{string.Join("','", uidArray)}')";
+
+                ExecuteSQL(query);
+            }
+        }
+
         #endregion
 
         #region Transaction

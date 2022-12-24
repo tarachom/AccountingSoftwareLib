@@ -41,7 +41,8 @@ namespace AccountingSoftware
         #region SpetialTable
 
         void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info);
-
+        void DeleteSpetialTableRegAccumTriger(Guid[] uidArray);
+        
         #endregion
 
         #region Transaction
