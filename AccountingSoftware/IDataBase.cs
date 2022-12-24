@@ -40,7 +40,7 @@ namespace AccountingSoftware
 
         #region SpetialTable
 
-        void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName);
+        void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info);
 
         #endregion
 

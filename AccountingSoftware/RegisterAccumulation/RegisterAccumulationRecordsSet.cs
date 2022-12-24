@@ -138,10 +138,8 @@ namespace AccountingSoftware
         {
             List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner);
             if (recordPeriod != null)
-            {
                 foreach (DateTime record in recordPeriod)
-                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(record, owner, TypeRegAccum);
-            }
+                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(record, owner, TypeRegAccum, "clear");
 
             Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
@@ -169,7 +167,7 @@ namespace AccountingSoftware
         /// <param name="regAccumName">Назва регістру</param>
         protected void BaseSpetialTableRegAccumTrigerAdd(DateTime period, Guid owner)
         {
-            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum);
+            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add");
         }
     }
 }

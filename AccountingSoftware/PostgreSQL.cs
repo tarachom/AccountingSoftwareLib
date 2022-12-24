@@ -168,11 +168,12 @@ CREATE TYPE uuidtext AS
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
 (
     uid uuid NOT NULL,
-    datewrite time without time zone NOT NULL,
-    period time without time zone NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    period timestamp without time zone NOT NULL,
     regname text NOT NULL,
     document uuid NOT NULL,
     execute boolean NOT NULL,
+    info text,
     PRIMARY KEY(uid)
 )");
 
@@ -183,7 +184,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
 
         #region SpetialTable
 
-        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName)
+        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info)
         {
             Dictionary<string, object> paramQuery = new Dictionary<string, object>();
             paramQuery.Add("uid", Guid.NewGuid());
@@ -192,6 +193,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
             paramQuery.Add("regname", regAccumName);
             paramQuery.Add("document", document);
             paramQuery.Add("execute", false);
+            paramQuery.Add("info", info);
 
             ExecuteSQL($@"
 INSERT INTO {SpecialTables.RegAccumTriger} 
@@ -201,7 +203,8 @@ INSERT INTO {SpecialTables.RegAccumTriger}
     period,
     regname,
     document,
-    execute
+    execute,
+    info
 )
 VALUES
 (
@@ -210,7 +213,8 @@ VALUES
     @period,
     @regname,
     @document,
-    @execute
+    @execute,
+    @info
 )", paramQuery);
         }
 
