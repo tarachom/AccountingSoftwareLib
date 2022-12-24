@@ -28,10 +28,11 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class RegisterAccumulationRecordsSet
     {
-        public RegisterAccumulationRecordsSet(Kernel kernel, string table, string[] fieldsArray)
+        public RegisterAccumulationRecordsSet(Kernel kernel, string table, string typeRegAccum, string[] fieldsArray)
         {
             Kernel = kernel;
             Table = table;
+            TypeRegAccum = typeRegAccum;
             FieldArray = fieldsArray;
 
             QuerySelect = new Query(Table);
@@ -41,6 +42,11 @@ namespace AccountingSoftware
             FieldValueList = new List<Dictionary<string, object>>();
             JoinValue = new Dictionary<string, Dictionary<string, string>>();
         }
+
+        /// <summary>
+        /// Назва як задано в конфігураторі
+        /// </summary>
+        public string TypeRegAccum { get; private set; }
 
         /// <summary>
         /// Запит SELECT
@@ -130,6 +136,13 @@ namespace AccountingSoftware
         /// <param name="owner">Унікальний ідентифікатор власника</param>
         protected void BaseDelete(Guid owner)
         {
+            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner);
+            if (recordPeriod != null)
+            {
+                foreach (DateTime record in recordPeriod)
+                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(record, owner, TypeRegAccum);
+            }
+
             Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
         }
@@ -154,9 +167,9 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="regAccumName">Назва регістру</param>
-        protected void BaseSpetialTableRegAccumTrigerAdd(DateTime period, Guid owner, string regAccumName)
+        protected void BaseSpetialTableRegAccumTrigerAdd(DateTime period, Guid owner)
         {
-            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, regAccumName);
+            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum);
         }
     }
 }

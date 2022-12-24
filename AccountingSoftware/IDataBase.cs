@@ -126,6 +126,7 @@ namespace AccountingSoftware
 
         void SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
         void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner);
         void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
         void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);

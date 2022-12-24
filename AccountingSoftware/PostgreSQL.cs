@@ -1331,6 +1331,33 @@ VALUES
             }
         }
 
+        public List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner)
+        {
+            if (DataSource != null)
+            {
+                string query = $"SELECT DISTINCT period FROM {table} WHERE owner = @owner";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("owner", owner);
+
+                NpgsqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    List<DateTime> result = new List<DateTime>();
+
+                    while (reader.Read())
+                        result.Add((DateTime)reader["period"]);
+                    reader.Close();
+
+                    return result;
+                }
+                else
+                    return null;
+            }
+            else
+                return null;
+        }
+
         public void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
