@@ -218,8 +218,11 @@ VALUES
 )", paramQuery);
         }
 
-        public void SelectSpetialTableRegAccumTriger()
+        public List<Dictionary<string, object>> SelectSpetialTableRegAccumTriger()
         {
+            string[] columnsName;
+            List<Dictionary<string, object>> listRow;
+
             string query = @$"
 SELECT
     uid,
@@ -227,7 +230,9 @@ SELECT
     regname
 FROM {SpecialTables.RegAccumTriger}";
 
+            SelectRequest(query, null, out columnsName, out listRow);
 
+            return listRow;
         }
 
         public void DeleteSpetialTableRegAccumTriger(Guid[] uidArray)
