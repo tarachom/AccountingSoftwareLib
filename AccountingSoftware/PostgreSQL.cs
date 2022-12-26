@@ -167,7 +167,7 @@ CREATE TYPE uuidtext AS
                 ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
 (
-    uid uuid NOT NULL,
+    uid serial NOT NULL,
     datewrite timestamp without time zone NOT NULL,
     period timestamp without time zone NOT NULL,
     regname text NOT NULL,
@@ -177,6 +177,8 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
     PRIMARY KEY(uid)
 )");
 
+                //Очистка системної таблиці при запуску  !!!
+                ClearSpetialTableRegAccumTriger();
             }
         }
 
@@ -184,10 +186,9 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
 
         #region SpetialTable
 
-        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info)
+        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
         {
             Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("uid", Guid.NewGuid());
             paramQuery.Add("datewrite", DateTime.Now);
             paramQuery.Add("period", period);
             paramQuery.Add("regname", regAccumName);
@@ -198,7 +199,6 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
             ExecuteSQL($@"
 INSERT INTO {SpecialTables.RegAccumTriger} 
 (
-    uid,
     datewrite,
     period,
     regname,
@@ -208,31 +208,55 @@ INSERT INTO {SpecialTables.RegAccumTriger}
 )
 VALUES
 (
-    @uid,
     @datewrite,
     @period,
     @regname,
     @document,
     @execute,
     @info
-)", paramQuery);
+)", paramQuery, transactionID);
         }
 
-        public List<Dictionary<string, object>> SelectSpetialTableRegAccumTriger()
+        //!!
+        public List<Dictionary<string, object>>? SelectSpetialTableRegAccumTriger(byte transactionID = 0)
         {
-            string[] columnsName;
-            List<Dictionary<string, object>> listRow;
-
-            string query = @$"
+            if (DataSource != null)
+            {
+                string query = @$"
 SELECT
     uid,
     date_trunc('day', period::timestamp) AS period,
     regname
 FROM {SpecialTables.RegAccumTriger}";
 
-            SelectRequest(query, null, out columnsName, out listRow);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
 
-            return listRow;
+                NpgsqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    List<Dictionary<string, object>> listRow = new List<Dictionary<string, object>>();
+                    while (reader.Read())
+                    {
+                        Dictionary<string, object> objRow = new Dictionary<string, object>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                            objRow.Add(reader.GetName(i), reader[i]);
+
+                        listRow.Add(objRow);
+                    }
+                    reader.Close();
+                    return listRow;
+                }
+                else
+                {
+                    reader.Close();
+                    return null;
+                }
+            }
+            else return null;
         }
 
         public void DeleteSpetialTableRegAccumTriger(Guid[] uidArray)
@@ -245,6 +269,12 @@ WHERE uid IN ('{string.Join("','", uidArray)}')";
 
                 ExecuteSQL(query);
             }
+        }
+
+        public void ClearSpetialTableRegAccumTriger()
+        {
+            string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
+            ExecuteSQL(query);
         }
 
         #endregion
@@ -1364,13 +1394,17 @@ WHERE uid IN ('{string.Join("','", uidArray)}')";
             }
         }
 
-        public List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner)
+        public List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 string query = $"SELECT DISTINCT period FROM {table} WHERE owner = @owner";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
                 command.Parameters.AddWithValue("owner", owner);
 
                 NpgsqlDataReader reader = command.ExecuteReader();
@@ -1380,12 +1414,15 @@ WHERE uid IN ('{string.Join("','", uidArray)}')";
 
                     while (reader.Read())
                         result.Add((DateTime)reader["period"]);
+                        
                     reader.Close();
-
                     return result;
                 }
                 else
+                {
+                    reader.Close();
                     return null;
+                }
             }
             else
                 return null;

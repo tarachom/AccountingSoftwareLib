@@ -136,10 +136,10 @@ namespace AccountingSoftware
         /// <param name="owner">Унікальний ідентифікатор власника</param>
         protected void BaseDelete(Guid owner)
         {
-            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner);
+            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, TransactionID);
             if (recordPeriod != null)
-                foreach (DateTime record in recordPeriod)
-                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(record, owner, TypeRegAccum, "clear");
+                foreach (DateTime period in recordPeriod)
+                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "clear", TransactionID);
 
             Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
@@ -165,9 +165,9 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="regAccumName">Назва регістру</param>
-        protected void BaseSpetialTableRegAccumTrigerAdd(DateTime period, Guid owner)
+        protected void BaseTrigerAdd(DateTime period, Guid owner)
         {
-            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add");
+            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
         }
     }
 }
