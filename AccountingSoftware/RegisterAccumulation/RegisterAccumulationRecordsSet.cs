@@ -136,11 +136,6 @@ namespace AccountingSoftware
         /// <param name="owner">Унікальний ідентифікатор власника</param>
         protected void BaseDelete(Guid owner)
         {
-            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, TransactionID);
-            if (recordPeriod != null)
-                foreach (DateTime period in recordPeriod)
-                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "clear", TransactionID);
-
             Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
         }
@@ -168,6 +163,25 @@ namespace AccountingSoftware
         protected void BaseTrigerAdd(DateTime period, Guid owner)
         {
             Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
+        }
+
+        /// <summary>
+        /// Вибірка періоду (або періодів) для запису крім поточного якщо такий заданий.
+        /// Використовується для вибірки паріоду і запису в системну таблицю тригерів для розрахунку.
+        /// Спрацьовує коли проведений документ проводиться іншим числом і змінилась дата документу. Відповідно треба розрахувати регістри на дві дати - стару і нову.
+        /// Також спрацьовує при очищенні записів.
+        /// </summary>
+        /// <param name="owner">Власник запису</param>
+        /// <param name="periodCurrent">Поточний період запису</param>
+        protected void BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
+        {
+            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, periodCurrent, TransactionID);
+            
+            if (recordPeriod != null)
+            {
+                foreach (DateTime period in recordPeriod)
+                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "clear", TransactionID);
+            }
         }
     }
 }

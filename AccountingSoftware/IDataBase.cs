@@ -41,8 +41,8 @@ namespace AccountingSoftware
         #region SpetialTable
 
         void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        void DeleteSpetialTableRegAccumTriger(Guid[] uidArray);
-        
+        void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> executeСalculationAction);
+
         #endregion
 
         #region Transaction
@@ -127,7 +127,7 @@ namespace AccountingSoftware
 
         void SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
         void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, byte transactionID = 0);
+        List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
         void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
         void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
