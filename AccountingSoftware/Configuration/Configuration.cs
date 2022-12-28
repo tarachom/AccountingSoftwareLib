@@ -42,6 +42,7 @@ namespace AccountingSoftware
             ConstantsBlock = new Dictionary<string, ConfigurationConstantsBlock>();
             Directories = new Dictionary<string, ConfigurationDirectories>();
             Documents = new Dictionary<string, ConfigurationDocuments>();
+            Journals = new Dictionary<string, ConfigurationJournals>();
             Enums = new Dictionary<string, ConfigurationEnums>();
             RegistersInformation = new Dictionary<string, ConfigurationRegistersInformation>();
             RegistersAccumulation = new Dictionary<string, ConfigurationRegistersAccumulation>();
@@ -109,6 +110,11 @@ namespace AccountingSoftware
         /// Документи
         /// </summary>
         public Dictionary<string, ConfigurationDocuments> Documents { get; }
+
+        /// <summary>
+        /// Журнали
+        /// </summary>
+        public Dictionary<string, ConfigurationJournals> Journals { get; }
 
         /// <summary>
         /// Перелічення
