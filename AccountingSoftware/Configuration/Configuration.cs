@@ -575,7 +575,7 @@ namespace AccountingSoftware
                     // потрібно один раз вибрати список таблиць і тоді перевіряти
                     // а не кожен раз звертатись до сервера
                     //
-                    
+
                     if (!Kernel.DataBase.IfExistsTable(tabNewName))
                     {
                         noExistInBase = true;
@@ -763,6 +763,29 @@ namespace AccountingSoftware
                         confRegAccum.AllowDocumentSpend.Add(documentItem.Name);
                 }
             }
+        }
+
+        /// <summary>
+        /// Функція об'єдьнює в один масив всі поля регістру
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> CombineAllFileldForRegister(
+            Dictionary<string, ConfigurationObjectField>.ValueCollection DimensionFields,
+            Dictionary<string, ConfigurationObjectField>.ValueCollection ResourcesFields,
+            Dictionary<string, ConfigurationObjectField>.ValueCollection PropertyFields
+            )
+        {
+            Dictionary<string, ConfigurationObjectField> AllFields = new Dictionary<string, ConfigurationObjectField>();
+
+            foreach (ConfigurationObjectField item in DimensionFields)
+                AllFields.Add(item.Name, item);
+
+            foreach (ConfigurationObjectField item in ResourcesFields)
+                AllFields.Add(item.Name, item);
+
+            foreach (ConfigurationObjectField item in PropertyFields)
+                AllFields.Add(item.Name, item);
+
+            return AllFields;
         }
 
         #endregion

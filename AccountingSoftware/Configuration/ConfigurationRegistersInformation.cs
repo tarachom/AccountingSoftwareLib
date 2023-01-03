@@ -71,13 +71,13 @@ namespace AccountingSoftware
             ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
-                confRegCopy.DimensionFields.Add(fields.Key, fields.Value);
+                confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
-                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value);
+                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
-                confRegCopy.PropertyFields.Add(fields.Key, fields.Value);
+                confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
 
             return confRegCopy;
         }

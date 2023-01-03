@@ -95,13 +95,13 @@ namespace AccountingSoftware
             ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
-                confRegCopy.DimensionFields.Add(fields.Key, fields.Value);
+                confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
-                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value);
+                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
-                confRegCopy.PropertyFields.Add(fields.Key, fields.Value);
+                confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confRegCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());

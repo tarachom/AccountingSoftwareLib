@@ -59,7 +59,7 @@ namespace AccountingSoftware
 			ConfigurationObjectTablePart confObjectTablePart = new ConfigurationObjectTablePart(this.Name, this.Table, this.Desc);
 
 			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-				confObjectTablePart.Fields.Add(fields.Key, fields.Value);
+				confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());
 
 			return confObjectTablePart;
 		}

@@ -345,18 +345,16 @@ FROM {SpecialTables.RegAccumTriger}";
         {
             if (DataSource != null)
             {
-                lock (loсked)
-                {
-                    if (TransactionCounter >= byte.MaxValue)
-                        TransactionCounter = 0;
-                }
-
                 byte TransactionID = 0;
                 NpgsqlTransaction Transaction = DataSource.OpenConnection().BeginTransaction();
 
                 lock (loсked)
                 {
+                    if (TransactionCounter >= byte.MaxValue)
+                        TransactionCounter = 0;
+
                     TransactionID = ++TransactionCounter;
+                    
                     OpenTransaction.Add(TransactionID, Transaction);
                 }
 

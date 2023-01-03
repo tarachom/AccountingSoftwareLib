@@ -77,7 +77,7 @@ namespace AccountingSoftware
             ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-                confDirCopy.Fields.Add(fields.Key, fields.Value);
+                confDirCopy.Fields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());

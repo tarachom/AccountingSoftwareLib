@@ -89,7 +89,7 @@ namespace AccountingSoftware
             ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-                confDocCopy.Fields.Add(fields.Key, fields.Value);
+                confDocCopy.Fields.Add(fields.Key, fields.Value.Copy());
 
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
