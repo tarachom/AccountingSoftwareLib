@@ -768,7 +768,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Функція об'єдьнює в один масив всі поля регістру
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> CombineAllFileldForRegister(
+        public Dictionary<string, ConfigurationObjectField> CombineAllFieldForRegister(
             Dictionary<string, ConfigurationObjectField>.ValueCollection DimensionFields,
             Dictionary<string, ConfigurationObjectField>.ValueCollection ResourcesFields,
             Dictionary<string, ConfigurationObjectField>.ValueCollection PropertyFields
