@@ -20,6 +20,7 @@ limitations under the License.
 Адреса:   Україна, м. Львів
 Сайт:     accounting.org.ua
 */
+
 namespace AccountingSoftware
 {
     public class ConfigurationJournals
