@@ -1,6 +1,6 @@
 # Бібліотека
 
-<img src="https://accounting.org.ua/images/configuration.png?v=lib" /> <b>Ядро</b>  | .net 6, Linux, Windows 
+<img src="https://accounting.org.ua/images/configuration.png?v=lib" /> <b>Ядро</b>  | .net 7, Linux, Windows 
 
  <b>Класи:</b>
     
