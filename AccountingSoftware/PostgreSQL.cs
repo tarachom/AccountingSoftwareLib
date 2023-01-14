@@ -106,7 +106,7 @@ namespace AccountingSoftware
 
                 try
                 {
-                    IsExistsDatabase = resultSql = Boolean.Parse(command?.ExecuteScalar()?.ToString() ?? "false");
+                    IsExistsDatabase = resultSql = Boolean.Parse(command.ExecuteScalar()?.ToString() ?? "false");
                 }
                 catch (Exception e)
                 {
@@ -186,9 +186,6 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
     info text,
     PRIMARY KEY(uid)
 )");
-
-                //Очистка системної таблиці при запуску  !!!
-                ClearSpetialTableRegAccumTriger();
             }
         }
 
@@ -232,101 +229,45 @@ VALUES
             if (DataSource != null)
             {
                 string query = @$"
-SELECT
-    uid,
-    date_trunc('day', period::timestamp) AS period,
-    regname
-FROM {SpecialTables.RegAccumTriger}";
+WITH trigers AS
+(
+    SELECT
+        uid,
+        date_trunc('day', period::timestamp) AS period,
+        regname
+    FROM {SpecialTables.RegAccumTriger}
+),
+trigers_update AS
+(
+    UPDATE {SpecialTables.RegAccumTriger} SET execute = true
+    WHERE uid IN (SELECT uid FROM trigers)
+)
+SELECT 
+    period, regname 
+FROM trigers
+GROUP BY period, regname
+ORDER BY period
+";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = command.ExecuteReader();
 
-                List<int> uidList = new List<int>();
-                List<string> periodAndRegAccumNameList = new List<string>();
-
                 while (reader.Read())
                 {
-                    int uid = (int)reader["uid"];
                     DateTime period = (DateTime)reader["period"];
                     string regname = (string)reader["regname"];
 
-                    uidList.Add(uid);
+                    Console.WriteLine(period + " - " + regname);
 
-                    string periodRegKey = $"{period.ToString("dd.MM.yyyy")}-{regname}";
-
-                    if (!periodAndRegAccumNameList.Contains(periodRegKey))
-                    {
-                        ExecuteСalculation.Invoke(period, regname);
-                        periodAndRegAccumNameList.Add(periodRegKey);
-                    }
+                    ExecuteСalculation.Invoke(period, regname);
                 }
                 reader.Close();
 
-                if (uidList.Count > 0)
-                {
-                    query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE uid IN ({string.Join(",", uidList)})";
-                    ExecuteSQL(query);
-                }
+                query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
+                ExecuteSQL(query);
             }
         }
 
-        /*
-                //!!
-                public List<Dictionary<string, object>>? SelectSpetialTableRegAccumTriger(byte transactionID = 0)
-                {
-                    if (DataSource != null)
-                    {
-                        string query = @$"
-        SELECT
-            uid,
-            date_trunc('day', period::timestamp) AS period,
-            regname
-        FROM {SpecialTables.RegAccumTriger}";
-
-                        NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                        NpgsqlCommand command = (transaction != null) ?
-                            new NpgsqlCommand(query, transaction.Connection, transaction) :
-                            DataSource.CreateCommand(query);
-
-                        NpgsqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
-                        {
-                            List<Dictionary<string, object>> listRow = new List<Dictionary<string, object>>();
-                            while (reader.Read())
-                            {
-                                Dictionary<string, object> objRow = new Dictionary<string, object>();
-
-                                for (int i = 0; i < reader.FieldCount; i++)
-                                    objRow.Add(reader.GetName(i), reader[i]);
-
-                                listRow.Add(objRow);
-                            }
-                            reader.Close();
-                            return listRow;
-                        }
-                        else
-                        {
-                            reader.Close();
-                            return null;
-                        }
-                    }
-                    else return null;
-                }
-
-
-                public void DeleteSpetialTableRegAccumTriger(Guid[] uidArray)
-                {
-                    if (uidArray.Length != 0)
-                    {
-                        string query = @$"
-        DELETE FROM {SpecialTables.RegAccumTriger}
-        WHERE uid IN ('{string.Join("','", uidArray)}')";
-
-                        ExecuteSQL(query);
-                    }
-                }
-
-        */
         public void ClearSpetialTableRegAccumTriger()
         {
             string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
@@ -354,7 +295,7 @@ FROM {SpecialTables.RegAccumTriger}";
                         TransactionCounter = 0;
 
                     TransactionID = ++TransactionCounter;
-                    
+
                     OpenTransaction.Add(TransactionID, Transaction);
                 }
 
