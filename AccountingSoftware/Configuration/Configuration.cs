@@ -1186,18 +1186,18 @@ namespace AccountingSoftware
             XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryBlockList/QueryBlock");
             while (nodeQueryBlock!.MoveNext())
             {
-                string? name = nodeQueryBlock?.Current?.SelectSingleNode("Name")?.Value;
+                string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value;
+                bool finalCalculation = bool.Parse(nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "False");
 
                 if (name == null)
                     throw new Exception("Не задана назва регістру накопичення");
 
-                ConfigurationObjectQueryBlock QueryBlock = new ConfigurationObjectQueryBlock(name);
+                ConfigurationObjectQueryBlock QueryBlock = new ConfigurationObjectQueryBlock(name, finalCalculation);
                 queryBlockList.Add(QueryBlock.Name, QueryBlock);
 
                 XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
                 while (nodeQuery!.MoveNext())
                 {
-                    //int position = int.Parse(nodeQuery?.Current?.GetAttribute("position", "") ?? "0");
                     string key = nodeQuery?.Current?.GetAttribute("key", "") ?? "";
                     string query = nodeQuery?.Current?.Value ?? "";
 
@@ -1822,6 +1822,10 @@ namespace AccountingSoftware
                 XmlElement nodeQueryBlockName = xmlConfDocument.CreateElement("Name");
                 nodeQueryBlockName.InnerText = queryBlock.Name;
                 nodeQueryBlock.AppendChild(nodeQueryBlockName);
+
+                XmlElement nodeQueryBlockFinalCalculation = xmlConfDocument.CreateElement("FinalCalculation");
+                nodeQueryBlockFinalCalculation.InnerText = queryBlock.FinalCalculation.ToString();
+                nodeQueryBlock.AppendChild(nodeQueryBlockFinalCalculation);
 
                 int position = 0;
 

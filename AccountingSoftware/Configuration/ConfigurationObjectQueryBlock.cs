@@ -33,14 +33,20 @@ namespace AccountingSoftware
             Query = new Dictionary<string, string>();
         }
 
-        public ConfigurationObjectQueryBlock(string name) : this()
+        public ConfigurationObjectQueryBlock(string name, bool finalCalculation = false) : this()
         {
             Name = name;
+            FinalCalculation = finalCalculation;
         }
 
         public Dictionary<string, string> Query { get; }
 
         public string Name { get; set; } = "";
+
+        /// <summary>
+        /// Признак того що блок запитів призначений для фінального розрахунку
+        /// </summary>
+        public bool FinalCalculation { get; set; }
 
         public ConfigurationObjectQueryBlock Copy()
         {
