@@ -94,9 +94,9 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-            confDocCopy.TriggerFunctions = this.TriggerFunctions;
+            confDocCopy.TriggerFunctions = this.TriggerFunctions.Copy();
 
-            confDocCopy.SpendFunctions = this.SpendFunctions;
+            confDocCopy.SpendFunctions = this.SpendFunctions.Copy();
 
             return confDocCopy;
         }

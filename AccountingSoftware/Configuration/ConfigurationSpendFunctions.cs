@@ -43,5 +43,14 @@ namespace AccountingSoftware
         /// Обробка очищення проводок документу
         /// </summary>
         public string ClearSpend { get; set; }
+
+        public ConfigurationSpendFunctions Copy()
+        {
+            return new ConfigurationSpendFunctions()
+            {
+                Spend = this.Spend,
+                ClearSpend = this.ClearSpend
+            };
+        }
     }
 }

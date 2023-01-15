@@ -82,7 +82,7 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-            confDirCopy.TriggerFunctions = this.TriggerFunctions;
+            confDirCopy.TriggerFunctions = this.TriggerFunctions.Copy();
 
             return confDirCopy;
         }

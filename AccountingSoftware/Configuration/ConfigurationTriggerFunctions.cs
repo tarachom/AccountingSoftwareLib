@@ -49,5 +49,15 @@ namespace AccountingSoftware
         /// Перед видаленням
         /// </summary>
         public string BeforeDelete { get; set; }
+
+        public ConfigurationTriggerFunctions Copy()
+        {
+            return new ConfigurationTriggerFunctions()
+            {
+                BeforeSave = this.BeforeSave,
+                AfterSave = this.AfterSave,
+                BeforeDelete = this.BeforeDelete
+            };
+        }
     }
 }
