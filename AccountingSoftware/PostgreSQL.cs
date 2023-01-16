@@ -257,8 +257,6 @@ ORDER BY period
                     DateTime period = (DateTime)reader["period"];
                     string regname = (string)reader["regname"];
 
-                    Console.WriteLine(period + " - " + regname);
-
                     ExecuteСalculation.Invoke(period, regname);
                 }
                 reader.Close();
