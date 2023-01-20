@@ -275,8 +275,6 @@ ORDER BY period
                     // ExecuteFinalСalculation
                     //
 
-                    Console.WriteLine(string.Join(", ", regAccumNameList));
-
                     ExecuteFinalСalculation.Invoke(regAccumNameList);
 
                     //
