@@ -41,7 +41,7 @@ namespace AccountingSoftware
         #region SpetialTable
 
         void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> executeСalculationAction);
+        void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
 
         #endregion
 

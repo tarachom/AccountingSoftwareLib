@@ -1187,7 +1187,9 @@ namespace AccountingSoftware
             while (nodeQueryBlock!.MoveNext())
             {
                 string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value;
-                bool finalCalculation = bool.Parse(nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "False");
+
+                string finalCalculationString = nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "0";
+                bool finalCalculation = finalCalculationString == "1";
 
                 if (name == null)
                     throw new Exception("Не задана назва регістру накопичення");
@@ -1824,7 +1826,7 @@ namespace AccountingSoftware
                 nodeQueryBlock.AppendChild(nodeQueryBlockName);
 
                 XmlElement nodeQueryBlockFinalCalculation = xmlConfDocument.CreateElement("FinalCalculation");
-                nodeQueryBlockFinalCalculation.InnerText = queryBlock.FinalCalculation.ToString();
+                nodeQueryBlockFinalCalculation.InnerText = queryBlock.FinalCalculation ? "1" : "0";
                 nodeQueryBlock.AppendChild(nodeQueryBlockFinalCalculation);
 
                 int position = 0;

@@ -224,7 +224,7 @@ VALUES
 )", paramQuery, transactionID);
         }
 
-        public void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation)
+        public void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
@@ -242,8 +242,7 @@ trigers_update AS
     UPDATE {SpecialTables.RegAccumTriger} SET execute = true
     WHERE uid IN (SELECT uid FROM trigers)
 )
-SELECT 
-    period, regname 
+SELECT period, regname 
 FROM trigers
 GROUP BY period, regname
 ORDER BY period
@@ -252,17 +251,39 @@ ORDER BY period
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.HasRows)
                 {
-                    DateTime period = (DateTime)reader["period"];
-                    string regname = (string)reader["regname"];
+                    List<string> regAccumNameList = new List<string>();
 
-                    ExecuteСalculation.Invoke(period, regname);
+                    while (reader.Read())
+                    {
+                        DateTime period = (DateTime)reader["period"];
+                        string regname = (string)reader["regname"];
+
+                        //
+                        // ExecuteСalculation
+                        //
+
+                        ExecuteСalculation.Invoke(period, regname);
+
+                        if (!regAccumNameList.Contains(regname))
+                            regAccumNameList.Add(regname);
+                    }
+                    reader.Close();
+
+                    //
+                    // ExecuteFinalСalculation
+                    //
+
+                    ExecuteFinalСalculation.Invoke(regAccumNameList);
+
+                    //
+                    // Clear
+                    //
+
+                    query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
+                    ExecuteSQL(query);
                 }
-                reader.Close();
-
-                query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
-                ExecuteSQL(query);
             }
         }
 
