@@ -251,36 +251,38 @@ ORDER BY period
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows)
+                bool hasRows = reader.HasRows;
+                List<string> regAccumNameList = new List<string>();
+
+                while (reader.Read())
                 {
-                    List<string> regAccumNameList = new List<string>();
-
-                    while (reader.Read())
-                    {
-                        DateTime period = (DateTime)reader["period"];
-                        string regname = (string)reader["regname"];
-
-                        //
-                        // ExecuteСalculation
-                        //
-
-                        ExecuteСalculation.Invoke(period, regname);
-
-                        if (!regAccumNameList.Contains(regname))
-                            regAccumNameList.Add(regname);
-                    }
-                    reader.Close();
+                    DateTime period = (DateTime)reader["period"];
+                    string regname = (string)reader["regname"];
 
                     //
-                    // ExecuteFinalСalculation
+                    // ExecuteСalculation
                     //
 
+                    ExecuteСalculation.Invoke(period, regname);
+
+                    if (!regAccumNameList.Contains(regname))
+                        regAccumNameList.Add(regname);
+                }
+                reader.Close();
+
+                //
+                // ExecuteFinalСalculation
+                //
+
+                if (hasRows)
                     ExecuteFinalСalculation.Invoke(regAccumNameList);
 
-                    //
-                    // Clear
-                    //
+                //
+                // Clear
+                //
 
+                if (hasRows)
+                {
                     query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
                     ExecuteSQL(query);
                 }
