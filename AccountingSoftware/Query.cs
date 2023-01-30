@@ -180,8 +180,16 @@ namespace AccountingSoftware
                             query += " " + field.ComparisonPreceding;
                     }
 
+                    //FuncToField && FuncToField_Param1
                     if (!String.IsNullOrEmpty(field.FuncToField))
-                        query += " " + field.FuncToField + "(" + (Joins.Count > 0 ? Table + "." : "") + field.Name + ")";
+                    {
+                        query += " " + field.FuncToField + "(" + (Joins.Count > 0 ? Table + "." : "") + field.Name;
+
+                        if (!String.IsNullOrEmpty(field.FuncToField_Param1))
+                            query += ", " + field.FuncToField_Param1;
+
+                        query += ")";
+                    }
                     else
                         query += " " + (Joins.Count > 0 ? Table + "." : "") + field.Name;
 
@@ -320,7 +328,6 @@ namespace AccountingSoftware
             UsingSQLToValue = usingSQLToValue;
             ComparisonNext = comparisonNext;
             Alias = "";
-            FuncToField = "";
 
             Init();
         }
@@ -342,7 +349,6 @@ namespace AccountingSoftware
             UsingSQLToValue = usingSQLToValue;
             ComparisonNext = Comparison.Empty;
             Alias = "";
-            FuncToField = "";
 
             Init();
         }
@@ -390,7 +396,12 @@ namespace AccountingSoftware
         /// <summary>
         ///  Функція для поля
         /// </summary>
-        public string FuncToField { get; set; }
+        public string FuncToField { get; set; } = "";
+
+        /// <summary>
+        ///  Перший параметр для функції
+        /// </summary>
+        public string FuncToField_Param1 { get; set; } = "";
     }
 
     /// <summary>

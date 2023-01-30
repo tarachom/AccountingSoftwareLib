@@ -1114,6 +1114,8 @@ namespace AccountingSoftware
 
                 if (propertyFieldsNode != null)
                     LoadFields(configurationRegistersInformation.PropertyFields, propertyFieldsNode, "RegisterInformation");
+
+                LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
             }
         }
 
@@ -1238,7 +1240,7 @@ namespace AccountingSoftware
 
             SaveDocuments(Conf, Conf.Documents, xmlConfDocument, rootNode);
 
-            SaveRegistersInformation(Conf.RegistersInformation, xmlConfDocument, rootNode);
+            SaveRegistersInformation(Conf, Conf.RegistersInformation, xmlConfDocument, rootNode);
 
             SaveRegistersAccumulation(Conf.RegistersAccumulation, xmlConfDocument, rootNode);
 
@@ -1710,7 +1712,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveRegistersInformation(Dictionary<string, ConfigurationRegistersInformation> ConfRegistersInformation, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveRegistersInformation(Configuration Conf, Dictionary<string, ConfigurationRegistersInformation> ConfRegistersInformation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootRegistersInformation = xmlConfDocument.CreateElement("RegistersInformation");
             rootNode.AppendChild(rootRegistersInformation);
@@ -1746,6 +1748,16 @@ namespace AccountingSoftware
                 nodeRegister.AppendChild(nodePropertyFields);
 
                 SaveFields(ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
+
+                //TabularList
+                Dictionary<string, ConfigurationObjectField> AllFields = Conf.CombineAllFieldForRegister
+                (
+                    ConfRegisterInfo.Value.DimensionFields.Values,
+                    ConfRegisterInfo.Value.ResourcesFields.Values,
+                    ConfRegisterInfo.Value.PropertyFields.Values
+                );
+
+                SaveTabularList(Conf, AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
             }
         }
 

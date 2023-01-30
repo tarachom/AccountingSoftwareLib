@@ -36,6 +36,7 @@ namespace AccountingSoftware
             DimensionFields = new Dictionary<string, ConfigurationObjectField>();
             ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
             PropertyFields = new Dictionary<string, ConfigurationObjectField>();
+            TabularList = new Dictionary<string, ConfigurationTabularList>();
         }
 
         /// <summary>
@@ -65,6 +66,11 @@ namespace AccountingSoftware
         /// Реквізити
         /// </summary>
         public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
+
+        /// <summary>
+        /// Табличні списки
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
         public ConfigurationRegistersInformation Copy()
         {
@@ -97,6 +103,11 @@ namespace AccountingSoftware
         public void AppendPropertyField(ConfigurationObjectField field)
         {
             PropertyFields.Add(field.Name, field);
+        }
+
+        public void AppendTableList(ConfigurationTabularList tabularList)
+        {
+            TabularList.Add(tabularList.Name, tabularList);
         }
 
         #endregion
