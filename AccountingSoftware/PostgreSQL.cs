@@ -1600,7 +1600,8 @@ ORDER BY period
 
                 string query = "SELECT table_name, column_name, data_type, udt_name " +
                                "FROM information_schema.columns " +
-                               "WHERE table_schema = 'public'";
+                               "WHERE table_schema = 'public' " +
+                               "ORDER BY table_name ASC, column_name ASC";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
@@ -1619,7 +1620,7 @@ ORDER BY period
                 // Індекси
                 //
 
-                query = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public'";
+                query = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public' ORDER BY indexname";
 
                 command = DataSource.CreateCommand(query);
                 reader = command.ExecuteReader();
