@@ -97,7 +97,7 @@ namespace AccountingSoftware
                 foreach (Dictionary<string, object> fieldValue in FieldValueList)
                 {
                     Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
-                    JoinValue.Add(fieldValue["uid"].ToString() ?? "", joinFieldValue);
+                    JoinValue.Add(fieldValue["uid"].ToString()!, joinFieldValue);
 
                     foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
                         joinFieldValue.Add(fieldAndAlias.Value ?? "", fieldValue[fieldAndAlias.Value ?? ""].ToString() ?? "");
