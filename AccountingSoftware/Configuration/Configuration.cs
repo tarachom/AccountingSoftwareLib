@@ -230,6 +230,15 @@ namespace AccountingSoftware
             RegistersAccumulation.Add(registersAccumulation.Name, registersAccumulation);
         }
 
+        /// <summary>
+        /// Додати журнал в список журналів
+        /// </summary>
+        /// <param name="Journal">Журнал</param>
+        public void AppendJournal(ConfigurationJournals Journal)
+        {
+            Journals.Add(Journal.Name, Journal);
+        }
+
         #endregion
 
         #region Function

@@ -24,18 +24,22 @@ limitations under the License.
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Журнали
+    /// Поле журналу
     /// </summary>
-    public class ConfigurationJournals
+    public class ConfigurationJournalField
     {
-        public ConfigurationJournals()
+        public ConfigurationJournalField()
         {
-            Fields = new Dictionary<string, ConfigurationJournalField>();
             Name = "";
             Desc = "";
         }
 
-        public ConfigurationJournals(string name, string desc = "") : this()
+        /// <summary>
+        /// Поле журналу 
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationJournalField(string name, string desc = "")
         {
             Name = name;
             Desc = desc;
@@ -51,28 +55,9 @@ namespace AccountingSoftware
         /// </summary>
         public string Desc { get; set; }
 
-        /// <summary>
-        /// Поля
-        /// </summary>
-        public Dictionary<string, ConfigurationJournalField> Fields { get; }
-
-        public ConfigurationJournals Copy()
+        public ConfigurationJournalField Copy()
         {
-            ConfigurationJournals newJournal = new ConfigurationJournals(this.Name, this.Desc);
-
-            foreach (ConfigurationJournalField field in Fields.Values)
-                newJournal.AppendField(field.Copy());
-
-            return newJournal;
-        }
-
-        /// <summary>
-        /// Додати нове поле в список полів
-        /// </summary>
-        /// <param name="field">Нове поле</param>
-        public void AppendField(ConfigurationJournalField field)
-        {
-            Fields.Add(field.Name, field);
+            return new ConfigurationJournalField(this.Name, this.Desc);
         }
     }
 }
