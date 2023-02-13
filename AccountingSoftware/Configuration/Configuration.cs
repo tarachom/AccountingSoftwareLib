@@ -829,9 +829,11 @@ namespace AccountingSoftware
 
             LoadDirectories(Conf, xPathDocNavigator);
 
+            LoadDocuments(Conf, xPathDocNavigator);
+
             LoadEnums(Conf, xPathDocNavigator);
 
-            LoadDocuments(Conf, xPathDocNavigator);
+            LoadJournals(Conf, xPathDocNavigator);
 
             LoadRegistersInformation(Conf, xPathDocNavigator);
 
@@ -1063,6 +1065,35 @@ namespace AccountingSoftware
             }
         }
 
+        public static void LoadJournals(Configuration Conf, XPathNavigator? xPathDocNavigator)
+        {
+            //Журнали
+            XPathNodeIterator? journalsNodes = xPathDocNavigator?.Select("/Configuration/Journals/Journal");
+            while (journalsNodes!.MoveNext())
+            {
+                string? name = journalsNodes?.Current?.SelectSingleNode("Name")?.Value;
+                string desc = journalsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                if (name == null)
+                    throw new Exception("Не задана назва журналу");
+
+                ConfigurationJournals configurationJournals = new ConfigurationJournals(name, desc);
+                Conf.Journals.Add(configurationJournals.Name, configurationJournals);
+
+                XPathNodeIterator? journalFieldsNodes = journalsNodes?.Current?.Select("Fields/Field");
+                while (journalFieldsNodes!.MoveNext())
+                {
+                    string? nameField = journalFieldsNodes?.Current?.SelectSingleNode("Name")?.Value;
+                    string descField = journalFieldsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                    if (nameField == null)
+                        throw new Exception("Не задана назва поля журналу");
+
+                    configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField));
+                }
+            }
+        }
+
         private static void LoadDocuments(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Документи
@@ -1245,9 +1276,11 @@ namespace AccountingSoftware
 
             SaveDirectories(Conf, Conf.Directories, xmlConfDocument, rootNode);
 
+            SaveDocuments(Conf, Conf.Documents, xmlConfDocument, rootNode);
+
             SaveEnums(Conf.Enums, xmlConfDocument, rootNode);
 
-            SaveDocuments(Conf, Conf.Documents, xmlConfDocument, rootNode);
+            SaveJournals(Conf.Journals, xmlConfDocument, rootNode);
 
             SaveRegistersInformation(Conf, Conf.RegistersInformation, xmlConfDocument, rootNode);
 
@@ -1677,6 +1710,43 @@ namespace AccountingSoftware
                     XmlElement nodeFieldValue = xmlConfDocument.CreateElement("Value");
                     nodeFieldValue.InnerText = field.Value.Value.ToString();
                     nodeField.AppendChild(nodeFieldValue);
+
+                    XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeFieldDesc.InnerText = field.Value.Desc;
+                    nodeField.AppendChild(nodeFieldDesc);
+                }
+            }
+        }
+
+        private static void SaveJournals(Dictionary<string, ConfigurationJournals> journals, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeJournals = xmlConfDocument.CreateElement("Journals");
+            rootNode.AppendChild(nodeJournals);
+
+            foreach (KeyValuePair<string, ConfigurationJournals> journal_item in journals)
+            {
+                XmlElement nodeJournal = xmlConfDocument.CreateElement("Journal");
+                nodeJournals.AppendChild(nodeJournal);
+
+                XmlElement nodeJournalName = xmlConfDocument.CreateElement("Name");
+                nodeJournalName.InnerText = journal_item.Key;
+                nodeJournal.AppendChild(nodeJournalName);
+
+                XmlElement nodeJournalDesc = xmlConfDocument.CreateElement("Desc");
+                nodeJournalDesc.InnerText = journal_item.Value.Desc;
+                nodeJournal.AppendChild(nodeJournalDesc);
+
+                XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
+                nodeJournal.AppendChild(nodeFields);
+
+                foreach (KeyValuePair<string, ConfigurationJournalField> field in journal_item.Value.Fields)
+                {
+                    XmlElement nodeField = xmlConfDocument.CreateElement("Field");
+                    nodeFields.AppendChild(nodeField);
+
+                    XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
+                    nodeFieldName.InnerText = field.Value.Name;
+                    nodeField.AppendChild(nodeFieldName);
 
                     XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
                     nodeFieldDesc.InnerText = field.Value.Desc;
