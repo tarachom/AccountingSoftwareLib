@@ -1033,7 +1033,7 @@ namespace AccountingSoftware
             spendFunctions.ClearSpend = nodeSpendFunctions?.SelectSingleNode("ClearSpend")?.Value ?? "";
         }
 
-        public static void LoadEnums(Configuration Conf, XPathNavigator? xPathDocNavigator)
+        private static void LoadEnums(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Перелічення
             XPathNodeIterator? enumsNodes = xPathDocNavigator?.Select("/Configuration/Enums/Enum");
@@ -1065,7 +1065,7 @@ namespace AccountingSoftware
             }
         }
 
-        public static void LoadJournals(Configuration Conf, XPathNavigator? xPathDocNavigator)
+        private static void LoadJournals(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Журнали
             XPathNodeIterator? journalsNodes = xPathDocNavigator?.Select("/Configuration/Journals/Journal");
@@ -1091,6 +1091,22 @@ namespace AccountingSoftware
 
                     configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField));
                 }
+
+                LoadJournalsAllowDocument(configurationJournals.AllowDocuments, journalsNodes?.Current);
+            }
+        }
+
+        private static void LoadJournalsAllowDocument(List<string> allowDocument, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? allowDocumentNodes = xPathDocNavigator?.Select("AllowDocument/Name");
+            while (allowDocumentNodes!.MoveNext())
+            {
+                string? name = allowDocumentNodes?.Current?.Value;
+
+                if (name == null)
+                    throw new Exception("Не задана назва документу");
+
+                allowDocument.Add(name);
             }
         }
 
@@ -1752,6 +1768,21 @@ namespace AccountingSoftware
                     nodeFieldDesc.InnerText = field.Value.Desc;
                     nodeField.AppendChild(nodeFieldDesc);
                 }
+
+                SaveJournalAllowDocument(journal_item.Value.AllowDocuments, xmlConfDocument, nodeJournal);
+            }
+        }
+
+        private static void SaveJournalAllowDocument(List<string> allowDocument, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeAllowDocument = xmlConfDocument.CreateElement("AllowDocument");
+            rootNode.AppendChild(nodeAllowDocument);
+
+            foreach (string name in allowDocument)
+            {
+                XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                nodeName.InnerText = name;
+                nodeAllowDocument.AppendChild(nodeName);
             }
         }
 

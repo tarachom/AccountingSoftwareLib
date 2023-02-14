@@ -31,6 +31,7 @@ namespace AccountingSoftware
         public ConfigurationJournals()
         {
             Fields = new Dictionary<string, ConfigurationJournalField>();
+            AllowDocuments = new List<string>();
             Name = "";
             Desc = "";
         }
@@ -55,6 +56,11 @@ namespace AccountingSoftware
         /// Поля
         /// </summary>
         public Dictionary<string, ConfigurationJournalField> Fields { get; }
+
+        /// <summary>
+        /// Документи які входять в журнал
+        /// </summary>
+        public List<string> AllowDocuments { get; private set; }
 
         public ConfigurationJournals Copy()
         {
