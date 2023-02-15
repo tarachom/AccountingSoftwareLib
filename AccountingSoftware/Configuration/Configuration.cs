@@ -49,14 +49,6 @@ namespace AccountingSoftware
 
             ReservedUnigueTableName = new List<string>();
             ReservedUnigueColumnName = new Dictionary<string, List<string>>();
-
-            Name = "";
-            NameSpace = "";
-            Author = "";
-            Desc = "";
-            PathToXmlFileConfiguration = "";
-            PathToCopyXmlFileConfiguration = "";
-            PathToTempXmlFileConfiguration = "";
         }
 
         #region Поля
@@ -64,37 +56,37 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва конфігурації
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Простір імен для конфігурації
         /// </summary>
-        public string NameSpace { get; set; }
+        public string NameSpace { get; set; } = "";
 
         /// <summary>
         /// Автор конфігурації
         /// </summary>
-        public string Author { get; set; }
+        public string Author { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Шлях до хмл файлу конфігурації
         /// </summary>
-        public string PathToXmlFileConfiguration { get; set; }
+        public string PathToXmlFileConfiguration { get; set; } = "";
 
         /// <summary>
         /// Шлях до копії хмл файлу конфігурації
         /// </summary>
-        public string PathToCopyXmlFileConfiguration { get; set; }
+        public string PathToCopyXmlFileConfiguration { get; set; } = "";
 
         /// <summary>
         /// Шлях до тимчасового хмл файлу конфігурації
         /// </summary>
-        public string PathToTempXmlFileConfiguration { get; set; }
+        public string PathToTempXmlFileConfiguration { get; set; } = "";
 
         /// <summary>
         /// Блоки констант
