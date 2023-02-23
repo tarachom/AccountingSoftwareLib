@@ -260,6 +260,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
     usersuid uuid NOT NULL,
     datelogin timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
+    master bool,
     PRIMARY KEY(uid)
 )");
 
@@ -551,10 +552,58 @@ WHERE
 
         public void SpetialTableActiveUsersClearOldSessions()
         {
+            byte transactionID = BeginTransaction();
+
             ExecuteSQL($@"
-DELETE FROM {SpecialTables.ActiveUsers}
-WHERE dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '5 seconds')
+BEGIN;
+LOCK TABLE {SpecialTables.ActiveUsers} IN SHARE MODE;
+
+DELETE FROM 
+    {SpecialTables.ActiveUsers}
+WHERE 
+    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '5 seconds');
+
+WITH
+master AS
+(
+    SELECT 
+        uid
+    FROM 
+        {SpecialTables.ActiveUsers}
+    WHERE
+        master = true
+),
+master_count AS
+(
+    SELECT 
+        count(uid) AS uidcount
+    FROM 
+        {SpecialTables.ActiveUsers}
+    WHERE
+        master = true
+),
+record AS
+(
+    SELECT 
+        CASE WHEN (SELECT uidcount FROM master_count) != 0 THEN
+            (SELECT uid FROM master)
+        ELSE
+            (SELECT uid FROM {SpecialTables.ActiveUsers} LIMIT 1)
+        END
+),
+update AS
+(
+    UPDATE {SpecialTables.ActiveUsers}
+    SET master = true
+    WHERE uid = (SELECT uid FROM record)
+)
+SELECT 1;
+
+
+COMMIT;
 ");
+
+            CommitTransaction(transactionID);
         }
 
         #endregion
