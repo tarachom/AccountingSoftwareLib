@@ -41,7 +41,7 @@ namespace AccountingSoftware
             Start();
         }
 
-        public bool Open2(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        public bool Open(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
         {
             exception = new Exception();
 
@@ -56,6 +56,15 @@ namespace AccountingSoftware
             {
                 exception = e;
                 return false;
+            }
+        }
+
+        public void Close()
+        {
+            if (DataSource != null)
+            {
+                OpenTransaction.Clear();
+                DataSource.Dispose();
             }
         }
 
@@ -96,8 +105,16 @@ namespace AccountingSoftware
 
             if (DataSource != null)
             {
-                string sql = "SELECT EXISTS(" +
-                    "SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower(@databasename));";
+                string sql = @"
+SELECT EXISTS
+(
+    SELECT 
+        datname 
+    FROM 
+        pg_catalog.pg_database 
+    WHERE 
+        lower(datname) = lower(@databasename)
+)";
 
                 NpgsqlCommand command = DataSource.CreateCommand(sql);
                 command.Parameters.AddWithValue("databasename", Database);
@@ -144,12 +161,22 @@ namespace AccountingSoftware
                 // uuidtext
                 //
 
-                string query = "SELECT 'Exist' FROM pg_type WHERE typname = 'uuidtext'";
+                //Перевірка наявності композитного типу uuidtext
+                string query = @"
+SELECT 
+    'exist' 
+FROM 
+    pg_type 
+WHERE 
+    typname = 'uuidtext'";
+
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 object? result = command.ExecuteScalar();
 
-                if (!(result != null && result.ToString() == "Exist"))
+                if (!(result != null && result.ToString() == "exist"))
                 {
+                    //Створення композитного типу uuidtext
+                    //Даний тип відповідає класу UuidAndText
                     ExecuteSQL($@"
 CREATE TYPE uuidtext AS 
 (
@@ -163,7 +190,8 @@ CREATE TYPE uuidtext AS
                 // ПідключитиДодаток_UUID_OSSP
                 //
 
-                ExecuteSQL("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"");
+                ExecuteSQL(@"
+CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
 
                 //
                 // Системні таблиці
@@ -171,9 +199,15 @@ CREATE TYPE uuidtext AS
 
                 /*
                 Таблиця для запису інформації про зміни в регістрах накопичення.
-                На основі цієї інформації мають розраховуватися віртуальні таблиці регістрів
-                */
+                На основі цієї інформації розраховуються віртуальні таблиці регістрів
+                
+                @datewrite - дата запису
+                @period - дата на яку потрібно зробити розрахунки регістру
+                @regname - назва регістру
+                @document - документ який зробив запис в регістр
+                @execute - признак виконання обчислень
 
+                */
                 ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
 (
@@ -186,17 +220,71 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
     info text,
     PRIMARY KEY(uid)
 )");
+
+                /*
+                Таблиця користувачів
+
+                @name - унікальна назва користувача у нижньому регістрі
+                @fullname - назва користувача
+                @password - пароль
+                @dateadd - коли доданий в базу
+                @dateupdate - коли обновлена інформація
+
+                */
+                ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.Users} 
+(
+    uid uuid NOT NULL,
+    name text NOT NULL,
+    fullname text,
+    password text NOT NULL,
+    dateadd timestamp without time zone NOT NULL,
+    dateupdate timestamp without time zone NOT NULL,
+    info text,
+    PRIMARY KEY(uid),
+    CONSTRAINT name_unique_idx UNIQUE (name)
+)");
+
+                /*
+                Таблиця активних користувачів
+
+                @usersuid - користувач ід
+                @datelogin - дата входу в систему
+                @dateupdate - дата підтвердження активного стану
+
+                */
+                ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
+(
+    uid uuid NOT NULL,
+    usersuid uuid NOT NULL,
+    datelogin timestamp without time zone NOT NULL,
+    dateupdate timestamp without time zone NOT NULL,
+    PRIMARY KEY(uid)
+)");
+
+                /*
+                Користувач Admin
+                */
+                SpetialTableUsersAddSuperUser();
             }
         }
 
         #endregion
 
-        #region SpetialTable
+        #region SpetialTable RegAccumTriger
 
+        /// <summary>
+        /// Добавляє запис в таблицю тригерів для обчислення віртуальних залишків
+        /// </summary>
+        /// <param name="period">Дата на яку потрібно розрахувати регістри</param>
+        /// <param name="document">Документ</param>
+        /// <param name="regAccumName">Назва регістру</param>
+        /// <param name="info">Додаткова інфа</param>
+        /// <param name="transactionID">Ід транзакції</param>
         public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
         {
             Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("datewrite", DateTime.Now);
             paramQuery.Add("period", period);
             paramQuery.Add("regname", regAccumName);
             paramQuery.Add("document", document);
@@ -215,19 +303,30 @@ INSERT INTO {SpecialTables.RegAccumTriger}
 )
 VALUES
 (
-    @datewrite,
+    CURRENT_TIMESTAMP,
     @period,
     @regname,
     @document,
     @execute,
     @info
 )", paramQuery, transactionID);
+
         }
 
+        /// <summary>
+        /// Запуск виконання обчислень віртуальних залишків
+        /// </summary>
+        /// <param name="ExecuteСalculation">Процедура обчислень</param>
+        /// <param name="ExecuteFinalСalculation">Фінальна процедура обчислень</param>
         public void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
+                /*
+                1. Вибираються всі завдання для обчислень
+                2. Помічаються признаком execute = true
+                3. Завдання групуються по періоду і регістру
+                */
                 string query = @$"
 WITH trigers AS
 (
@@ -283,12 +382,16 @@ ORDER BY period
 
                 if (hasRows)
                 {
+                    /* Очищення виконаних завдань */
                     query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
                     ExecuteSQL(query);
                 }
             }
         }
 
+        /// <summary>
+        /// Очищення завдань. Пока не використовується.
+        /// </summary>
         public void ClearSpetialTableRegAccumTriger()
         {
             string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
@@ -297,11 +400,169 @@ ORDER BY period
 
         #endregion
 
-        #region Transaction
+        #region SpetialTable Users
 
-        private readonly object loсked = new Object();
-        private Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
-        private volatile byte TransactionCounter = 0;
+        void SpetialTableUsersAddSuperUser()
+        {
+            ExecuteSQL($@"
+INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password) 
+VALUES 
+(
+    uuid_generate_v4(),
+    'admin',
+    'Admin',
+    CURRENT_TIMESTAMP::timestamp,
+    CURRENT_TIMESTAMP::timestamp,
+    '' /* password */
+)
+ON CONFLICT (name) DO NOTHING;
+");
+
+        }
+
+        public void SpetialTableUsersAddOrUpdate(string user, string password)
+        {
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+            paramQuery.Add("name", user.Trim().ToLower());
+            paramQuery.Add("fullname", user);
+            paramQuery.Add("password", password);
+
+            ExecuteSQL($@"
+INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password) 
+VALUES 
+(
+    uuid_generate_v4(),
+    @name,
+    @fullname,
+    CURRENT_TIMESTAMP::timestamp,
+    CURRENT_TIMESTAMP::timestamp,
+    @password
+)
+ON CONFLICT (name) 
+DO UPDATE SET 
+    password = @password,
+    fullname = @fullname,
+    dateupdate = CURRENT_TIMESTAMP::timestamp
+", paramQuery);
+
+        }
+
+        public Dictionary<string, string> SpetialTableUsersAllSelect()
+        {
+            Dictionary<string, string> users = new Dictionary<string, string>();
+
+            if (DataSource != null)
+            {
+                string query = $"SELECT name, fullname FROM {SpecialTables.Users}";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                    users.Add((string)reader["name"], (string)reader["fullname"]);
+
+                reader.Close();
+            }
+
+            return users;
+        }
+
+        public string SpetialTableUsersGetName(Guid user_uid)
+        {
+            if (DataSource != null)
+            {
+                string query = $"SELECT fullname FROM {SpecialTables.Users} WHERE uid = @uid";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("uid", user_uid);
+
+                object? resultat = command.ExecuteScalar();
+                return (resultat != null) ? (string)resultat : "";
+            }
+            else
+                return "";
+        }
+
+        public (Guid, Guid)? SpetialTableUsersLogIn(string user, string password)
+        {
+            if (DataSource != null)
+            {
+                string query = $"SELECT uid FROM {SpecialTables.Users} WHERE name = @name AND password = @password";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("name", user);
+                command.Parameters.AddWithValue("password", password);
+
+                object? uid = command.ExecuteScalar();
+
+                if (uid != null)
+                {
+                    Guid user_uid = (Guid)uid;
+                    Guid session_uid = SpetialTableActiveUsersAddSession(user_uid);
+
+                    return (user_uid, session_uid);
+                }
+                else
+                    return null;
+            }
+            else
+                return null;
+        }
+
+        #endregion
+
+        #region SpetialTable ActiveUsers
+
+        public Guid SpetialTableActiveUsersAddSession(Guid user_uid)
+        {
+            Guid session_uid = Guid.NewGuid();
+
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+            paramQuery.Add("user", user_uid);
+            paramQuery.Add("session", session_uid);
+
+            ExecuteSQL($@"
+INSERT INTO {SpecialTables.ActiveUsers} (uid, usersuid, datelogin, dateupdate) 
+VALUES 
+(
+    @session,
+    @user,
+    CURRENT_TIMESTAMP::timestamp,
+    CURRENT_TIMESTAMP::timestamp
+)
+", paramQuery);
+
+            return session_uid;
+        }
+
+        public void SpetialTableActiveUsersUpdateSession(Guid session_uid)
+        {
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+            paramQuery.Add("session", session_uid);
+
+            ExecuteSQL($@"
+UPDATE {SpecialTables.ActiveUsers} SET
+    dateupdate = CURRENT_TIMESTAMP::timestamp
+WHERE
+    uid = @session
+", paramQuery);
+
+        }
+
+        public void SpetialTableActiveUsersClearOldSessions()
+        {
+            ExecuteSQL($@"
+DELETE FROM {SpecialTables.ActiveUsers}
+WHERE dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '5 seconds')
+");
+        }
+
+        #endregion
+
+        #region Transaction
+        readonly object loсked = new Object();
+        Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
+        volatile byte TransactionCounter = 0;
 
         public byte BeginTransaction()
         {

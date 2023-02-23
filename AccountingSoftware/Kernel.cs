@@ -23,132 +23,173 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Ядро
-	/// </summary>
-	public class Kernel
-	{
-		public Kernel()
-		{
-			Conf = new Configuration();
-			DataBase = new PostgreSQL();
+    /// <summary>
+    /// Ядро
+    /// </summary>
+    public class Kernel
+    {
+        public Kernel()
+        {
+            Conf = new Configuration();
+            DataBase = new PostgreSQL();
 
-			DataBase_Server = "";
-			DataBase_UserId = "";
-			DataBase_Port = "";
-			DataBase_BaseName = "";
-		}
+            DataBase_Server = "";
+            DataBase_UserId = "";
+            DataBase_Port = "";
+            DataBase_BaseName = "";
 
-		/// <summary>
-		/// Перевірити підключення до сервера
-		/// </summary>
-		/// <param name="Server">Адреса сервера баз даних</param>
-		/// <param name="UserId">Користувач</param>
-		/// <param name="Password">Пароль</param>
-		/// <param name="Port">Порт</param>
-		/// <param name="Database">База даних</param>
-		/// <param name="exception">Помилка</param>
-		/// <returns></returns>
-		public bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
-		{
-			DataBase = new PostgreSQL();
-			return DataBase.TryConnectToServer(Server, UserId, Password, Port, Database, out exception);
-		}
+            User = Session = Guid.Empty;
+        }
 
-		/// <summary>
-		/// Створити базу даних
-		/// </summary>
-		/// <param name="Server">Адреса сервера баз даних</param>
-		/// <param name="UserId">Користувач</param>
-		/// <param name="Password">Пароль</param>
-		/// <param name="Port">Порт</param>
-		/// <param name="Database">База даних</param>
-		/// <param name="exception">Помилка</param>
-		/// <param name="IsExistsDatabase">Чи вже є?</param>
-		/// <returns>True якщо все ок</returns>
-		public bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase)
-		{
-			DataBase = new PostgreSQL();
-			return DataBase.CreateDatabaseIfNotExist(Server, UserId, Password, Port, Database, out exception, out IsExistsDatabase);
-		}
+        /// <summary>
+        /// Перевірити підключення до сервера
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <param name="exception">Помилка</param>
+        /// <returns></returns>
+        public bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        {
+            DataBase = new PostgreSQL();
+            return DataBase.TryConnectToServer(Server, UserId, Password, Port, Database, out exception);
+        }
 
-		/// <summary>
-		/// Підключення до сервера баз даних і завантаження конфігурації
-		/// </summary>
-		/// <param name="PathToXmlFileConfiguration">Шлях до файлу конфігурації</param>
-		/// <param name="Server">Адреса сервера баз даних</param>
-		/// <param name="UserId">Користувач</param>
-		/// <param name="Password">Пароль</param>
-		/// <param name="Port">Порт</param>
-		/// <param name="Database">База даних</param>
-		/// <param name="exception">Помилка</param>
-		/// <returns>True якщо підключення відбулось нормально</returns>
-		public bool Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database, out Exception exception)
-		{
-			DataBase = new PostgreSQL();
-			bool flagConnect = DataBase.Open2(Server, UserId, Password, Port, Database, out exception);
+        /// <summary>
+        /// Створити базу даних
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <param name="exception">Помилка</param>
+        /// <param name="IsExistsDatabase">Чи вже є?</param>
+        /// <returns>True якщо все ок</returns>
+        public bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase)
+        {
+            DataBase = new PostgreSQL();
+            return DataBase.CreateDatabaseIfNotExist(Server, UserId, Password, Port, Database, out exception, out IsExistsDatabase);
+        }
 
-			DataBase_Server = Server;
-			DataBase_UserId = UserId;
-			DataBase_Port = Port.ToString();
-			DataBase_BaseName = Database;
+        /// <summary>
+        /// Підключення до сервера баз даних і завантаження конфігурації
+        /// </summary>
+        /// <param name="PathToXmlFileConfiguration">Шлях до файлу конфігурації</param>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <param name="exception">Помилка</param>
+        /// <returns>True якщо підключення відбулось нормально</returns>
+        public bool Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        {
+            DataBase = new PostgreSQL();
+            bool flagConnect = DataBase.Open(Server, UserId, Password, Port, Database, out exception);
 
-			try
-			{
-				Configuration conf;
-				Configuration.Load(PathToXmlFileConfiguration, out conf);
-				Conf = conf;
-			}
-			catch
-			{
-				return false;
-			}
+            DataBase_Server = Server;
+            DataBase_UserId = UserId;
+            DataBase_Port = Port.ToString();
+            DataBase_BaseName = Database;
 
-			Conf.PathToXmlFileConfiguration = PathToXmlFileConfiguration;
+            try
+            {
+                Configuration conf;
+                Configuration.Load(PathToXmlFileConfiguration, out conf);
+                Conf = conf;
+            }
+            catch
+            {
+                return false;
+            }
 
-			return flagConnect;
-		}
+            Conf.PathToXmlFileConfiguration = PathToXmlFileConfiguration;
 
-		/// <summary>
-		/// Підключення до сервера баз даних без конфігурації
-		/// </summary>
-		/// <param name="Server">Адреса сервера баз даних</param>
-		/// <param name="UserId">Користувач</param>
-		/// <param name="Password">Пароль</param>
-		/// <param name="Port">Порт</param>
-		/// <param name="Database">База даних</param>
-		/// <param name="exception"Помилка></param>
-		/// <returns>True якщо підключення відбулось нормально</returns>
-		public bool OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
-		{
-			DataBase = new PostgreSQL();
-			bool flagConnect = DataBase.Open2(Server, UserId, Password, Port, Database, out exception);
+            return flagConnect;
+        }
 
-			DataBase_Server = Server;
-			DataBase_UserId = UserId;
-			DataBase_Port = Port.ToString();
-			DataBase_BaseName = Database;
+        /// <summary>
+        /// Підключення до сервера баз даних без конфігурації
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <param name="exception"Помилка></param>
+        /// <returns>True якщо підключення відбулось нормально</returns>
+        public bool OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        {
+            DataBase = new PostgreSQL();
+            bool flagConnect = DataBase.Open(Server, UserId, Password, Port, Database, out exception);
 
-			return flagConnect;
-		}
+            DataBase_Server = Server;
+            DataBase_UserId = UserId;
+            DataBase_Port = Port.ToString();
+            DataBase_BaseName = Database;
 
-		/// <summary>
-		/// Конфігурація
-		/// </summary>
-		public Configuration Conf { get; set; }
+            return flagConnect;
+        }
 
-		/// <summary>
-		/// Інтерфейс для роботи з базою даних
-		/// </summary>
-		public IDataBase DataBase { get; set; }
+        /// <summary>
+        /// Закриття
+        /// </summary>
+        public void Close()
+        {
+            DataBase.Close();
+            Conf = new Configuration();
+            User = Session = Guid.Empty;
+        }
 
-		#region DataBase Info
+        /// <summary>
+        /// Конфігурація
+        /// </summary>
+        public Configuration Conf { get; set; }
 
-		public string DataBase_Server { get; private set; }
-		public string DataBase_UserId { get; private set; }
-		public string DataBase_Port { get; private set; }
-		public string DataBase_BaseName { get; private set; }
+        /// <summary>
+        /// Інтерфейс для роботи з базою даних
+        /// </summary>
+        public IDataBase DataBase { get; set; }
 
-		#endregion
-	}
+        /// <summary>
+        /// Авторизований користувач
+        /// </summary>
+        public Guid User { get; private set; }
+
+        /// <summary>
+        /// Сесія користувача
+        /// </summary>
+        public Guid Session { get; private set; }
+
+        public bool UserLogIn(string user, string password)
+        {
+            (Guid, Guid)? userSession = DataBase.SpetialTableUsersLogIn(user, password);
+
+            if (userSession != null)
+            {
+                User = userSession.Value.Item1;
+                Session = userSession.Value.Item2;
+
+                return true;
+            }
+            else
+            {
+                User = Session = Guid.Empty;
+
+                return false;
+            }
+        }
+
+        #region DataBase Info
+
+        public string DataBase_Server { get; private set; }
+        public string DataBase_UserId { get; private set; }
+        public string DataBase_Port { get; private set; }
+        public string DataBase_BaseName { get; private set; }
+
+        #endregion
+    }
 }

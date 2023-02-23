@@ -31,17 +31,34 @@ namespace AccountingSoftware
         #region Open
 
         void Open(string connectionString);
-
-        bool Open2(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
+        bool Open(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
         bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
         bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase);
+        void Close();
 
         #endregion
 
-        #region SpetialTable
+        #region SpetialTable RegAccumTriger
 
         void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
         void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
+
+        #endregion
+
+        #region SpetialTable Users
+
+        void SpetialTableUsersAddOrUpdate(string user, string password); //!!!
+        Dictionary<string, string> SpetialTableUsersAllSelect();
+        string SpetialTableUsersGetName(Guid user_uid);
+        (Guid, Guid)? SpetialTableUsersLogIn(string user, string password);
+
+        #endregion
+
+        #region SpetialTable ActiveUsers
+
+        Guid SpetialTableActiveUsersAddSession(Guid user_uid);
+        void SpetialTableActiveUsersUpdateSession(Guid session_uid);
+        void SpetialTableActiveUsersClearOldSessions();
 
         #endregion
 
