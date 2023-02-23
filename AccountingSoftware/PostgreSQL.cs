@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
     usersuid uuid NOT NULL,
     datelogin timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
-    master bool,
+    master boolean NOT NULL DEFAULT FALSE,
     PRIMARY KEY(uid)
 )");
 
@@ -317,12 +317,21 @@ VALUES
         /// <summary>
         /// Запуск виконання обчислень віртуальних залишків
         /// </summary>
+        /// <param name="session">Сесія з якої викликана дана процедура</param>
         /// <param name="ExecuteСalculation">Процедура обчислень</param>
         /// <param name="ExecuteFinalСalculation">Фінальна процедура обчислень</param>
-        public void SpetialTableRegAccumTrigerExecute(Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
+        public void SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
+                /*
+                Перевірка чи дана сесія є головною в розрахунках
+                */
+                if (!SpetialTableActiveUsersIsMaster(session))
+                    return;
+
+                Console.WriteLine($"master session={session}");
+
                 /*
                 1. Вибираються всі завдання для обчислень
                 2. Помічаються признаком execute = true
@@ -552,16 +561,29 @@ WHERE
 
         public void SpetialTableActiveUsersClearOldSessions()
         {
-            byte transactionID = BeginTransaction();
+            try
+            {
+                /*
+                
+                Стратегія:
 
-            ExecuteSQL($@"
+                1. Очищення устарівших сесій
+                2. Пошук головної сесії з признаком master = true
+                3. Якщо є головна сесія вона дальше залишається головною, 
+                   інаше головною сесією стає перша в списку
+
+                Тільки головна сесія виконує фонові обчислення віртуальних залишків
+
+                */
+
+                ExecuteSQL($@"
 BEGIN;
-LOCK TABLE {SpecialTables.ActiveUsers} IN SHARE MODE;
+LOCK TABLE {SpecialTables.ActiveUsers};
 
 DELETE FROM 
     {SpecialTables.ActiveUsers}
 WHERE 
-    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '5 seconds');
+    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '60 seconds');
 
 WITH
 master AS
@@ -571,6 +593,7 @@ master AS
     FROM 
         {SpecialTables.ActiveUsers}
     WHERE
+        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds') AND
         master = true
 ),
 master_count AS
@@ -580,30 +603,48 @@ master_count AS
     FROM 
         {SpecialTables.ActiveUsers}
     WHERE
+        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds') AND
         master = true
 ),
 record AS
 (
     SELECT 
         CASE WHEN (SELECT uidcount FROM master_count) != 0 THEN
-            (SELECT uid FROM master)
+            (SELECT uid FROM master LIMIT 1)
         ELSE
             (SELECT uid FROM {SpecialTables.ActiveUsers} LIMIT 1)
         END
 ),
 update AS
 (
-    UPDATE {SpecialTables.ActiveUsers}
-    SET master = true
+    UPDATE {SpecialTables.ActiveUsers} SET master = true
     WHERE uid = (SELECT uid FROM record)
 )
 SELECT 1;
 
-
 COMMIT;
 ");
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.AppendAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "error.txt"), ex.Message);
+            }
+        }
 
-            CommitTransaction(transactionID);
+        bool SpetialTableActiveUsersIsMaster(Guid session_uid)
+        {
+            if (DataSource != null)
+            {
+                string query = $"SELECT master FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("session", session_uid);
+
+                object? master = command.ExecuteScalar();
+                return (master != null) ? (bool)master : false;
+            }
+            else
+                return false;
         }
 
         #endregion
