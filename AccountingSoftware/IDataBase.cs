@@ -51,6 +51,7 @@ namespace AccountingSoftware
         Dictionary<string, string> SpetialTableUsersAllSelect();
         string SpetialTableUsersGetName(Guid user_uid);
         (Guid, Guid)? SpetialTableUsersLogIn(string user, string password);
+        List<Dictionary<string, object>> SpetialTableActiveUsersAllSelect();
 
         #endregion
 

@@ -252,6 +252,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
                 @datelogin - дата входу в систему
                 @dateupdate - дата підтвердження активного стану
 
+                ExecuteSQL($"DROP TABLE {SpecialTables.ActiveUsers}");
                 */
                 ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
@@ -329,8 +330,6 @@ VALUES
                 */
                 if (!SpetialTableActiveUsersIsMaster(session))
                     return;
-
-                Console.WriteLine($"master session={session}");
 
                 /*
                 1. Вибираються всі завдання для обчислень
@@ -645,6 +644,29 @@ COMMIT;
             }
             else
                 return false;
+        }
+
+        public List<Dictionary<string, object>> SpetialTableActiveUsersAllSelect()
+        {
+            string query = $@"
+SELECT 
+    {SpecialTables.ActiveUsers}.uid,
+    {SpecialTables.ActiveUsers}.usersuid,
+    {SpecialTables.Users}.fullname AS username,
+    {SpecialTables.ActiveUsers}.datelogin,
+    {SpecialTables.ActiveUsers}.dateupdate
+FROM 
+    {SpecialTables.ActiveUsers}
+    JOIN {SpecialTables.Users} ON {SpecialTables.Users}.uid =
+        {SpecialTables.ActiveUsers}.usersuid
+";
+
+            string[] columnsName;
+            List<Dictionary<string, object>> listRow;
+
+            SelectRequest(query, null, out columnsName, out listRow);
+
+            return listRow;
         }
 
         #endregion
