@@ -575,6 +575,9 @@ WHERE
 
                 */
 
+                int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
+                int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
+
                 ExecuteSQL($@"
 BEGIN;
 LOCK TABLE {SpecialTables.ActiveUsers};
@@ -582,9 +585,14 @@ LOCK TABLE {SpecialTables.ActiveUsers};
 DELETE FROM 
     {SpecialTables.ActiveUsers}
 WHERE 
-    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '60 seconds');
+    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} seconds');
 
 WITH
+clear AS
+(
+    UPDATE {SpecialTables.ActiveUsers} SET master = false
+    WHERE dateupdate <= (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds')
+),
 master AS
 (
     SELECT 
@@ -592,7 +600,7 @@ master AS
     FROM 
         {SpecialTables.ActiveUsers}
     WHERE
-        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds') AND
+        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
         master = true
 ),
 master_count AS
@@ -602,7 +610,7 @@ master_count AS
     FROM 
         {SpecialTables.ActiveUsers}
     WHERE
-        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds') AND
+        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
         master = true
 ),
 record AS
@@ -611,7 +619,11 @@ record AS
         CASE WHEN (SELECT uidcount FROM master_count) != 0 THEN
             (SELECT uid FROM master LIMIT 1)
         ELSE
-            (SELECT uid FROM {SpecialTables.ActiveUsers} LIMIT 1)
+            (
+                SELECT uid FROM {SpecialTables.ActiveUsers} 
+                WHERE dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds')
+                LIMIT 1
+            )
         END
 ),
 update AS
@@ -654,11 +666,16 @@ SELECT
     {SpecialTables.ActiveUsers}.usersuid,
     {SpecialTables.Users}.fullname AS username,
     {SpecialTables.ActiveUsers}.datelogin,
-    {SpecialTables.ActiveUsers}.dateupdate
+    {SpecialTables.ActiveUsers}.dateupdate, 
+    {SpecialTables.ActiveUsers}.master
 FROM 
     {SpecialTables.ActiveUsers}
     JOIN {SpecialTables.Users} ON {SpecialTables.Users}.uid =
         {SpecialTables.ActiveUsers}.usersuid
+/*WHERE
+    {SpecialTables.ActiveUsers}.dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds')*/
+ORDER BY
+    {SpecialTables.ActiveUsers}.dateupdate DESC
 ";
 
             string[] columnsName;
