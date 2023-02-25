@@ -230,6 +230,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @dateadd - коли доданий в базу
                 @dateupdate - коли обновлена інформація
 
+                ExecuteSQL($"DROP TABLE {SpecialTables.Users}");
                 */
                 ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.Users} 
@@ -240,7 +241,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
     password text NOT NULL,
     dateadd timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
-    info text,
+    info text NOT NULL DEFAULT '',
     PRIMARY KEY(uid),
     CONSTRAINT name_unique_idx UNIQUE (name)
 )");
@@ -456,7 +457,7 @@ DO UPDATE SET
 
         }
 
-        public Dictionary<string, string> SpetialTableUsersAllSelect()
+        public Dictionary<string, string> SpetialTableUsersShortSelect()
         {
             Dictionary<string, string> users = new Dictionary<string, string>();
 
@@ -476,7 +477,31 @@ DO UPDATE SET
             return users;
         }
 
-        public string SpetialTableUsersGetName(Guid user_uid)
+        public List<Dictionary<string, object>> SpetialTableUsersExtendetList()
+        {
+            string query = $@"
+SELECT 
+    uid,
+    name,
+    fullname,
+    dateadd,
+    dateupdate,
+    info
+FROM 
+    {SpecialTables.Users}
+ORDER BY
+    name DESC
+";
+
+            string[] columnsName;
+            List<Dictionary<string, object>> listRow;
+
+            SelectRequest(query, null, out columnsName, out listRow);
+
+            return listRow;
+        }
+
+        public string SpetialTableUsersGetFullName(Guid user_uid)
         {
             if (DataSource != null)
             {
@@ -522,7 +547,7 @@ DO UPDATE SET
 
         #region SpetialTable ActiveUsers
 
-        public Guid SpetialTableActiveUsersAddSession(Guid user_uid)
+        Guid SpetialTableActiveUsersAddSession(Guid user_uid)
         {
             Guid session_uid = Guid.NewGuid();
 
@@ -544,39 +569,75 @@ VALUES
             return session_uid;
         }
 
-        public void SpetialTableActiveUsersUpdateSession(Guid session_uid)
+        bool SpetialTableActiveUsersIsMaster(Guid session_uid)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("session", session_uid);
+            if (DataSource != null)
+            {
+                string query = $"SELECT master FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
 
-            ExecuteSQL($@"
-UPDATE {SpecialTables.ActiveUsers} SET
-    dateupdate = CURRENT_TIMESTAMP::timestamp
-WHERE
-    uid = @session
-", paramQuery);
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("session", session_uid);
 
+                object? master = command.ExecuteScalar();
+                return (master != null) ? (bool)master : false;
+            }
+            else
+                return false;
         }
 
-        public void SpetialTableActiveUsersClearOldSessions()
+        bool SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
         {
+            if (DataSource != null)
+            {
+                string query = $@"
+WITH
+count_session AS (
+    SELECT count(uid) AS count FROM {SpecialTables.ActiveUsers} WHERE uid = @session
+),
+update_session AS (
+    UPDATE {SpecialTables.ActiveUsers} 
+        SET dateupdate = CURRENT_TIMESTAMP::timestamp 
+    WHERE uid = @session
+)
+SELECT count FROM count_session
+";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("session", session_uid);
+
+                object? count_session = command.ExecuteScalar();
+
+                if (count_session != null && (long)count_session == 1)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+
+        public bool SpetialTableActiveUsersUpdateSession(Guid session_uid)
+        {
+            int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
+            int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
+
+            //Обновлення сесії
+            bool session_update = SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
+
             try
             {
                 /*
-                
-                Стратегія:
 
+                Стратегія:
+                
                 1. Очищення устарівших сесій
                 2. Пошук головної сесії з признаком master = true
                 3. Якщо є головна сесія вона дальше залишається головною, 
-                   інаше головною сесією стає перша в списку
+                інаше головною сесією стає перша в списку
 
                 Тільки головна сесія виконує фонові обчислення віртуальних залишків
 
                 */
-
-                int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
-                int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
 
                 ExecuteSQL($@"
 BEGIN;
@@ -640,25 +701,11 @@ COMMIT;
             {
                 System.IO.File.AppendAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "error.txt"), ex.Message);
             }
+
+            return session_update;
         }
 
-        bool SpetialTableActiveUsersIsMaster(Guid session_uid)
-        {
-            if (DataSource != null)
-            {
-                string query = $"SELECT master FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("session", session_uid);
-
-                object? master = command.ExecuteScalar();
-                return (master != null) ? (bool)master : false;
-            }
-            else
-                return false;
-        }
-
-        public List<Dictionary<string, object>> SpetialTableActiveUsersAllSelect()
+        public List<Dictionary<string, object>> SpetialTableActiveUsersSelect()
         {
             string query = $@"
 SELECT 
@@ -672,8 +719,6 @@ FROM
     {SpecialTables.ActiveUsers}
     JOIN {SpecialTables.Users} ON {SpecialTables.Users}.uid =
         {SpecialTables.ActiveUsers}.usersuid
-/*WHERE
-    {SpecialTables.ActiveUsers}.dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '10 seconds')*/
 ORDER BY
     {SpecialTables.ActiveUsers}.dateupdate DESC
 ";

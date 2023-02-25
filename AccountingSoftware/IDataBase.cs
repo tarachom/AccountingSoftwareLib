@@ -48,18 +48,18 @@ namespace AccountingSoftware
         #region SpetialTable Users
 
         void SpetialTableUsersAddOrUpdate(string user, string password); //!!!
-        Dictionary<string, string> SpetialTableUsersAllSelect();
-        string SpetialTableUsersGetName(Guid user_uid);
+
+        Dictionary<string, string> SpetialTableUsersShortSelect();
+        List<Dictionary<string, object>> SpetialTableUsersExtendetList();
+        string SpetialTableUsersGetFullName(Guid user_uid);
         (Guid, Guid)? SpetialTableUsersLogIn(string user, string password);
-        List<Dictionary<string, object>> SpetialTableActiveUsersAllSelect();
 
         #endregion
 
         #region SpetialTable ActiveUsers
 
-        Guid SpetialTableActiveUsersAddSession(Guid user_uid);
-        void SpetialTableActiveUsersUpdateSession(Guid session_uid);
-        void SpetialTableActiveUsersClearOldSessions();
+        bool SpetialTableActiveUsersUpdateSession(Guid session_uid);
+        List<Dictionary<string, object>> SpetialTableActiveUsersSelect();
 
         #endregion
 
