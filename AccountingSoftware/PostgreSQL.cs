@@ -494,7 +494,7 @@ WHERE
 
             if (DataSource != null)
             {
-                string query = $"SELECT name, fullname FROM {SpecialTables.Users}";
+                string query = $"SELECT name, fullname FROM {SpecialTables.Users} ORDER BY name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = command.ExecuteReader();
@@ -521,7 +521,7 @@ SELECT
 FROM 
     {SpecialTables.Users}
 ORDER BY
-    name DESC
+    name
 ";
 
             string[] columnsName;
