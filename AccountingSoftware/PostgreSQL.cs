@@ -430,31 +430,62 @@ ON CONFLICT (name) DO NOTHING;
 
         }
 
-        public void SpetialTableUsersAddOrUpdate(string user, string password)
+        public Guid? SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
         {
             Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("name", user.Trim().ToLower());
-            paramQuery.Add("fullname", user);
-            paramQuery.Add("password", password);
 
-            ExecuteSQL($@"
-INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password) 
+            paramQuery.Add("name", name.Trim().ToLower());
+            paramQuery.Add("fullname", fullname);
+            paramQuery.Add("password", password);
+            paramQuery.Add("info", info);
+
+            if (isNew)
+            {
+                Guid user_uid = Guid.NewGuid();
+                paramQuery.Add("uid", user_uid);
+
+                ExecuteSQL($@"
+INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, info) 
 VALUES 
 (
-    uuid_generate_v4(),
+    @uid,
     @name,
     @fullname,
     CURRENT_TIMESTAMP::timestamp,
     CURRENT_TIMESTAMP::timestamp,
-    @password
+    @password,
+    @info
 )
 ON CONFLICT (name) 
 DO UPDATE SET 
     password = @password,
     fullname = @fullname,
-    dateupdate = CURRENT_TIMESTAMP::timestamp
+    dateupdate = CURRENT_TIMESTAMP::timestamp,
+    info = @info
 ", paramQuery);
 
+                return user_uid;
+            }
+            else
+            {
+                if (uid != null)
+                {
+                    paramQuery.Add("uid", uid);
+
+                    ExecuteSQL($@"
+UPDATE {SpecialTables.Users} SET
+    name = @name,
+    fullname = @fullname,
+    password = @password,
+    dateupdate = CURRENT_TIMESTAMP::timestamp,
+    info = @info
+WHERE
+    uid = @uid
+", paramQuery);
+                }
+
+                return uid;
+            }
         }
 
         public Dictionary<string, string> SpetialTableUsersShortSelect()
@@ -501,6 +532,65 @@ ORDER BY
             return listRow;
         }
 
+        public Dictionary<string, object>? SpetialTableUsersExtendetUser(Guid user_uid)
+        {
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+            paramQuery.Add("user_uid", user_uid);
+
+            string query = $@"
+SELECT 
+    name,
+    fullname,
+ /* dateadd,
+    dateupdate, */
+    info
+FROM 
+    {SpecialTables.Users}
+WHERE
+    uid = @user_uid
+ORDER BY
+    name DESC
+";
+
+            string[] columnsName;
+            List<Dictionary<string, object>> listRow;
+
+            SelectRequest(query, paramQuery, out columnsName, out listRow);
+
+            if (listRow.Count == 1)
+                return listRow[0];
+            else
+                return null;
+        }
+
+        public bool SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
+        {
+            if (DataSource != null)
+            {
+                string query = $"SELECT count(uid) AS count FROM {SpecialTables.Users} WHERE name = @name " +
+                    (uid.HasValue ? " AND uid = @uid" : "") +
+                    (not_uid.HasValue ? " AND uid != @uid" : "");
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("name", name);
+
+                if (uid.HasValue)
+                    command.Parameters.AddWithValue("uid", uid.Value);
+
+                if (not_uid.HasValue)
+                    command.Parameters.AddWithValue("uid", not_uid.Value);
+
+                object? count_user = command.ExecuteScalar();
+
+                if (count_user != null && (long)count_user == 1)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+
         public string SpetialTableUsersGetFullName(Guid user_uid)
         {
             if (DataSource != null)
@@ -515,6 +605,28 @@ ORDER BY
             }
             else
                 return "";
+        }
+
+        public bool SpetialTableUsersDelete(Guid user_uid, string name)
+        {
+            if (DataSource != null)
+            {
+                if (SpetialTableUsersIsExistUser(name, user_uid))
+                {
+                    string query = $"DELETE FROM {SpecialTables.Users} WHERE uid = @uid";
+
+                    NpgsqlCommand command = DataSource.CreateCommand(query);
+                    command.Parameters.AddWithValue("uid", user_uid);
+
+                    command.ExecuteNonQuery();
+
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return false;
         }
 
         public (Guid, Guid)? SpetialTableUsersLogIn(string user, string password)
