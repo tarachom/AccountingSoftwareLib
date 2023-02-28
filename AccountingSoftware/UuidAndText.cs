@@ -25,52 +25,57 @@ using NpgsqlTypes;
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Композитний тип даних
-	/// </summary>
-	public class UuidAndText
-	{
-		public UuidAndText()
-		{
-			Text = "";
-		}
+    /// <summary>
+    /// Композитний тип даних
+    /// </summary>
+    public class UuidAndText
+    {
+        public UuidAndText()
+        {
+            Text = "";
+        }
 
-		public UuidAndText(Guid uuid)
-		{
-			Uuid = uuid;
-			Text = "";
-		}
+        public UuidAndText(Guid uuid)
+        {
+            Uuid = uuid;
+            Text = "";
+        }
 
-		public UuidAndText(Guid uuid, string text)
-		{
-			Uuid = uuid;
-			Text = text;
-		}
+        public UuidAndText(Guid uuid, string text)
+        {
+            Uuid = uuid;
+            Text = text;
+        }
 
-		/// <summary>
-		/// Вказівник
-		/// </summary>
-		[PgName("uuid")]
-		public Guid Uuid { get; set; }
+        /// <summary>
+        /// Вказівник
+        /// </summary>
+        [PgName("uuid")]
+        public Guid Uuid { get; set; } = Guid.Empty;
 
-		/// <summary>
-		/// Додаткова інформація
-		/// </summary>
-		[PgName("text")]
-		public string Text { get; set; }
+        /// <summary>
+        /// Додаткова інформація
+        /// </summary>
+        [PgName("text")]
+        public string Text { get; set; } = "";
 
-		/// <summary>
-		/// Дані у XML форматі
-		/// </summary>
-		/// <returns></returns>
-		public string ToXml()
-		{
-			return $"<uuid>{Uuid}</uuid><text>{Text}</text>";
-		}
+        /// <summary>
+        /// Дані у XML форматі
+        /// </summary>
+        /// <returns></returns>
+        public string ToXml()
+        {
+            return $"<uuid>{Uuid}</uuid><text>{Text}</text>";
+        }
 
-		public override string ToString()
-		{
-			return $"('{Uuid}', '{Text}')";
-		}
-	}
+        public bool IsEmpty()
+        {
+            return Uuid == Guid.Empty;
+        }
+
+        public override string ToString()
+        {
+            return $"('{Uuid}', '{Text}')";
+        }
+    }
 }
