@@ -32,6 +32,7 @@ namespace AccountingSoftware
         {
             Fields = new Dictionary<string, ConfigurationJournalField>();
             AllowDocuments = new List<string>();
+            TabularList = new Dictionary<string, ConfigurationTabularList>();
             Name = "";
             Desc = "";
         }
@@ -62,6 +63,11 @@ namespace AccountingSoftware
         /// </summary>
         public List<string> AllowDocuments { get; private set; }
 
+        /// <summary>
+        /// Табличні списки
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
+
         public ConfigurationJournals Copy()
         {
             ConfigurationJournals newJournal = new ConfigurationJournals(this.Name, this.Desc);
@@ -79,6 +85,11 @@ namespace AccountingSoftware
         public void AppendField(ConfigurationJournalField field)
         {
             Fields.Add(field.Name, field);
+        }
+
+        public void AppendTableList(ConfigurationTabularList tabularList)
+        {
+            TabularList.Add(tabularList.Name, tabularList);
         }
     }
 }

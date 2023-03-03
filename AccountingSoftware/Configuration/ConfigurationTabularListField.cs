@@ -32,6 +32,7 @@ namespace AccountingSoftware
         {
             Name = "";
             Caption = "";
+            DocField = "";
         }
 
         public ConfigurationTabularListField(string name) : this()
@@ -48,6 +49,12 @@ namespace AccountingSoftware
             SortField = sortField;
         }
 
+        public ConfigurationTabularListField(string name, string docfield) : this()
+        {
+            Name = name;
+            DocField = docfield;
+        }
+
         public string Name { get; set; }
 
         public string Caption { get; set; }
@@ -57,5 +64,12 @@ namespace AccountingSoftware
         public int SortNum { get; set; }
 
         public bool SortField { get; set; }
+        
+
+        #region ForJournals
+
+        public string DocField { get; set; }
+
+        #endregion
     }
 }

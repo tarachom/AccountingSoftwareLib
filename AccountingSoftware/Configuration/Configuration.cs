@@ -994,6 +994,35 @@ namespace AccountingSoftware
             }
         }
 
+        private static void LoadJournalTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
+            while (tabularListsNodes!.MoveNext())
+            {
+                string? name = tabularListsNodes?.Current?.SelectSingleNode("Name")?.Value;
+                string desc = tabularListsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                if (name == null)
+                    throw new Exception("Не задана назва табличного списку");
+
+                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                tabularLists.Add(ConfTabularList.Name, ConfTabularList);
+
+                XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
+                while (tabularListFieldNodes!.MoveNext())
+                {
+                    string? nameField = tabularListFieldNodes?.Current?.SelectSingleNode("Name")?.Value;
+                    string docField = tabularListFieldNodes?.Current?.SelectSingleNode("DocField")?.Value ?? "";
+
+                    if (nameField == null)
+                        throw new Exception("Не задана назва поля табличного списку");
+
+                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, docField);
+                    ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                }
+            }
+        }
+
         private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
@@ -1077,14 +1106,22 @@ namespace AccountingSoftware
                 {
                     string? nameField = journalFieldsNodes?.Current?.SelectSingleNode("Name")?.Value;
                     string descField = journalFieldsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string sortType = journalFieldsNodes?.Current?.SelectSingleNode("Type")?.Value ?? "";
+                    string sortField = journalFieldsNodes?.Current?.SelectSingleNode("SortField")?.Value ?? "";
+                    string sortWherePeriod = journalFieldsNodes?.Current?.SelectSingleNode("WherePeriod")?.Value ?? "";
 
                     if (nameField == null)
                         throw new Exception("Не задана назва поля журналу");
 
-                    configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField));
+                    bool isSort = sortField == "1" ? true : false;
+                    bool isWherePeriod = sortWherePeriod == "1" ? true : false;
+
+                    configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField, sortType, isSort, isWherePeriod));
                 }
 
                 LoadJournalsAllowDocument(configurationJournals.AllowDocuments, journalsNodes?.Current);
+
+                LoadJournalTabularList(configurationJournals.TabularList, journalsNodes?.Current);
             }
         }
 
@@ -1288,7 +1325,7 @@ namespace AccountingSoftware
 
             SaveEnums(Conf.Enums, xmlConfDocument, rootNode);
 
-            SaveJournals(Conf.Journals, xmlConfDocument, rootNode);
+            SaveJournals(Conf, Conf.Journals, xmlConfDocument, rootNode);
 
             SaveRegistersInformation(Conf, Conf.RegistersInformation, xmlConfDocument, rootNode);
 
@@ -1483,8 +1520,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveTabularList(
-            Configuration Conf, Dictionary<string, ConfigurationObjectField> fields,
+        private static void SaveTabularList(Configuration Conf, Dictionary<string, ConfigurationObjectField> fields,
             Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularLists = xmlConfDocument.CreateElement("TabularLists");
@@ -1636,6 +1672,167 @@ namespace AccountingSoftware
             }
         }
 
+        private static void SaveJournalTabularList(Configuration Conf, Dictionary<string, ConfigurationJournalField> fields,
+            Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeTabularLists = xmlConfDocument.CreateElement("TabularLists");
+            rootNode.AppendChild(nodeTabularLists);
+
+            foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in tabularLists)
+            {
+                int counterJoin = 0;
+                ConfigurationDocuments Doc = Conf.Documents[tabularList.Key];
+
+                XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
+                nodeTabularLists.AppendChild(nodeTabularList);
+
+                XmlElement nodeTabularListName = xmlConfDocument.CreateElement("Name");
+                nodeTabularListName.InnerText = tabularList.Key;
+                nodeTabularList.AppendChild(nodeTabularListName);
+
+                XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
+                nodeTabularListDesc.InnerText = tabularList.Value.Desc;
+                nodeTabularList.AppendChild(nodeTabularListDesc);
+
+                XmlElement nodeTabularListTable = xmlConfDocument.CreateElement("Table");
+                nodeTabularListTable.InnerText = Doc.Table;
+                nodeTabularList.AppendChild(nodeTabularListTable);
+
+                XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
+                nodeTabularList.AppendChild(nodeTabularListFields);
+
+                foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
+                {
+                    if (fields.ContainsKey(field.Key))
+                    {
+                        string docField = field.Value.DocField;
+
+                        XmlElement nodeTabularListField = xmlConfDocument.CreateElement("Field");
+                        nodeTabularListFields.AppendChild(nodeTabularListField);
+
+                        XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                        nodeName.InnerText = field.Key;
+                        nodeTabularListField.AppendChild(nodeName);
+
+                        XmlElement nodeDocField = xmlConfDocument.CreateElement("DocField");
+                        nodeDocField.InnerText = docField;
+                        nodeTabularListField.AppendChild(nodeDocField);
+
+                        XmlElement nodeSqlType = xmlConfDocument.CreateElement("SqlType");
+                        nodeSqlType.InnerText = fields[field.Key].Type;
+                        nodeTabularListField.AppendChild(nodeSqlType);
+
+                        XmlElement nodeWherePeriod = xmlConfDocument.CreateElement("WherePeriod");
+                        nodeWherePeriod.InnerText = fields[field.Key].WherePeriod ? "1" : "0";
+                        nodeTabularListField.AppendChild(nodeWherePeriod);
+
+                        //
+                        // ObjField Info
+                        //
+
+                        //Поле документу
+                        if (!String.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
+                        {
+                            ConfigurationObjectField objField = Doc.Fields[docField];
+
+                            XmlElement nodeType = xmlConfDocument.CreateElement("Type");
+                            nodeType.InnerText = objField.Type;
+                            nodeTabularListField.AppendChild(nodeType);
+
+                            XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
+                            nodePointer.InnerText = objField.Pointer;
+                            nodeTabularListField.AppendChild(nodePointer);
+
+                            if (objField.Type == "pointer")
+                            {
+                                string[] typeConf = objField.Pointer.Split(".");
+                                if (typeConf.Length == 2)
+                                {
+                                    string groupTypeConf = typeConf[0];
+                                    string nameTypeConf = typeConf[1];
+
+                                    if (groupTypeConf == "Довідники")
+                                    {
+                                        if (Conf.Directories.ContainsKey(nameTypeConf))
+                                        {
+                                            Dictionary<string, ConfigurationObjectField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                                            if (directoryPointerFields.Count != 0)
+                                            {
+                                                XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                                nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                                                nodeTabularListField.AppendChild(nodeJoinTable);
+
+                                                bool isExistPresentation = false;
+
+                                                foreach (ConfigurationObjectField itemDirectoryPointerFields in directoryPointerFields.Values)
+                                                {
+                                                    if (itemDirectoryPointerFields.IsPresentation)
+                                                    {
+                                                        XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                        nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                                                        nodeTabularListField.AppendChild(nodeFieldAndAlias);
+
+                                                        isExistPresentation = true;
+                                                        break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                                    }
+                                                }
+
+                                                if (isExistPresentation == false)
+                                                {
+                                                    ConfigurationObjectField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+
+                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if (groupTypeConf == "Документи")
+                                    {
+                                        if (Conf.Documents.ContainsKey(nameTypeConf))
+                                        {
+                                            Dictionary<string, ConfigurationObjectField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                                            if (documentPointerFields.Count != 0)
+                                            {
+                                                XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                                nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                                                nodeTabularListField.AppendChild(nodeJoinTable);
+
+                                                bool isExistPresentation = false;
+
+                                                foreach (ConfigurationObjectField itemDocumentPointerFields in documentPointerFields.Values)
+                                                {
+                                                    if (itemDocumentPointerFields.IsPresentation)
+                                                    {
+                                                        XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                        nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                                                        nodeTabularListField.AppendChild(nodeFieldAndAlias);
+
+                                                        isExistPresentation = true;
+                                                        break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                                    }
+                                                }
+
+                                                if (isExistPresentation == false)
+                                                {
+                                                    ConfigurationObjectField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+
+                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private static void SaveAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeAllowRegisterAccumulation = xmlConfDocument.CreateElement("AllowRegisterAccumulation");
@@ -1726,28 +1923,28 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveJournals(Dictionary<string, ConfigurationJournals> journals, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveJournals(Configuration Conf, Dictionary<string, ConfigurationJournals> journals, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeJournals = xmlConfDocument.CreateElement("Journals");
             rootNode.AppendChild(nodeJournals);
 
-            foreach (KeyValuePair<string, ConfigurationJournals> journal_item in journals)
+            foreach (KeyValuePair<string, ConfigurationJournals> journal in journals)
             {
                 XmlElement nodeJournal = xmlConfDocument.CreateElement("Journal");
                 nodeJournals.AppendChild(nodeJournal);
 
                 XmlElement nodeJournalName = xmlConfDocument.CreateElement("Name");
-                nodeJournalName.InnerText = journal_item.Key;
+                nodeJournalName.InnerText = journal.Key;
                 nodeJournal.AppendChild(nodeJournalName);
 
                 XmlElement nodeJournalDesc = xmlConfDocument.CreateElement("Desc");
-                nodeJournalDesc.InnerText = journal_item.Value.Desc;
+                nodeJournalDesc.InnerText = journal.Value.Desc;
                 nodeJournal.AppendChild(nodeJournalDesc);
 
                 XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
                 nodeJournal.AppendChild(nodeFields);
 
-                foreach (KeyValuePair<string, ConfigurationJournalField> field in journal_item.Value.Fields)
+                foreach (KeyValuePair<string, ConfigurationJournalField> field in journal.Value.Fields)
                 {
                     XmlElement nodeField = xmlConfDocument.CreateElement("Field");
                     nodeFields.AppendChild(nodeField);
@@ -1759,9 +1956,23 @@ namespace AccountingSoftware
                     XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
                     nodeFieldDesc.InnerText = field.Value.Desc;
                     nodeField.AppendChild(nodeFieldDesc);
+
+                    XmlElement nodeFieldType = xmlConfDocument.CreateElement("Type");
+                    nodeFieldType.InnerText = field.Value.Type;
+                    nodeField.AppendChild(nodeFieldType);
+
+                    XmlElement nodeFieldSort = xmlConfDocument.CreateElement("SortField");
+                    nodeFieldSort.InnerText = field.Value.SortField ? "1" : "0";
+                    nodeField.AppendChild(nodeFieldSort);
+
+                    XmlElement nodeFieldWherePeriod = xmlConfDocument.CreateElement("WherePeriod");
+                    nodeFieldWherePeriod.InnerText = field.Value.WherePeriod ? "1" : "0";
+                    nodeField.AppendChild(nodeFieldWherePeriod);
                 }
 
-                SaveJournalAllowDocument(journal_item.Value.AllowDocuments, xmlConfDocument, nodeJournal);
+                SaveJournalAllowDocument(journal.Value.AllowDocuments, xmlConfDocument, nodeJournal);
+
+                SaveJournalTabularList(Conf, journal.Value.Fields, journal.Value.TabularList, xmlConfDocument, nodeJournal);
             }
         }
 

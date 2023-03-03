@@ -32,6 +32,7 @@ namespace AccountingSoftware
         {
             Name = "";
             Desc = "";
+            Type = "";
         }
 
         /// <summary>
@@ -39,10 +40,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationJournalField(string name, string desc = "")
+        /// <param name="desc">Значення за замовчуванням</param>
+        public ConfigurationJournalField(string name, string desc = "", string type = "", bool sort = false, bool where_period = false)
         {
             Name = name;
             Desc = desc;
+            Type = type;
+            SortField = sort;
+            WherePeriod = where_period;
         }
 
         /// <summary>
@@ -54,6 +59,21 @@ namespace AccountingSoftware
         /// Опис
         /// </summary>
         public string Desc { get; set; }
+
+        /// <summary>
+        /// Тип поля
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Сортувати по полю
+        /// </summary>
+        public bool SortField { get; set; }
+
+        /// <summary>
+        /// Відбір по періоду
+        /// </summary>
+        public bool WherePeriod { get; set; }
 
         public ConfigurationJournalField Copy()
         {
