@@ -68,7 +68,6 @@ namespace AccountingSoftware
 
 			fieldTypes.Add(new FieldType("string", "[ string ] - Текст"));
 			fieldTypes.Add(new FieldType("integer", "[ integer ] - Ціле число")); //От -2 147 483 648 до 2 147 483 647
-			//fieldTypes.Add(new FieldType("long",            "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
 			fieldTypes.Add(new FieldType("numeric", "[ numeric ] - Число з комою")); //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
 			fieldTypes.Add(new FieldType("boolean", "[ boolean ] - Логічне значення"));
 			fieldTypes.Add(new FieldType("date", "[ date ] - Дата"));
@@ -76,15 +75,15 @@ namespace AccountingSoftware
 			fieldTypes.Add(new FieldType("time", "[ time ] - Час"));
 			fieldTypes.Add(new FieldType("enum", "[ enum ] - Перелічення"));
 			fieldTypes.Add(new FieldType("pointer", "[ pointer ] - Вказівник на елемент конфігурації"));
-			fieldTypes.Add(new FieldType("any_pointer", "[ any_pointer ] - Вказівник на різні елементи конфігурації"));
-			fieldTypes.Add(new FieldType("empty_pointer", "[ empty_pointer ] - Пустий вказівник"));
-			fieldTypes.Add(new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник + текст"));
+			fieldTypes.Add(new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник на різні елементи конфігурації"));
+			fieldTypes.Add(new FieldType("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор"));
             fieldTypes.Add(new FieldType("bytea", "[ byte ] - Бінарні дані"));
-            //fieldTypes.Add(new FieldType("uuid[]",        "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));
             fieldTypes.Add(new FieldType("string[]", "[ Текст1, Текст2, ... ] - [ string[] ] - Масив текстових даних"));
 			fieldTypes.Add(new FieldType("integer[]", "[ Число1, Число2, ... ] - [ integer[] ] - Масив цілих чисел"));
 			fieldTypes.Add(new FieldType("numeric[]", "[ Число1.0, Число2.0, ... ] - [ numeric[] ] - Масив чисел з комою"));
-            
+
+            //fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
+            //fieldTypes.Add(new FieldType("uuid[]", "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));
 
             //character [ (n) ] - char [ (n) ] - fixed-length character string
             //character varying [ (n) ] - varchar [ (n) ] - variable-length character string
