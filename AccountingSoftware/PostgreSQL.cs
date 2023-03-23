@@ -817,6 +817,20 @@ COMMIT;
             return session_update;
         }
 
+        public void SpetialTableActiveUsersCloseSession(Guid session_uid)
+        {
+            if (DataSource != null)
+            {
+                string query = $@"
+DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("session", session_uid);
+
+                command.ExecuteNonQuery();
+            }
+        }
+
         public List<Dictionary<string, object>> SpetialTableActiveUsersSelect()
         {
             string query = $@"

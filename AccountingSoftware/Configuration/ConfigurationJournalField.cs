@@ -61,7 +61,7 @@ namespace AccountingSoftware
         public string Desc { get; set; }
 
         /// <summary>
-        /// Тип поля
+        /// SQL тип поля
         /// </summary>
         public string Type { get; set; }
 
@@ -74,6 +74,8 @@ namespace AccountingSoftware
         /// Відбір по періоду
         /// </summary>
         public bool WherePeriod { get; set; }
+
+        
 
         public ConfigurationJournalField Copy()
         {

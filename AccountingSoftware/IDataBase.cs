@@ -61,6 +61,7 @@ namespace AccountingSoftware
         #region SpetialTable ActiveUsers
 
         bool SpetialTableActiveUsersUpdateSession(Guid session_uid);
+        void SpetialTableActiveUsersCloseSession(Guid session_uid);
         List<Dictionary<string, object>> SpetialTableActiveUsersSelect();
 
         #endregion
