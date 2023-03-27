@@ -206,6 +206,7 @@ CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
                 @regname - назва регістру
                 @document - документ який зробив запис в регістр
                 @execute - признак виконання обчислень
+                @info - додаткова інформація
 
                 */
                 ExecuteSQL($@"
@@ -229,6 +230,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @password - пароль
                 @dateadd - коли доданий в базу
                 @dateupdate - коли обновлена інформація
+                @info - додаткова інформація
 
                 ExecuteSQL($"DROP TABLE {SpecialTables.Users}");
                 */
@@ -252,6 +254,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
                 @usersuid - користувач ід
                 @datelogin - дата входу в систему
                 @dateupdate - дата підтвердження активного стану
+                @master - головний. Він виконує обчислення
 
                 ExecuteSQL($"DROP TABLE {SpecialTables.ActiveUsers}");
                 */
@@ -270,6 +273,43 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
                 Користувач Admin
                 */
                 SpetialTableUsersAddSuperUser();
+
+                /*
+                Таблиця для повнотекстового пошуку
+
+                @uidobj - ід обєкту конфігурації
+                @obj - обєкт конфігурації
+                @value - текстове значення полів для яких використовується повнотекстовий пошук
+                @vector - вектор на основі @value
+                @groupname - група пріоритету (A, B, C)
+                @dateadd - дата додавання
+                @dateupdate - дата останнього обновлення
+                @processed - запис опрацьований
+
+                */
+
+                ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.FullTextSearch} 
+(
+    uidobj uuid NOT NULL,
+    obj uuidtext NOT NULL,
+    value text NOT NULL DEFAULT '',
+    vector tsvector,
+    groupname ""char"" NOT NULL DEFAULT '',
+    dateadd timestamp without time zone NOT NULL,
+    dateupdate timestamp without time zone NOT NULL,
+    processed boolean NOT NULL DEFAULT FALSE,
+    PRIMARY KEY(uidobj)
+)");
+
+                ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {SpecialTables.FullTextSearch} USING gin(vector)");
+
+                ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
+
+                ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_processed_idx ON {SpecialTables.FullTextSearch}(processed)");
             }
         }
 
@@ -855,6 +895,124 @@ ORDER BY
             SelectRequest(query, null, out columnsName, out listRow);
 
             return listRow;
+        }
+
+        #endregion
+
+        #region SpetialTable FullTextSearch
+
+        public void SpetialTableFullTextSearchAddValue(UuidAndText obj, string value)
+        {
+            if (DataSource != null)
+            {
+                if (obj.IsEmpty() || String.IsNullOrEmpty(obj.Text) || obj.Text.IndexOf(".") == -1)
+                    return;
+
+                string[] pointer_and_type = obj.Text.Split(".", StringSplitOptions.None);
+                string groupname = "";
+
+                switch (pointer_and_type[0])
+                {
+                    case "Довідники":
+                        {
+                            groupname = "A";
+                            break;
+                        }
+                    case "Документи":
+                        {
+                            groupname = "B";
+                            break;
+                        }
+                }
+
+                string query = $@"
+INSERT INTO {SpecialTables.FullTextSearch} (uidobj, obj, value, vector, groupname, dateadd, dateupdate) 
+VALUES 
+(
+    @uidobj,
+    @obj,
+    @value,
+    to_tsvector('russian', @value),
+    @groupname,
+    CURRENT_TIMESTAMP::timestamp,
+    CURRENT_TIMESTAMP::timestamp
+)
+ON CONFLICT (uidobj) DO UPDATE SET 
+    value = @value,
+    vector = to_tsvector('russian', @value),
+    dateupdate = CURRENT_TIMESTAMP::timestamp,
+    processed = false
+";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("uidobj", obj.Uuid);
+                command.Parameters.AddWithValue("obj", obj);
+                command.Parameters.AddWithValue("value", value);
+                command.Parameters.AddWithValue("groupname", groupname);
+
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $@"
+DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("uid", uid.UGuid);
+
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext)
+        {
+            if (DataSource != null)
+            {
+                string query = $@"
+WITH find_rows AS (
+    SELECT 
+        uidobj,
+        obj,
+        groupname,
+        ts_rank(vector, plainto_tsquery('russian', @findtext)) AS rank,
+        value
+    FROM 
+        {SpecialTables.FullTextSearch}
+    WHERE
+        vector @@ plainto_tsquery('russian', @findtext)
+    ORDER BY
+        groupname ASC, 
+        rank DESC
+    LIMIT 50
+)
+SELECT
+    uidobj,
+    obj,
+    rank,
+    ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value
+FROM 
+    find_rows
+";
+                Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+                paramQuery.Add("findtext", findtext);
+
+                string[] columnsName;
+                List<Dictionary<string, object>> listRow;
+
+                SelectRequest(query, paramQuery, out columnsName, out listRow);
+
+                return listRow;
+            }
+            else
+                return null;
         }
 
         #endregion

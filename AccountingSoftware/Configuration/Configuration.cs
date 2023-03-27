@@ -930,13 +930,16 @@ namespace AccountingSoftware
                 string isIndexString = fieldNodes?.Current?.SelectSingleNode("IsIndex")?.Value ?? "";
                 bool isIndex = isIndexString == "1";
 
+                string isFullTextSearchString = fieldNodes?.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "";
+                bool isFullTextSearch = isFullTextSearchString == "1";
+
                 string pointer = "";
                 if (type == "pointer" || type == "enum")
                 {
                     pointer = fieldNodes?.Current?.SelectSingleNode("Pointer")?.Value ?? "";
                 }
 
-                ConfigurationObjectField ConfObjectField = new ConfigurationObjectField(name, nameInTable, type, pointer, desc, isPresentation, isIndex);
+                ConfigurationObjectField ConfObjectField = new ConfigurationObjectField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
 
                 fields.Add(name, ConfObjectField);
             }
@@ -1491,6 +1494,10 @@ namespace AccountingSoftware
                 XmlElement nodeFieldIsIndex = xmlConfDocument.CreateElement("IsIndex");
                 nodeFieldIsIndex.InnerText = field.Value.IsIndex ? "1" : "0";
                 nodeField.AppendChild(nodeFieldIsIndex);
+
+                XmlElement nodeFieldIsFullTextSearch = xmlConfDocument.CreateElement("IsFullTextSearch");
+                nodeFieldIsFullTextSearch.InnerText = field.Value.IsFullTextSearch ? "1" : "0";
+                nodeField.AppendChild(nodeFieldIsFullTextSearch);
             }
         }
 

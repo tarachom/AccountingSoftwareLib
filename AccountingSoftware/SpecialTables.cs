@@ -30,5 +30,7 @@ namespace AccountingSoftware
         public static readonly string Users = "tab_special_users";
 
         public static readonly string ActiveUsers = "tab_special_active_users";
+
+        public static readonly string FullTextSearch = "tab_special_full_text_search";
     }
 }

@@ -66,6 +66,14 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region SpetialTable FullTextSearch
+
+        void SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
+        void SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
+        List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext);
+
+        #endregion
+
         #region Transaction
 
         byte BeginTransaction();

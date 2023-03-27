@@ -133,6 +133,17 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Запис даних полів в таблицю для повнотекстового пошуку
+        /// </summary>
+        /// <param name="obj">Обєкт</param>
+        /// <param name="values">Масив значень полів</param>
+        protected void BaseWriteFullTextSearch(UuidAndText obj, string[] values)
+        {
+            if (values.Length != 0)
+                Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
+        }
+
+        /// <summary>
         /// Видалення з бази даних
         /// </summary>
         protected void BaseDelete(string[] tablePartsTables)
@@ -145,6 +156,9 @@ namespace AccountingSoftware
             //Видалення даних з табличних частин
             foreach (string tablePartsTable in tablePartsTables)
                 Kernel.DataBase.DeleteDirectoryTablePartRecords(UnigueID, tablePartsTable, TransactionID);
+
+            //Видалення з повнотекстового пошуку
+            Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             Kernel.DataBase.CommitTransaction(TransactionID);
 

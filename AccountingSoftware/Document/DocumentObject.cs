@@ -162,6 +162,17 @@ namespace AccountingSoftware
             BaseClear();
         }
 
+        /// <summary>
+        /// Запис даних полів в таблицю для повнотекстового пошуку
+        /// </summary>
+        /// <param name="obj">Обєкт</param>
+        /// <param name="values">Масив значень полів</param>
+        protected void BaseWriteFullTextSearch(UuidAndText obj, string[] values)
+        {
+            if (values.Length != 0)
+                Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
+        }
+
         protected void BaseSpend(bool spend, DateTime spend_date)
         {
             Spend = spend;
@@ -189,6 +200,9 @@ namespace AccountingSoftware
             foreach (string tablePartsTable in tablePartsTables)
                 Kernel.DataBase.DeleteDocumentTablePartRecords(UnigueID, tablePartsTable, TransactionID);
 
+            //Видалення з повнотекстового пошуку
+            Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
+            
             Kernel.DataBase.CommitTransaction(TransactionID);
 
             BaseClear();

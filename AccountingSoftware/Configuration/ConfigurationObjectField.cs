@@ -46,7 +46,8 @@ namespace AccountingSoftware
         /// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
         /// <param name="pointer">Вказівник</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationObjectField(string name, string nameInTable, string type, string pointer, string desc = "", bool isPresentation = false, bool isIndex = false)
+        public ConfigurationObjectField(string name, string nameInTable, string type, string pointer,
+            string desc = "", bool isPresentation = false, bool isIndex = false, bool isFullTextSearch = false)
         {
             Name = name;
             NameInTable = nameInTable;
@@ -55,6 +56,7 @@ namespace AccountingSoftware
             Desc = desc;
             IsPresentation = isPresentation;
             IsIndex = isIndex;
+            IsFullTextSearch = isFullTextSearch;
         }
 
         /// <summary>
@@ -92,9 +94,14 @@ namespace AccountingSoftware
         /// </summary>
         public bool IsIndex { get; set; }
 
+        /// <summary>
+        /// Використовувати поле для повнотекстового пошуку
+        /// </summary>
+        public bool IsFullTextSearch { get; set; }
+
         public ConfigurationObjectField Copy()
         {
-            return new ConfigurationObjectField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex);
+            return new ConfigurationObjectField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
         }
     }
 }
