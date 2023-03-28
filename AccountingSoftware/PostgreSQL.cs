@@ -972,7 +972,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext)
+        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, int offset = 0)
         {
             if (DataSource != null)
             {
@@ -991,7 +991,7 @@ WITH find_rows AS (
     ORDER BY
         groupname ASC, 
         rank DESC
-    LIMIT 50
+    LIMIT 100 OFFSET {offset}
 )
 SELECT
     uidobj,
