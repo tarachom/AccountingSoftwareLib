@@ -972,7 +972,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, int offset = 0)
+        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, uint offset = 0)
         {
             if (DataSource != null)
             {
@@ -991,12 +991,10 @@ WITH find_rows AS (
     ORDER BY
         groupname ASC, 
         rank DESC
-    LIMIT 100 OFFSET {offset}
+    LIMIT 10 OFFSET {offset}
 )
 SELECT
-    uidobj,
     obj,
-    rank,
     ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value
 FROM 
     find_rows
