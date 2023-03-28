@@ -30,10 +30,16 @@ namespace AccountingSoftware
     {
         public ConfigurationTriggerFunctions()
         {
+            New = "";
             BeforeSave = "";
             AfterSave = "";
             BeforeDelete = "";
         }
+
+        /// <summary>
+        /// При створенні нового
+        /// </summary>
+        public string New { get; set; }
 
         /// <summary>
         /// Перед записом
@@ -54,6 +60,7 @@ namespace AccountingSoftware
         {
             return new ConfigurationTriggerFunctions()
             {
+                New = this.New,
                 BeforeSave = this.BeforeSave,
                 AfterSave = this.AfterSave,
                 BeforeDelete = this.BeforeDelete

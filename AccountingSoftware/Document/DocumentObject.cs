@@ -90,7 +90,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Новий обєкт
         /// </summary>
-        public void New()
+        protected void BaseNew()
         {
             UnigueID = UnigueID.NewUnigueID();
             IsNew = true;
