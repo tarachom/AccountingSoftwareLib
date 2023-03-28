@@ -70,7 +70,7 @@ namespace AccountingSoftware
 
         void SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
         void SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
-        List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext);
+        List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, int offset = 0);
 
         #endregion
 
