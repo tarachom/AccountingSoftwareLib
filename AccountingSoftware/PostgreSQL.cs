@@ -298,7 +298,6 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.FullTextSearch}
     groupname ""char"" NOT NULL DEFAULT '',
     dateadd timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
-    processed boolean NOT NULL DEFAULT FALSE,
     PRIMARY KEY(uidobj)
 )");
 
@@ -307,9 +306,6 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {Special
 
                 ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
-
-                ExecuteSQL($@"
-CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_processed_idx ON {SpecialTables.FullTextSearch}(processed)");
             }
         }
 
@@ -909,9 +905,11 @@ ORDER BY
                     return;
 
                 string[] pointer_and_type = obj.Text.Split(".", StringSplitOptions.None);
+                string pointer = pointer_and_type[0];
+                string type = pointer_and_type[1];
                 string groupname = "";
 
-                switch (pointer_and_type[0])
+                switch (pointer)
                 {
                     case "Довідники":
                         {
@@ -940,14 +938,13 @@ VALUES
 ON CONFLICT (uidobj) DO UPDATE SET 
     value = @value,
     vector = to_tsvector('russian', @value),
-    dateupdate = CURRENT_TIMESTAMP::timestamp,
-    processed = false
+    dateupdate = CURRENT_TIMESTAMP::timestamp
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uidobj", obj.Uuid);
                 command.Parameters.AddWithValue("obj", obj);
-                command.Parameters.AddWithValue("value", value);
+                command.Parameters.AddWithValue("value", pointer + " (" + type + "): " + value);
                 command.Parameters.AddWithValue("groupname", groupname);
 
                 command.ExecuteNonQuery();
@@ -983,19 +980,22 @@ WITH find_rows AS (
         obj,
         groupname,
         ts_rank(vector, plainto_tsquery('russian', @findtext)) AS rank,
-        value
+        value,
+        dateadd
     FROM 
         {SpecialTables.FullTextSearch}
     WHERE
         vector @@ plainto_tsquery('russian', @findtext)
     ORDER BY
         groupname ASC, 
+        dateadd DESC,
         rank DESC
     LIMIT 10 OFFSET {offset}
 )
 SELECT
     obj,
-    ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value
+    ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value,
+    dateadd
 FROM 
     find_rows
 ";
