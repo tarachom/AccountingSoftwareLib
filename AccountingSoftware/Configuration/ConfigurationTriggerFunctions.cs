@@ -31,6 +31,7 @@ namespace AccountingSoftware
         public ConfigurationTriggerFunctions()
         {
             New = "";
+            Copying = "";
             BeforeSave = "";
             AfterSave = "";
             BeforeDelete = "";
@@ -40,6 +41,11 @@ namespace AccountingSoftware
         /// При створенні нового
         /// </summary>
         public string New { get; set; }
+
+        /// <summary>
+        /// При копіюванні
+        /// </summary>
+        public string Copying { get; set; }
 
         /// <summary>
         /// Перед записом
@@ -61,6 +67,7 @@ namespace AccountingSoftware
             return new ConfigurationTriggerFunctions()
             {
                 New = this.New,
+                Copying = this.Copying,
                 BeforeSave = this.BeforeSave,
                 AfterSave = this.AfterSave,
                 BeforeDelete = this.BeforeDelete

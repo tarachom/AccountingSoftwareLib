@@ -1045,6 +1045,7 @@ namespace AccountingSoftware
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
 
             triggerFunctions.New = nodeTriggerFunctions?.SelectSingleNode("New")?.Value ?? "";
+            triggerFunctions.Copying = nodeTriggerFunctions?.SelectSingleNode("Copying")?.Value ?? "";
             triggerFunctions.BeforeSave = nodeTriggerFunctions?.SelectSingleNode("BeforeSave")?.Value ?? "";
             triggerFunctions.AfterSave = nodeTriggerFunctions?.SelectSingleNode("AfterSave")?.Value ?? "";
             triggerFunctions.BeforeDelete = nodeTriggerFunctions?.SelectSingleNode("BeforeDelete")?.Value ?? "";
@@ -1862,6 +1863,10 @@ namespace AccountingSoftware
             XmlElement nodeNew = xmlConfDocument.CreateElement("New");
             nodeNew.InnerText = triggerFunctions.New;
             nodeTriggerFunctions.AppendChild(nodeNew);
+
+            XmlElement nodeCopying = xmlConfDocument.CreateElement("Copying");
+            nodeCopying.InnerText = triggerFunctions.Copying;
+            nodeTriggerFunctions.AppendChild(nodeCopying);
 
             XmlElement nodeBeforeSave = xmlConfDocument.CreateElement("BeforeSave");
             nodeBeforeSave.InnerText = triggerFunctions.BeforeSave;
