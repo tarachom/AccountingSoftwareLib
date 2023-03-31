@@ -90,13 +90,13 @@ namespace AccountingSoftware
         protected void BaseCommitTransaction()
         {
             Kernel.DataBase.CommitTransaction(TransactionID);
-			TransactionID = 0;
+            TransactionID = 0;
         }
 
         protected void BaseRollbackTransaction()
         {
             Kernel.DataBase.RollbackTransaction(TransactionID);
-			TransactionID = 0;
+            TransactionID = 0;
         }
 
         /// <summary>
@@ -112,10 +112,11 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID"></param>
         /// <param name="fieldValue"></param>
-        protected void BaseSave(Guid UID, Dictionary<string, object> fieldValue)
+        protected Guid BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertConstantsTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
+            return recordUnigueID;
         }
     }
 }

@@ -140,10 +140,11 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected void BaseSave(Guid UID, DateTime period, Guid owner, Dictionary<string, object> fieldValue)
+        protected Guid BaseSave(Guid UID, DateTime period, Guid owner, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, FieldArray, fieldValue, TransactionID);
+            return recordUnigueID;
         }
     }
 }

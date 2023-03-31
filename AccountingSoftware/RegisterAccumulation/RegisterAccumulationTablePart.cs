@@ -112,10 +112,11 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID"></param>
         /// <param name="fieldValue"></param>
-        protected void BaseSave(Guid UID, Dictionary<string, object> fieldValue)
+        protected Guid BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertRegisterAccumulationTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
+            return recordUnigueID;
         }
     }
 }

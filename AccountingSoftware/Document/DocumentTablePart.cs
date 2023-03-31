@@ -139,10 +139,11 @@ namespace AccountingSoftware
         /// <param name="UID">Унікальний ідентифікатор запису</param>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
         /// <param name="fieldValue">Список значень полів</param>
-        protected void BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
+        protected Guid BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertDocumentTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
+            return recordUnigueID;
         }
     }
 }

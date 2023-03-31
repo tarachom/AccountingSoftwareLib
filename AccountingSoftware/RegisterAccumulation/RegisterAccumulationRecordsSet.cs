@@ -148,10 +148,11 @@ namespace AccountingSoftware
         /// <param name="income">Тип запису - прибуток чи зменшення</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected void BaseSave(Guid UID, DateTime period, bool income, Guid owner, Dictionary<string, object> fieldValue)
+        protected Guid BaseSave(Guid UID, DateTime period, bool income, Guid owner, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
             Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, FieldArray, fieldValue, TransactionID);
+            return recordUnigueID;
         }
 
         /// <summary>
@@ -176,7 +177,7 @@ namespace AccountingSoftware
         protected void BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
         {
             List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, periodCurrent, TransactionID);
-            
+
             if (recordPeriod != null)
             {
                 foreach (DateTime period in recordPeriod)

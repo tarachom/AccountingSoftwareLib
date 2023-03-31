@@ -1233,6 +1233,7 @@ namespace AccountingSoftware
                 string table = registerAccumulationNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string type = registerAccumulationNode?.Current?.SelectSingleNode("Type")?.Value ?? "";
                 string desc = registerAccumulationNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                string noSummary = registerAccumulationNode?.Current?.SelectSingleNode("NoSummary")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва регістру накопичення");
@@ -1247,6 +1248,8 @@ namespace AccountingSoftware
 
                 ConfigurationRegistersAccumulation configurationRegistersAccumulation =
                     new ConfigurationRegistersAccumulation(name, table, typeRegistersAccumulation, desc);
+
+                configurationRegistersAccumulation.NoSummary = (noSummary == "1" ? true : false);
 
                 Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
 
@@ -2129,6 +2132,10 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterDesc = xmlConfDocument.CreateElement("Desc");
                 nodeRegisterDesc.InnerText = ConfRegisterAccml.Value.Desc;
                 nodeRegister.AppendChild(nodeRegisterDesc);
+
+                XmlElement nodeRegisterNoSummary = xmlConfDocument.CreateElement("NoSummary");
+                nodeRegisterNoSummary.InnerText = ConfRegisterAccml.Value.NoSummary ? "1" : "0";
+                nodeRegister.AppendChild(nodeRegisterNoSummary);
 
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);

@@ -90,6 +90,11 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; }
 
+        /// <summary>
+        /// Без віртуальної таблиці підсумки
+        /// </summary>
+        public bool NoSummary { get; set; }
+
         public ConfigurationRegistersAccumulation Copy()
         {
             ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
