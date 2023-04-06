@@ -1236,8 +1236,8 @@ FROM
         {
             if (DataSource != null)
             {
-                string query_field = "uid";
-                string query_values = "@uid";
+                string query_field = "uid, deletion_label";
+                string query_values = "@uid, @deletion_label";
 
                 if (fieldArray.Length != 0)
                 {
@@ -1249,6 +1249,7 @@ FROM
 
                 NpgsqlCommand nCommand = DataSource.CreateCommand(query);
                 nCommand.Parameters.AddWithValue("uid", directoryObject.UnigueID.UGuid);
+                nCommand.Parameters.AddWithValue("deletion_label", directoryObject.DeletionLabel);
 
                 foreach (string field in fieldArray)
                     nCommand.Parameters.AddWithValue(field, fieldValue[field]);
@@ -1261,19 +1262,16 @@ FROM
         {
             if (DataSource != null)
             {
-                if (fieldArray.Length == 0)
-                    return;
+                string query = $"UPDATE {table} SET deletion_label = @deletion_label";
 
-                string query = $"UPDATE {table} SET ";
-
-                int count = 0;
                 foreach (string field in fieldArray)
-                    query += $"{(count++ > 0 ? ", " : "")}{field} = @{field}";
+                    query += $", {field} = @{field}";
 
                 query += " WHERE uid = @uid";
 
                 NpgsqlCommand nCommand = DataSource.CreateCommand(query);
                 nCommand.Parameters.AddWithValue("uid", directoryObject.UnigueID.UGuid);
+                nCommand.Parameters.AddWithValue("deletion_label", directoryObject.DeletionLabel);
 
                 foreach (string field in fieldArray)
                     nCommand.Parameters.AddWithValue(field, fieldValue[field]);
@@ -1282,11 +1280,11 @@ FROM
             }
         }
 
-        public bool SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
+                string query = $"SELECT uid, deletion_label, {string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
@@ -1296,8 +1294,12 @@ FROM
                 bool hasRows = reader.HasRows;
 
                 while (reader.Read())
+                {
+                    deletion_label = (bool)reader["deletion_label"];
+
                     foreach (string field in fieldArray)
                         fieldValue[field] = reader[field];
+                }
 
                 reader.Close();
 
@@ -1540,11 +1542,11 @@ FROM
 
         #region Document
 
-        public bool SelectDocumentObject(UnigueID unigueID, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query = "SELECT uid, spend, spend_date ";
+                string query = "SELECT uid, deletion_label, spend, spend_date ";
 
                 if (fieldArray.Length != 0)
                     query += ", " + string.Join(", ", fieldArray);
@@ -1559,6 +1561,7 @@ FROM
 
                 while (reader.Read())
                 {
+                    deletion_label = (bool)reader["deletion_label"];
                     spend = (bool)reader["spend"];
                     spend_date = (DateTime)reader["spend_date"];
 
@@ -1573,12 +1576,12 @@ FROM
                 return false;
         }
 
-        public void InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertDocumentObject(UnigueID unigueID, bool deletion_label, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query_field = "uid, spend, spend_date";
-                string query_values = "@uid, @spend, @spend_date";
+                string query_field = "uid, deletion_label, spend, spend_date";
+                string query_values = "@uid, @deletion_label, @spend, @spend_date";
 
                 if (fieldArray.Length != 0)
                 {
@@ -1590,6 +1593,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("deletion_label", deletion_label);
                 command.Parameters.AddWithValue("spend", spend);
                 command.Parameters.AddWithValue("spend_date", spend_date);
 
@@ -1600,11 +1604,17 @@ FROM
             }
         }
 
-        public void UpdateDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void UpdateDocumentObject(UnigueID unigueID, bool deletion_label, bool? spend, DateTime? spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query = $"UPDATE {table} SET spend = @spend, spend_date = @spend_date";
+                string query = $"UPDATE {table} SET deletion_label = @deletion_label";
+
+                if (spend != null)
+                    query += ", spend = @spend";
+
+                if (spend_date != null)
+                    query += ", spend_date = @spend_date";
 
                 foreach (string field in fieldArray)
                     query += ", " + field + " = @" + field;
@@ -1613,8 +1623,13 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
-                command.Parameters.AddWithValue("spend", spend);
-                command.Parameters.AddWithValue("spend_date", spend_date);
+                command.Parameters.AddWithValue("deletion_label", deletion_label);
+
+                if (spend != null)
+                    command.Parameters.AddWithValue("spend", spend);
+
+                if (spend_date != null)
+                    command.Parameters.AddWithValue("spend_date", spend_date);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);

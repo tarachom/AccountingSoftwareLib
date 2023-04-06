@@ -68,6 +68,11 @@ namespace AccountingSoftware
         public UnigueID UnigueID { get; private set; }
 
         /// <summary>
+        /// Мітка видалення
+        /// </summary>
+        public bool DeletionLabel { get; private set; }
+
+        /// <summary>
         /// Чи це новий запис?
         /// </summary>
         public bool IsNew { get; private set; }
@@ -79,7 +84,13 @@ namespace AccountingSoftware
         {
             UnigueID = UnigueID.NewUnigueID();
             IsNew = true;
+            IsSave = false;
         }
+
+        /// <summary>
+        /// Чи вже записаний документ
+        /// </summary>
+        public bool IsSave { get; private set; }
 
         /// <summary>
         /// Очистка вн. масивів
@@ -102,9 +113,14 @@ namespace AccountingSoftware
 
             BaseClear();
 
-            if (Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue))
+            bool deletion_label = false;
+
+            if (Kernel.DataBase.SelectDirectoryObject(uid, ref deletion_label, Table, FieldArray, FieldValue))
             {
                 UnigueID = uid;
+                DeletionLabel = deletion_label;
+
+                IsSave = true;
                 return true;
             }
             else
@@ -129,6 +145,8 @@ namespace AccountingSoftware
                     throw new Exception("Спроба записати неіснуючий елемент довідника. Потрібно спочатку створити новий - функція New()");
             }
 
+            IsSave = true;
+
             BaseClear();
         }
 
@@ -141,6 +159,22 @@ namespace AccountingSoftware
         {
             if (values.Length != 0)
                 Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
+        }
+
+        /// <summary>
+        /// Встановлення мітки на видалення
+        /// </summary>
+        /// <param name="label">Мітка</param>
+        /// <exception cref="Exception">Не записаний</exception>
+        protected void BaseDeletionLabel(bool label)
+        {
+            DeletionLabel = label;
+
+            if (IsSave)
+                //Обновлення поля deletion_label елементу, решта полів не зачіпаються
+                Kernel.DataBase.UpdateDirectoryObject(this, Table, new string[] { }, new Dictionary<string, object>());
+            else
+                throw new Exception("Елемент спочатку треба записати, а потім вже встановлювати мітку видалення");
         }
 
         /// <summary>

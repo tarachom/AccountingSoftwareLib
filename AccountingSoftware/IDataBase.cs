@@ -98,7 +98,7 @@ namespace AccountingSoftware
 
         void InsertDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void UpdateDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
@@ -116,9 +116,9 @@ namespace AccountingSoftware
 
         #region Document
 
-        void InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void UpdateDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool SelectDocumentObject(UnigueID unigueID, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        void InsertDocumentObject(UnigueID unigueID, bool deletion_label, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        void UpdateDocumentObject(UnigueID unigueID, bool deletion_label, bool? spend, DateTime? spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);

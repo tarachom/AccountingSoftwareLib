@@ -83,6 +83,11 @@ namespace AccountingSoftware
         public DateTime SpendDate { get; private set; }
 
         /// <summary>
+        /// Мітка видалення
+        /// </summary>
+        public bool DeletionLabel { get; private set; }
+
+        /// <summary>
         /// Чи це новий?
         /// </summary>
         public bool IsNew { get; private set; }
@@ -123,12 +128,14 @@ namespace AccountingSoftware
 
             BaseClear();
 
+            bool deletion_label = false;
             bool spend = false;
             DateTime spend_date = DateTime.MinValue;
 
-            if (Kernel.DataBase.SelectDocumentObject(uid, ref spend, ref spend_date, Table, FieldArray, FieldValue))
+            if (Kernel.DataBase.SelectDocumentObject(uid, ref deletion_label, ref spend, ref spend_date, Table, FieldArray, FieldValue))
             {
                 UnigueID = uid;
+                DeletionLabel = deletion_label;
                 Spend = spend;
                 SpendDate = spend_date;
 
@@ -146,13 +153,13 @@ namespace AccountingSoftware
         {
             if (IsNew)
             {
-                Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
+                Kernel.DataBase.InsertDocumentObject(UnigueID, false, Spend, SpendDate, Table, FieldArray, FieldValue);
                 IsNew = false;
             }
             else
             {
                 if (!UnigueID.IsEmpty())
-                    Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
+                    Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий документ. Потрібно спочатку створити новий - функція New()");
             }
@@ -179,10 +186,24 @@ namespace AccountingSoftware
             SpendDate = spend_date;
 
             if (IsSave)
-                //Обновлення поля spend документу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend, SpendDate, Table, new string[] { }, new Dictionary<string, object>());
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, (Spend ? false : DeletionLabel), Spend, SpendDate, Table, new string[] { }, new Dictionary<string, object>());
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже провести");
+        }
+
+        /// <summary>
+        /// Встановлення мітки на видалення
+        /// </summary>
+        /// <param name="label">Мітка</param>
+        /// <exception cref="Exception">Не записаний</exception>
+        protected void BaseDeletionLabel(bool label)
+        {
+            DeletionLabel = label;
+
+            if (IsSave)
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, new string[] { }, new Dictionary<string, object>());
+            else
+                throw new Exception("Документ спочатку треба записати, а потім вже встановлювати мітку видалення");
         }
 
         /// <summary>
@@ -202,7 +223,7 @@ namespace AccountingSoftware
 
             //Видалення з повнотекстового пошуку
             Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
-            
+
             Kernel.DataBase.CommitTransaction(TransactionID);
 
             BaseClear();
