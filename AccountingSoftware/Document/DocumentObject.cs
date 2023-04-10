@@ -201,7 +201,14 @@ namespace AccountingSoftware
             DeletionLabel = label;
 
             if (IsSave)
+            {
+                //Обновлення поля deletion_label елементу, решта полів не зачіпаються
                 Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, new string[] { }, new Dictionary<string, object>());
+
+                //Видалення з повнотекстового пошуку
+                if (DeletionLabel)
+                    Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+            }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже встановлювати мітку видалення");
         }
