@@ -1048,6 +1048,7 @@ namespace AccountingSoftware
             triggerFunctions.Copying = nodeTriggerFunctions?.SelectSingleNode("Copying")?.Value ?? "";
             triggerFunctions.BeforeSave = nodeTriggerFunctions?.SelectSingleNode("BeforeSave")?.Value ?? "";
             triggerFunctions.AfterSave = nodeTriggerFunctions?.SelectSingleNode("AfterSave")?.Value ?? "";
+            triggerFunctions.SetDeletionLabel = nodeTriggerFunctions?.SelectSingleNode("SetDeletionLabel")?.Value ?? "";
             triggerFunctions.BeforeDelete = nodeTriggerFunctions?.SelectSingleNode("BeforeDelete")?.Value ?? "";
         }
 
@@ -1878,6 +1879,10 @@ namespace AccountingSoftware
             XmlElement nodeAfterSave = xmlConfDocument.CreateElement("AfterSave");
             nodeAfterSave.InnerText = triggerFunctions.AfterSave;
             nodeTriggerFunctions.AppendChild(nodeAfterSave);
+
+            XmlElement nodeSetDeletionLabel = xmlConfDocument.CreateElement("SetDeletionLabel");
+            nodeSetDeletionLabel.InnerText = triggerFunctions.SetDeletionLabel;
+            nodeTriggerFunctions.AppendChild(nodeSetDeletionLabel);
 
             XmlElement nodeBeforeDelete = xmlConfDocument.CreateElement("BeforeDelete");
             nodeBeforeDelete.InnerText = triggerFunctions.BeforeDelete;

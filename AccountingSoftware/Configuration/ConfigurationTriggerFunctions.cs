@@ -34,6 +34,7 @@ namespace AccountingSoftware
             Copying = "";
             BeforeSave = "";
             AfterSave = "";
+            SetDeletionLabel = "";
             BeforeDelete = "";
         }
 
@@ -58,6 +59,11 @@ namespace AccountingSoftware
         public string AfterSave { get; set; }
 
         /// <summary>
+        /// Встановлення мітки на видалення
+        /// </summary>
+        public string SetDeletionLabel { get; set; }
+
+        /// <summary>
         /// Перед видаленням
         /// </summary>
         public string BeforeDelete { get; set; }
@@ -70,6 +76,7 @@ namespace AccountingSoftware
                 Copying = this.Copying,
                 BeforeSave = this.BeforeSave,
                 AfterSave = this.AfterSave,
+                SetDeletionLabel = this.SetDeletionLabel,
                 BeforeDelete = this.BeforeDelete
             };
         }
