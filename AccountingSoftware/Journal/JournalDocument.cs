@@ -62,10 +62,15 @@ namespace AccountingSoftware
 		/// </summary>
 		public string DocDate { get; set; }
 
-		/// <summary>
-		/// Документ проведений
-		/// </summary>
-		public bool Spend { get; set; }
+        /// <summary>
+        /// Мітка видалення
+        /// </summary>
+        public bool DeletionLabel { get; set; }
+
+        /// <summary>
+        /// Документ проведений
+        /// </summary>
+        public bool Spend { get; set; }
 
 		/// <summary>
 		/// Дата проведення документу

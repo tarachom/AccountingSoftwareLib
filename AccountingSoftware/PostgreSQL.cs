@@ -1859,7 +1859,7 @@ FROM
                     //}
 
                     query += (counter > 0 ? "\nUNION " : "") +
-                        $"(SELECT uid, docname, docdate, docnomer, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
+                        $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
                         "WHERE docdate >= @periodstart AND docdate <= @periodend)";
 
                     counter++;
@@ -1882,6 +1882,7 @@ FROM
                         DocName = reader["docname"]?.ToString() ?? "",
                         DocDate = reader["docdate"]?.ToString() ?? "",
                         DocNomer = reader["docnomer"]?.ToString() ?? "",
+                        DeletionLabel = (bool)reader["deletion_label"],
                         Spend = (bool)reader["spend"],
                         SpendDate = (DateTime)reader["spend_date"],
                         TypeDocument = reader["type_doc"]?.ToString() ?? ""
