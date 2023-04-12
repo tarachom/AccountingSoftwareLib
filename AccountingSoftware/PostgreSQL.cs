@@ -2411,17 +2411,7 @@ FROM
         /// <returns></returns>
         public int ExecuteSQL(string query, byte transactionID = 0)
         {
-            if (DataSource != null)
-            {
-                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
-
-                return command.ExecuteNonQuery();
-            }
-            else
-                return -1;
+            return ExecuteSQL(query, null, transactionID);
         }
 
         /// <summary>
@@ -2447,6 +2437,25 @@ FROM
             }
             else
                 return -1;
+        }
+
+        public object? ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ?
+                    new NpgsqlCommand(query, transaction.Connection, transaction) :
+                    DataSource.CreateCommand(query);
+
+                if (paramQuery != null)
+                    foreach (KeyValuePair<string, object> param in paramQuery)
+                        command.Parameters.AddWithValue(param.Key, param.Value);
+
+                return command.ExecuteScalar();
+            }
+            else
+                return null;
         }
 
         /// <summary>

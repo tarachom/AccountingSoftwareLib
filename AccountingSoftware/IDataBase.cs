@@ -178,6 +178,7 @@ namespace AccountingSoftware
         int InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
         int ExecuteSQL(string query, byte transactionID = 0);
         int ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
+        object? ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
 

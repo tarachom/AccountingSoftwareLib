@@ -25,6 +25,8 @@ namespace AccountingSoftware
 {
     public static class SpecialTables
     {
+        public static readonly string Constants = "tab_constants";
+
         public static readonly string RegAccumTriger = "tab_special_regaccum_triger";
 
         public static readonly string Users = "tab_special_users";

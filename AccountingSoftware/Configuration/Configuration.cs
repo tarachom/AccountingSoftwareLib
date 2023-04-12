@@ -235,16 +235,23 @@ namespace AccountingSoftware
 
         #region Function
 
+        public enum VariantWorkSearchForPointers
+        {
+            Info,
+            Tables
+        }
+
         /// <summary>
         /// Пошук ссилок довідників і документів
         /// </summary>
         /// <param name="searchName">Назва довідника або документу</param>
+        /// <param name="variantWorkFunction">Варіант роботи функції</param>
         /// <returns>Повертає список довідників або документів які вказують на searchName</returns>
-        public List<string> SearchForPointers(string searchName)
+        public List<string> SearchForPointers(string searchName, VariantWorkSearchForPointers variantWork = VariantWorkSearchForPointers.Info)
         {
             if (searchName.IndexOf(".") > 0)
             {
-                string[] searchNameSplit = searchName.Split(new string[] { "." }, StringSplitOptions.None);
+                string[] searchNameSplit = searchName.Split(".");
 
                 if (!(searchNameSplit[0] == "Довідники" || searchNameSplit[0] == "Документи"))
                     throw new Exception("Перша частина назви має бути 'Довідники' або 'Документи'");
@@ -260,7 +267,12 @@ namespace AccountingSoftware
                 foreach (ConfigurationConstants constantsItem in constantsBlockItem.Constants.Values)
                 {
                     if (constantsItem.Type == "pointer" && constantsItem.Pointer == searchName)
-                        ListPointer.Add("Константа (Блок " + constantsBlockItem.BlockName + "): " + constantsItem.Name + "." + constantsItem.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(SpecialTables.Constants + "." + constantsItem.NameInTable);
+                        else
+                            ListPointer.Add("Константа (Блок " + constantsBlockItem.BlockName + "): " + constantsItem.Name + "." + constantsItem.Name + " [" + SpecialTables.Constants + "." + constantsItem.NameInTable + "]");
+                    }
                 }
             }
 
@@ -271,7 +283,13 @@ namespace AccountingSoftware
                 foreach (ConfigurationObjectField directoryField in directoryItem.Fields.Values)
                 {
                     if (directoryField.Type == "pointer" && directoryField.Pointer == searchName)
-                        ListPointer.Add("Довідники: " + directoryItem.Name + "." + directoryField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(directoryItem.Table + "." + directoryField.NameInTable);
+                        else
+                            ListPointer.Add("Довідники: " + directoryItem.Name + "." + directoryField.Name +
+                                " [" + directoryItem.Table + "." + directoryField.NameInTable + "]");
+                    }
                 }
 
                 //Табличні частини
@@ -281,7 +299,13 @@ namespace AccountingSoftware
                     foreach (ConfigurationObjectField tablePartField in directoryTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
-                            ListPointer.Add("Довідники (таблична частина): " + directoryItem.Name + "." + directoryTablePart.Name + "." + tablePartField.Name);
+                        {
+                            if (variantWork == VariantWorkSearchForPointers.Tables)
+                                ListPointer.Add(directoryTablePart.Table + "." + tablePartField.NameInTable);
+                            else
+                                ListPointer.Add("Довідники (таблична частина): " + directoryItem.Name + "." + directoryTablePart.Name + "." + tablePartField.Name +
+                                " [" + directoryTablePart.Table + "." + tablePartField.NameInTable + "]");
+                        }
                     }
                 }
             }
@@ -293,7 +317,13 @@ namespace AccountingSoftware
                 foreach (ConfigurationObjectField documentField in documentItem.Fields.Values)
                 {
                     if (documentField.Type == "pointer" && documentField.Pointer == searchName)
-                        ListPointer.Add("Документи: " + documentItem.Name + "." + documentField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(documentItem.Table + "." + documentField.NameInTable);
+                        else
+                            ListPointer.Add("Документи: " + documentItem.Name + "." + documentField.Name +
+                                " [" + documentItem.Table + "." + documentField.NameInTable + "]");
+                    }
                 }
 
                 //Табличні частини
@@ -303,7 +333,13 @@ namespace AccountingSoftware
                     foreach (ConfigurationObjectField tablePartField in documentTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
-                            ListPointer.Add("Документи (таблична частина): " + documentItem.Name + "." + documentTablePart.Name + "." + tablePartField.Name);
+                        {
+                            if (variantWork == VariantWorkSearchForPointers.Tables)
+                                ListPointer.Add(documentTablePart.Table + "." + tablePartField.NameInTable);
+                            else
+                                ListPointer.Add("Документи (таблична частина): " + documentItem.Name + "." + documentTablePart.Name + "." + tablePartField.Name +
+                                " [" + documentTablePart.Table + "." + tablePartField.NameInTable + "]");
+                        }
                     }
                 }
             }
@@ -315,19 +351,37 @@ namespace AccountingSoftware
                 foreach (ConfigurationObjectField registersField in registersInformationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersInformationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name +
+                                " [" + registersInformationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
 
                 foreach (ConfigurationObjectField registersField in registersInformationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersInformationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name +
+                                " [" + registersInformationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
 
                 foreach (ConfigurationObjectField registersField in registersInformationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersInformationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name +
+                                " [" + registersInformationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
             }
 
@@ -338,19 +392,37 @@ namespace AccountingSoftware
                 foreach (ConfigurationObjectField registersField in registersAccumulationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersAccumulationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name +
+                                " [" + registersAccumulationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
 
                 foreach (ConfigurationObjectField registersField in registersAccumulationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersAccumulationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name +
+                                " [" + registersAccumulationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
 
                 foreach (ConfigurationObjectField registersField in registersAccumulationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                        ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
+                    {
+                        if (variantWork == VariantWorkSearchForPointers.Tables)
+                            ListPointer.Add(registersAccumulationItem.Table + "." + registersField.NameInTable);
+                        else
+                            ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name +
+                                " [" + registersAccumulationItem.Table + "." + registersField.NameInTable + "]");
+                    }
                 }
             }
 
