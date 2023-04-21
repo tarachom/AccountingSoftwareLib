@@ -1232,7 +1232,7 @@ FROM
 
         #region Directory
 
-        public void InsertDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1248,8 +1248,8 @@ FROM
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.Parameters.AddWithValue("uid", directoryObject.UnigueID.UGuid);
-                nCommand.Parameters.AddWithValue("deletion_label", directoryObject.DeletionLabel);
+                nCommand.Parameters.AddWithValue("uid", unigueID.UGuid);
+                nCommand.Parameters.AddWithValue("deletion_label", false);
 
                 foreach (string field in fieldArray)
                     nCommand.Parameters.AddWithValue(field, fieldValue[field]);
@@ -1258,23 +1258,25 @@ FROM
             }
         }
 
-        public void UpdateDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
                 string query = $"UPDATE {table} SET deletion_label = @deletion_label";
 
-                foreach (string field in fieldArray)
-                    query += $", {field} = @{field}";
+                if (fieldArray != null)
+                    foreach (string field in fieldArray)
+                        query += $", {field} = @{field}";
 
                 query += " WHERE uid = @uid";
 
                 NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.Parameters.AddWithValue("uid", directoryObject.UnigueID.UGuid);
-                nCommand.Parameters.AddWithValue("deletion_label", directoryObject.DeletionLabel);
+                nCommand.Parameters.AddWithValue("uid", unigueID.UGuid);
+                nCommand.Parameters.AddWithValue("deletion_label", deletion_label);
 
-                foreach (string field in fieldArray)
-                    nCommand.Parameters.AddWithValue(field, fieldValue[field]);
+                if (fieldArray != null && fieldValue != null)
+                    foreach (string field in fieldArray)
+                        nCommand.Parameters.AddWithValue(field, fieldValue[field]);
 
                 nCommand.ExecuteNonQuery();
             }
@@ -1390,12 +1392,6 @@ FROM
                 return false;
         }
 
-        /// <summary>
-        /// Вибирає значення полів по вказівнику для представлення
-        /// </summary>
-        /// <param name="QuerySelect">Запит</param>
-        /// <param name="fieldPresentation">Поля які використовуються для представлення</param>
-        /// <returns></returns>
         public string GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)
@@ -1424,11 +1420,16 @@ FROM
 
         public void DeleteDirectoryTempTable(DirectorySelect directorySelect)
         {
+            /*
+            Створення тимчасових таблиць на даний момент не використовується,
+            але така можливість є в класі Query якщо (CreateTempTable == true)
+            */
+
             if (DataSource != null)
             {
                 if (directorySelect.QuerySelect.CreateTempTable == true &&
                     directorySelect.QuerySelect.TempTable != "" &&
-                     directorySelect.QuerySelect.TempTable.Substring(0, 4) == "tmp_")
+                    directorySelect.QuerySelect.TempTable.Substring(0, 4) == "tmp_")
                 {
                     string query = $"DROP TABLE IF EXISTS {directorySelect.QuerySelect.TempTable}";
 
@@ -1604,26 +1605,34 @@ FROM
             }
         }
 
-        public void UpdateDocumentObject(UnigueID unigueID, bool deletion_label, bool? spend, DateTime? spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public void UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
-                string query = $"UPDATE {table} SET deletion_label = @deletion_label";
+                string query = $"UPDATE {table} SET";
+                List<string> allfield = new List<string>();
+
+                if (deletion_label != null)
+                    allfield.Add("deletion_label = @deletion_label");
 
                 if (spend != null)
-                    query += ", spend = @spend";
+                    allfield.Add("spend = @spend");
 
                 if (spend_date != null)
-                    query += ", spend_date = @spend_date";
+                    allfield.Add("spend_date = @spend_date");
 
-                foreach (string field in fieldArray)
-                    query += ", " + field + " = @" + field;
+                if (fieldArray != null)
+                    foreach (string field in fieldArray)
+                        allfield.Add(field + " = @" + field);
 
+                query += string.Join(", ", allfield.ToList());
                 query += " WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
-                command.Parameters.AddWithValue("deletion_label", deletion_label);
+
+                if (deletion_label != null)
+                    command.Parameters.AddWithValue("deletion_label", deletion_label);
 
                 if (spend != null)
                     command.Parameters.AddWithValue("spend", spend);
@@ -1631,8 +1640,9 @@ FROM
                 if (spend_date != null)
                     command.Parameters.AddWithValue("spend_date", spend_date);
 
-                foreach (string field in fieldArray)
-                    command.Parameters.AddWithValue(field, fieldValue[field]);
+                if (fieldArray != null && fieldValue != null)
+                    foreach (string field in fieldArray)
+                        command.Parameters.AddWithValue(field, fieldValue[field]);
 
                 command.ExecuteNonQuery();
             }
@@ -1689,12 +1699,6 @@ FROM
             }
         }
 
-        /// <summary>
-        /// Вибирає значення полів по вказівнику для представлення
-        /// </summary>
-        /// <param name="QuerySelect">Запит</param>
-        /// <param name="fieldPresentation">Поля які використовуються для представлення</param>
-        /// <returns></returns>
         public string GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)

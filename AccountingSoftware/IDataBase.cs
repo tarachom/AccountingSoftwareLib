@@ -96,8 +96,8 @@ namespace AccountingSoftware
 
         #region Directory
 
-        void InsertDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void UpdateDirectoryObject(DirectoryObject directoryObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        void InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        void UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
         bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
@@ -117,7 +117,7 @@ namespace AccountingSoftware
         #region Document
 
         void InsertDocumentObject(UnigueID unigueID, bool deletion_label, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void UpdateDocumentObject(UnigueID unigueID, bool deletion_label, bool? spend, DateTime? spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        void UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
         bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 

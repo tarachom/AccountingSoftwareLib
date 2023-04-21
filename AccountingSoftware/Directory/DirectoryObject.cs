@@ -70,7 +70,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Мітка видалення
         /// </summary>
-        public bool DeletionLabel { get; private set; }
+        public bool DeletionLabel { get; set; }
 
         /// <summary>
         /// Чи це новий запис?
@@ -134,13 +134,13 @@ namespace AccountingSoftware
         {
             if (IsNew)
             {
-                Kernel.DataBase.InsertDirectoryObject(this, Table, FieldArray, FieldValue);
+                Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
                 IsNew = false;
             }
             else
             {
                 if (!UnigueID.IsEmpty())
-                    Kernel.DataBase.UpdateDirectoryObject(this, Table, FieldArray, FieldValue);
+                    Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий елемент довідника. Потрібно спочатку створити новий - функція New()");
             }
@@ -173,7 +173,7 @@ namespace AccountingSoftware
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDirectoryObject(this, Table, new string[] { }, new Dictionary<string, object>());
+                Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (DeletionLabel)

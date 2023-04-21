@@ -23,95 +23,120 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Документ Вказівник
-	/// </summary>
-	public class DocumentPointer
-	{
-		public DocumentPointer()
-		{
-			UnigueID = new UnigueID();
-			Table = TypeDocument = "";
-			Fields = new Dictionary<string, object>();
-		}
+    /// <summary>
+    /// Документ Вказівник
+    /// </summary>
+    public class DocumentPointer
+    {
+        public DocumentPointer()
+        {
+            UnigueID = new UnigueID();
+            Table = TypeDocument = "";
+            Fields = new Dictionary<string, object>();
+        }
 
-		public DocumentPointer(Kernel kernel, string table, string typeDocument) : this()
-		{
-			Table = table;
-			Kernel = kernel;
-			TypeDocument = typeDocument;
-		}
+        public DocumentPointer(Kernel kernel, string table, string typeDocument) : this()
+        {
+            Table = table;
+            Kernel = kernel;
+            TypeDocument = typeDocument;
+        }
 
-		/// <summary>
-		/// Ініціалізація вказівника
-		/// </summary>
-		/// <param name="uid">Унікальний ідентифікатор</param>
-		/// <param name="fields">Поля які потрібно додатково зчитати</param>
-		public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
-		{
-			UnigueID = uid;
-			Fields = fields;
-		}
+        /// <summary>
+        /// Ініціалізація вказівника
+        /// </summary>
+        /// <param name="uid">Унікальний ідентифікатор</param>
+        /// <param name="fields">Поля які потрібно додатково зчитати</param>
+        public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
+        {
+            UnigueID = uid;
+            Fields = fields;
+        }
 
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		private Kernel? Kernel { get; set; }
+        /// <summary>
+        /// Ядро
+        /// </summary>
+        private Kernel? Kernel { get; set; }
 
-		/// <summary>
-		/// Таблиця
-		/// </summary>
-		private string Table { get; set; }
+        /// <summary>
+        /// Таблиця
+        /// </summary>
+        private string Table { get; set; }
 
-		/// <summary>
-		/// Назва як задано в конфігураторі
-		/// </summary>
-		public string TypeDocument { get; private set; }
+        /// <summary>
+        /// Назва як задано в конфігураторі
+        /// </summary>
+        public string TypeDocument { get; private set; }
 
-		/// <summary>
-		/// Унікальний ідентифікатор запису
-		/// </summary>
-		public UnigueID UnigueID { get; private set; }
+        /// <summary>
+        /// Унікальний ідентифікатор запису
+        /// </summary>
+        public UnigueID UnigueID { get; private set; }
 
-		/// <summary>
-		/// Поля які потрібно додатково зчитати
-		/// </summary>
-		public Dictionary<string, object>? Fields { get; private set; }
+        /// <summary>
+        /// Поля які потрібно додатково зчитати
+        /// </summary>
+        public Dictionary<string, object>? Fields { get; private set; }
 
-		/// <summary>
-		/// Чи пустий ідентифікатор?
-		/// </summary>
-		/// <returns></returns>
-		public bool IsEmpty()
-		{
-			return UnigueID.IsEmpty();
-		}
+        /// <summary>
+        /// Чи пустий ідентифікатор?
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return UnigueID.IsEmpty();
+        }
 
-		/// <summary>
-		/// Отримати ідентифікатор
-		/// </summary>
-		/// <returns></returns>
-		public Guid GetPointer()
-		{
-			return UnigueID.UGuid;
-		}
+        /// <summary>
+        /// Отримати ідентифікатор
+        /// </summary>
+        /// <returns></returns>
+        public Guid GetPointer()
+        {
+            return UnigueID.UGuid;
+        }
 
-		/// <summary>
-		/// Представлення обєкта
-		/// </summary>
-		/// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
-		/// <returns>Представлення обєкта</returns>
-		protected string BasePresentation(string[] fieldPresentation)
-		{
-			if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
-			{
-				Query query = new Query(Table);
-				query.Field.AddRange(fieldPresentation);
-				query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
+        /// <summary>
+        /// Представлення обєкта
+        /// </summary>
+        /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
+        /// <returns>Представлення обєкта</returns>
+        protected string BasePresentation(string[] fieldPresentation)
+        {
+            if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
+            {
+                Query query = new Query(Table);
+                query.Field.AddRange(fieldPresentation);
+                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
-				return Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
-			}
-			else return "";
-		}
-	}
+                return Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
+            }
+            else return "";
+        }
+
+        protected void BaseSpend(bool spend, DateTime spend_date)
+        {
+            if (Kernel != null && !IsEmpty())
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, (spend ? false : null), spend, spend_date, Table, null, null);
+        }
+
+        /// <summary>
+        /// Встановлення мітки на видалення
+        /// </summary>
+        /// <param name="label">Мітка</param>
+        /// <exception cref="Exception">Не записаний</exception>
+        protected void BaseDeletionLabel(bool label)
+        {
+            if (Kernel != null && !IsEmpty())
+            {
+                //Обновлення поля deletion_label елементу, решта полів не зачіпаються
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
+
+                //Видалення з повнотекстового пошуку
+                if (label)
+                    Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+            }
+        }
+
+    }
 }

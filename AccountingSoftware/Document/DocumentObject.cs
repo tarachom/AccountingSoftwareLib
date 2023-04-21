@@ -186,7 +186,7 @@ namespace AccountingSoftware
             SpendDate = spend_date;
 
             if (IsSave)
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, (Spend ? false : DeletionLabel), Spend, SpendDate, Table, new string[] { }, new Dictionary<string, object>());
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, (Spend ? false : DeletionLabel), Spend, SpendDate, Table, null, null);
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже провести");
         }
@@ -203,7 +203,7 @@ namespace AccountingSoftware
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, new string[] { }, new Dictionary<string, object>());
+                Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (DeletionLabel)

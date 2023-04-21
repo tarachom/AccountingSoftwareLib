@@ -430,6 +430,242 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Пошук залежностей
+        /// </summary>
+        /// <param name="searchName"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public List<ConfigurationDependencies> SearchDependencies(string searchName)
+        {
+            if (searchName.IndexOf(".") > 0)
+            {
+                string[] searchNameSplit = searchName.Split(".");
+
+                if (!(searchNameSplit[0] == "Довідники" || searchNameSplit[0] == "Документи"))
+                    throw new Exception("Перша частина назви має бути 'Довідники' або 'Документи'");
+            }
+            else
+                throw new Exception("Назва для пошуку має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
+
+            List<ConfigurationDependencies> ListDependencies = new List<ConfigurationDependencies>();
+
+            //Перевірити константи
+            foreach (ConfigurationConstantsBlock constantsBlockItem in ConstantsBlock.Values)
+            {
+                foreach (ConfigurationConstants constantsItem in constantsBlockItem.Constants.Values)
+                {
+                    if (constantsItem.Type == "pointer" && constantsItem.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "Константи",
+                            ConfigurationObjectName = constantsItem.Name,
+                            ConfigurationObjectDesc = constantsItem.Desc,
+                            Table = SpecialTables.Constants,
+                            Field = constantsItem.NameInTable
+                        });
+                    }
+                }
+            }
+
+            //Перевірити поля довідників та поля табличних частин чи часом вони не ссилаються на цей довідник
+            foreach (ConfigurationDirectories directoryItem in Directories.Values)
+            {
+                //Поля довідника
+                foreach (ConfigurationObjectField directoryField in directoryItem.Fields.Values)
+                {
+                    if (directoryField.Type == "pointer" && directoryField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "Довідники",
+                            ConfigurationObjectName = directoryItem.Name,
+                            ConfigurationObjectDesc = directoryItem.Desc,
+                            Table = directoryItem.Table,
+                            ConfigurationFieldName = directoryField.Name,
+                            Field = directoryField.NameInTable
+                        });
+                    }
+                }
+
+                //Табличні частини
+                foreach (ConfigurationObjectTablePart directoryTablePart in directoryItem.TabularParts.Values)
+                {
+                    //Поля табличної частини
+                    foreach (ConfigurationObjectField tablePartField in directoryTablePart.Fields.Values)
+                    {
+                        if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
+                        {
+                            ListDependencies.Add(new ConfigurationDependencies()
+                            {
+                                ConfigurationGroupName = "Довідники",
+                                ConfigurationGroupLevel = ConfigurationDependencies.GroupLevel.TablePart,
+                                ConfigurationTablePartName = directoryTablePart.Name,
+                                ConfigurationObjectName = directoryItem.Name,
+                                ConfigurationObjectDesc = directoryItem.Desc,
+                                Table = directoryTablePart.Table,
+                                ConfigurationFieldName = directoryTablePart.Name,
+                                Field = tablePartField.NameInTable
+                            });
+                        }
+                    }
+                }
+            }
+
+            //Перевірка документів
+            foreach (ConfigurationDocuments documentItem in Documents.Values)
+            {
+                //Поля довідника
+                foreach (ConfigurationObjectField documentField in documentItem.Fields.Values)
+                {
+                    if (documentField.Type == "pointer" && documentField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "Документи",
+                            ConfigurationObjectName = documentItem.Name,
+                            ConfigurationObjectDesc = documentItem.Desc,
+                            Table = documentItem.Table,
+                            ConfigurationFieldName = documentField.Name,
+                            Field = documentField.NameInTable
+                        });
+                    }
+                }
+
+                //Табличні частини
+                foreach (ConfigurationObjectTablePart documentTablePart in documentItem.TabularParts.Values)
+                {
+                    //Поля табличної частини
+                    foreach (ConfigurationObjectField tablePartField in documentTablePart.Fields.Values)
+                    {
+                        if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
+                        {
+                            ListDependencies.Add(new ConfigurationDependencies()
+                            {
+                                ConfigurationGroupName = "Документи",
+                                ConfigurationGroupLevel = ConfigurationDependencies.GroupLevel.TablePart,
+                                ConfigurationTablePartName = documentTablePart.Name,
+                                ConfigurationObjectName = documentItem.Name,
+                                ConfigurationObjectDesc = documentItem.Desc,
+                                Table = documentTablePart.Table,
+                                ConfigurationFieldName = documentTablePart.Name,
+                                Field = tablePartField.NameInTable
+                            });
+                        }
+                    }
+                }
+            }
+
+            //Перевірка регістра RegistersInformation
+            foreach (ConfigurationRegistersInformation registersInformationItem in RegistersInformation.Values)
+            {
+                //Поля
+                foreach (ConfigurationObjectField registersField in registersInformationItem.DimensionFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриІнформації",
+                            ConfigurationObjectName = registersInformationItem.Name,
+                            ConfigurationObjectDesc = registersInformationItem.Desc,
+                            Table = registersInformationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+
+                foreach (ConfigurationObjectField registersField in registersInformationItem.ResourcesFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриІнформації",
+                            ConfigurationObjectName = registersInformationItem.Name,
+                            ConfigurationObjectDesc = registersInformationItem.Desc,
+                            Table = registersInformationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+
+                foreach (ConfigurationObjectField registersField in registersInformationItem.PropertyFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриІнформації",
+                            ConfigurationObjectName = registersInformationItem.Name,
+                            ConfigurationObjectDesc = registersInformationItem.Desc,
+                            Table = registersInformationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+            }
+
+            //Перевірка регістра RegistersAccumulation
+            foreach (ConfigurationRegistersAccumulation registersAccumulationItem in RegistersAccumulation.Values)
+            {
+                //Поля
+                foreach (ConfigurationObjectField registersField in registersAccumulationItem.DimensionFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриНакопичення",
+                            ConfigurationObjectName = registersAccumulationItem.Name,
+                            ConfigurationObjectDesc = registersAccumulationItem.Desc,
+                            Table = registersAccumulationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+
+                foreach (ConfigurationObjectField registersField in registersAccumulationItem.ResourcesFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриНакопичення",
+                            ConfigurationObjectName = registersAccumulationItem.Name,
+                            ConfigurationObjectDesc = registersAccumulationItem.Desc,
+                            Table = registersAccumulationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+
+                foreach (ConfigurationObjectField registersField in registersAccumulationItem.PropertyFields.Values)
+                {
+                    if (registersField.Type == "pointer" && registersField.Pointer == searchName)
+                    {
+                        ListDependencies.Add(new ConfigurationDependencies()
+                        {
+                            ConfigurationGroupName = "РегістриНакопичення",
+                            ConfigurationObjectName = registersAccumulationItem.Name,
+                            ConfigurationObjectDesc = registersAccumulationItem.Desc,
+                            Table = registersAccumulationItem.Table,
+                            ConfigurationFieldName = registersField.Name,
+                            Field = registersField.NameInTable
+                        });
+                    }
+                }
+            }
+
+            return ListDependencies;
+        }
+
+        /// <summary>
         /// Пошук ссилок на перелічення
         /// </summary>
         /// <param name="searchName">Назва перелічення</param>
