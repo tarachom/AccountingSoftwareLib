@@ -1609,7 +1609,7 @@ FROM
         {
             if (DataSource != null)
             {
-                string query = $"UPDATE {table} SET";
+                string query = $"UPDATE {table} SET ";
                 List<string> allfield = new List<string>();
 
                 if (deletion_label != null)
@@ -1625,8 +1625,7 @@ FROM
                     foreach (string field in fieldArray)
                         allfield.Add(field + " = @" + field);
 
-                query += string.Join(", ", allfield.ToList());
-                query += " WHERE uid = @uid";
+                query += string.Join(", ", allfield.ToList()) + " WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
