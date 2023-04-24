@@ -102,8 +102,8 @@ namespace AccountingSoftware
 
         #region Directory
 
-        void InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
+        bool InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        bool UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
         bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 

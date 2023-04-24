@@ -1249,7 +1249,7 @@ FROM
 
         #region Directory
 
-        public void InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public bool InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1272,10 +1272,14 @@ FROM
                     nCommand.Parameters.AddWithValue(field, fieldValue[field]);
 
                 nCommand.ExecuteNonQuery();
+
+                return true;
             }
+            else
+                return false;
         }
 
-        public void UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public bool UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -1296,7 +1300,11 @@ FROM
                         nCommand.Parameters.AddWithValue(field, fieldValue[field]);
 
                 nCommand.ExecuteNonQuery();
+
+                return true;
             }
+            else
+                return false;
         }
 
         public bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue)

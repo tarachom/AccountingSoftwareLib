@@ -130,24 +130,27 @@ namespace AccountingSoftware
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected void BaseSave()
+        protected bool BaseSave()
         {
+            bool result = false;
+
             if (IsNew)
             {
-                Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
-                IsNew = false;
+                result = Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
+                if (result) IsNew = false;
             }
             else
             {
-                if (!UnigueID.IsEmpty())
-                    Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
+                if (!UnigueID.IsEmpty() && Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                    result = Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
                 else
-                    throw new Exception("Спроба записати неіснуючий елемент довідника. Потрібно спочатку створити новий - функція New()");
+                    throw new Exception("Спроба записати неіснуючий елемент довідника");
             }
 
-            IsSave = true;
-
+            IsSave = result;
             BaseClear();
+
+            return result;
         }
 
         /// <summary>

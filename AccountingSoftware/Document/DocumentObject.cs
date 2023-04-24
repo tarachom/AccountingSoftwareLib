@@ -157,11 +157,7 @@ namespace AccountingSoftware
             if (IsNew)
             {
                 result = Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
-
-                if (result)
-                    IsNew = false;
-                else
-                    throw new Exception("Невдалось добавити документ");
+                if (result) IsNew = false;
             }
             else
             {
@@ -171,7 +167,7 @@ namespace AccountingSoftware
                     throw new Exception("Спроба записати неіснуючий документ");
             }
 
-            IsSave = true;
+            IsSave = result;
             BaseClear();
 
             return result;
