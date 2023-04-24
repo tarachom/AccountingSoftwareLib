@@ -70,7 +70,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Мітка видалення
         /// </summary>
-        public bool DeletionLabel { get; set; }
+        public bool DeletionLabel { get; private set; }
 
         /// <summary>
         /// Чи це новий запис?

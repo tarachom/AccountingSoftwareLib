@@ -123,10 +123,10 @@ namespace AccountingSoftware
         /// <returns></returns>
         protected bool BaseRead(UnigueID uid)
         {
-            if (uid == null || uid.UGuid == Guid.Empty)
-                return false;
-
             BaseClear();
+
+            if (uid.IsEmpty() || IsNew == true)
+                return false;
 
             bool deletion_label = false;
             bool spend = false;
@@ -134,12 +134,13 @@ namespace AccountingSoftware
 
             if (Kernel.DataBase.SelectDocumentObject(uid, ref deletion_label, ref spend, ref spend_date, Table, FieldArray, FieldValue))
             {
+                IsSave = true;
+
                 UnigueID = uid;
                 DeletionLabel = deletion_label;
                 Spend = spend;
                 SpendDate = spend_date;
 
-                IsSave = true;
                 return true;
             }
             else
@@ -149,24 +150,31 @@ namespace AccountingSoftware
         /// <summary>
         /// Зберегти дані
         /// </summary>
-        protected void BaseSave()
+        protected bool BaseSave()
         {
+            bool result = false;
+
             if (IsNew)
             {
-                Kernel.DataBase.InsertDocumentObject(UnigueID, false, Spend, SpendDate, Table, FieldArray, FieldValue);
-                IsNew = false;
+                result = Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
+
+                if (result)
+                    IsNew = false;
+                else
+                    throw new Exception("Невдалось добавити документ");
             }
             else
             {
-                if (!UnigueID.IsEmpty())
-                    Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
+                if (!UnigueID.IsEmpty() && Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                    result = Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
                 else
-                    throw new Exception("Спроба записати неіснуючий документ. Потрібно спочатку створити новий - функція New()");
+                    throw new Exception("Спроба записати неіснуючий документ");
             }
 
             IsSave = true;
-
             BaseClear();
+
+            return result;
         }
 
         /// <summary>

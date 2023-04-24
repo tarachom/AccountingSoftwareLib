@@ -1230,6 +1230,23 @@ FROM
 
         #endregion
 
+        #region Func (Directory, Document)
+
+        public bool IsExistUniqueID(UnigueID unigueID, string table)
+        {
+            if (DataSource != null)
+            {
+                Dictionary<string, object> paramQuery = new Dictionary<string, object>();
+                paramQuery.Add("uid", unigueID.UGuid);
+
+                object? result = ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", paramQuery, 0);
+                return (result != null) ? (long)result == 1 : false;
+            }
+            return false;
+        }
+
+        #endregion
+
         #region Directory
 
         public void InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
@@ -1577,7 +1594,7 @@ FROM
                 return false;
         }
 
-        public void InsertDocumentObject(UnigueID unigueID, bool deletion_label, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public bool InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1594,7 +1611,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
-                command.Parameters.AddWithValue("deletion_label", deletion_label);
+                command.Parameters.AddWithValue("deletion_label", false);
                 command.Parameters.AddWithValue("spend", spend);
                 command.Parameters.AddWithValue("spend_date", spend_date);
 
@@ -1602,10 +1619,14 @@ FROM
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
                 command.ExecuteNonQuery();
+
+                return true;
             }
+            else
+                return false;
         }
 
-        public void UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public bool UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -1644,7 +1665,11 @@ FROM
                         command.Parameters.AddWithValue(field, fieldValue[field]);
 
                 command.ExecuteNonQuery();
+
+                return true;
             }
+            else
+                return false;
         }
 
         public void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0)
