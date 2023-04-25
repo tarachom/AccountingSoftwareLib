@@ -29,6 +29,8 @@ namespace AccountingSoftware
 
         public static readonly string RegAccumTriger = "tab_special_regaccum_triger";
 
+        public static readonly string LockedObject = "tab_special_locked_object";
+
         public static readonly string Users = "tab_special_users";
 
         public static readonly string ActiveUsers = "tab_special_active_users";

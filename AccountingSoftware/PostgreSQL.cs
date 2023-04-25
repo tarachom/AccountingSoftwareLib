@@ -223,6 +223,35 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
 )");
 
                 /*
+                Таблиця заблокованих обєктів
+
+                @uidobj - обєкт
+                @session - сесія
+                @users - користувач
+                @datelock - дата блокування
+                @dateupdate - дата підтвердження блокування
+                @nameobj - назва обєкту
+
+                */
+                ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.LockedObject} 
+(
+    uidobj uuid NOT NULL,
+    session uuid NOT NULL,
+    users uuid NOT NULL,
+    datelock timestamp without time zone NOT NULL,
+    dateupdate timestamp without time zone NOT NULL,
+    nameobj text NOT NULL DEFAULT '',
+    PRIMARY KEY(uidobj)
+)");
+
+                ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_session_idx ON {SpecialTables.LockedObject}(session)");
+
+                ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_users_idx ON {SpecialTables.LockedObject}(users)");
+
+                /*
                 Таблиця користувачів
 
                 @name - унікальна назва користувача у нижньому регістрі
@@ -1242,7 +1271,8 @@ FROM
                 object? result = ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", paramQuery, 0);
                 return (result != null) ? (long)result == 1 : false;
             }
-            return false;
+            else
+                return false;
         }
 
         #endregion

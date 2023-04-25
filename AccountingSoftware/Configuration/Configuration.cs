@@ -1198,11 +1198,12 @@ namespace AccountingSoftware
                 string? name = directoryNodes?.Current?.SelectSingleNode("Name")?.Value;
                 string table = directoryNodes?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = directoryNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                string autoNum = directoryNodes?.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, table, desc);
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, table, desc, autoNum == "1");
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
                 LoadFields(ConfObjectDirectories.Fields, directoryNodes?.Current, "Directory");
@@ -1462,11 +1463,12 @@ namespace AccountingSoftware
                 string? name = documentsNode?.Current?.SelectSingleNode("Name")?.Value;
                 string table = documentsNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = documentsNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                string autoNum = documentsNode?.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва документу");
 
-                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, table, desc);
+                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, table, desc, autoNum == "1");
                 Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
                 LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
@@ -1754,6 +1756,10 @@ namespace AccountingSoftware
                 XmlElement nodeDirectoryDesc = xmlConfDocument.CreateElement("Desc");
                 nodeDirectoryDesc.InnerText = ConfDirectory.Value.Desc;
                 nodeDirectory.AppendChild(nodeDirectoryDesc);
+
+                XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
+                nodeDirectoryAutoNum.InnerText = ConfDirectory.Value.AutomaticNumeration ? "1" : "0";
+                nodeDirectory.AppendChild(nodeDirectoryAutoNum);
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 
@@ -2343,6 +2349,10 @@ namespace AccountingSoftware
                 XmlElement nodeDocumentDesc = xmlConfDocument.CreateElement("Desc");
                 nodeDocumentDesc.InnerText = ConfDocument.Value.Desc;
                 nodeDocument.AppendChild(nodeDocumentDesc);
+
+                XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
+                nodeDirectoryAutoNum.InnerText = ConfDocument.Value.AutomaticNumeration ? "1" : "0";
+                nodeDocument.AppendChild(nodeDirectoryAutoNum);
 
                 SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 

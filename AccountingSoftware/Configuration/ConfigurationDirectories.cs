@@ -45,11 +45,12 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationDirectories(string name, string table, string desc = "") : this()
+        public ConfigurationDirectories(string name, string table, string desc = "", bool automaticNumeration = false) : this()
         {
             Name = name;
             Table = table;
             Desc = desc;
+            AutomaticNumeration = automaticNumeration;
         }
 
         /// <summary>
@@ -72,6 +73,15 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
+        /// <summary>
+        /// Автоматична нумерація
+        /// </summary>
+        public bool AutomaticNumeration { get; set; }
+
+        /// <summary>
+        /// Створити копію
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationDirectories Copy()
         {
             ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.Table, this.Desc);
@@ -105,6 +115,10 @@ namespace AccountingSoftware
             TabularParts.Add(tablePart.Name, tablePart);
         }
 
+        /// <summary>
+        /// Додати новий табличний список
+        /// </summary>
+        /// <param name="tablePart">Новий табличний список</param>
         public void AppendTableList(ConfigurationTabularList tabularList)
         {
             TabularList.Add(tabularList.Name, tabularList);
