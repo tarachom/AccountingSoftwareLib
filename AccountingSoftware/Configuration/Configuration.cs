@@ -2591,7 +2591,7 @@ namespace AccountingSoftware
                 if (dirName == null)
                     throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
 
-                string fileNewName = Path.GetFileNameWithoutExtension(pathToConf) + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".xml";
+                string fileNewName = Path.GetFileNameWithoutExtension(pathToConf) + DateTime.Now.ToString("ddMMyyyyHHmmssFFFFFFF") + ".xml";
                 string pathToCopyConf = Path.Combine(dirName, fileNewName);
 
                 File.Copy(pathToConf, pathToCopyConf);
