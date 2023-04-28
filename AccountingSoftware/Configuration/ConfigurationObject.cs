@@ -32,7 +32,8 @@ namespace AccountingSoftware
 		{
 			UID = "";
 			Name = "";
-			Table = "";
+            FullName = "";
+            Table = "";
 			Desc = "";
 		}
 
@@ -45,6 +46,11 @@ namespace AccountingSoftware
 		/// Назва
 		/// </summary>
 		public string Name { get; set; }
+
+        /// <summary>
+        /// Повна назва
+        /// </summary>
+        public string FullName { get; set; }
 
 		/// <summary>
 		/// Таблиця в базі даних

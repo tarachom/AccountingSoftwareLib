@@ -68,6 +68,10 @@ namespace AccountingSoftware
         /// </summary>
         public string BeforeDelete { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationTriggerFunctions Copy()
         {
             return new ConfigurationTriggerFunctions()

@@ -1196,6 +1196,7 @@ namespace AccountingSoftware
             while (directoryNodes!.MoveNext())
             {
                 string? name = directoryNodes?.Current?.SelectSingleNode("Name")?.Value;
+                string fullName = directoryNodes?.Current?.SelectSingleNode("FullName")?.Value ?? "";
                 string table = directoryNodes?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = directoryNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 string autoNum = directoryNodes?.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
@@ -1203,7 +1204,7 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, table, desc, autoNum == "1");
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1");
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
                 LoadFields(ConfObjectDirectories.Fields, directoryNodes?.Current, "Directory");
@@ -1461,6 +1462,7 @@ namespace AccountingSoftware
             while (documentsNode!.MoveNext())
             {
                 string? name = documentsNode?.Current?.SelectSingleNode("Name")?.Value;
+                string fullName = documentsNode?.Current?.SelectSingleNode("FullName")?.Value ?? "";
                 string table = documentsNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = documentsNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 string autoNum = documentsNode?.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
@@ -1468,7 +1470,7 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва документу");
 
-                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, table, desc, autoNum == "1");
+                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum == "1");
                 Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
                 LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
@@ -1492,13 +1494,14 @@ namespace AccountingSoftware
             while (registerInformationNode!.MoveNext())
             {
                 string? name = registerInformationNode?.Current?.SelectSingleNode("Name")?.Value;
+                string fullName = registerInformationNode?.Current?.SelectSingleNode("FullName")?.Value ?? "";
                 string table = registerInformationNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = registerInformationNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва регістру відомостей");
 
-                ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, table, desc);
+                ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, fullName, table, desc);
                 Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
                 XPathNavigator? dimensionFieldsNode = registerInformationNode?.Current?.SelectSingleNode("DimensionFields");
@@ -1541,6 +1544,7 @@ namespace AccountingSoftware
             while (registerAccumulationNode!.MoveNext())
             {
                 string? name = registerAccumulationNode?.Current?.SelectSingleNode("Name")?.Value;
+                string fullName = registerAccumulationNode?.Current?.SelectSingleNode("FullName")?.Value ?? "";
                 string table = registerAccumulationNode?.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string type = registerAccumulationNode?.Current?.SelectSingleNode("Type")?.Value ?? "";
                 string desc = registerAccumulationNode?.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1558,7 +1562,7 @@ namespace AccountingSoftware
                     throw new Exception("Не оприділений тип регістру");
 
                 ConfigurationRegistersAccumulation configurationRegistersAccumulation =
-                    new ConfigurationRegistersAccumulation(name, table, typeRegistersAccumulation, desc);
+                    new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc);
 
                 configurationRegistersAccumulation.NoSummary = (noSummary == "1" ? true : false);
 
@@ -1748,6 +1752,10 @@ namespace AccountingSoftware
                 XmlElement nodeDirectoryName = xmlConfDocument.CreateElement("Name");
                 nodeDirectoryName.InnerText = ConfDirectory.Key;
                 nodeDirectory.AppendChild(nodeDirectoryName);
+
+                XmlElement nodeDirectoryFullName = xmlConfDocument.CreateElement("FullName");
+                nodeDirectoryFullName.InnerText = ConfDirectory.Value.FullName;
+                nodeDirectory.AppendChild(nodeDirectoryFullName);
 
                 XmlElement nodeDirectoryTable = xmlConfDocument.CreateElement("Table");
                 nodeDirectoryTable.InnerText = ConfDirectory.Value.Table;
@@ -2342,6 +2350,10 @@ namespace AccountingSoftware
                 nodeDocumentName.InnerText = ConfDocument.Key;
                 nodeDocument.AppendChild(nodeDocumentName);
 
+                XmlElement nodeDocumentFullName = xmlConfDocument.CreateElement("FullName");
+                nodeDocumentFullName.InnerText = ConfDocument.Value.FullName;
+                nodeDocument.AppendChild(nodeDocumentFullName);
+
                 XmlElement nodeDocumentTable = xmlConfDocument.CreateElement("Table");
                 nodeDocumentTable.InnerText = ConfDocument.Value.Table;
                 nodeDocument.AppendChild(nodeDocumentTable);
@@ -2381,6 +2393,10 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterName = xmlConfDocument.CreateElement("Name");
                 nodeRegisterName.InnerText = ConfRegisterInfo.Key;
                 nodeRegister.AppendChild(nodeRegisterName);
+
+                XmlElement nodeRegisterFullName = xmlConfDocument.CreateElement("FullName");
+                nodeRegisterFullName.InnerText = ConfRegisterInfo.Value.FullName;
+                nodeRegister.AppendChild(nodeRegisterFullName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
                 nodeRegisterTable.InnerText = ConfRegisterInfo.Value.Table;
@@ -2443,6 +2459,10 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterName = xmlConfDocument.CreateElement("Name");
                 nodeRegisterName.InnerText = ConfRegisterAccml.Key;
                 nodeRegister.AppendChild(nodeRegisterName);
+
+                XmlElement nodeRegisterFullName = xmlConfDocument.CreateElement("FullName");
+                nodeRegisterFullName.InnerText = ConfRegisterAccml.Value.FullName;
+                nodeRegister.AppendChild(nodeRegisterFullName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
                 nodeRegisterTable.InnerText = ConfRegisterAccml.Value.Table;

@@ -47,9 +47,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationRegistersAccumulation(string name, string table, TypeRegistersAccumulation type, string desc = "") : this()
+        public ConfigurationRegistersAccumulation(string name, string fullname, string table, TypeRegistersAccumulation type, string desc = "") : this()
         {
             Name = name;
+            FullName = fullname;
             Table = table;
             TypeRegistersAccumulation = type;
             Desc = desc;
@@ -95,9 +96,13 @@ namespace AccountingSoftware
         /// </summary>
         public bool NoSummary { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationRegistersAccumulation Copy()
         {
-            ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.Table, this.TypeRegistersAccumulation, this.Desc);
+            ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.FullName, this.Table, this.TypeRegistersAccumulation, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());

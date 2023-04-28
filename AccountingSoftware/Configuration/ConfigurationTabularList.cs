@@ -41,17 +41,34 @@ namespace AccountingSoftware
             Desc = desc;
         }
 
+        /// <summary>
+        /// Назва
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Опис
+        /// </summary>
         public string Desc { get; set; }
 
+        /// <summary>
+        /// Поля
+        /// </summary>
         public Dictionary<string, ConfigurationTabularListField> Fields { get; }
 
+        /// <summary>
+        /// Додати поле
+        /// </summary>
+        /// <param name="field"></param>
         public void AppendField(ConfigurationTabularListField field)
         {
             Fields.Add(field.Name, field);
         }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationTabularList Copy()
         {
             ConfigurationTabularList newTabularList = new ConfigurationTabularList(Name, Desc);

@@ -75,8 +75,10 @@ namespace AccountingSoftware
         /// </summary>
         public bool WherePeriod { get; set; }
 
-        
-
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationJournalField Copy()
         {
             return new ConfigurationJournalField(this.Name, this.Desc);

@@ -47,9 +47,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationDocuments(string name, string table, string desc = "", bool automaticNumeration = false) : this()
+        public ConfigurationDocuments(string name, string fullname, string table, string desc = "", bool automaticNumeration = false) : this()
         {
             Name = name;
+            FullName = fullname;
             Table = table;
             Desc = desc;
             AutomaticNumeration = automaticNumeration;
@@ -96,7 +97,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationDocuments Copy()
         {
-            ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.Table, this.Desc);
+            ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.FullName, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
                 confDocCopy.Fields.Add(fields.Key, fields.Value.Copy());

@@ -105,6 +105,10 @@ namespace AccountingSoftware
             TabularParts.Add(tablePart.Name, tablePart);
         }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationConstants Copy()
         {
             ConfigurationConstants newConst = new ConfigurationConstants(Name, NameInTable, Type, Block, Pointer, Desc);

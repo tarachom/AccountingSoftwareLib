@@ -25,7 +25,7 @@ limitations under the License.
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Залежності. Використовується для аналізу перед видаленням з бази.
+    /// Залежності. Використовується для аналізу перед видаленням елементів з бази.
     /// </summary>
     public class ConfigurationDependencies
     {

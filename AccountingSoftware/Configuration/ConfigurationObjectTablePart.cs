@@ -23,54 +23,58 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Таблична частина
-	/// </summary>
-	public class ConfigurationObjectTablePart : ConfigurationObject
-	{
-		/// <summary>
-		/// Таблична частина
-		/// </summary>
-		public ConfigurationObjectTablePart()
-		{
-			Fields = new Dictionary<string, ConfigurationObjectField>();
-		}
+    /// <summary>
+    /// Таблична частина
+    /// </summary>
+    public class ConfigurationObjectTablePart : ConfigurationObject
+    {
+        /// <summary>
+        /// Таблична частина
+        /// </summary>
+        public ConfigurationObjectTablePart()
+        {
+            Fields = new Dictionary<string, ConfigurationObjectField>();
+        }
 
-		/// <summary>
-		/// Таблична частина
-		/// </summary>
-		/// <param name="name">Назва</param>
-		/// <param name="table">Таблиця в базі даних</param>
-		/// <param name="desc">Опис</param>
-		public ConfigurationObjectTablePart(string name, string table, string desc = "") : this()
-		{
-			Name = name;
-			Table = table;
-			Desc = desc;
-		}
+        /// <summary>
+        /// Таблична частина
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="desc">Опис</param>
+        public ConfigurationObjectTablePart(string name, string table, string desc = "") : this()
+        {
+            Name = name;
+            Table = table;
+            Desc = desc;
+        }
 
-		/// <summary>
-		/// Поля
-		/// </summary>
-		public Dictionary<string, ConfigurationObjectField> Fields { get; }
+        /// <summary>
+        /// Поля
+        /// </summary>
+        public Dictionary<string, ConfigurationObjectField> Fields { get; }
 
-		public ConfigurationObjectTablePart Copy()
-		{
-			ConfigurationObjectTablePart confObjectTablePart = new ConfigurationObjectTablePart(this.Name, this.Table, this.Desc);
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
+        public ConfigurationObjectTablePart Copy()
+        {
+            ConfigurationObjectTablePart confObjectTablePart = new ConfigurationObjectTablePart(this.Name, this.Table, this.Desc);
 
-			foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
-				confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());
+            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+                confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());
 
-			return confObjectTablePart;
-		}
+            return confObjectTablePart;
+        }
 
-		/// <summary>
-		/// Додати нове поле в список полів
-		/// </summary>
-		/// <param name="field">Нове поле</param>
-		public void AppendField(ConfigurationObjectField field)
-		{
-			Fields.Add(field.Name, field);
-		}
-	}
+        /// <summary>
+        /// Додати нове поле в список полів
+        /// </summary>
+        /// <param name="field">Нове поле</param>
+        public void AppendField(ConfigurationObjectField field)
+        {
+            Fields.Add(field.Name, field);
+        }
+    }
 }

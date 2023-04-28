@@ -55,19 +55,37 @@ namespace AccountingSoftware
             DocField = docfield;
         }
 
+        /// <summary>
+        /// Назва
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Заголовок
+        /// </summary>
         public string Caption { get; set; }
 
+        /// <summary>
+        /// Розмір
+        /// </summary>
         public uint Size { get; set; }
 
+        /// <summary>
+        /// Порядок поля в списку
+        /// </summary>
         public int SortNum { get; set; }
 
+        /// <summary>
+        /// Сортувати по даному полю
+        /// </summary>
         public bool SortField { get; set; }
-        
+
 
         #region ForJournals
 
+        /// <summary>
+        /// Поля для журналу документів, так як даний клас використовується і в журналах
+        /// </summary>
         public string DocField { get; set; }
 
         #endregion

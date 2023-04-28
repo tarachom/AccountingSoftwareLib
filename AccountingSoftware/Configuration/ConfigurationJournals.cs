@@ -68,6 +68,10 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationJournals Copy()
         {
             ConfigurationJournals newJournal = new ConfigurationJournals(this.Name, this.Desc);
@@ -87,6 +91,10 @@ namespace AccountingSoftware
             Fields.Add(field.Name, field);
         }
 
+        /// <summary>
+        /// Додати новий табличний список
+        /// </summary>
+        /// <param name="tabularList"></param>
         public void AppendTableList(ConfigurationTabularList tabularList)
         {
             TabularList.Add(tabularList.Name, tabularList);

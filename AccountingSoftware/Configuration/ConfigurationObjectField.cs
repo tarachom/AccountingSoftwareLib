@@ -99,6 +99,10 @@ namespace AccountingSoftware
         /// </summary>
         public bool IsFullTextSearch { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationObjectField Copy()
         {
             return new ConfigurationObjectField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);

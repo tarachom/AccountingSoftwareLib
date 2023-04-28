@@ -65,11 +65,19 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationConstants> Constants { get; }
 
+        /// <summary>
+        /// Добавлення константи
+        /// </summary>
+        /// <param name="constant"></param>
         public void AppendConstant(ConfigurationConstants constant)
         {
             Constants.Add(constant.Name, constant);
         }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationConstantsBlock Copy()
         {
             ConfigurationConstantsBlock newConstantsBlock = new ConfigurationConstantsBlock(this.BlockName, this.Desc);

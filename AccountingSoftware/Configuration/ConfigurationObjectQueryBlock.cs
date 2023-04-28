@@ -24,7 +24,7 @@ limitations under the License.
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Запити
+    /// Блоки запитів для розрахунків регістрів накопичення
     /// </summary>
     public class ConfigurationObjectQueryBlock
     {
@@ -39,8 +39,14 @@ namespace AccountingSoftware
             FinalCalculation = finalCalculation;
         }
 
+        /// <summary>
+        /// Запити
+        /// </summary>
         public Dictionary<string, string> Query { get; }
 
+        /// <summary>
+        /// Назва блоку
+        /// </summary>
         public string Name { get; set; } = "";
 
         /// <summary>
@@ -48,6 +54,10 @@ namespace AccountingSoftware
         /// </summary>
         public bool FinalCalculation { get; set; }
 
+        /// <summary>
+        /// Стоврення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationObjectQueryBlock Copy()
         {
             ConfigurationObjectQueryBlock newQueryBlock = new ConfigurationObjectQueryBlock(Name);

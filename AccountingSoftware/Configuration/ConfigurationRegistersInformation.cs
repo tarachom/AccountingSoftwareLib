@@ -45,9 +45,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationRegistersInformation(string name, string table, string desc = "") : this()
+        public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "") : this()
         {
             Name = name;
+            FullName = fullname;
             Table = table;
             Desc = desc;
         }
@@ -72,9 +73,13 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationRegistersInformation Copy()
         {
-            ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.Table, this.Desc);
+            ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.FullName, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());

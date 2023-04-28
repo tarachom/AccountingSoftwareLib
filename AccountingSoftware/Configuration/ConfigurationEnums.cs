@@ -73,6 +73,10 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationEnumField> Fields { get; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationEnums Copy()
         {
             ConfigurationEnums newEnum = new ConfigurationEnums(this.Name, this.SerialNumber, this.Desc);

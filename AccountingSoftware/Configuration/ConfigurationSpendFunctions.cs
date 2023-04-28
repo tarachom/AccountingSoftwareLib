@@ -44,6 +44,10 @@ namespace AccountingSoftware
         /// </summary>
         public string ClearSpend { get; set; }
 
+        /// <summary>
+        /// Створення копії
+        /// </summary>
+        /// <returns></returns>
         public ConfigurationSpendFunctions Copy()
         {
             return new ConfigurationSpendFunctions()
