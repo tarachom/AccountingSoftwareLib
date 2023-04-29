@@ -1443,10 +1443,10 @@ namespace AccountingSoftware
 
         private static void LoadJournalsAllowDocument(List<string> allowDocument, XPathNavigator? xPathDocNavigator)
         {
-            XPathNodeIterator? allowDocumentNodes = xPathDocNavigator?.Select("AllowDocument/Name");
+            XPathNodeIterator? allowDocumentNodes = xPathDocNavigator?.Select("AllowDocument/Item");
             while (allowDocumentNodes!.MoveNext())
             {
-                string? name = allowDocumentNodes?.Current?.Value;
+                string? name = allowDocumentNodes?.Current?.SelectSingleNode("Name")?.Value;
 
                 if (name == null)
                     throw new Exception("Не задана назва документу");
@@ -2317,22 +2317,32 @@ namespace AccountingSoftware
                     nodeField.AppendChild(nodeFieldWherePeriod);
                 }
 
-                SaveJournalAllowDocument(journal.Value.AllowDocuments, xmlConfDocument, nodeJournal);
+                SaveJournalAllowDocument(Conf, journal.Value.AllowDocuments, xmlConfDocument, nodeJournal);
 
                 SaveJournalTabularList(Conf, journal.Value.Fields, journal.Value.TabularList, xmlConfDocument, nodeJournal);
             }
         }
 
-        private static void SaveJournalAllowDocument(List<string> allowDocument, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveJournalAllowDocument(Configuration Conf, List<string> allowDocument, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeAllowDocument = xmlConfDocument.CreateElement("AllowDocument");
             rootNode.AppendChild(nodeAllowDocument);
 
             foreach (string name in allowDocument)
             {
+                XmlElement nodeItem = xmlConfDocument.CreateElement("Item");
+                nodeAllowDocument.AppendChild(nodeItem);
+
                 XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                 nodeName.InnerText = name;
-                nodeAllowDocument.AppendChild(nodeName);
+                nodeItem.AppendChild(nodeName);
+
+                if (Conf.Documents.ContainsKey(name))
+                {
+                    XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                    nodeFullName.InnerText = Conf.Documents[name].FullName;
+                    nodeItem.AppendChild(nodeFullName);
+                }
             }
         }
 
