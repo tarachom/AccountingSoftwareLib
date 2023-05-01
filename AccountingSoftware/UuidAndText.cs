@@ -73,6 +73,11 @@ namespace AccountingSoftware
             return Uuid == Guid.Empty;
         }
 
+        public UnigueID UnigueID()
+        {
+            return new UnigueID(Uuid);
+        }
+
         public override string ToString()
         {
             return $"('{Uuid}', '{Text}')";
