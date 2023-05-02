@@ -28,13 +28,9 @@ namespace AccountingSoftware
     /// </summary>
     public class DirectoryPointer
     {
-        public DirectoryPointer()
-        {
-            Table = "";
-            UnigueID = new UnigueID();
-        }
+        public DirectoryPointer() { }
 
-        public DirectoryPointer(Kernel kernel, string table) : this()
+        public DirectoryPointer(Kernel kernel, string table)
         {
             Table = table;
             Kernel = kernel;
@@ -59,12 +55,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Таблиця
         /// </summary>
-        private string Table { get; set; }
+        private string Table { get; set; } = "";
 
         /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
-        public UnigueID UnigueID { get; private set; }
+        public UnigueID UnigueID { get; private set; } = new UnigueID();
 
         /// <summary>
         /// Поля які потрібно додатково зчитати з бази даних 

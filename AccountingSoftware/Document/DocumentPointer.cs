@@ -28,14 +28,9 @@ namespace AccountingSoftware
     /// </summary>
     public class DocumentPointer
     {
-        public DocumentPointer()
-        {
-            UnigueID = new UnigueID();
-            Table = TypeDocument = "";
-            Fields = new Dictionary<string, object>();
-        }
+        public DocumentPointer() { }
 
-        public DocumentPointer(Kernel kernel, string table, string typeDocument) : this()
+        public DocumentPointer(Kernel kernel, string table, string typeDocument)
         {
             Table = table;
             Kernel = kernel;
@@ -61,17 +56,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Таблиця
         /// </summary>
-        private string Table { get; set; }
+        private string Table { get; set; } = "";
 
         /// <summary>
         /// Назва як задано в конфігураторі
         /// </summary>
-        public string TypeDocument { get; private set; }
+        public string TypeDocument { get; private set; } = "";
 
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; private set; }
+        public UnigueID UnigueID { get; private set; } = new UnigueID();
 
         /// <summary>
         /// Поля які потрібно додатково зчитати
@@ -114,6 +109,11 @@ namespace AccountingSoftware
             else return "";
         }
 
+        /// <summary>
+        /// Проведення
+        /// </summary>
+        /// <param name="spend">Мітка проведення</param>
+        /// <param name="spend_date">Дата проведення</param>
         protected void BaseSpend(bool spend, DateTime spend_date)
         {
             if (Kernel != null && !IsEmpty())
@@ -137,6 +137,5 @@ namespace AccountingSoftware
                     Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
             }
         }
-
     }
 }
