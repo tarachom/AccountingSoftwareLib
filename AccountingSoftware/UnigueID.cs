@@ -23,17 +23,17 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Унікальний ідентифікатор
-	/// </summary>
-	public class UnigueID
-	{
-		/// <summary>
-		/// Пустий вказівник
-		/// </summary>
-		public UnigueID()
-		{
-			UGuid = Guid.Empty;
+    /// <summary>
+    /// Унікальний ідентифікатор
+    /// </summary>
+    public class UnigueID
+    {
+        /// <summary>
+        /// Пустий вказівник
+        /// </summary>
+        public UnigueID()
+        {
+            UGuid = Guid.Empty;
         }
 
         /// <summary>
@@ -41,56 +41,61 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uGuid">Унікальний ідентифікатор</param>
         public UnigueID(Guid uGuid)
-		{
-			UGuid = uGuid;
-		}
-
-		/// <summary>
-		/// Унікальний ідентифікатор
-		/// </summary>
-		/// <param name="uGuid">Унікальний ідентифікатор як object</param>
-		public UnigueID(object? uGuid)
-		{
-			if (uGuid != null && uGuid != DBNull.Value)
-				UGuid = (Guid)uGuid;
-			else
-				UGuid = Guid.Empty;
-		}
-
-		/// <summary>
-		/// Унікальний ідентифікатор у формі тексту. Використовується Guid.Parse(uGuid).
-		/// </summary>
-		/// <param name="uGuid">Унікальний ідентифікатор</param>
-		public UnigueID(string uGuid)
-		{
-			Guid resultUGuid;
-
-			if (Guid.TryParse(uGuid, out resultUGuid))
-				UGuid = resultUGuid;
-			else
-				UGuid = Guid.Empty;
-		}
-
-		/// <summary>
-		/// Чи це пустий вказівник?
-		/// </summary>
-		/// <returns></returns>
-		public bool IsEmpty()
-		{
-			return UGuid == Guid.Empty;
+        {
+            UGuid = uGuid;
         }
 
-		/// <summary>
-		/// Згенерувати новий ідентифікатор
-		/// </summary>
-		public void New()
-		{
-			UGuid = Guid.NewGuid();
+        /// <summary>
+        /// Унікальний ідентифікатор
+        /// </summary>
+        /// <param name="uGuid">Унікальний ідентифікатор як object</param>
+        public UnigueID(object? uGuid)
+        {
+            if (uGuid != null && uGuid != DBNull.Value)
+                UGuid = (Guid)uGuid;
+            else
+                UGuid = Guid.Empty;
+        }
+
+        /// <summary>
+        /// Унікальний ідентифікатор у формі тексту. Використовується Guid.Parse(uGuid).
+        /// </summary>
+        /// <param name="uGuid">Унікальний ідентифікатор</param>
+        public UnigueID(string uGuid)
+        {
+            Guid resultUGuid;
+
+            if (Guid.TryParse(uGuid, out resultUGuid))
+                UGuid = resultUGuid;
+            else
+                UGuid = Guid.Empty;
+        }
+
+        /// <summary>
+        /// Чи це пустий вказівник?
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return UGuid == Guid.Empty;
+        }
+
+        /// <summary>
+        /// Згенерувати новий ідентифікатор
+        /// </summary>
+        public void New()
+        {
+            UGuid = Guid.NewGuid();
         }
 
         public static UnigueID NewUnigueID()
         {
-			return new UnigueID(Guid.NewGuid());
+            return new UnigueID(Guid.NewGuid());
+        }
+
+        public void Clear()
+        {
+            UGuid = Guid.Empty;
         }
 
         /// <summary>
@@ -98,9 +103,9 @@ namespace AccountingSoftware
         /// </summary>
         public Guid UGuid { get; private set; }
 
-		public override string ToString()
-		{
-			return UGuid.ToString();
-		}
-	}
+        public override string ToString()
+        {
+            return UGuid.ToString();
+        }
+    }
 }

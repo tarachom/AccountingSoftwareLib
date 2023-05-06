@@ -1282,11 +1282,12 @@ namespace AccountingSoftware
             {
                 string? name = tabularListsNodes?.Current?.SelectSingleNode("Name")?.Value;
                 string desc = tabularListsNodes?.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                string isTree = tabularListsNodes?.Current?.SelectSingleNode("IsTree")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва табличного списку");
 
-                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc, isTree == "1");
                 tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                 XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
@@ -1779,7 +1780,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveFields(Dictionary<string, ConfigurationObjectField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName)
+        public static void SaveFields(Dictionary<string, ConfigurationObjectField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
         {
             XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
             rootNode.AppendChild(nodeFields);
@@ -1829,7 +1830,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveTabularParts(Dictionary<string, ConfigurationObjectTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTabularParts(Dictionary<string, ConfigurationObjectTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularParts = xmlConfDocument.CreateElement("TabularParts");
             rootNode.AppendChild(nodeTabularParts);
@@ -1858,6 +1859,11 @@ namespace AccountingSoftware
         private static void SaveTabularList(Configuration Conf, Dictionary<string, ConfigurationObjectField> fields,
             Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
+            /*
+            fields - список полів довідника чи документу
+            tabularLists - колекція  табличних списків
+            */
+
             XmlElement nodeTabularLists = xmlConfDocument.CreateElement("TabularLists");
             rootNode.AppendChild(nodeTabularLists);
 
@@ -1873,6 +1879,10 @@ namespace AccountingSoftware
                 XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
                 nodeTabularListDesc.InnerText = tabularList.Value.Desc;
                 nodeTabularList.AppendChild(nodeTabularListDesc);
+
+                XmlElement nodeTabularListIsTree = xmlConfDocument.CreateElement("IsTree");
+                nodeTabularListIsTree.InnerText = tabularList.Value.IsTree ? "1" : "0";
+                nodeTabularList.AppendChild(nodeTabularListIsTree);
 
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
@@ -1905,6 +1915,8 @@ namespace AccountingSoftware
                         XmlElement nodeSortField = xmlConfDocument.CreateElement("SortField");
                         nodeSortField.InnerText = field.Value.SortField.ToString();
                         nodeTabularListField.AppendChild(nodeSortField);
+
+                        #region Додаткова інформація для полегшення генерування коду
 
                         //
                         // ObjField Info
@@ -2002,6 +2014,9 @@ namespace AccountingSoftware
                                 }
                             }
                         }
+
+                        #endregion
+
                     }
                 }
             }
@@ -2060,6 +2075,8 @@ namespace AccountingSoftware
                         XmlElement nodeWherePeriod = xmlConfDocument.CreateElement("WherePeriod");
                         nodeWherePeriod.InnerText = fields[field.Key].WherePeriod ? "1" : "0";
                         nodeTabularListField.AppendChild(nodeWherePeriod);
+
+                        #region Додаткова інформація для полегшення генерування коду
 
                         //
                         // ObjField Info
@@ -2162,7 +2179,10 @@ namespace AccountingSoftware
                                     }
                                 }
                             }
+
                         }
+
+                        #endregion
                     }
                 }
             }
@@ -2827,6 +2847,36 @@ namespace AccountingSoftware
             xsltCodeGnerator.Transform(pathToXML, xsltArgumentList, fileStream);
 
             fileStream.Close();
+        }
+
+
+        public static string? Transform(XmlDocument xmlDoc, string pathToTemplate, Dictionary<string, object>? arguments)
+        {
+            XPathNavigator? navigator = xmlDoc.CreateNavigator();
+            string result = "";
+
+            if (navigator != null)
+            {
+                XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+                xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
+
+                XsltArgumentList? xsltArgumentList = null;
+
+                if (arguments != null)
+                {
+                    xsltArgumentList = new XsltArgumentList();
+                    foreach (KeyValuePair<string, object> argument in arguments)
+                        xsltArgumentList.AddParam(argument.Key, "", argument.Value);
+                }
+
+                using (TextWriter writer = new StringWriter())
+                {
+                    xsltCodeGnerator.Transform(navigator, xsltArgumentList, writer);
+                    result = writer?.ToString() ?? "";
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

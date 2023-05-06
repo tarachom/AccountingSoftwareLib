@@ -35,10 +35,11 @@ namespace AccountingSoftware
             Fields = new Dictionary<string, ConfigurationTabularListField>();
         }
 
-        public ConfigurationTabularList(string name, string desc) : this()
+        public ConfigurationTabularList(string name, string desc, bool isTree = false) : this()
         {
             Name = name;
             Desc = desc;
+            IsTree = isTree;
         }
 
         /// <summary>
@@ -50,6 +51,11 @@ namespace AccountingSoftware
         /// Опис
         /// </summary>
         public string Desc { get; set; }
+
+        /// <summary>
+        /// Список для виводу дерева (для довідників)
+        /// </summary>
+        public bool IsTree { get; set; }
 
         /// <summary>
         /// Поля
