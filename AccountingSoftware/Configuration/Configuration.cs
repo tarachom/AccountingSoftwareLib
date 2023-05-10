@@ -2849,7 +2849,13 @@ namespace AccountingSoftware
             fileStream.Close();
         }
 
-
+        /// <summary>
+        /// Трансформація ХМЛ документу
+        /// </summary>
+        /// <param name="xmlDoc">ХМЛ документ</param>
+        /// <param name="pathToTemplate">Шаблон</param>
+        /// <param name="arguments">Аргументи</param>
+        /// <returns>Повертає результат трансформації</returns>
         public static string? Transform(XmlDocument xmlDoc, string pathToTemplate, Dictionary<string, object>? arguments)
         {
             XPathNavigator? navigator = xmlDoc.CreateNavigator();
