@@ -1809,7 +1809,7 @@ namespace AccountingSoftware
                 }
 
                 XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
-                nodeFieldDesc.InnerText = field.Value.Desc;
+                nodeFieldDesc.InnerText = field.Value.Desc.Trim();
                 nodeField.AppendChild(nodeFieldDesc);
 
                 if (parentName == "Directory" || parentName == "Document")
