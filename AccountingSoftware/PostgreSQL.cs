@@ -1002,13 +1002,16 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
         {
             if (DataSource != null)
             {
+                /*ts_rank(vector, plainto_tsquery('russian', @findtext)) AS rank,*/
+                /*, rank DESC */
+
                 string query = $@"
-WITH find_rows AS (
+WITH find_rows AS 
+(
     SELECT 
         uidobj,
         obj,
         groupname,
-        ts_rank(vector, plainto_tsquery('russian', @findtext)) AS rank,
         value,
         dateadd
     FROM 
@@ -1017,8 +1020,7 @@ WITH find_rows AS (
         vector @@ plainto_tsquery('russian', @findtext)
     ORDER BY
         groupname ASC, 
-        dateadd DESC,
-        rank DESC
+        dateadd DESC
     LIMIT 10 OFFSET {offset}
 )
 SELECT
