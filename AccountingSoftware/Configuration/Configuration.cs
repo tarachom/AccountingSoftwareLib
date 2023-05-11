@@ -1232,24 +1232,23 @@ namespace AccountingSoftware
 
                 bool isPresentation = false;
                 if (parentName == "Directory" || parentName == "Document")
-                {
-                    string isPresentationString = fieldNodes?.Current?.SelectSingleNode("IsPresentation")?.Value ?? "";
-                    isPresentation = isPresentationString == "1";
-                }
+                    isPresentation = (fieldNodes?.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
 
-                string isIndexString = fieldNodes?.Current?.SelectSingleNode("IsIndex")?.Value ?? "";
-                bool isIndex = isIndexString == "1";
-
-                string isFullTextSearchString = fieldNodes?.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "";
-                bool isFullTextSearch = isFullTextSearchString == "1";
+                bool isIndex = (fieldNodes?.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
+                bool isFullTextSearch = (fieldNodes?.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
 
                 string pointer = "";
                 if (type == "pointer" || type == "enum")
-                {
                     pointer = fieldNodes?.Current?.SelectSingleNode("Pointer")?.Value ?? "";
-                }
 
                 ConfigurationObjectField ConfObjectField = new ConfigurationObjectField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
+
+                //
+                // Для генерування коду
+                //
+
+                if (type == "string")
+                    ConfObjectField.Multiline = (fieldNodes?.Current?.SelectSingleNode("Multiline")?.Value ?? "") == "1";
 
                 fields.Add(name, ConfObjectField);
             }
@@ -1827,6 +1826,17 @@ namespace AccountingSoftware
                 XmlElement nodeFieldIsFullTextSearch = xmlConfDocument.CreateElement("IsFullTextSearch");
                 nodeFieldIsFullTextSearch.InnerText = field.Value.IsFullTextSearch ? "1" : "0";
                 nodeField.AppendChild(nodeFieldIsFullTextSearch);
+
+                //
+                // Для генерування коду
+                //
+
+                if (field.Value.Type == "string")
+                {
+                    XmlElement nodeFieldMultiline = xmlConfDocument.CreateElement("Multiline");
+                    nodeFieldMultiline.InnerText = field.Value.Multiline ? "1" : "0";
+                    nodeField.AppendChild(nodeFieldMultiline);
+                }
             }
         }
 

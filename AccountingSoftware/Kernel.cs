@@ -164,6 +164,12 @@ namespace AccountingSoftware
         /// </summary>
         public Guid Session { get; private set; }
 
+        /// <summary>
+        /// Авторизація 
+        /// </summary>
+        /// <param name="user">Користувач</param>
+        /// <param name="password">Пароль</param>
+        /// <returns></returns>
         public bool UserLogIn(string user, string password)
         {
             (Guid, Guid)? userSession = DataBase.SpetialTableUsersLogIn(user, password);

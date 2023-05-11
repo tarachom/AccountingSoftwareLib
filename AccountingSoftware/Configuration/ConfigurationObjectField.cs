@@ -100,6 +100,11 @@ namespace AccountingSoftware
         public bool IsFullTextSearch { get; set; }
 
         /// <summary>
+        /// Багатострічкове поле (тільки для типу string)
+        /// </summary>
+        public bool Multiline { get; set; }
+
+        /// <summary>
         /// Створення копії
         /// </summary>
         /// <returns></returns>
