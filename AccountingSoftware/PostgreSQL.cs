@@ -1906,59 +1906,60 @@ FROM
                 string query = "";
                 int counter = 0;
 
-                foreach (string table in tables)
+                if (tables.Length > 0)
                 {
-                    //if (typeDocSelect != null)
-                    //{
-                    //	bool existTypeDoc = false;
-
-                    //	foreach (string typeDoc in typeDocSelect)
-                    //		if (typeDocument[counter] == typeDoc)
-                    //		{
-                    //			existTypeDoc = true;
-                    //			break;
-                    //		}
-
-                    //	if (!existTypeDoc)
-                    //	{
-                    //		counter++;
-                    //		continue;
-                    //	}
-                    //}
-
-                    query += (counter > 0 ? "\nUNION " : "") +
-                        $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
-                        "WHERE docdate >= @periodstart AND docdate <= @periodend)";
-
-                    counter++;
-                }
-
-                query += "\nORDER BY docdate";
-
-                //Console.WriteLine(query);
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("periodstart", periodStart);
-                command.Parameters.AddWithValue("periodend", periodEnd);
-
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    JournalDocument document = new JournalDocument()
+                    foreach (string table in tables)
                     {
-                        UnigueID = new UnigueID(reader["uid"]),
-                        DocName = reader["docname"]?.ToString() ?? "",
-                        DocDate = reader["docdate"]?.ToString() ?? "",
-                        DocNomer = reader["docnomer"]?.ToString() ?? "",
-                        DeletionLabel = (bool)reader["deletion_label"],
-                        Spend = (bool)reader["spend"],
-                        SpendDate = (DateTime)reader["spend_date"],
-                        TypeDocument = reader["type_doc"]?.ToString() ?? ""
-                    };
+                        //if (typeDocSelect != null)
+                        //{
+                        //	bool existTypeDoc = false;
 
-                    listJournalDocument.Add(document);
+                        //	foreach (string typeDoc in typeDocSelect)
+                        //		if (typeDocument[counter] == typeDoc)
+                        //		{
+                        //			existTypeDoc = true;
+                        //			break;
+                        //		}
+
+                        //	if (!existTypeDoc)
+                        //	{
+                        //		counter++;
+                        //		continue;
+                        //	}
+                        //}
+
+                        query += (counter > 0 ? "\nUNION " : "") +
+                            $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
+                            "WHERE docdate >= @periodstart AND docdate <= @periodend)";
+
+                        counter++;
+                    }
+
+                    query += "\nORDER BY docdate";
+
+                    NpgsqlCommand command = DataSource.CreateCommand(query);
+                    command.Parameters.AddWithValue("periodstart", periodStart);
+                    command.Parameters.AddWithValue("periodend", periodEnd);
+
+                    NpgsqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        JournalDocument document = new JournalDocument()
+                        {
+                            UnigueID = new UnigueID(reader["uid"]),
+                            DocName = reader["docname"]?.ToString() ?? "",
+                            DocDate = reader["docdate"]?.ToString() ?? "",
+                            DocNomer = reader["docnomer"]?.ToString() ?? "",
+                            DeletionLabel = (bool)reader["deletion_label"],
+                            Spend = (bool)reader["spend"],
+                            SpendDate = (DateTime)reader["spend_date"],
+                            TypeDocument = reader["type_doc"]?.ToString() ?? ""
+                        };
+
+                        listJournalDocument.Add(document);
+                    }
+                    reader.Close();
                 }
-                reader.Close();
             }
         }
 
