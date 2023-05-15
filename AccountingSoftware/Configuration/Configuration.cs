@@ -2040,159 +2040,162 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in tabularLists)
             {
-                int counterJoin = 0;
-                ConfigurationDocuments Doc = Conf.Documents[tabularList.Key];
-
-                XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
-                nodeTabularLists.AppendChild(nodeTabularList);
-
-                XmlElement nodeTabularListName = xmlConfDocument.CreateElement("Name");
-                nodeTabularListName.InnerText = tabularList.Key;
-                nodeTabularList.AppendChild(nodeTabularListName);
-
-                XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
-                nodeTabularListDesc.InnerText = tabularList.Value.Desc;
-                nodeTabularList.AppendChild(nodeTabularListDesc);
-
-                XmlElement nodeTabularListTable = xmlConfDocument.CreateElement("Table");
-                nodeTabularListTable.InnerText = Doc.Table;
-                nodeTabularList.AppendChild(nodeTabularListTable);
-
-                XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
-                nodeTabularList.AppendChild(nodeTabularListFields);
-
-                foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
+                if (Conf.Documents.ContainsKey(tabularList.Key))
                 {
-                    if (fields.ContainsKey(field.Key))
+                    int counterJoin = 0;
+                    ConfigurationDocuments Doc = Conf.Documents[tabularList.Key];
+
+                    XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
+                    nodeTabularLists.AppendChild(nodeTabularList);
+
+                    XmlElement nodeTabularListName = xmlConfDocument.CreateElement("Name");
+                    nodeTabularListName.InnerText = tabularList.Key;
+                    nodeTabularList.AppendChild(nodeTabularListName);
+
+                    XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeTabularListDesc.InnerText = tabularList.Value.Desc;
+                    nodeTabularList.AppendChild(nodeTabularListDesc);
+
+                    XmlElement nodeTabularListTable = xmlConfDocument.CreateElement("Table");
+                    nodeTabularListTable.InnerText = Doc.Table;
+                    nodeTabularList.AppendChild(nodeTabularListTable);
+
+                    XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
+                    nodeTabularList.AppendChild(nodeTabularListFields);
+
+                    foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
                     {
-                        string docField = field.Value.DocField;
-
-                        XmlElement nodeTabularListField = xmlConfDocument.CreateElement("Field");
-                        nodeTabularListFields.AppendChild(nodeTabularListField);
-
-                        XmlElement nodeName = xmlConfDocument.CreateElement("Name");
-                        nodeName.InnerText = field.Key;
-                        nodeTabularListField.AppendChild(nodeName);
-
-                        XmlElement nodeDocField = xmlConfDocument.CreateElement("DocField");
-                        nodeDocField.InnerText = docField;
-                        nodeTabularListField.AppendChild(nodeDocField);
-
-                        XmlElement nodeSqlType = xmlConfDocument.CreateElement("SqlType");
-                        nodeSqlType.InnerText = fields[field.Key].Type;
-                        nodeTabularListField.AppendChild(nodeSqlType);
-
-                        XmlElement nodeWherePeriod = xmlConfDocument.CreateElement("WherePeriod");
-                        nodeWherePeriod.InnerText = fields[field.Key].WherePeriod ? "1" : "0";
-                        nodeTabularListField.AppendChild(nodeWherePeriod);
-
-                        #region Додаткова інформація для полегшення генерування коду
-
-                        //
-                        // ObjField Info
-                        //
-
-                        //Поле документу
-                        if (!String.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
+                        if (fields.ContainsKey(field.Key))
                         {
-                            ConfigurationObjectField objField = Doc.Fields[docField];
+                            string docField = field.Value.DocField;
 
-                            XmlElement nodeType = xmlConfDocument.CreateElement("Type");
-                            nodeType.InnerText = objField.Type;
-                            nodeTabularListField.AppendChild(nodeType);
+                            XmlElement nodeTabularListField = xmlConfDocument.CreateElement("Field");
+                            nodeTabularListFields.AppendChild(nodeTabularListField);
 
-                            XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
-                            nodePointer.InnerText = objField.Pointer;
-                            nodeTabularListField.AppendChild(nodePointer);
+                            XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                            nodeName.InnerText = field.Key;
+                            nodeTabularListField.AppendChild(nodeName);
 
-                            if (objField.Type == "pointer")
+                            XmlElement nodeDocField = xmlConfDocument.CreateElement("DocField");
+                            nodeDocField.InnerText = docField;
+                            nodeTabularListField.AppendChild(nodeDocField);
+
+                            XmlElement nodeSqlType = xmlConfDocument.CreateElement("SqlType");
+                            nodeSqlType.InnerText = fields[field.Key].Type;
+                            nodeTabularListField.AppendChild(nodeSqlType);
+
+                            XmlElement nodeWherePeriod = xmlConfDocument.CreateElement("WherePeriod");
+                            nodeWherePeriod.InnerText = fields[field.Key].WherePeriod ? "1" : "0";
+                            nodeTabularListField.AppendChild(nodeWherePeriod);
+
+                            #region Додаткова інформація для полегшення генерування коду
+
+                            //
+                            // ObjField Info
+                            //
+
+                            //Поле документу
+                            if (!String.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
                             {
-                                string[] typeConf = objField.Pointer.Split(".");
-                                if (typeConf.Length == 2)
+                                ConfigurationObjectField objField = Doc.Fields[docField];
+
+                                XmlElement nodeType = xmlConfDocument.CreateElement("Type");
+                                nodeType.InnerText = objField.Type;
+                                nodeTabularListField.AppendChild(nodeType);
+
+                                XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
+                                nodePointer.InnerText = objField.Pointer;
+                                nodeTabularListField.AppendChild(nodePointer);
+
+                                if (objField.Type == "pointer")
                                 {
-                                    string groupTypeConf = typeConf[0];
-                                    string nameTypeConf = typeConf[1];
-
-                                    if (groupTypeConf == "Довідники")
+                                    string[] typeConf = objField.Pointer.Split(".");
+                                    if (typeConf.Length == 2)
                                     {
-                                        if (Conf.Directories.ContainsKey(nameTypeConf))
+                                        string groupTypeConf = typeConf[0];
+                                        string nameTypeConf = typeConf[1];
+
+                                        if (groupTypeConf == "Довідники")
                                         {
-                                            Dictionary<string, ConfigurationObjectField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
-                                            if (directoryPointerFields.Count != 0)
+                                            if (Conf.Directories.ContainsKey(nameTypeConf))
                                             {
-                                                XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                                nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                                nodeTabularListField.AppendChild(nodeJoinTable);
-
-                                                bool isExistPresentation = false;
-
-                                                foreach (ConfigurationObjectField itemDirectoryPointerFields in directoryPointerFields.Values)
+                                                Dictionary<string, ConfigurationObjectField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                                                if (directoryPointerFields.Count != 0)
                                                 {
-                                                    if (itemDirectoryPointerFields.IsPresentation)
+                                                    XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                                    nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                                                    nodeTabularListField.AppendChild(nodeJoinTable);
+
+                                                    bool isExistPresentation = false;
+
+                                                    foreach (ConfigurationObjectField itemDirectoryPointerFields in directoryPointerFields.Values)
                                                     {
+                                                        if (itemDirectoryPointerFields.IsPresentation)
+                                                        {
+                                                            XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                            nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                                                            nodeTabularListField.AppendChild(nodeFieldAndAlias);
+
+                                                            isExistPresentation = true;
+                                                            break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                                        }
+                                                    }
+
+                                                    if (isExistPresentation == false)
+                                                    {
+                                                        ConfigurationObjectField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+
                                                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
                                                         nodeTabularListField.AppendChild(nodeFieldAndAlias);
-
-                                                        isExistPresentation = true;
-                                                        break; /* Для журналу документів береться тільки перше презентаційне поле */
                                                     }
-                                                }
-
-                                                if (isExistPresentation == false)
-                                                {
-                                                    ConfigurationObjectField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
-
-                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
-                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
                                                 }
                                             }
                                         }
-                                    }
-                                    else if (groupTypeConf == "Документи")
-                                    {
-                                        if (Conf.Documents.ContainsKey(nameTypeConf))
+                                        else if (groupTypeConf == "Документи")
                                         {
-                                            Dictionary<string, ConfigurationObjectField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
-                                            if (documentPointerFields.Count != 0)
+                                            if (Conf.Documents.ContainsKey(nameTypeConf))
                                             {
-                                                XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                                nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                                nodeTabularListField.AppendChild(nodeJoinTable);
-
-                                                bool isExistPresentation = false;
-
-                                                foreach (ConfigurationObjectField itemDocumentPointerFields in documentPointerFields.Values)
+                                                Dictionary<string, ConfigurationObjectField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                                                if (documentPointerFields.Count != 0)
                                                 {
-                                                    if (itemDocumentPointerFields.IsPresentation)
+                                                    XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                                    nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                                                    nodeTabularListField.AppendChild(nodeJoinTable);
+
+                                                    bool isExistPresentation = false;
+
+                                                    foreach (ConfigurationObjectField itemDocumentPointerFields in documentPointerFields.Values)
                                                     {
+                                                        if (itemDocumentPointerFields.IsPresentation)
+                                                        {
+                                                            XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                                            nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                                                            nodeTabularListField.AppendChild(nodeFieldAndAlias);
+
+                                                            isExistPresentation = true;
+                                                            break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                                        }
+                                                    }
+
+                                                    if (isExistPresentation == false)
+                                                    {
+                                                        ConfigurationObjectField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+
                                                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
                                                         nodeTabularListField.AppendChild(nodeFieldAndAlias);
-
-                                                        isExistPresentation = true;
-                                                        break; /* Для журналу документів береться тільки перше презентаційне поле */
                                                     }
-                                                }
-
-                                                if (isExistPresentation == false)
-                                                {
-                                                    ConfigurationObjectField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
-
-                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
-                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
                                                 }
                                             }
                                         }
                                     }
                                 }
+
                             }
 
+                            #endregion
                         }
-
-                        #endregion
                     }
                 }
             }
