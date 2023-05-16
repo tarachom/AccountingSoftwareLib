@@ -1947,13 +1947,13 @@ FROM
                         JournalDocument document = new JournalDocument()
                         {
                             UnigueID = new UnigueID(reader["uid"]),
-                            DocName = reader["docname"]?.ToString() ?? "",
-                            DocDate = reader["docdate"]?.ToString() ?? "",
-                            DocNomer = reader["docnomer"]?.ToString() ?? "",
+                            DocName = reader["docname"].ToString() ?? "",
+                            DocDate = reader["docdate"].ToString() ?? "",
+                            DocNomer = reader["docnomer"].ToString() ?? "",
                             DeletionLabel = (bool)reader["deletion_label"],
                             Spend = (bool)reader["spend"],
                             SpendDate = (DateTime)reader["spend_date"],
-                            TypeDocument = reader["type_doc"]?.ToString() ?? ""
+                            TypeDocument = reader["type_doc"].ToString() ?? ""
                         };
 
                         listJournalDocument.Add(document);
