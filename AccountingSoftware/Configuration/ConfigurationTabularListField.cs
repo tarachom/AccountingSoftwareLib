@@ -38,6 +38,7 @@ namespace AccountingSoftware
         public ConfigurationTabularListField(string name) : this()
         {
             Name = name;
+            Caption = name;
         }
 
         public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false) : this()
@@ -73,7 +74,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Порядок поля в списку
         /// </summary>
-        public int SortNum { get; set; }
+        public int SortNum { get; set; } = 100;
 
         /// <summary>
         /// Сортувати по даному полю

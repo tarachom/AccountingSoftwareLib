@@ -35,7 +35,7 @@ namespace AccountingSoftware
             Fields = new Dictionary<string, ConfigurationTabularListField>();
         }
 
-        public ConfigurationTabularList(string name, string desc, bool isTree = false) : this()
+        public ConfigurationTabularList(string name, string desc = "", bool isTree = false) : this()
         {
             Name = name;
             Desc = desc;
