@@ -28,49 +28,40 @@ namespace AccountingSoftware
 	/// </summary>
 	public class JournalDocument
 	{
-		public JournalDocument()
-		{
-			TypeDocument = "";
-			UnigueID = new UnigueID();
-			DocName = "";
-			DocNomer = "";
-			DocDate = "";
-		}
-
 		/// <summary>
 		/// Назва як задано в конфігураторі
 		/// </summary>
-		public string TypeDocument { get; set; }
+		public string TypeDocument { get; set; } = "";
 
 		/// <summary>
 		/// Унікальний ідентифікатор запису
 		/// </summary>
-		public UnigueID UnigueID { get; set; }
+		public UnigueID UnigueID { get; set; } = new UnigueID();
 
 		/// <summary>
 		/// Назва документу
 		/// </summary>
-		public string DocName { get; set; }
+		public string DocName { get; set; } = "";
 
 		/// <summary>
 		/// Номер документу
 		/// </summary>
-		public string DocNomer { get; set; }
+		public string DocNomer { get; set; } = "";
 
 		/// <summary>
 		/// Дата документу
 		/// </summary>
-		public string DocDate { get; set; }
+		public string DocDate { get; set; } = "";
 
-        /// <summary>
-        /// Мітка видалення
-        /// </summary>
-        public bool DeletionLabel { get; set; }
+		/// <summary>
+		/// Мітка видалення
+		/// </summary>
+		public bool DeletionLabel { get; set; }
 
-        /// <summary>
-        /// Документ проведений
-        /// </summary>
-        public bool Spend { get; set; }
+		/// <summary>
+		/// Документ проведений
+		/// </summary>
+		public bool Spend { get; set; }
 
 		/// <summary>
 		/// Дата проведення документу

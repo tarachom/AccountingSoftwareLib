@@ -28,12 +28,7 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationJournalField
     {
-        public ConfigurationJournalField()
-        {
-            Name = "";
-            Desc = "";
-            Type = "";
-        }
+        public ConfigurationJournalField() { }
 
         /// <summary>
         /// Поле журналу 
@@ -53,17 +48,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// SQL тип поля
         /// </summary>
-        public string Type { get; set; }
+        public string Type { get; set; } = "";
 
         /// <summary>
         /// Сортувати по полю

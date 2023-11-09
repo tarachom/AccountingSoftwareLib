@@ -31,13 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Довідник
         /// </summary>
-        public ConfigurationDirectories()
-        {
-            Fields = new Dictionary<string, ConfigurationObjectField>();
-            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-            TriggerFunctions = new ConfigurationTriggerFunctions();
-            TabularList = new Dictionary<string, ConfigurationTabularList>();
-        }
+        public ConfigurationDirectories() { }
 
         /// <summary>
         /// Довідник
@@ -45,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationDirectories(string name, string fullname, string table, string desc = "", bool automaticNumeration = false) : this()
+        public ConfigurationDirectories(string name, string fullname, string table, string desc = "", bool automaticNumeration = false)
         {
             Name = name;
             FullName = fullname;
@@ -57,22 +51,22 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; }
+        public Dictionary<string, ConfigurationObjectField> Fields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
 
         /// <summary>
         /// Тригери
         /// </summary>
-        public ConfigurationTriggerFunctions TriggerFunctions { get; set; }
+        public ConfigurationTriggerFunctions TriggerFunctions { get; set; } = new ConfigurationTriggerFunctions();
 
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
 
         /// <summary>
         /// Автоматична нумерація

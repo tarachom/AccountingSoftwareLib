@@ -31,10 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Таблична частина
         /// </summary>
-        public ConfigurationObjectTablePart()
-        {
-            Fields = new Dictionary<string, ConfigurationObjectField>();
-        }
+        public ConfigurationObjectTablePart() { }
 
         /// <summary>
         /// Таблична частина
@@ -42,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationObjectTablePart(string name, string table, string desc = "") : this()
+        public ConfigurationObjectTablePart(string name, string table, string desc = "")
         {
             Name = name;
             Table = table;
@@ -52,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; }
+        public Dictionary<string, ConfigurationObjectField> Fields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Створення копії

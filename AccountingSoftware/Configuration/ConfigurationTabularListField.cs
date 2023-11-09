@@ -28,20 +28,14 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTabularListField
     {
-        public ConfigurationTabularListField()
+        public ConfigurationTabularListField() { }
+
+        public ConfigurationTabularListField(string name)
         {
-            Name = "";
-            Caption = "";
-            DocField = "";
+            Name = Caption = name;
         }
 
-        public ConfigurationTabularListField(string name) : this()
-        {
-            Name = name;
-            Caption = name;
-        }
-
-        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false) : this()
+        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false)
         {
             Name = name;
             Caption = caption;
@@ -50,7 +44,7 @@ namespace AccountingSoftware
             SortField = sortField;
         }
 
-        public ConfigurationTabularListField(string name, string docfield) : this()
+        public ConfigurationTabularListField(string name, string docfield)
         {
             Name = name;
             DocField = docfield;
@@ -59,12 +53,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Заголовок
         /// </summary>
-        public string Caption { get; set; }
+        public string Caption { get; set; } = "";
 
         /// <summary>
         /// Розмір
@@ -87,7 +81,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля для журналу документів, так як даний клас використовується і в журналах
         /// </summary>
-        public string DocField { get; set; }
+        public string DocField { get; set; } = "";
 
         #endregion
     }

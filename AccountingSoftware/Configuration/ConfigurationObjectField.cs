@@ -31,14 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поле
         /// </summary>
-        public ConfigurationObjectField()
-        {
-            Name = "";
-            NameInTable = "";
-            Type = "";
-            Pointer = "";
-            Desc = "";
-        }
+        public ConfigurationObjectField() { }
 
         /// <summary>Поле</summary>
         /// <param name="name">Назва поля</param>
@@ -62,27 +55,27 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва поля в конфігурації
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Назва поля в базі даних
         /// </summary>
-        public string NameInTable { get; set; }
+        public string NameInTable { get; set; } = "";
 
         /// <summary>
         /// Тип даних
         /// </summary>
-        public string Type { get; set; }
+        public string Type { get; set; } = "";
 
         /// <summary>
         /// Вказівник на об'єкт конфігурації
         /// </summary>
-        public string Pointer { get; set; }
+        public string Pointer { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Використовувати поле для презентації в списках і формах

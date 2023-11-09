@@ -32,13 +32,6 @@ namespace AccountingSoftware
         {
             Conf = new Configuration();
             DataBase = new PostgreSQL();
-
-            DataBase_Server = "";
-            DataBase_UserId = "";
-            DataBase_Port = "";
-            DataBase_BaseName = "";
-
-            User = Session = Guid.Empty;
         }
 
         /// <summary>
@@ -157,12 +150,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Авторизований користувач
         /// </summary>
-        public Guid User { get; private set; }
+        public Guid User { get; private set; } = Guid.Empty;
 
         /// <summary>
         /// Сесія користувача
         /// </summary>
-        public Guid Session { get; private set; }
+        public Guid Session { get; private set; } = Guid.Empty;
 
         /// <summary>
         /// Авторизація 
@@ -191,10 +184,10 @@ namespace AccountingSoftware
 
         #region DataBase Info
 
-        public string DataBase_Server { get; private set; }
-        public string DataBase_UserId { get; private set; }
-        public string DataBase_Port { get; private set; }
-        public string DataBase_BaseName { get; private set; }
+        public string DataBase_Server { get; private set; } = "";
+        public string DataBase_UserId { get; private set; } = "";
+        public string DataBase_Port { get; private set; } = "";
+        public string DataBase_BaseName { get; private set; } = "";
 
         #endregion
     }

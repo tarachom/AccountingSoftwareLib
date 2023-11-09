@@ -34,9 +34,6 @@ namespace AccountingSoftware
 			Table = table;
 
 			QuerySelect = new Query(table);
-
-			BaseSelectList = new List<DirectoryPointer>();
-			DirectoryPointerPosition = new DirectoryPointer();
 		}
 
 		/// <summary>
@@ -80,12 +77,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected DirectoryPointer DirectoryPointerPosition { get; private set; }
+		protected DirectoryPointer DirectoryPointerPosition { get; private set; } = new DirectoryPointer();
 
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<DirectoryPointer> BaseSelectList { get; private set; }
+		protected List<DirectoryPointer> BaseSelectList { get; private set; } = new List<DirectoryPointer>();
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці
@@ -150,7 +147,7 @@ namespace AccountingSoftware
 			Query querySelect = new Query(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
-			bool isFind = Kernel.DataBase.FindDirectoryPointer(querySelect, ref directoryPointer);
+			bool isFind = Kernel.DataBase.FindDirectoryPointer(querySelect, ref directoryPointer); // ????
 
 			return directoryPointer;
 		}
@@ -167,9 +164,7 @@ namespace AccountingSoftware
 		{
 			List<DirectoryPointer> directoryPointerList = new List<DirectoryPointer>();
 
-			Query querySelect = new Query(Table);
-			querySelect.Limit = limit;
-			querySelect.Offset = offset;
+			Query querySelect = new Query(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
 			Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);

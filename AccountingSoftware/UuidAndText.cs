@@ -30,15 +30,11 @@ namespace AccountingSoftware
     /// </summary>
     public class UuidAndText
     {
-        public UuidAndText()
-        {
-            Text = "";
-        }
+        public UuidAndText() { }
 
         public UuidAndText(Guid uuid)
         {
             Uuid = uuid;
-            Text = "";
         }
 
         public UuidAndText(Guid uuid, string text)

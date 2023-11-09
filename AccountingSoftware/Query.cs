@@ -34,17 +34,10 @@ namespace AccountingSoftware
         /// <param name="table">Таблиця</param>
         public Query(string table)
         {
-            Field = new List<string>();
-            FieldAndAlias = new List<NameValue<string>>();
-            Joins = new List<Join>();
-            Where = new List<Where>();
-            Order = new Dictionary<string, SelectOrder>();
-
             Table = table;
-            TempTable = "";
         }
 
-        private static int _ParamGuidState { get; set; }
+        private static int ParamGuidState { get; set; }
 
         /// <summary>
         /// Функція повертає номер параметру.
@@ -53,20 +46,20 @@ namespace AccountingSoftware
         /// <returns></returns>
         public static string GetParamGuid()
         {
-            if (_ParamGuidState == 0) _ParamGuidState = 1;
-            if (_ParamGuidState >= int.MaxValue - 1) _ParamGuidState = 1;
-            return "p" + (_ParamGuidState++).ToString();
+            if (ParamGuidState == 0) ParamGuidState = 1;
+            if (ParamGuidState >= int.MaxValue - 1) ParamGuidState = 1;
+            return "p" + ParamGuidState++.ToString();
         }
 
         /// <summary>
         /// Назва таблиці
         /// </summary>
-        public string Table { get; set; }
+        public string Table { get; set; } = "";
 
         /// <summary>
         /// Назва тимчасової таблиці
         /// </summary>
-        public string TempTable { get; set; }
+        public string TempTable { get; set; } = "";
 
         /// <summary>
         /// Створити тимчасову таблицю на основі запиту
@@ -76,17 +69,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Які поля вибирати
         /// </summary>
-        public List<string> Field { get; set; }
+        public List<string> Field { get; set; } = new List<string>();
 
         /// <summary>
         /// Поля із псевдонімами
         /// </summary>
-        public List<NameValue<string>> FieldAndAlias { get; set; }
+        public List<NameValue<string>> FieldAndAlias { get; set; } = new List<NameValue<string>>();
 
         /// <summary>
         /// Таблиці які потрібно приєднати
         /// </summary>
-        public List<Join> Joins { get; set; }
+        public List<Join> Joins { get; set; } = new List<Join>();
 
         /// <summary>
         /// Умови.
@@ -96,14 +89,14 @@ namespace AccountingSoftware
         /// 4. Тип порівняння з наступним блоком (по замовчуванню AND)
         /// Example: Name EQ "Test" AND (Name = "Test" AND ... )
         /// </summary>
-        public List<Where> Where { get; set; }
+        public List<Where> Where { get; set; } = new List<Where>();
 
         /// <summary>
         /// Сортування. 
         /// Назва поля, тип сортування
         /// Name ASC, Code Desc
         /// </summary>
-        public Dictionary<string, SelectOrder> Order { get; set; }
+        public Dictionary<string, SelectOrder> Order { get; set; } = new Dictionary<string, SelectOrder>();
 
         /// <summary>
         /// Обмеження вибірки
@@ -302,7 +295,7 @@ namespace AccountingSoftware
             Where = new List<Where>();
             Order = new Dictionary<string, SelectOrder>();
 
-            _ParamGuidState = 0;
+            ParamGuidState = 0;
         }
     }
 
@@ -327,7 +320,6 @@ namespace AccountingSoftware
             Value = value;
             UsingSQLToValue = usingSQLToValue;
             ComparisonNext = comparisonNext;
-            Alias = "";
 
             Init();
         }
@@ -348,7 +340,6 @@ namespace AccountingSoftware
             Value = value;
             UsingSQLToValue = usingSQLToValue;
             ComparisonNext = Comparison.Empty;
-            Alias = "";
 
             Init();
         }
@@ -366,7 +357,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Псевдонім
         /// </summary>
-        public string Alias { get; private set; }
+        public string Alias { get; private set; } = "";
 
         /// <summary>
         /// Значення поля
@@ -409,15 +400,7 @@ namespace AccountingSoftware
     /// </summary>
     public class Join
     {
-        public Join()
-        {
-            JoinType = JoinType.LEFT;
-
-            JoinTable = "";
-            JoinTableAlias = "";
-            JoinField = "";
-            ParentTable = "";
-        }
+        public Join() { }
 
         /// <summary>
         /// 
@@ -439,27 +422,27 @@ namespace AccountingSoftware
         /// <summary>
         /// Таблиця яку треба приєднати.
         /// </summary>
-        public string JoinTable { get; set; }
+        public string JoinTable { get; set; } = "";
 
         /// <summary>
         /// Псевдонім
         /// </summary>
-        public string JoinTableAlias { get; set; }
+        public string JoinTableAlias { get; set; } = "";
 
         /// <summary>
         /// Поле з основної таблиці (ParentTable) із ключами
         /// </summary>
-        public string JoinField { get; set; }
+        public string JoinField { get; set; } = "";
 
         /// <summary>
         /// Основна таблиця
         /// </summary>
-        public string ParentTable { get; set; }
+        public string ParentTable { get; set; } = "";
 
         /// <summary>
         /// Тип приєднання
         /// </summary>
-        public JoinType JoinType { get; set; }
+        public JoinType JoinType { get; set; } = JoinType.LEFT;
     }
 
     /// <summary>

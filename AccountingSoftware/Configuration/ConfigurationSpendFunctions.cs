@@ -28,21 +28,15 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationSpendFunctions
     {
-        public ConfigurationSpendFunctions()
-        {
-            Spend = "";
-            ClearSpend = "";
-        }
-
         /// <summary>
         /// Обробка проведення документу
         /// </summary>
-        public string Spend { get; set; }
+        public string Spend { get; set; } = "";
 
         /// <summary>
         /// Обробка очищення проводок документу
         /// </summary>
-        public string ClearSpend { get; set; }
+        public string ClearSpend { get; set; } = "";
 
         /// <summary>
         /// Створення копії

@@ -32,9 +32,6 @@ namespace AccountingSoftware
 		{
 			QuerySelect = new Query(table);
 			Kernel = kernel;
-
-			BaseSelectList = new List<DocumentPointer>();
-			DocumentPointerPosition = new DocumentPointer();
 		}
 
 		/// <summary>
@@ -73,12 +70,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected DocumentPointer DocumentPointerPosition { get; private set; }
+		protected DocumentPointer DocumentPointerPosition { get; private set; } = new DocumentPointer();
 
 		/// <summary>
 		/// Список вибраних вказівників
 		/// </summary>
-		protected List<DocumentPointer> BaseSelectList { get; private set; }
+		protected List<DocumentPointer> BaseSelectList { get; private set; } = new List<DocumentPointer>();
 
 		/// <summary>
 		/// Переміститися на наступну позицію

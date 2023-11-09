@@ -28,38 +28,29 @@ namespace AccountingSoftware
 	/// </summary>
 	public abstract class ConfigurationObject
 	{
-		public ConfigurationObject()
-		{
-			UID = "";
-			Name = "";
-            FullName = "";
-            Table = "";
-			Desc = "";
-		}
-
 		/// <summary>
 		/// Унікальний ключ обєкту
 		/// </summary>
-		public string UID { get; set; }
+		public string UID { get; set; } = "";
 
 		/// <summary>
 		/// Назва
 		/// </summary>
-		public string Name { get; set; }
+		public string Name { get; set; } = "";
 
-        /// <summary>
-        /// Повна назва
-        /// </summary>
-        public string FullName { get; set; }
+		/// <summary>
+		/// Повна назва
+		/// </summary>
+		public string FullName { get; set; } = "";
 
 		/// <summary>
 		/// Таблиця в базі даних
 		/// </summary>
-		public string Table { get; set; }
+		public string Table { get; set; } = "";
 
 		/// <summary>
 		/// Опис
 		/// </summary>
-		public string Desc { get; set; }
+		public string Desc { get; set; } = "";
 	}
 }

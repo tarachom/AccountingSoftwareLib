@@ -31,16 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Константа
         /// </summary>
-        public ConfigurationConstants()
-        {
-            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-            Block = new ConfigurationConstantsBlock();
-            Name = "";
-            NameInTable = "";
-            Desc = "";
-            Type = "";
-            Pointer = "";
-        }
+        public ConfigurationConstants() { }
 
         /// <summary>
         /// Константа
@@ -51,7 +42,7 @@ namespace AccountingSoftware
         /// <param name="block">Блок</param>
         /// <param name="pointer">Вказівник</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationConstants(string name, string nameInTable, string type, ConfigurationConstantsBlock block, string pointer = "", string desc = "") : this()
+        public ConfigurationConstants(string name, string nameInTable, string type, ConfigurationConstantsBlock block, string pointer = "", string desc = "")
         {
             Name = name;
             NameInTable = nameInTable;
@@ -64,37 +55,37 @@ namespace AccountingSoftware
         /// <summary>
         /// Блок
         /// </summary>
-        public ConfigurationConstantsBlock Block { get; set; }
+        public ConfigurationConstantsBlock Block { get; set; } = new ConfigurationConstantsBlock();
 
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Назва поля в базі даних
         /// </summary>
-        public string NameInTable { get; set; }
+        public string NameInTable { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Тип даних
         /// </summary>
-        public string Type { get; set; }
+        public string Type { get; set; } = "";
 
         /// <summary>
         /// Вказівник на об'єкт конфігурації
         /// </summary>
-        public string Pointer { get; set; }
+        public string Pointer { get; set; } = "";
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
 
         /// <summary>
         /// Додати нову табличну частину
@@ -120,11 +111,3 @@ namespace AccountingSoftware
         }
     }
 }
-
-/*
-
-Довідка.
-TabularParts - список табличних частин для константи.
-Може використовуватися для збереження історії константи.
-
-*/

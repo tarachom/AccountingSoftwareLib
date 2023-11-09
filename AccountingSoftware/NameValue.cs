@@ -49,10 +49,21 @@ namespace AccountingSoftware
             Value = value;
         }
 
+        /// <summary>
+        /// Назва
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Значення
+        /// </summary>
         public T? Value { get; set; }
 
+        /// <summary>
+        /// Порівняння у формі тексту
+        /// </summary>
+        /// <param name="value">Значення</param>
+        /// <returns></returns>
         public bool Equals(T value)
         {
             if (Value == null || value == null)

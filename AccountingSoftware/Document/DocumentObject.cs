@@ -34,9 +34,6 @@ namespace AccountingSoftware
             Table = table;
             TypeDocument = typeDocument;
             FieldArray = fieldsArray;
-            UnigueID = new UnigueID();
-
-            FieldValue = new Dictionary<string, object>();
 
             foreach (string field in FieldArray)
                 FieldValue.Add(field, new object());
@@ -65,12 +62,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; }
+        protected Dictionary<string, object> FieldValue { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; private set; }
+        public UnigueID UnigueID { get; private set; } = new UnigueID();
 
         /// <summary>
         /// Документ проведений

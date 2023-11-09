@@ -31,12 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Перелічення
         /// </summary>
-        public ConfigurationEnums()
-        {
-            Fields = new Dictionary<string, ConfigurationEnumField>();
-            Name = "";
-            Desc = "";
-        }
+        public ConfigurationEnums() { }
 
         /// <summary>
         /// Перелічення
@@ -44,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="serialNumber">Останній порядковий номер</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationEnums(string name, int serialNumber = 0, string desc = "") : this()
+        public ConfigurationEnums(string name, int serialNumber = 0, string desc = "")
         {
             Name = name;
             Desc = desc;
@@ -54,12 +49,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва перелічення
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Останній порядковий номер використаний для поля перелічення.
@@ -71,7 +66,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля перелічення
         /// </summary>
-        public Dictionary<string, ConfigurationEnumField> Fields { get; }
+        public Dictionary<string, ConfigurationEnumField> Fields { get; } = new Dictionary<string, ConfigurationEnumField>();
 
         /// <summary>
         /// Створення копії

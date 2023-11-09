@@ -34,14 +34,8 @@ namespace AccountingSoftware
             Table = table;
             FieldArray = fieldsArray;
 
-            FieldValue = new Dictionary<string, object>();
-
             foreach (string field in FieldArray)
                 FieldValue.Add(field, new object());
-
-            UnigueID = new UnigueID();
-            Period = DateTime.Now;
-            Owner = Guid.Empty;
         }
 
         /// <summary>
@@ -62,22 +56,22 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; }
+        protected Dictionary<string, object> FieldValue { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; private set; }
+        public UnigueID UnigueID { get; private set; } = new UnigueID();
 
         /// <summary>
         /// Період
         /// </summary>
-        public DateTime Period { get; set; }
+        public DateTime Period { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Власник
         /// </summary>
-        public Guid Owner { get; set; }
+        public Guid Owner { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Чи це новий запис?

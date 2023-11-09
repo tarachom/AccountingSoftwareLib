@@ -31,11 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поле перелічення
         /// </summary>
-        public ConfigurationEnumField()
-        {
-            Name = "";
-            Desc = "";
-        }
+        public ConfigurationEnumField() { }
 
         /// <summary>
         /// Поле перелічення 
@@ -53,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Значення
@@ -63,7 +59,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Створення копії

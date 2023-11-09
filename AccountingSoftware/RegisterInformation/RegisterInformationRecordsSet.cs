@@ -37,9 +37,6 @@ namespace AccountingSoftware
             QuerySelect = new Query(Table);
             QuerySelect.Field.AddRange(new string[] { "period", "owner" });
             QuerySelect.Field.AddRange(fieldsArray);
-
-            FieldValueList = new List<Dictionary<string, object>>();
-            JoinValue = new Dictionary<string, Dictionary<string, string>>();
         }
 
         /// <summary>
@@ -65,12 +62,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Масив значень полів
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; }
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
 
         /// <summary>
         /// Додаткові поля
         /// </summary>
-        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>
         /// Очищення вн. списків
@@ -142,7 +139,7 @@ namespace AccountingSoftware
         /// <param name="fieldValue">Значення полів</param>
         protected Guid BaseSave(Guid UID, DateTime period, Guid owner, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }

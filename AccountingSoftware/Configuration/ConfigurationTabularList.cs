@@ -28,14 +28,9 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTabularList
     {
-        public ConfigurationTabularList()
-        {
-            Name = "";
-            Desc = "";
-            Fields = new Dictionary<string, ConfigurationTabularListField>();
-        }
+        public ConfigurationTabularList() { }
 
-        public ConfigurationTabularList(string name, string desc = "", bool isTree = false) : this()
+        public ConfigurationTabularList(string name, string desc = "", bool isTree = false)
         {
             Name = name;
             Desc = desc;
@@ -45,12 +40,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Список для виводу дерева (для довідників)
@@ -60,7 +55,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationTabularListField> Fields { get; }
+        public Dictionary<string, ConfigurationTabularListField> Fields { get; } = new Dictionary<string, ConfigurationTabularListField>();
 
         /// <summary>
         /// Додати поле
@@ -78,6 +73,7 @@ namespace AccountingSoftware
         public ConfigurationTabularList Copy()
         {
             ConfigurationTabularList newTabularList = new ConfigurationTabularList(Name, Desc);
+
             foreach (ConfigurationTabularListField item in Fields.Values)
                 newTabularList.Fields.Add(item.Name, item);
 

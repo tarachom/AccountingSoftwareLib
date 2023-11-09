@@ -29,21 +29,16 @@ namespace AccountingSoftware
     public class ConfigurationConstantsBlock
     {
         /// <summary>
-        /// Блок констант
+        /// Назва блоку констант
         /// </summary>
-        public ConfigurationConstantsBlock()
-        {
-            Constants = new Dictionary<string, ConfigurationConstants>();
-            BlockName = "";
-            Desc = "";
-        }
+        public ConfigurationConstantsBlock() { }
 
         /// <summary>
         /// Назва блоку констант
         /// </summary>
         /// <param name="blockName">Назва</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationConstantsBlock(string blockName, string desc = "") : this()
+        public ConfigurationConstantsBlock(string blockName, string desc = "")
         {
             BlockName = blockName;
             Desc = desc;
@@ -52,18 +47,18 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string BlockName { get; set; }
+        public string BlockName { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// <summary>
         /// Константи
         /// </summary>
-        public Dictionary<string, ConfigurationConstants> Constants { get; }
+        public Dictionary<string, ConfigurationConstants> Constants { get; } = new Dictionary<string, ConfigurationConstants>();
 
         /// <summary>
         /// Добавлення константи

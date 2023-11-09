@@ -31,15 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Регістри накопичення
         /// </summary>
-        public ConfigurationRegistersAccumulation()
-        {
-            DimensionFields = new Dictionary<string, ConfigurationObjectField>();
-            ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
-            PropertyFields = new Dictionary<string, ConfigurationObjectField>();
-            AllowDocumentSpend = new List<string>();
-            TabularParts = new Dictionary<string, ConfigurationObjectTablePart>();
-            QueryBlockList = new Dictionary<string, ConfigurationObjectQueryBlock>();
-        }
+        public ConfigurationRegistersAccumulation() { }
 
         /// <summary>
         /// Регістри накопичення
@@ -47,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationRegistersAccumulation(string name, string fullname, string table, TypeRegistersAccumulation type, string desc = "") : this()
+        public ConfigurationRegistersAccumulation(string name, string fullname, string table, TypeRegistersAccumulation type, string desc = "")
         {
             Name = name;
             FullName = fullname;
@@ -59,37 +51,37 @@ namespace AccountingSoftware
         /// <summary>
         /// Тип регістру
         /// </summary>
-        public TypeRegistersAccumulation TypeRegistersAccumulation { get; set; }
+        public TypeRegistersAccumulation TypeRegistersAccumulation { get; set; } = TypeRegistersAccumulation.Residues;
 
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Документи які роблять рухи по даному регістру
         /// </summary>
-        public List<string> AllowDocumentSpend { get; }
+        public List<string> AllowDocumentSpend { get; } = new List<string>();
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; }
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
 
         /// <summary>
         /// Блоки запитів
         /// </summary>
-        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; }
+        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; } = new Dictionary<string, ConfigurationObjectQueryBlock>();
 
         /// <summary>
         /// Без віртуальної таблиці підсумки

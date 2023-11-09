@@ -28,45 +28,35 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTriggerFunctions
     {
-        public ConfigurationTriggerFunctions()
-        {
-            New = "";
-            Copying = "";
-            BeforeSave = "";
-            AfterSave = "";
-            SetDeletionLabel = "";
-            BeforeDelete = "";
-        }
-
         /// <summary>
         /// При створенні нового
         /// </summary>
-        public string New { get; set; }
+        public string New { get; set; } = "";
 
         /// <summary>
         /// При копіюванні
         /// </summary>
-        public string Copying { get; set; }
+        public string Copying { get; set; } = "";
 
         /// <summary>
         /// Перед записом
         /// </summary>
-        public string BeforeSave { get; set; }
+        public string BeforeSave { get; set; } = "";
 
         /// <summary>
         /// Після запису
         /// </summary>
-        public string AfterSave { get; set; }
+        public string AfterSave { get; set; } = "";
 
         /// <summary>
         /// Встановлення мітки на видалення
         /// </summary>
-        public string SetDeletionLabel { get; set; }
+        public string SetDeletionLabel { get; set; } = "";
 
         /// <summary>
         /// Перед видаленням
         /// </summary>
-        public string BeforeDelete { get; set; }
+        public string BeforeDelete { get; set; } = "";
 
         /// <summary>
         /// Створення копії

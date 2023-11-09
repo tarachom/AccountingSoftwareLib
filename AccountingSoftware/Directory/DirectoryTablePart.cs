@@ -36,9 +36,6 @@ namespace AccountingSoftware
 
             QuerySelect = new Query(Table);
             QuerySelect.Field.AddRange(fieldsArray);
-
-            FieldValueList = new List<Dictionary<string, object>>();
-            JoinValue = new Dictionary<string, Dictionary<string, string>>();
         }
 
         /// <summary>
@@ -64,12 +61,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Список даних
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; }
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
 
         /// <summary>
         /// Значення додаткових полів
         /// </summary>
-        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>
         /// Очистити вн. списки
@@ -145,7 +142,7 @@ namespace AccountingSoftware
         /// <param name="fieldValue">Значення полів запису</param>
         protected Guid BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             Kernel.DataBase.InsertDirectoryTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }

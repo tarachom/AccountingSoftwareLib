@@ -33,9 +33,6 @@ namespace AccountingSoftware
 			Kernel = kernel;
 			Tables = table;
 			TypeDocuments = typeDocument;
-			Current = new JournalDocument();
-
-			BaseSelectList = new List<JournalDocument>();
 		}
 
 		/// <summary>
@@ -79,7 +76,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Список вибраних вказівників
 		/// </summary>
-		protected List<JournalDocument> BaseSelectList { get; private set; }
+		protected List<JournalDocument> BaseSelectList { get; private set; } = new List<JournalDocument>();
 
 		/// <summary>
 		/// Переміститися на наступну позицію
@@ -100,7 +97,7 @@ namespace AccountingSoftware
 			}
 		}
 
-		public JournalDocument Current { get; private set; }
+		public JournalDocument Current { get; private set; } = new JournalDocument();
 
 		/// <summary>
 		/// Зчитати

@@ -31,13 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Регістри відомостей
         /// </summary>
-        public ConfigurationRegistersInformation()
-        {
-            DimensionFields = new Dictionary<string, ConfigurationObjectField>();
-            ResourcesFields = new Dictionary<string, ConfigurationObjectField>();
-            PropertyFields = new Dictionary<string, ConfigurationObjectField>();
-            TabularList = new Dictionary<string, ConfigurationTabularList>();
-        }
+        public ConfigurationRegistersInformation() { }
 
         /// <summary>
         /// Регістри відомостей
@@ -45,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "") : this()
+        public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "")
         {
             Name = name;
             FullName = fullname;
@@ -56,22 +50,22 @@ namespace AccountingSoftware
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; }
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; }
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; }
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = new Dictionary<string, ConfigurationObjectField>();
 
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
 
         /// <summary>
         /// Створення копії

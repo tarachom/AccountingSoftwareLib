@@ -23,18 +23,39 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
+    /// <summary>
+    /// Назви спеціальних таблиць
+    /// </summary>
     public static class SpecialTables
     {
+        /// <summary>
+        /// Константи
+        /// </summary>
         public static readonly string Constants = "tab_constants";
 
+        /// <summary>
+        /// Тригери для розрахунку регістрів накопичення
+        /// </summary>
         public static readonly string RegAccumTriger = "tab_special_regaccum_triger";
 
+        /// <summary>
+        /// Заблоковані обєкти
+        /// </summary>
         public static readonly string LockedObject = "tab_special_locked_object";
 
+        /// <summary>
+        /// Користувічі
+        /// </summary>
         public static readonly string Users = "tab_special_users";
 
+        /// <summary>
+        /// Активні користувачі
+        /// </summary>
         public static readonly string ActiveUsers = "tab_special_active_users";
 
+        /// <summary>
+        /// Повнотекстовий пошук
+        /// </summary>
         public static readonly string FullTextSearch = "tab_special_full_text_search";
     }
 }

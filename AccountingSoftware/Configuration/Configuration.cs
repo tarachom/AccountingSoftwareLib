@@ -34,23 +34,6 @@ namespace AccountingSoftware
     /// </summary>
     public class Configuration
     {
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        public Configuration()
-        {
-            ConstantsBlock = new Dictionary<string, ConfigurationConstantsBlock>();
-            Directories = new Dictionary<string, ConfigurationDirectories>();
-            Documents = new Dictionary<string, ConfigurationDocuments>();
-            Journals = new Dictionary<string, ConfigurationJournals>();
-            Enums = new Dictionary<string, ConfigurationEnums>();
-            RegistersInformation = new Dictionary<string, ConfigurationRegistersInformation>();
-            RegistersAccumulation = new Dictionary<string, ConfigurationRegistersAccumulation>();
-
-            ReservedUnigueTableName = new List<string>();
-            ReservedUnigueColumnName = new Dictionary<string, List<string>>();
-        }
-
         #region Поля
 
         /// <summary>
@@ -91,37 +74,37 @@ namespace AccountingSoftware
         /// <summary>
         /// Блоки констант
         /// </summary>
-        public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; }
+        public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; } = new Dictionary<string, ConfigurationConstantsBlock>();
 
         /// <summary>
         /// Довідники
         /// </summary>
-        public Dictionary<string, ConfigurationDirectories> Directories { get; }
+        public Dictionary<string, ConfigurationDirectories> Directories { get; } = new Dictionary<string, ConfigurationDirectories>();
 
         /// <summary>
         /// Документи
         /// </summary>
-        public Dictionary<string, ConfigurationDocuments> Documents { get; }
+        public Dictionary<string, ConfigurationDocuments> Documents { get; } = new Dictionary<string, ConfigurationDocuments>();
 
         /// <summary>
         /// Журнали
         /// </summary>
-        public Dictionary<string, ConfigurationJournals> Journals { get; }
+        public Dictionary<string, ConfigurationJournals> Journals { get; } = new Dictionary<string, ConfigurationJournals>();
 
         /// <summary>
         /// Перелічення
         /// </summary>
-        public Dictionary<string, ConfigurationEnums> Enums { get; }
+        public Dictionary<string, ConfigurationEnums> Enums { get; } = new Dictionary<string, ConfigurationEnums>();
 
         /// <summary>
         /// Регістри відомостей
         /// </summary>
-        public Dictionary<string, ConfigurationRegistersInformation> RegistersInformation { get; }
+        public Dictionary<string, ConfigurationRegistersInformation> RegistersInformation { get; } = new Dictionary<string, ConfigurationRegistersInformation>();
 
         /// <summary>
         /// Регістри накопичення
         /// </summary>
-        public Dictionary<string, ConfigurationRegistersAccumulation> RegistersAccumulation { get; }
+        public Dictionary<string, ConfigurationRegistersAccumulation> RegistersAccumulation { get; } = new Dictionary<string, ConfigurationRegistersAccumulation>();
 
         #endregion
 
@@ -132,13 +115,13 @@ namespace AccountingSoftware
         /// Довідка: коли створюється новий довідник, чи документ 
         /// для нього резервується нова унікальна назва таблиці в базі даних. 
         /// </summary>
-        private List<string> ReservedUnigueTableName { get; set; }
+        private List<string> ReservedUnigueTableName { get; set; } = new List<string>();
 
         /// <summary>
         /// Список зарезервованих назв стовпців.
         /// Ключем виступає назва таблиці для якої резервуються стовпці.
         /// </summary>
-        private Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; }
+        private Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; } = new Dictionary<string, List<string>>();
 
         /// <summary>
         /// Масив з бук анг. алфавіту. Використовується для задання назви таблиці або стовпчика в базі даних
@@ -1112,13 +1095,11 @@ namespace AccountingSoftware
 
             //Якщо конфігурація не знайдена, створюю нову пусту конфігурацію і записую
             if (!File.Exists(pathToConf))
-            {
-                Configuration EmptyConf = new Configuration();
-                EmptyConf.Name = "Нова конфігурація";
-                EmptyConf.NameSpace = "НоваКонфігурація_1_0";
-
-                Save(pathToConf, EmptyConf);
-            }
+                Save(pathToConf, new Configuration()
+                {
+                    Name = "Нова конфігурація",
+                    NameSpace = "НоваКонфігурація_1_0"
+                });
 
             XPathDocument xPathDoc = new XPathDocument(pathToConf);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();

@@ -36,9 +36,6 @@ namespace AccountingSoftware
 
             QuerySelect = new Query(Table);
             QuerySelect.Field.AddRange(fieldsArray);
-
-            FieldValueList = new List<Dictionary<string, object>>();
-            JoinValue = new Dictionary<string, Dictionary<string, string>>();
         }
 
         /// <summary>
@@ -64,12 +61,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; }
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
 
         /// <summary>
         /// Значення додаткових полів
         /// </summary>
-        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; }
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>
         /// Очистка вн. списків

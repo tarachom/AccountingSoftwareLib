@@ -39,8 +39,6 @@ namespace AccountingSoftware
             Kernel = kernel;
             Table = table;
             FieldArray = fieldsArray;
-
-            FieldValueList = new List<Dictionary<string, object>>();
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Масив полів та значеннь
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; }
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
 
         /// <summary>
         /// Очистити вн. масив
@@ -114,7 +112,7 @@ namespace AccountingSoftware
         /// <param name="fieldValue"></param>
         protected Guid BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             Kernel.DataBase.InsertConstantsTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }

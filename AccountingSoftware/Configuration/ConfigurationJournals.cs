@@ -28,16 +28,9 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationJournals
     {
-        public ConfigurationJournals()
-        {
-            Fields = new Dictionary<string, ConfigurationJournalField>();
-            AllowDocuments = new List<string>();
-            TabularList = new Dictionary<string, ConfigurationTabularList>();
-            Name = "";
-            Desc = "";
-        }
+        public ConfigurationJournals() { }
 
-        public ConfigurationJournals(string name, string desc = "") : this()
+        public ConfigurationJournals(string name, string desc = "")
         {
             Name = name;
             Desc = desc;
@@ -46,27 +39,27 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; }
+        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationJournalField> Fields { get; }
+        public Dictionary<string, ConfigurationJournalField> Fields { get; } = new Dictionary<string, ConfigurationJournalField>();
 
         /// <summary>
         /// Документи які входять в журнал
         /// </summary>
-        public List<string> AllowDocuments { get; private set; }
+        public List<string> AllowDocuments { get; private set; } = new List<string>();
 
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; }
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
 
         /// <summary>
         /// Створення копії

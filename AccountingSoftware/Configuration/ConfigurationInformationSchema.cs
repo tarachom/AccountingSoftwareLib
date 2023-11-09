@@ -29,17 +29,9 @@ namespace AccountingSoftware
 	public class ConfigurationInformationSchema
 	{
 		/// <summary>
-		/// Структура таблиць і стовбців бази даних
-		/// </summary>
-		public ConfigurationInformationSchema()
-		{
-			Tables = new Dictionary<string, ConfigurationInformationSchema_Table>();
-		}
-
-		/// <summary>
 		/// Таблиці
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; }
+		public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = new Dictionary<string, ConfigurationInformationSchema_Table>();
 
 		/// <summary>
 		/// Дабавлення інформації в структуру
@@ -82,24 +74,22 @@ namespace AccountingSoftware
 		public ConfigurationInformationSchema_Table(string tableName)
 		{
 			TableName = tableName;
-			Columns = new Dictionary<string, ConfigurationInformationSchema_Column>();
-			Indexes = new Dictionary<string, ConfigurationInformationSchema_Index>();
 		}
 
 		/// <summary>
 		/// Назва таблиці
 		/// </summary>
-		public string TableName { get; set; }
+		public string TableName { get; set; } = "";
 
 		/// <summary>
 		/// Стовпці
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; }
+		public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = new Dictionary<string, ConfigurationInformationSchema_Column>();
 
 		/// <summary>
 		/// Індекси
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; }
+		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = new Dictionary<string, ConfigurationInformationSchema_Index>();
 	}
 
 	/// <summary>
@@ -107,13 +97,6 @@ namespace AccountingSoftware
 	/// </summary>
 	public class ConfigurationInformationSchema_Column
 	{
-		public ConfigurationInformationSchema_Column()
-		{
-			ColumnName = "";
-			DataType = "";
-			UdtName = "";
-		}
-
 		/// <summary>
 		/// Стовпчик
 		/// </summary>
@@ -130,17 +113,17 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Назва стовпця
 		/// </summary>
-		public string ColumnName { get; set; }
+		public string ColumnName { get; set; } = "";
 
 		/// <summary>
 		/// Тип даних
 		/// </summary>
-		public string DataType { get; set; }
+		public string DataType { get; set; } = "";
 
 		/// <summary>
 		/// Тип даних
 		/// </summary>
-		public string UdtName { get; set; }
+		public string UdtName { get; set; } = "";
 	}
 
 	/// <summary>
@@ -148,11 +131,6 @@ namespace AccountingSoftware
 	/// </summary>
 	public class ConfigurationInformationSchema_Index
 	{
-		public ConfigurationInformationSchema_Index()
-		{
-			IndexName = "";
-		}
-
 		/// <summary>
 		/// Індекс
 		/// </summary>
@@ -165,6 +143,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Назва індексу
 		/// </summary>
-		public string IndexName { get; set; }
+		public string IndexName { get; set; } = "";
 	}
 }

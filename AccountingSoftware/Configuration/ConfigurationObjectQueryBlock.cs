@@ -28,10 +28,7 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationObjectQueryBlock
     {
-        public ConfigurationObjectQueryBlock()
-        {
-            Query = new Dictionary<string, string>();
-        }
+        public ConfigurationObjectQueryBlock() { }
 
         public ConfigurationObjectQueryBlock(string name, bool finalCalculation = false) : this()
         {
@@ -42,7 +39,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Запити
         /// </summary>
-        public Dictionary<string, string> Query { get; }
+        public Dictionary<string, string> Query { get; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Назва блоку
