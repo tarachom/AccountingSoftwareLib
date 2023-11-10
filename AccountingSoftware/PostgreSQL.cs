@@ -1198,7 +1198,7 @@ FROM
                 return false;
         }
 
-        public void SaveConstants(string table, string field, object fieldValue)
+        public async ValueTask SaveConstants(string table, string field, object fieldValue)
         {
             if (DataSource != null)
             {
@@ -1209,7 +1209,7 @@ FROM
                 command.Parameters.AddWithValue("uid", Guid.Empty);
                 command.Parameters.AddWithValue(field, fieldValue);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1235,7 +1235,7 @@ FROM
             }
         }
 
-        public async void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1264,7 +1264,7 @@ FROM
             }
         }
 
-        public void DeleteConstantsTablePartRecords(string table, byte transactionID = 0)
+        public async ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1275,7 +1275,7 @@ FROM
                     new NpgsqlCommand(query, transaction.Connection, transaction) :
                     DataSource.CreateCommand(query);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1597,7 +1597,7 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-               await command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1614,7 +1614,7 @@ FROM
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-               await command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1912,7 +1912,7 @@ FROM
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-               await command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
             }
         }
 

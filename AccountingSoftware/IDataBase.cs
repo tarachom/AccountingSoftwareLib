@@ -86,11 +86,11 @@ namespace AccountingSoftware
 
         bool SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         bool SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
-        void SaveConstants(string table, string field, object fieldValue);
+        ValueTask SaveConstants(string table, string field, object fieldValue);
 
         void SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        void DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
+        ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
 
         #endregion
 
