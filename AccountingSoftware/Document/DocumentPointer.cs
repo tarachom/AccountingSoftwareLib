@@ -114,10 +114,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="spend">Мітка проведення</param>
         /// <param name="spend_date">Дата проведення</param>
-        protected void BaseSpend(bool spend, DateTime spend_date)
+        protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
         {
             if (Kernel != null && !IsEmpty())
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, (spend ? false : null), spend, spend_date, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UnigueID, (spend ? false : null), spend, spend_date, Table, null, null);
         }
 
         /// <summary>
@@ -125,12 +125,12 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected void BaseDeletionLabel(bool label)
+        protected async ValueTask BaseDeletionLabel(bool label)
         {
             if (Kernel != null && !IsEmpty())
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (label)

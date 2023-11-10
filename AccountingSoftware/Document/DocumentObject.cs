@@ -147,19 +147,19 @@ namespace AccountingSoftware
         /// <summary>
         /// Зберегти дані
         /// </summary>
-        protected bool BaseSave()
+        protected async ValueTask<bool> BaseSave()
         {
-            bool result = false;
+            bool result;
 
             if (IsNew)
             {
-                result = Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
                 if (result) IsNew = false;
             }
             else
             {
-                if (!UnigueID.IsEmpty() && Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
-                    result = Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
+                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                    result = await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий документ");
             }
@@ -181,13 +181,13 @@ namespace AccountingSoftware
                 Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
         }
 
-        protected void BaseSpend(bool spend, DateTime spend_date)
+        protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
         {
             Spend = spend;
             SpendDate = spend_date;
 
             if (IsSave)
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, (Spend ? false : DeletionLabel), Spend, SpendDate, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже провести");
         }
@@ -197,14 +197,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected void BaseDeletionLabel(bool label)
+        protected async ValueTask BaseDeletionLabel(bool label)
         {
             DeletionLabel = label;
 
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (DeletionLabel)
@@ -218,21 +218,21 @@ namespace AccountingSoftware
         /// Видалити запис
         /// </summary>
         /// <param name="tablePartsTables">Список таблиць табличних частин</param>
-        protected void BaseDelete(string[] tablePartsTables)
+        protected async ValueTask BaseDelete(string[] tablePartsTables)
         {
-            byte TransactionID = Kernel.DataBase.BeginTransaction();
+            byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
             //Видалити сам документ
-            Kernel.DataBase.DeleteDocumentObject(UnigueID, Table, TransactionID);
+            await Kernel.DataBase.DeleteDocumentObject(UnigueID, Table, TransactionID);
 
             //Видалення даних з табличних частин
             foreach (string tablePartsTable in tablePartsTables)
-                Kernel.DataBase.DeleteDocumentTablePartRecords(UnigueID, tablePartsTable, TransactionID);
+                await Kernel.DataBase.DeleteDocumentTablePartRecords(UnigueID, tablePartsTable, TransactionID);
 
             //Видалення з повнотекстового пошуку
             Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
-            Kernel.DataBase.CommitTransaction(TransactionID);
+            await Kernel.DataBase.CommitTransaction(TransactionID);
 
             BaseClear();
         }

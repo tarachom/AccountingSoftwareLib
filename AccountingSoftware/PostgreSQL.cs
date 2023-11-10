@@ -31,14 +31,14 @@ namespace AccountingSoftware
 
         private NpgsqlDataSource? DataSource { get; set; }
 
-        public void Open(string connectionString)
+        public async void Open(string connectionString)
         {
             NpgsqlDataSourceBuilder dataBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataBuilder.MapComposite<UuidAndText>("uuidtext");
 
             DataSource = dataBuilder.Build();
 
-            Start();
+            await Start();
         }
 
         public bool Open(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
@@ -153,7 +153,7 @@ SELECT EXISTS
                 return false;
         }
 
-        private void Start()
+        private async ValueTask Start()
         {
             if (DataSource != null)
             {
@@ -171,26 +171,27 @@ WHERE
     typname = 'uuidtext'";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                object? result = command.ExecuteScalar();
+                object? result = await command.ExecuteScalarAsync();
 
                 if (!(result != null && result.ToString() == "exist"))
                 {
                     //Створення композитного типу uuidtext
                     //Даний тип відповідає класу UuidAndText
-                    ExecuteSQL($@"
+                    await ExecuteSQL($@"
 CREATE TYPE uuidtext AS 
 (
     uuid uuid, 
     text text
 )");
-                    DataSource.OpenConnection().ReloadTypes();
+                    await using NpgsqlConnection conn = await DataSource.OpenConnectionAsync();
+                    await conn.ReloadTypesAsync();
                 }
 
                 //
                 // ПідключитиДодаток_UUID_OSSP
                 //
 
-                ExecuteSQL(@"
+                await ExecuteSQL(@"
 CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
 
                 //
@@ -209,7 +210,7 @@ CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
                 @info - додаткова інформація
 
                 */
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
 (
     uid serial NOT NULL,
@@ -233,7 +234,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @nameobj - назва обєкту
 
                 */
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.LockedObject} 
 (
     uidobj uuid NOT NULL,
@@ -245,10 +246,10 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.LockedObject}
     PRIMARY KEY(uidobj)
 )");
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_session_idx ON {SpecialTables.LockedObject}(session)");
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_users_idx ON {SpecialTables.LockedObject}(users)");
 
                 /*
@@ -263,7 +264,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_users_idx ON {SpecialTab
 
                 ExecuteSQL($"DROP TABLE {SpecialTables.Users}");
                 */
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.Users} 
 (
     uid uuid NOT NULL,
@@ -287,7 +288,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
 
                 ExecuteSQL($"DROP TABLE {SpecialTables.ActiveUsers}");
                 */
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
 (
     uid uuid NOT NULL,
@@ -301,7 +302,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
                 /*
                 Користувач Admin
                 */
-                SpetialTableUsersAddSuperUser();
+                await SpetialTableUsersAddSuperUser();
 
                 /*
                 Таблиця для повнотекстового пошуку
@@ -317,7 +318,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
 
                 */
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.FullTextSearch} 
 (
     uidobj uuid NOT NULL,
@@ -330,10 +331,10 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.FullTextSearch}
     PRIMARY KEY(uidobj)
 )");
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {SpecialTables.FullTextSearch} USING gin(vector)");
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
             }
         }
@@ -350,16 +351,18 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
         /// <param name="regAccumName">Назва регістру</param>
         /// <param name="info">Додаткова інфа</param>
         /// <param name="transactionID">Ід транзакції</param>
-        public void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
+        public async ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("period", period);
-            paramQuery.Add("regname", regAccumName);
-            paramQuery.Add("document", document);
-            paramQuery.Add("execute", false);
-            paramQuery.Add("info", info);
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            {
+                { "period", period },
+                { "regname", regAccumName },
+                { "document", document },
+                { "execute", false },
+                { "info", info }
+            };
 
-            ExecuteSQL($@"
+            await ExecuteSQL($@"
 INSERT INTO {SpecialTables.RegAccumTriger} 
 (
     datewrite,
@@ -387,14 +390,14 @@ VALUES
         /// <param name="session">Сесія з якої викликана дана процедура</param>
         /// <param name="ExecuteСalculation">Процедура обчислень</param>
         /// <param name="ExecuteFinalСalculation">Фінальна процедура обчислень</param>
-        public void SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
+        public async ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
                 /*
                 Перевірка чи дана сесія є головною в розрахунках
                 */
-                if (!SpetialTableActiveUsersIsMaster(session))
+                if (!await SpetialTableActiveUsersIsMaster(session))
                     return;
 
                 /*
@@ -423,12 +426,12 @@ ORDER BY period
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 bool hasRows = reader.HasRows;
                 List<string> regAccumNameList = new List<string>();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     DateTime period = (DateTime)reader["period"];
                     string regname = (string)reader["regname"];
@@ -442,7 +445,7 @@ ORDER BY period
                     if (!regAccumNameList.Contains(regname))
                         regAccumNameList.Add(regname);
                 }
-                reader.Close();
+                await reader.CloseAsync();
 
                 //
                 // ExecuteFinalСalculation
@@ -459,7 +462,7 @@ ORDER BY period
                 {
                     /* Очищення виконаних завдань */
                     query = $"DELETE FROM {SpecialTables.RegAccumTriger} WHERE execute = true";
-                    ExecuteSQL(query);
+                    await ExecuteSQL(query);
                 }
             }
         }
@@ -467,19 +470,19 @@ ORDER BY period
         /// <summary>
         /// Очищення завдань. Пока не використовується.
         /// </summary>
-        public void ClearSpetialTableRegAccumTriger()
+        public async ValueTask ClearSpetialTableRegAccumTriger()
         {
             string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
-            ExecuteSQL(query);
+            await ExecuteSQL(query);
         }
 
         #endregion
 
         #region SpetialTable Users
 
-        void SpetialTableUsersAddSuperUser()
+        async ValueTask SpetialTableUsersAddSuperUser()
         {
-            ExecuteSQL($@"
+            await ExecuteSQL($@"
 INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password) 
 VALUES 
 (
@@ -495,21 +498,22 @@ ON CONFLICT (name) DO NOTHING;
 
         }
 
-        public Guid? SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
+        public async ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-
-            paramQuery.Add("name", name.Trim().ToLower());
-            paramQuery.Add("fullname", fullname);
-            paramQuery.Add("password", password);
-            paramQuery.Add("info", info);
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            {
+                { "name", name.Trim().ToLower() },
+                { "fullname", fullname },
+                { "password", password },
+                { "info", info }
+            };
 
             if (isNew)
             {
                 Guid user_uid = Guid.NewGuid();
                 paramQuery.Add("uid", user_uid);
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, info) 
 VALUES 
 (
@@ -537,7 +541,7 @@ DO UPDATE SET
                 {
                     paramQuery.Add("uid", uid);
 
-                    ExecuteSQL($@"
+                    await ExecuteSQL($@"
 UPDATE {SpecialTables.Users} SET
     name = @name,
     fullname = @fullname,
@@ -553,7 +557,7 @@ WHERE
             }
         }
 
-        public Dictionary<string, string> SpetialTableUsersShortSelect()
+        public async ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect()
         {
             Dictionary<string, string> users = new Dictionary<string, string>();
 
@@ -562,12 +566,12 @@ WHERE
                 string query = $"SELECT name, fullname FROM {SpecialTables.Users} ORDER BY name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                     users.Add((string)reader["name"], (string)reader["fullname"]);
 
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             return users;
@@ -599,8 +603,10 @@ ORDER BY
 
         public Dictionary<string, object>? SpetialTableUsersExtendetUser(Guid user_uid)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("user_uid", user_uid);
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            {
+                { "user_uid", user_uid }
+            };
 
             string query = $@"
 SELECT 
@@ -628,7 +634,7 @@ ORDER BY
                 return null;
         }
 
-        public bool SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
+        public async ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
         {
             if (DataSource != null)
             {
@@ -645,7 +651,7 @@ ORDER BY
                 if (not_uid.HasValue)
                     command.Parameters.AddWithValue("uid", not_uid.Value);
 
-                object? count_user = command.ExecuteScalar();
+                object? count_user = await command.ExecuteScalarAsync();
 
                 if (count_user != null && (long)count_user == 1)
                     return true;
@@ -656,7 +662,7 @@ ORDER BY
                 return false;
         }
 
-        public string SpetialTableUsersGetFullName(Guid user_uid)
+        public async ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid)
         {
             if (DataSource != null)
             {
@@ -665,25 +671,25 @@ ORDER BY
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", user_uid);
 
-                object? resultat = command.ExecuteScalar();
+                object? resultat = await command.ExecuteScalarAsync();
                 return (resultat != null) ? (string)resultat : "";
             }
             else
                 return "";
         }
 
-        public bool SpetialTableUsersDelete(Guid user_uid, string name)
+        public async ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name)
         {
             if (DataSource != null)
             {
-                if (SpetialTableUsersIsExistUser(name, user_uid))
+                if (await SpetialTableUsersIsExistUser(name, user_uid))
                 {
                     string query = $"DELETE FROM {SpecialTables.Users} WHERE uid = @uid";
 
                     NpgsqlCommand command = DataSource.CreateCommand(query);
                     command.Parameters.AddWithValue("uid", user_uid);
 
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
 
                     return true;
                 }
@@ -694,7 +700,7 @@ ORDER BY
                 return false;
         }
 
-        public (Guid, Guid)? SpetialTableUsersLogIn(string user, string password)
+        public async ValueTask<(Guid, Guid)?> SpetialTableUsersLogIn(string user, string password)
         {
             if (DataSource != null)
             {
@@ -709,7 +715,7 @@ ORDER BY
                 if (uid != null)
                 {
                     Guid user_uid = (Guid)uid;
-                    Guid session_uid = SpetialTableActiveUsersAddSession(user_uid);
+                    Guid session_uid = await SpetialTableActiveUsersAddSession(user_uid);
 
                     return (user_uid, session_uid);
                 }
@@ -724,15 +730,17 @@ ORDER BY
 
         #region SpetialTable ActiveUsers
 
-        Guid SpetialTableActiveUsersAddSession(Guid user_uid)
+        async ValueTask<Guid> SpetialTableActiveUsersAddSession(Guid user_uid)
         {
             Guid session_uid = Guid.NewGuid();
 
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-            paramQuery.Add("user", user_uid);
-            paramQuery.Add("session", session_uid);
+            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            {
+                { "user", user_uid },
+                { "session", session_uid }
+            };
 
-            ExecuteSQL($@"
+            await ExecuteSQL($@"
 INSERT INTO {SpecialTables.ActiveUsers} (uid, usersuid, datelogin, dateupdate) 
 VALUES 
 (
@@ -746,7 +754,7 @@ VALUES
             return session_uid;
         }
 
-        bool SpetialTableActiveUsersIsMaster(Guid session_uid)
+        async ValueTask<bool> SpetialTableActiveUsersIsMaster(Guid session_uid)
         {
             if (DataSource != null)
             {
@@ -755,14 +763,14 @@ VALUES
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("session", session_uid);
 
-                object? master = command.ExecuteScalar();
-                return (master != null) ? (bool)master : false;
+                object? master = await command.ExecuteScalarAsync();
+                return master != null ? (bool)master : false;
             }
             else
                 return false;
         }
 
-        bool SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
+        async ValueTask<bool> SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
         {
             if (DataSource != null)
             {
@@ -782,7 +790,7 @@ SELECT count FROM count_session
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("session", session_uid);
 
-                object? count_session = command.ExecuteScalar();
+                object? count_session = await command.ExecuteScalarAsync();
 
                 if (count_session != null && (long)count_session == 1)
                     return true;
@@ -793,13 +801,13 @@ SELECT count FROM count_session
                 return false;
         }
 
-        public bool SpetialTableActiveUsersUpdateSession(Guid session_uid)
+        public async ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid)
         {
             int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
             int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
 
             //Обновлення сесії
-            bool session_update = SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
+            bool session_update = await SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
 
             try
             {
@@ -816,7 +824,7 @@ SELECT count FROM count_session
 
                 */
 
-                ExecuteSQL($@"
+                await ExecuteSQL($@"
 BEGIN;
 LOCK TABLE {SpecialTables.ActiveUsers};
 
@@ -882,7 +890,7 @@ COMMIT;
             return session_update;
         }
 
-        public void SpetialTableActiveUsersCloseSession(Guid session_uid)
+        public async ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid)
         {
             if (DataSource != null)
             {
@@ -892,7 +900,7 @@ DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("session", session_uid);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1047,16 +1055,18 @@ FROM
         #endregion
 
         #region Transaction
-        readonly object loсked = new Object();
+        readonly object loсked = new object();
         Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
         volatile byte TransactionCounter = 0;
 
-        public byte BeginTransaction()
+        public async ValueTask<byte> BeginTransaction()
         {
             if (DataSource != null)
             {
                 byte TransactionID = 0;
-                NpgsqlTransaction Transaction = DataSource.OpenConnection().BeginTransaction();
+
+                NpgsqlConnection Conn = await DataSource.OpenConnectionAsync();
+                NpgsqlTransaction Transaction = await Conn.BeginTransactionAsync();
 
                 lock (loсked)
                 {
@@ -1074,7 +1084,7 @@ FROM
                 return 0;
         }
 
-        public void CommitTransaction(byte transactionID)
+        public async ValueTask CommitTransaction(byte transactionID)
         {
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
@@ -1088,14 +1098,19 @@ FROM
                     OpenTransaction.Remove(transactionID);
                 }
 
-                Transaction?.Commit();
-                Transaction?.Connection?.Close();
+                if (Transaction != null)
+                {
+                    await Transaction.CommitAsync();
+
+                    if (Transaction.Connection != null)
+                        await Transaction.Connection.CloseAsync();
+                }
             }
             else
                 throw new IndexOutOfRangeException("Невірний номер транзації");
         }
 
-        public void RollbackTransaction(byte transactionID)
+        public async ValueTask RollbackTransaction(byte transactionID)
         {
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
@@ -1109,8 +1124,13 @@ FROM
                     OpenTransaction.Remove(transactionID);
                 }
 
-                Transaction?.Rollback();
-                Transaction?.Connection?.Close();
+                if (Transaction != null)
+                {
+                    await Transaction.RollbackAsync();
+
+                    if (Transaction.Connection != null)
+                        await Transaction.Connection.CloseAsync();
+                }
             }
             else
                 throw new IndexOutOfRangeException("Невірний номер транзації");
@@ -1215,7 +1235,7 @@ FROM
             }
         }
 
-        public void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async void InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1240,7 +1260,7 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1263,15 +1283,17 @@ FROM
 
         #region Func (Directory, Document)
 
-        public bool IsExistUniqueID(UnigueID unigueID, string table)
+        public async ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table)
         {
             if (DataSource != null)
             {
-                Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-                paramQuery.Add("uid", unigueID.UGuid);
+                Dictionary<string, object> paramQuery = new Dictionary<string, object>
+                {
+                    { "uid", unigueID.UGuid }
+                };
 
-                object? result = ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", paramQuery, 0);
-                return (result != null) ? (long)result == 1 : false;
+                object? result = await ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", paramQuery, 0);
+                return result != null ? (long)result == 1 : false;
             }
             else
                 return false;
@@ -1281,7 +1303,7 @@ FROM
 
         #region Directory
 
-        public bool InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1303,7 +1325,7 @@ FROM
                 foreach (string field in fieldArray)
                     nCommand.Parameters.AddWithValue(field, fieldValue[field]);
 
-                nCommand.ExecuteNonQuery();
+                await nCommand.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -1311,7 +1333,7 @@ FROM
                 return false;
         }
 
-        public bool UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async ValueTask<bool> UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -1331,7 +1353,7 @@ FROM
                     foreach (string field in fieldArray)
                         nCommand.Parameters.AddWithValue(field, fieldValue[field]);
 
-                nCommand.ExecuteNonQuery();
+                await nCommand.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -1368,7 +1390,7 @@ FROM
                 return false;
         }
 
-        public void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1381,7 +1403,7 @@ FROM
 
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1549,7 +1571,7 @@ FROM
             }
         }
 
-        public void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1575,11 +1597,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+               await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1592,7 +1614,7 @@ FROM
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-                command.ExecuteNonQuery();
+               await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1634,7 +1656,7 @@ FROM
                 return false;
         }
 
-        public bool InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1658,7 +1680,7 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -1666,7 +1688,7 @@ FROM
                 return false;
         }
 
-        public bool UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async ValueTask<bool> UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -1704,7 +1726,7 @@ FROM
                     foreach (string field in fieldArray)
                         command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -1712,7 +1734,7 @@ FROM
                 return false;
         }
 
-        public void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1725,7 +1747,7 @@ FROM
 
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1847,7 +1869,7 @@ FROM
             }
         }
 
-        public void InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1873,11 +1895,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1890,7 +1912,7 @@ FROM
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-                command.ExecuteNonQuery();
+               await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1999,7 +2021,7 @@ FROM
             }
         }
 
-        public void InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2026,11 +2048,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0)
+        public async ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2043,11 +2065,11 @@ FROM
 
                 command.Parameters.AddWithValue("owner", owner);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2070,11 +2092,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2093,7 +2115,7 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -2131,7 +2153,7 @@ FROM
                 return false;
         }
 
-        public void DeleteRegisterInformationObject(string table, UnigueID uid)
+        public async ValueTask DeleteRegisterInformationObject(string table, UnigueID uid)
         {
             if (DataSource != null)
             {
@@ -2140,7 +2162,7 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", uid.UGuid);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -2180,7 +2202,7 @@ FROM
             }
         }
 
-        public void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2208,11 +2230,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0)
+        public async ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2231,20 +2253,20 @@ FROM
                 if (periodCurrent != null)
                     command.Parameters.AddWithValue("period_current", periodCurrent);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 if (reader.HasRows)
                 {
                     List<DateTime> result = new List<DateTime>();
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                         result.Add((DateTime)reader["period"]);
 
-                    reader.Close();
+                    await reader.CloseAsync();
                     return result;
                 }
                 else
                 {
-                    reader.Close();
+                    await reader.CloseAsync();
                     return null;
                 }
             }
@@ -2252,7 +2274,7 @@ FROM
                 return null;
         }
 
-        public void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
+        public async ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2265,7 +2287,7 @@ FROM
 
                 command.Parameters.AddWithValue("owner", owner);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -2478,9 +2500,9 @@ FROM
         /// </summary>
         /// <param name="sqlQuery">Запит</param>
         /// <returns></returns>
-        public int ExecuteSQL(string query, byte transactionID = 0)
+        public async ValueTask<int> ExecuteSQL(string query, byte transactionID = 0)
         {
-            return ExecuteSQL(query, null, transactionID);
+            return await ExecuteSQL(query, null, transactionID);
         }
 
         /// <summary>
@@ -2489,12 +2511,12 @@ FROM
         /// <param name="sqlQuery">Запит</param>
         /// <param name="paramQuery">Параметри</param>
         /// <returns></returns>
-        public int ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
+        public async ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
         {
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
+                await using NpgsqlCommand command = (transaction != null) ?
                     new NpgsqlCommand(query, transaction.Connection, transaction) :
                     DataSource.CreateCommand(query);
 
@@ -2502,13 +2524,13 @@ FROM
                     foreach (KeyValuePair<string, object> param in paramQuery)
                         command.Parameters.AddWithValue(param.Key, param.Value);
 
-                return command.ExecuteNonQuery();
+                return await command.ExecuteNonQueryAsync();
             }
             else
                 return -1;
         }
 
-        public object? ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
+        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2521,7 +2543,7 @@ FROM
                     foreach (KeyValuePair<string, object> param in paramQuery)
                         command.Parameters.AddWithValue(param.Key, param.Value);
 
-                return command.ExecuteScalar();
+                return await command.ExecuteScalarAsync();
             }
             else
                 return null;

@@ -99,12 +99,12 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected void BaseDeletionLabel(bool label)
+        protected async ValueTask BaseDeletionLabel(bool label)
         {
             if (Kernel != null && !IsEmpty())
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
+                await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (label)

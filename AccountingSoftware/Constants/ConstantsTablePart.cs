@@ -80,20 +80,20 @@ namespace AccountingSoftware
 
         private byte TransactionID = 0;
 
-        protected void BaseBeginTransaction()
+        protected async void BaseBeginTransaction()
         {
-            TransactionID = Kernel.DataBase.BeginTransaction();
+            TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected void BaseCommitTransaction()
+        protected async void BaseCommitTransaction()
         {
-            Kernel.DataBase.CommitTransaction(TransactionID);
+            await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected void BaseRollbackTransaction()
+        protected async void BaseRollbackTransaction()
         {
-            Kernel.DataBase.RollbackTransaction(TransactionID);
+            await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
         }
 

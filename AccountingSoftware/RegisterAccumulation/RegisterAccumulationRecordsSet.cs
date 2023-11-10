@@ -110,20 +110,20 @@ namespace AccountingSoftware
 
         private byte TransactionID = 0;
 
-        protected void BaseBeginTransaction()
+        protected async ValueTask BaseBeginTransaction()
         {
-            TransactionID = Kernel.DataBase.BeginTransaction();
+            TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected void BaseCommitTransaction()
+        protected async ValueTask BaseCommitTransaction()
         {
-            Kernel.DataBase.CommitTransaction(TransactionID);
+            await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected void BaseRollbackTransaction()
+        protected async ValueTask BaseRollbackTransaction()
         {
-            Kernel.DataBase.RollbackTransaction(TransactionID);
+            await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
         }
 
@@ -131,9 +131,9 @@ namespace AccountingSoftware
         /// Видалення записів для власника
         /// </summary>
         /// <param name="owner">Унікальний ідентифікатор власника</param>
-        protected void BaseDelete(Guid owner)
+        protected async ValueTask BaseDelete(Guid owner)
         {
-            Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
+            await Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
         }
 
@@ -145,10 +145,10 @@ namespace AccountingSoftware
         /// <param name="income">Тип запису - прибуток чи зменшення</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected Guid BaseSave(Guid UID, DateTime period, bool income, Guid owner, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, bool income, Guid owner, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = (UID == Guid.Empty ? Guid.NewGuid() : UID);
-            Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, FieldArray, fieldValue, TransactionID);
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
+            await Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }
 
@@ -158,9 +158,9 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="regAccumName">Назва регістру</param>
-        protected void BaseTrigerAdd(DateTime period, Guid owner)
+        protected async ValueTask BaseTrigerAdd(DateTime period, Guid owner)
         {
-            Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
+            await Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
         }
 
         /// <summary>
@@ -171,14 +171,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="owner">Власник запису</param>
         /// <param name="periodCurrent">Поточний період запису</param>
-        protected void BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
+        protected async ValueTask BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
         {
-            List<DateTime>? recordPeriod = Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, periodCurrent, TransactionID);
+            List<DateTime>? recordPeriod = await Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, periodCurrent, TransactionID);
 
             if (recordPeriod != null)
             {
                 foreach (DateTime period in recordPeriod)
-                    Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "clear", TransactionID);
+                    await Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "clear", TransactionID);
             }
         }
     }

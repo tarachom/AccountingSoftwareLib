@@ -122,16 +122,16 @@ namespace AccountingSoftware
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected void BaseSave()
+        protected async ValueTask BaseSave()
         {
             if (IsNew)
             {
-                Kernel.DataBase.InsertRegisterInformationObject(this, Table, FieldArray, FieldValue);
+                await Kernel.DataBase.InsertRegisterInformationObject(this, Table, FieldArray, FieldValue);
                 IsNew = false;
             }
             else
             {
-                Kernel.DataBase.UpdateRegisterInformationObject(this, Table, FieldArray, FieldValue);
+                await Kernel.DataBase.UpdateRegisterInformationObject(this, Table, FieldArray, FieldValue);
             }
 
             BaseClear();
@@ -140,9 +140,9 @@ namespace AccountingSoftware
         /// <summary>
         /// Видалення з бази даних
         /// </summary>
-        protected void BaseDelete()
+        protected async ValueTask BaseDelete()
         {
-            Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
+            await Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
             BaseClear();
         }
     }

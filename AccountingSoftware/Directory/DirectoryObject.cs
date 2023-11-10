@@ -126,19 +126,19 @@ namespace AccountingSoftware
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected bool BaseSave()
+        protected async ValueTask<bool> BaseSave()
         {
             bool result;
 
             if (IsNew)
             {
-                result = Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
                 if (result) IsNew = false;
             }
             else
             {
-                if (!UnigueID.IsEmpty() && Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
-                    result = Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
+                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                    result = await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий елемент довідника");
             }
@@ -165,14 +165,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected void BaseDeletionLabel(bool label)
+        protected async ValueTask BaseDeletionLabel(bool label)
         {
             DeletionLabel = label;
 
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, null, null);
+                await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
                 if (DeletionLabel)
@@ -185,21 +185,21 @@ namespace AccountingSoftware
         /// <summary>
         /// Видалення з бази даних
         /// </summary>
-        protected void BaseDelete(string[] tablePartsTables)
+        protected async ValueTask BaseDelete(string[] tablePartsTables)
         {
-            byte TransactionID = Kernel.DataBase.BeginTransaction();
+            byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
             //Видалити сам елемент
-            Kernel.DataBase.DeleteDirectoryObject(UnigueID, Table, TransactionID);
+            await Kernel.DataBase.DeleteDirectoryObject(UnigueID, Table, TransactionID);
 
             //Видалення даних з табличних частин
             foreach (string tablePartsTable in tablePartsTables)
-                Kernel.DataBase.DeleteDirectoryTablePartRecords(UnigueID, tablePartsTable, TransactionID);
+                await Kernel.DataBase.DeleteDirectoryTablePartRecords(UnigueID, tablePartsTable, TransactionID);
 
             //Видалення з повнотекстового пошуку
             Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
-            Kernel.DataBase.CommitTransaction(TransactionID);
+            await Kernel.DataBase.CommitTransaction(TransactionID);
 
             BaseClear();
         }

@@ -163,9 +163,9 @@ namespace AccountingSoftware
         /// <param name="user">Користувач</param>
         /// <param name="password">Пароль</param>
         /// <returns></returns>
-        public bool UserLogIn(string user, string password)
+        public async Task<bool> UserLogIn(string user, string password)
         {
-            (Guid, Guid)? userSession = DataBase.SpetialTableUsersLogIn(user, password);
+            (Guid, Guid)? userSession = await DataBase.SpetialTableUsersLogIn(user, password);
 
             if (userSession != null)
             {

@@ -107,20 +107,20 @@ namespace AccountingSoftware
 
         private byte TransactionID = 0;
 
-        protected void BaseBeginTransaction()
+        protected async ValueTask BaseBeginTransaction()
         {
-            TransactionID = Kernel.DataBase.BeginTransaction();
+            TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected void BaseCommitTransaction()
+        protected async ValueTask BaseCommitTransaction()
         {
-            Kernel.DataBase.CommitTransaction(TransactionID);
+            await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected void BaseRollbackTransaction()
+        protected async ValueTask BaseRollbackTransaction()
         {
-            Kernel.DataBase.RollbackTransaction(TransactionID);
+            await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
         }
 
@@ -129,9 +129,9 @@ namespace AccountingSoftware
         /// Функція очищає всю таб. частину
         /// </summary>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
-        protected void BaseDelete(UnigueID ownerUnigueID)
+        protected async ValueTask BaseDelete(UnigueID ownerUnigueID)
         {
-            Kernel.DataBase.DeleteDirectoryTablePartRecords(ownerUnigueID, Table, TransactionID);
+            await Kernel.DataBase.DeleteDirectoryTablePartRecords(ownerUnigueID, Table, TransactionID);
         }
 
         /// <summary>
@@ -140,10 +140,10 @@ namespace AccountingSoftware
         /// <param name="UID">Унікальний ідентифікатор запису</param>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
         /// <param name="fieldValue">Значення полів запису</param>
-        protected Guid BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
-            Kernel.DataBase.InsertDirectoryTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
+            await Kernel.DataBase.InsertDirectoryTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }
     }

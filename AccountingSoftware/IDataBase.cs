@@ -40,28 +40,28 @@ namespace AccountingSoftware
 
         #region SpetialTable RegAccumTriger
 
-        void SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        void SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
+        ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
+        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
 
         #endregion
 
         #region SpetialTable Users
 
-        Guid? SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
-        Dictionary<string, string> SpetialTableUsersShortSelect();
+        ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
+        ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect();
         List<Dictionary<string, object>> SpetialTableUsersExtendetList();
         Dictionary<string, object>? SpetialTableUsersExtendetUser(Guid user_uid);
-        bool SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
-        bool SpetialTableUsersDelete(Guid user_uid, string name);
-        string SpetialTableUsersGetFullName(Guid user_uid);
-        (Guid, Guid)? SpetialTableUsersLogIn(string user, string password);
+        ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
+        ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name);
+        ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid);
+        ValueTask<(Guid, Guid)?> SpetialTableUsersLogIn(string user, string password);
 
         #endregion
 
         #region SpetialTable ActiveUsers
 
-        bool SpetialTableActiveUsersUpdateSession(Guid session_uid);
-        void SpetialTableActiveUsersCloseSession(Guid session_uid);
+        ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid);
+        ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid);
         List<Dictionary<string, object>> SpetialTableActiveUsersSelect();
 
         #endregion
@@ -76,9 +76,9 @@ namespace AccountingSoftware
 
         #region Transaction
 
-        byte BeginTransaction();
-        void CommitTransaction(byte transactionID);
-        void RollbackTransaction(byte transactionID);
+        ValueTask<byte> BeginTransaction();
+        ValueTask CommitTransaction(byte transactionID);
+        ValueTask RollbackTransaction(byte transactionID);
 
         #endregion
 
@@ -96,16 +96,16 @@ namespace AccountingSoftware
 
         #region Func (Directory, Document)
 
-        bool IsExistUniqueID(UnigueID unigueID, string table);
+        ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table);
 
         #endregion 
 
         #region Directory
 
-        bool InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
+        ValueTask<bool> InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
         bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
+        ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
         bool FindDirectoryPointer(Query QuerySelect, ref DirectoryPointer directoryPointer);
@@ -115,17 +115,17 @@ namespace AccountingSoftware
         void SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         void SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
 
-        void InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        void DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
+        ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
 
         #region Document
 
-        bool InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
+        ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
         bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
+        ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
         string GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
@@ -133,8 +133,8 @@ namespace AccountingSoftware
         void SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         void SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
 
-        void InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        void DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
+        ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
 
@@ -148,22 +148,22 @@ namespace AccountingSoftware
         #region RegisterInformation
 
         void SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
-        void InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        void DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
+        ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
-        void InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         bool SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        void DeleteRegisterInformationObject(string table, UnigueID uid);
+        ValueTask DeleteRegisterInformationObject(string table, UnigueID uid);
 
         #endregion
 
         #region RegisterAccumulation
 
         void SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
-        void InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        List<DateTime>? SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
-        void DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
+        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
+        ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
         void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
@@ -182,9 +182,9 @@ namespace AccountingSoftware
         #region SQL
 
         int InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
-        int ExecuteSQL(string query, byte transactionID = 0);
-        int ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
-        object? ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
+        ValueTask<int> ExecuteSQL(string query, byte transactionID = 0);
+        ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
+        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
 
