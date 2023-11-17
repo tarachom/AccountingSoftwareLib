@@ -72,10 +72,10 @@ namespace AccountingSoftware
         /// <summary>
         /// Прочитати значення у вн. масив
         /// </summary>
-        protected void BaseRead()
+        protected async ValueTask BaseRead()
         {
             BaseClear();
-            Kernel.DataBase.SelectConstantsTablePartRecords(Table, FieldArray, FieldValueList);
+            await Kernel.DataBase.SelectConstantsTablePartRecords(Table, FieldArray, FieldValueList);
         }
 
         private byte TransactionID = 0;

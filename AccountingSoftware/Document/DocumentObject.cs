@@ -77,7 +77,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Дата проведення документу
         /// </summary>
-        public DateTime SpendDate { get; private set; }
+        public DateTime SpendDate { get; private set; } = DateTime.MinValue;
 
         /// <summary>
         /// Мітка видалення
@@ -118,25 +118,23 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
         /// <returns></returns>
-        protected bool BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
             BaseClear();
 
             if (uid.IsEmpty() || IsNew == true)
                 return false;
 
-            bool deletion_label = false;
-            bool spend = false;
-            DateTime spend_date = DateTime.MinValue;
+            var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, FieldArray, FieldValue);
 
-            if (Kernel.DataBase.SelectDocumentObject(uid, ref deletion_label, ref spend, ref spend_date, Table, FieldArray, FieldValue))
+            if (record.Result)
             {
                 IsSave = true;
 
                 UnigueID = uid;
-                DeletionLabel = deletion_label;
-                Spend = spend;
-                SpendDate = spend_date;
+                DeletionLabel = record.DeletionLabel;
+                Spend = record.Spend;
+                SpendDate = record.SpendDate;
 
                 return true;
             }

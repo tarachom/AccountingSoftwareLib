@@ -21,6 +21,8 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using Microsoft.VisualBasic;
+
 namespace AccountingSoftware
 {
     /// <summary>
@@ -102,19 +104,19 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         /// <returns></returns>
-        protected bool BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
             if (uid == null || uid.IsEmpty())
                 return false;
 
             BaseClear();
 
-            bool deletion_label = false;
+            var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue);
 
-            if (Kernel.DataBase.SelectDirectoryObject(uid, ref deletion_label, Table, FieldArray, FieldValue))
+            if (record.Result)
             {
                 UnigueID = uid;
-                DeletionLabel = deletion_label;
+                DeletionLabel = record.DeletionLabel;
 
                 IsSave = true;
                 return true;

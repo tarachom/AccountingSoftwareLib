@@ -30,11 +30,17 @@ namespace AccountingSoftware
     {
         #region Open
 
-        void Open(string connectionString);
-        bool Open(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
-        bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception);
-        bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase);
+        //ValueTask Open(string connectionString, bool startScript = true);
+        ValueTask<bool> Open(string Server, string UserId, string Password, int Port, string Database);
+        ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database);
+        ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database);
+        ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database);
         void Close();
+
+        #endregion
+
+        #region Exception
+        Exception? Exception { get; }
 
         #endregion
 
@@ -84,11 +90,11 @@ namespace AccountingSoftware
 
         #region Constants
 
-        bool SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
+        ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
         ValueTask SaveConstants(string table, string field, object fieldValue);
 
-        void SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
 
@@ -104,7 +110,7 @@ namespace AccountingSoftware
 
         ValueTask<bool> InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask<bool> UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<SelectObject_RecordResult> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
@@ -124,7 +130,7 @@ namespace AccountingSoftware
 
         ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask<bool> UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<SelectObject_RecordResult> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);

@@ -28,45 +28,6 @@ namespace AccountingSoftware
     /// </summary>
     public class Kernel
     {
-        public Kernel()
-        {
-            Conf = new Configuration();
-            DataBase = new PostgreSQL();
-        }
-
-        /// <summary>
-        /// Перевірити підключення до сервера
-        /// </summary>
-        /// <param name="Server">Адреса сервера баз даних</param>
-        /// <param name="UserId">Користувач</param>
-        /// <param name="Password">Пароль</param>
-        /// <param name="Port">Порт</param>
-        /// <param name="Database">База даних</param>
-        /// <param name="exception">Помилка</param>
-        /// <returns></returns>
-        public bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
-        {
-            DataBase = new PostgreSQL();
-            return DataBase.TryConnectToServer(Server, UserId, Password, Port, Database, out exception);
-        }
-
-        /// <summary>
-        /// Створити базу даних
-        /// </summary>
-        /// <param name="Server">Адреса сервера баз даних</param>
-        /// <param name="UserId">Користувач</param>
-        /// <param name="Password">Пароль</param>
-        /// <param name="Port">Порт</param>
-        /// <param name="Database">База даних</param>
-        /// <param name="exception">Помилка</param>
-        /// <param name="IsExistsDatabase">Чи вже є?</param>
-        /// <returns>True якщо все ок</returns>
-        public bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase)
-        {
-            DataBase = new PostgreSQL();
-            return DataBase.CreateDatabaseIfNotExist(Server, UserId, Password, Port, Database, out exception, out IsExistsDatabase);
-        }
-
         /// <summary>
         /// Підключення до сервера баз даних і завантаження конфігурації
         /// </summary>
@@ -76,17 +37,10 @@ namespace AccountingSoftware
         /// <param name="Password">Пароль</param>
         /// <param name="Port">Порт</param>
         /// <param name="Database">База даних</param>
-        /// <param name="exception">Помилка</param>
         /// <returns>True якщо підключення відбулось нормально</returns>
-        public bool Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        public async ValueTask<bool> Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database)
         {
-            DataBase = new PostgreSQL();
-            bool flagConnect = DataBase.Open(Server, UserId, Password, Port, Database, out exception);
-
-            DataBase_Server = Server;
-            DataBase_UserId = UserId;
-            DataBase_Port = Port.ToString();
-            DataBase_BaseName = Database;
+            bool result = await OpenOnlyDataBase(Server, UserId, Password, Port, Database);
 
             try
             {
@@ -101,7 +55,7 @@ namespace AccountingSoftware
 
             Conf.PathToXmlFileConfiguration = PathToXmlFileConfiguration;
 
-            return flagConnect;
+            return result;
         }
 
         /// <summary>
@@ -114,17 +68,72 @@ namespace AccountingSoftware
         /// <param name="Database">База даних</param>
         /// <param name="exception"Помилка></param>
         /// <returns>True якщо підключення відбулось нормально</returns>
-        public bool OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        public async ValueTask<bool> OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database)
         {
             DataBase = new PostgreSQL();
-            bool flagConnect = DataBase.Open(Server, UserId, Password, Port, Database, out exception);
+            bool result = await DataBase.Open(Server, UserId, Password, Port, Database);
+            Exception = result ? null : DataBase.Exception;
 
             DataBase_Server = Server;
             DataBase_UserId = UserId;
             DataBase_Port = Port.ToString();
             DataBase_BaseName = Database;
 
-            return flagConnect;
+            return result;
+        }
+
+        /// <summary>
+        /// Перевірити підключення до сервера
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <returns>True якщо все ок</returns>
+        public async ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
+        {
+            DataBase = new PostgreSQL();
+            bool result = await DataBase.TryConnectToServer(Server, UserId, Password, Port, Database);
+            Exception = result ? null : DataBase.Exception;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Чи вже є база даних?
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <returns>True якщо все ок</returns>
+        public async ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
+        {
+            DataBase = new PostgreSQL();
+            bool result = await DataBase.IfExistDatabase(Server, UserId, Password, Port, Database);
+            Exception = result ? null : DataBase.Exception;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Створити базу даних
+        /// </summary>
+        /// <param name="Server">Адреса сервера баз даних</param>
+        /// <param name="UserId">Користувач</param>
+        /// <param name="Password">Пароль</param>
+        /// <param name="Port">Порт</param>
+        /// <param name="Database">База даних</param>
+        /// <returns>True якщо все ок</returns>
+        public async ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
+        {
+            DataBase = new PostgreSQL();
+            bool result = await DataBase.CreateDatabaseIfNotExist(Server, UserId, Password, Port, Database);
+            Exception = result ? null : DataBase.Exception;
+
+            return result;
         }
 
         /// <summary>
@@ -140,12 +149,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Конфігурація
         /// </summary>
-        public Configuration Conf { get; set; }
+        public Configuration Conf { get; set; } = new Configuration();
 
         /// <summary>
         /// Інтерфейс для роботи з базою даних
         /// </summary>
-        public IDataBase DataBase { get; set; }
+        public IDataBase DataBase { get; set; } = new PostgreSQL();
 
         /// <summary>
         /// Авторизований користувач
@@ -188,6 +197,15 @@ namespace AccountingSoftware
         public string DataBase_UserId { get; private set; } = "";
         public string DataBase_Port { get; private set; } = "";
         public string DataBase_BaseName { get; private set; } = "";
+
+        #endregion
+
+        #region Exception
+
+        /// <summary>
+        /// Інформація про помилки
+        /// </summary>
+        public Exception? Exception { get; private set; }
 
         #endregion
     }

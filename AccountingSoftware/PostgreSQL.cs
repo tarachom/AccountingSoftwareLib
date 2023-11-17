@@ -21,88 +21,89 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Text.RegularExpressions;
 using Npgsql;
 
 namespace AccountingSoftware
 {
     public class PostgreSQL : IDataBase
     {
+
         #region Connect
+        NpgsqlDataSource? DataSource { get; set; }
 
-        private NpgsqlDataSource? DataSource { get; set; }
+        public async ValueTask<bool> Open(string Server, string UserId, string Password, int Port, string Database)
+        {
+            Exception = null;
 
-        public async void Open(string connectionString)
+            string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
+
+            try
+            {
+                await Open(conString);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Exception = e;
+                return false;
+            }
+        }
+
+        async ValueTask Open(string connectionString, bool startScript = true)
         {
             NpgsqlDataSourceBuilder dataBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataBuilder.MapComposite<UuidAndText>("uuidtext");
 
             DataSource = dataBuilder.Build();
 
-            await Start();
+            if (startScript)
+                await StartScript();
         }
 
-        public bool Open(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        public async ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
         {
-            exception = new Exception();
-
             string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
+
+            Exception = null;
 
             try
             {
-                Open(conString);
+                await Open(conString, false);
                 return true;
             }
             catch (Exception e)
             {
-                exception = e;
+                Exception = e;
                 return false;
             }
-        }
-
-        public void Close()
-        {
-            if (DataSource != null)
+            finally
             {
-                OpenTransaction.Clear();
-                DataSource.Dispose();
+                Close();
             }
         }
 
-        public bool TryConnectToServer(string Server, string UserId, string Password, int Port, string Database, out Exception exception)
+        public async ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
         {
-            string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
-
-            exception = new Exception();
-
-            try
-            {
-                Open(conString);
-                return true;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                return false;
-            }
-        }
-
-        public bool CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database, out Exception exception, out bool IsExistsDatabase)
-        {
-            exception = new Exception();
-            IsExistsDatabase = false;
+            Exception = null;
 
             string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};SSLMode=Prefer;";
 
             try
             {
-                Open(conString);
+                await Open(conString, false);
             }
             catch (Exception e)
             {
-                exception = e;
+                Exception = e;
                 return false;
             }
 
+            return await IfExistDatabase(Database);
+        }
+
+        async ValueTask<bool> IfExistDatabase(string Database)
+        {
             if (DataSource != null)
             {
                 string sql = @"
@@ -119,41 +120,74 @@ SELECT EXISTS
                 NpgsqlCommand command = DataSource.CreateCommand(sql);
                 command.Parameters.AddWithValue("databasename", Database);
 
-                bool resultSql = false;
-
                 try
                 {
-                    IsExistsDatabase = resultSql = Boolean.Parse(command.ExecuteScalar()?.ToString() ?? "false");
+                    object? result = await command.ExecuteScalarAsync();
+                    return bool.Parse(result?.ToString() ?? "false");
                 }
                 catch (Exception e)
                 {
-                    exception = e;
+                    Exception = e;
                     return false;
                 }
-
-                if (!resultSql)
-                {
-                    sql = "CREATE DATABASE " + Database;
-                    command = DataSource.CreateCommand(sql);
-
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception e)
-                    {
-                        exception = e;
-                        return false;
-                    }
-                }
-
-                return true;
             }
             else
                 return false;
         }
 
-        private async ValueTask Start()
+        public async ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
+        {
+            if (!Regex.IsMatch(Database, "^[0-9a-z_]+$"))
+            {
+                Exception = new Exception(
+                    "Назва бази даних не відповідає критерію.\n" +
+                    "Назва має складатися тільки з маленьких англійських букв, цифр або знаку _\n\n" +
+                    "Наприклад: mydata, my_data, data2023, storage_and_trade");
+
+                return false;
+            }
+
+            string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};SSLMode=Prefer;";
+
+            try
+            {
+                await Open(conString, false);
+            }
+            catch (Exception e)
+            {
+                Exception = e;
+                return false;
+            }
+
+            if (DataSource != null && !await IfExistDatabase(Database))
+            {
+                NpgsqlCommand command = DataSource.CreateCommand($"CREATE DATABASE {Database}");
+
+                try
+                {
+                    await command.ExecuteNonQueryAsync();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Exception = e;
+                    return false;
+                }
+            }
+            else
+                return false;
+        }
+
+        public void Close()
+        {
+            if (DataSource != null)
+            {
+                OpenTransaction.Clear();
+                DataSource.Dispose();
+            }
+        }
+
+        async ValueTask StartScript()
         {
             if (DataSource != null)
             {
@@ -338,6 +372,12 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {Special
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
             }
         }
+
+        #endregion
+
+        #region Exception
+
+        public Exception? Exception { get; private set; }
 
         #endregion
 
@@ -1151,7 +1191,7 @@ FROM
 
         #region Constants
 
-        public bool SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1160,14 +1200,14 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", Guid.Empty);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 bool hasRows = reader.HasRows;
 
-                if (reader.Read())
+                if (await reader.ReadAsync())
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return hasRows;
             }
@@ -1175,7 +1215,7 @@ FROM
                 return false;
         }
 
-        public bool SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1184,13 +1224,13 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", Guid.Empty);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 bool hasRows = reader.HasRows;
 
-                if (reader.Read())
+                if (await reader.ReadAsync())
                     fieldValue.Add(field, reader[field]);
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return hasRows;
             }
@@ -1213,15 +1253,15 @@ FROM
             }
         }
 
-        public void SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
                 string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table}";
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -1231,7 +1271,7 @@ FROM
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -1361,33 +1401,31 @@ FROM
                 return false;
         }
 
-        public bool SelectDirectoryObject(UnigueID unigueID, ref bool deletion_label, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectObject_RecordResult> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
+            SelectObject_RecordResult record = new();
+
             if (DataSource != null)
             {
-                string query = $"SELECT uid, deletion_label, {string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
+                string query = $"SELECT deletion_label" + (fieldArray.Length > 0 ? "," : "") +
+                               $"{string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-
-                bool hasRows = reader.HasRows;
-
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
+                while (await reader.ReadAsync())
                 {
-                    deletion_label = (bool)reader["deletion_label"];
+                    record.DeletionLabel = (bool)reader["deletion_label"];
 
                     foreach (string field in fieldArray)
                         fieldValue[field] = reader[field];
                 }
-
-                reader.Close();
-
-                return hasRows;
+                await reader.CloseAsync();
             }
-            else
-                return false;
+
+            return record;
         }
 
         public async ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0)
@@ -1622,8 +1660,10 @@ FROM
 
         #region Document
 
-        public bool SelectDocumentObject(UnigueID unigueID, ref bool deletion_label, ref bool spend, ref DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectObject_RecordResult> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
+            SelectObject_RecordResult record = new();
+
             if (DataSource != null)
             {
                 string query = "SELECT uid, deletion_label, spend, spend_date ";
@@ -1636,24 +1676,22 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                bool hasRows = reader.HasRows;
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
-                    deletion_label = (bool)reader["deletion_label"];
-                    spend = (bool)reader["spend"];
-                    spend_date = (DateTime)reader["spend_date"];
+                    record.DeletionLabel = (bool)reader["deletion_label"];
+                    record.Spend = (bool)reader["spend"];
+                    record.SpendDate = (DateTime)reader["spend_date"];
 
                     foreach (string field in fieldArray)
                         fieldValue[field] = reader[field];
                 }
-                reader.Close();
-
-                return hasRows;
+                await reader.CloseAsync();
             }
-            else
-                return false;
+
+            return record;
         }
 
         public async ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
