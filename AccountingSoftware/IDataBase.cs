@@ -110,12 +110,12 @@ namespace AccountingSoftware
 
         ValueTask<bool> InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask<bool> UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        ValueTask<SelectObject_RecordResult> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
-        void SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
-        bool FindDirectoryPointer(Query QuerySelect, ref DirectoryPointer directoryPointer);
-        string GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
+        ValueTask SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
+        ValueTask<FindDirectoryPointer_Record> FindDirectoryPointer(Query QuerySelect, DirectoryPointer directoryPointer);
+        ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
         void DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
         void SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
@@ -130,11 +130,11 @@ namespace AccountingSoftware
 
         ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask<bool> UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        ValueTask<SelectObject_RecordResult> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
-        string GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
+        ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
         void SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         void SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);

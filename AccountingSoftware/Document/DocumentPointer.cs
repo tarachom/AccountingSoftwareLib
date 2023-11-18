@@ -96,7 +96,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
         /// <returns>Представлення обєкта</returns>
-        protected string BasePresentation(string[] fieldPresentation)
+        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
             if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
             {
@@ -104,7 +104,7 @@ namespace AccountingSoftware
                 query.Field.AddRange(fieldPresentation);
                 query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
-                return Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
+                return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
             else return "";
         }

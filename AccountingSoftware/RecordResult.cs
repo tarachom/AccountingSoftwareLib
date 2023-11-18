@@ -21,13 +21,32 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+/*
+Структури для повернення результатів з функцій в класі PostgreSQL
+*/
+
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Структура для повернення результату з функції зчитування об'єкту довідника 
-    /// чи документу
+    /// Структура для повернення результату з функції зчитування об'єкту довідника
     /// </summary>
-    public record SelectObject_RecordResult
+    public record SelectDirectoryObject_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Помітка на видалення
+        /// </summary>
+        public bool DeletionLabel;
+    }
+
+    /// <summary>
+    /// Структура для повернення результату з функції зчитування об'єкту документу
+    /// </summary>
+    public record SelectDocumentObject_Record
     {
         /// <summary>
         /// Результат функції
@@ -48,5 +67,21 @@ namespace AccountingSoftware
         /// Дата проведення документу
         /// </summary>
         public DateTime SpendDate = DateTime.MinValue;
+    }
+
+    /// <summary>
+    /// Структура для повернення результату з функції пошуку вказівника
+    /// </summary>
+    public record FindDirectoryPointer_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Знайдений вказівник
+        /// </summary>
+        public DirectoryPointer? DirectoryPointer;
     }
 }

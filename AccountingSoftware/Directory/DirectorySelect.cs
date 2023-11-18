@@ -107,13 +107,13 @@ namespace AccountingSoftware
 		/// Вибрати дані
 		/// </summary>
 		/// <returns></returns>
-		protected bool BaseSelect()
+		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
 			DirectoryPointerPosition = new DirectoryPointer();
 			BaseSelectList.Clear();
 
-			Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
+			await Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
 
 			return Count() > 0;
 		}
@@ -122,12 +122,12 @@ namespace AccountingSoftware
 		/// Вибрати один запис з бази даних
 		/// </summary>
 		/// <returns></returns>
-		protected bool BaseSelectSingle()
+		protected async ValueTask<bool> BaseSelectSingle()
 		{
 			int oldLimitValue = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
 
-			BaseSelect();
+			await BaseSelect();
 
 			QuerySelect.Limit = oldLimitValue;
 
@@ -140,14 +140,15 @@ namespace AccountingSoftware
 		/// <param name="fieldName">Назва поля в базі даних</param>
 		/// <param name="fieldValue">Значення поля</param>
 		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected DirectoryPointer BaseFindByField(string fieldName, object fieldValue)
+		protected async ValueTask<DirectoryPointer> BaseFindByField(string fieldName, object fieldValue)
 		{
 			DirectoryPointer directoryPointer = new DirectoryPointer(Kernel, Table);
 
 			Query querySelect = new Query(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
-			bool isFind = Kernel.DataBase.FindDirectoryPointer(querySelect, ref directoryPointer); // ????
+			var record = await Kernel.DataBase.FindDirectoryPointer(querySelect, directoryPointer);
+			if (record.Result && record.DirectoryPointer != null) directoryPointer = record.DirectoryPointer;
 
 			return directoryPointer;
 		}
@@ -160,14 +161,14 @@ namespace AccountingSoftware
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
 		/// <returns>Повертає список знайдених вказівників</returns>
-		protected List<DirectoryPointer> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		protected async ValueTask<List<DirectoryPointer>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
 			List<DirectoryPointer> directoryPointerList = new List<DirectoryPointer>();
 
 			Query querySelect = new Query(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
-			Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);
+			await Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);
 
 			return directoryPointerList;
 		}

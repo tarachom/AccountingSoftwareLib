@@ -211,7 +211,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
         /// <returns></returns>
-        protected string BasePresentation(string[] fieldPresentation)
+        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
             if (Kernel != null && !UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
@@ -220,7 +220,7 @@ namespace AccountingSoftware
 
                 query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
-                return Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
+                return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }
             else return "";
         }

@@ -1401,9 +1401,9 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectObject_RecordResult> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
-            SelectObject_RecordResult record = new();
+            SelectDirectoryObject_Record record = new();
 
             if (DataSource != null)
             {
@@ -1445,7 +1445,7 @@ FROM
             }
         }
 
-        public void SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer)
+        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer)
         {
             if (DataSource != null)
             {
@@ -1456,8 +1456,8 @@ FROM
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object>? fields = null;
 
@@ -1477,12 +1477,14 @@ FROM
 
                     listDirectoryPointer.Add(elementPointer);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
-        public bool FindDirectoryPointer(Query QuerySelect, ref DirectoryPointer directoryPointer)
+        public async ValueTask<FindDirectoryPointer_Record> FindDirectoryPointer(Query QuerySelect, DirectoryPointer directoryPointer)
         {
+            FindDirectoryPointer_Record record = new();
+
             if (DataSource != null)
             {
                 QuerySelect.Limit = 1;
@@ -1495,21 +1497,22 @@ FROM
                     foreach (Where field in QuerySelect.Where)
                         command.Parameters.AddWithValue(field.Alias, field.Value);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                bool hasRows = reader.HasRows;
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
 
-                if (reader.Read())
-                    directoryPointer.Init(new UnigueID(reader["uid"]), null);
+                if (await reader.ReadAsync())
+                {
+                    directoryPointer.Init(new UnigueID(reader["uid"]));
+                    record.DirectoryPointer = directoryPointer;
+                }
 
-                reader.Close();
-
-                return hasRows;
+                await reader.CloseAsync();
             }
-            else
-                return false;
+
+            return record;
         }
 
-        public string GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
+        public async ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)
             {
@@ -1522,12 +1525,12 @@ FROM
 
                 string presentation = "";
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                     for (int i = 0; i < fieldPresentation.Length; i++)
                         presentation += (i > 0 ? ", " : "") + reader[fieldPresentation[i]].ToString();
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return presentation;
             }
@@ -1660,9 +1663,9 @@ FROM
 
         #region Document
 
-        public async ValueTask<SelectObject_RecordResult> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
-            SelectObject_RecordResult record = new();
+            SelectDocumentObject_Record record = new();
 
             if (DataSource != null)
             {
@@ -1823,7 +1826,7 @@ FROM
             }
         }
 
-        public string GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
+        public async ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)
             {
@@ -1836,12 +1839,12 @@ FROM
 
                 string presentation = "";
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                     for (int i = 0; i < fieldPresentation.Length; i++)
                         presentation += (i > 0 ? ", " : "") + reader[fieldPresentation[i]].ToString();
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return presentation;
             }
