@@ -85,6 +85,9 @@ namespace AccountingSoftware
         public DirectoryPointer? DirectoryPointer;
     }
 
+    /// <summary>
+    /// Структура для повернення результату з функції SelectRequestAsync
+    /// </summary>
     public record SelectRequestAsync_Record
     {
         /// <summary>
