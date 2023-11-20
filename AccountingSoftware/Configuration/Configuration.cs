@@ -785,7 +785,7 @@ namespace AccountingSoftware
             bool noExistInConf = false;
             string columnNewName = "";
 
-            if (String.IsNullOrWhiteSpace(table))
+            if (string.IsNullOrWhiteSpace(table))
             {
                 table = "0";
             }
@@ -840,7 +840,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="Kernel">Ядро</param>
         /// <returns>Повертає унікальну назву таблиці</returns>
-        public static string GetNewUnigueTableName(Kernel Kernel)
+        public static async ValueTask<string> GetNewUnigueTableName(Kernel Kernel)
         {
             string[] englishAlphabet = GetEnglishAlphabet();
 
@@ -868,7 +868,7 @@ namespace AccountingSoftware
                     // а не кожен раз звертатись до сервера
                     //
 
-                    if (!Kernel.DataBase.IfExistsTable(tabNewName))
+                    if (!await Kernel.DataBase.IfExistsTable(tabNewName))
                     {
                         noExistInBase = true;
                     }

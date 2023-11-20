@@ -74,8 +74,8 @@ namespace AccountingSoftware
 
         #region SpetialTable FullTextSearch
 
-        void SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
-        void SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
+        ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
+        ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
         List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, uint offset = 0);
 
         #endregion
@@ -146,53 +146,54 @@ namespace AccountingSoftware
 
         #region Journal
 
-        void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
+        ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
             DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null);
 
         #endregion
 
         #region RegisterInformation
 
-        void SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
         ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
         ValueTask InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        bool SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteRegisterInformationObject(string table, UnigueID uid);
 
         #endregion
 
         #region RegisterAccumulation
 
-        void SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
         ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
         ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
-        void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        void DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0);
+        ValueTask SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0);
 
         #endregion
 
         #region InformationShema
 
-        ConfigurationInformationSchema SelectInformationSchema();
-        bool IfExistsTable(string tableName);
-        bool IfExistsColumn(string tableName, string columnName);
+        ValueTask<ConfigurationInformationSchema> SelectInformationSchema();
+        ValueTask<bool> IfExistsTable(string tableName);
+        ValueTask<bool> IfExistsColumn(string tableName, string columnName);
 
         #endregion
 
         #region SQL
 
-        int InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
+        ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
         ValueTask<int> ExecuteSQL(string query, byte transactionID = 0);
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
+        ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null);
 
         #endregion
     }

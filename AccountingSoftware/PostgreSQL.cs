@@ -974,7 +974,7 @@ ORDER BY
 
         #region SpetialTable FullTextSearch
 
-        public void SpetialTableFullTextSearchAddValue(UuidAndText obj, string value)
+        public async ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value)
         {
             if (DataSource != null)
             {
@@ -1024,11 +1024,11 @@ ON CONFLICT (uidobj) DO UPDATE SET
                 command.Parameters.AddWithValue("value", pointer + " (" + type + "): " + value);
                 command.Parameters.AddWithValue("groupname", groupname);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0)
+        public async ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1042,7 +1042,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
 
                 command.Parameters.AddWithValue("uid", uid.UGuid);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -1078,8 +1078,10 @@ SELECT
 FROM 
     find_rows
 ";
-                Dictionary<string, object> paramQuery = new Dictionary<string, object>();
-                paramQuery.Add("findtext", findtext);
+                Dictionary<string, object> paramQuery = new Dictionary<string, object>
+                {
+                    { "findtext", findtext }
+                };
 
                 string[] columnsName;
                 List<Dictionary<string, object>> listRow;
@@ -1973,7 +1975,7 @@ FROM
 
         #region Journal
 
-        public void SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
+        public async ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
             DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
         {
             if (DataSource != null)
@@ -2016,8 +2018,8 @@ FROM
                     command.Parameters.AddWithValue("periodstart", periodStart);
                     command.Parameters.AddWithValue("periodend", periodEnd);
 
-                    NpgsqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
+                    NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
                         JournalDocument document = new JournalDocument()
                         {
@@ -2033,7 +2035,7 @@ FROM
 
                         listJournalDocument.Add(document);
                     }
-                    reader.Close();
+                    await reader.CloseAsync();
                 }
             }
         }
@@ -2042,7 +2044,7 @@ FROM
 
         #region RegistersInformation
 
-        public void SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -2056,8 +2058,8 @@ FROM
                         command.Parameters.AddWithValue(ItemFilter.Alias, ItemFilter.Value);
                 }
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -2070,7 +2072,7 @@ FROM
                     foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
                         fieldValue.Add(field.Value!, reader[field.Value!]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -2172,7 +2174,7 @@ FROM
             }
         }
 
-        public bool SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2186,10 +2188,10 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", registerInformationObject.UnigueID.UGuid);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 bool hasRows = reader.HasRows;
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     registerInformationObject.Period = (DateTime)reader["period"];
                     registerInformationObject.Owner = (Guid)reader["owner"];
@@ -2198,7 +2200,7 @@ FROM
                         fieldValue[field] = reader[field];
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return hasRows;
             }
@@ -2223,7 +2225,7 @@ FROM
 
         #region RegistersAccumulation
 
-        public void SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -2237,8 +2239,8 @@ FROM
                         command.Parameters.AddWithValue(ItemFilter.Alias, ItemFilter.Value);
                 }
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -2251,7 +2253,7 @@ FROM
                     foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
                         fieldValue.Add(field.Value!, reader[field.Value!]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -2344,7 +2346,7 @@ FROM
             }
         }
 
-        public void SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -2357,8 +2359,8 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -2368,11 +2370,11 @@ FROM
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
-        public void InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2397,11 +2399,11 @@ FROM
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
-        public void DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0)
+        public async ValueTask DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2412,7 +2414,7 @@ FROM
                     new NpgsqlCommand(query, transaction.Connection, transaction) :
                     DataSource.CreateCommand(query);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -2420,7 +2422,7 @@ FROM
 
         #region InformationShema
 
-        public bool IfExistsTable(string tableName)
+        public async ValueTask<bool> IfExistsTable(string tableName)
         {
             if (DataSource != null)
             {
@@ -2431,10 +2433,10 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("table_name", tableName);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 bool hasRows = reader.HasRows;
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return hasRows;
             }
@@ -2442,7 +2444,7 @@ FROM
                 return false;
         }
 
-        public bool IfExistsColumn(string tableName, string columnName)
+        public async ValueTask<bool> IfExistsColumn(string tableName, string columnName)
         {
             if (DataSource != null)
             {
@@ -2454,10 +2456,10 @@ FROM
                 command.Parameters.AddWithValue("table_name", tableName);
                 command.Parameters.AddWithValue("column_name", columnName);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 bool hasRows = reader.HasRows;
 
-                reader.Close();
+                await reader.CloseAsync();
 
                 return hasRows;
             }
@@ -2465,7 +2467,7 @@ FROM
                 return false;
         }
 
-        public ConfigurationInformationSchema SelectInformationSchema()
+        public async ValueTask<ConfigurationInformationSchema> SelectInformationSchema()
         {
             ConfigurationInformationSchema informationSchema = new ConfigurationInformationSchema();
 
@@ -2482,8 +2484,8 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     informationSchema.Append(
                         reader["table_name"].ToString()?.ToLower() ?? "",
@@ -2491,7 +2493,7 @@ FROM
                         reader["data_type"].ToString() ?? "",
                         reader["udt_name"].ToString() ?? "");
                 }
-                reader.Close();
+                await reader.CloseAsync();
 
                 //
                 // Індекси
@@ -2500,14 +2502,14 @@ FROM
                 query = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public' ORDER BY indexname";
 
                 command = DataSource.CreateCommand(query);
-                reader = command.ExecuteReader();
-                while (reader.Read())
+                reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     informationSchema.AppendIndex(
                         reader["tablename"].ToString()?.ToLower() ?? "",
                         reader["indexname"].ToString()?.ToLower() ?? "");
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             return informationSchema;
@@ -2523,7 +2525,7 @@ FROM
         /// <param name="table">Таблиця</param>
         /// <param name="paramQuery">Поля і значення</param>
         /// <returns></returns>
-        public int InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0)
+        public async ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2542,7 +2544,7 @@ FROM
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
 
-                return command.ExecuteNonQuery();
+                return await command.ExecuteNonQueryAsync();
             }
             else
                 return -1;
@@ -2683,6 +2685,44 @@ FROM
                 reader.Close();
             }
         }
+
+        public async ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null)
+        {
+            SelectRequestAsync_Record record = new();
+
+            if (DataSource != null)
+            {
+                NpgsqlCommand command = DataSource.CreateCommand(selectQuery);
+
+                if (paramQuery != null)
+                    foreach (KeyValuePair<string, object> param in paramQuery)
+                        command.Parameters.AddWithValue(param.Key, param.Value);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                record.Result = reader.HasRows;
+
+                int columnsCount = reader.FieldCount;
+                record.ColumnsName = new string[columnsCount];
+
+                for (int n = 0; n < columnsCount; n++)
+                    record.ColumnsName[n] = reader.GetName(n);
+
+                while (await reader.ReadAsync())
+                {
+                    Dictionary<string, object> objRow = new Dictionary<string, object>();
+
+                    for (int i = 0; i < columnsCount; i++)
+                        objRow.Add(record.ColumnsName[i], reader[i]);
+
+                    record.ListRow.Add(objRow);
+                }
+                await reader.CloseAsync();
+            }
+
+            return record;
+        }
+
 
         #endregion
     }

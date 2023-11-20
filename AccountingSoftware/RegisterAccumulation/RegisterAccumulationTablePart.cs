@@ -72,26 +72,26 @@ namespace AccountingSoftware
         /// <summary>
         /// Прочитати значення у вн. масив
         /// </summary>
-        protected void BaseRead()
+        protected async ValueTask BaseRead()
         {
             BaseClear();
-            Kernel.DataBase.SelectRegisterAccumulationTablePartRecords(Table, FieldArray, FieldValueList);
+            await Kernel.DataBase.SelectRegisterAccumulationTablePartRecords(Table, FieldArray, FieldValueList);
         }
 
         private byte TransactionID = 0;
 
-        protected async void BaseBeginTransaction()
+        protected async ValueTask BaseBeginTransaction()
         {
             TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected async void BaseCommitTransaction()
+        protected async ValueTask BaseCommitTransaction()
         {
             await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected async void BaseRollbackTransaction()
+        protected async ValueTask BaseRollbackTransaction()
         {
             await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
@@ -100,9 +100,9 @@ namespace AccountingSoftware
         /// <summary>
         /// Очистити табличну частину
         /// </summary>
-        protected void BaseDelete()
+        protected async ValueTask BaseDelete()
         {
-            Kernel.DataBase.DeleteRegisterAccumulationTablePartRecords(Table, TransactionID);
+            await Kernel.DataBase.DeleteRegisterAccumulationTablePartRecords(Table, TransactionID);
         }
 
         /// <summary>
@@ -110,10 +110,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID"></param>
         /// <param name="fieldValue"></param>
-        protected Guid BaseSave(Guid UID, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
-            Kernel.DataBase.InsertRegisterAccumulationTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
+            await Kernel.DataBase.InsertRegisterAccumulationTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }
     }

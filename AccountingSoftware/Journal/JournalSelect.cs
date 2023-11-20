@@ -103,13 +103,13 @@ namespace AccountingSoftware
 		/// Зчитати
 		/// </summary>
 		/// <returns></returns>
-		public bool Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
+		public async ValueTask<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
 		{
 			Position = 0;
 			Current = new JournalDocument();
 			BaseSelectList.Clear();
 
-			Kernel.DataBase.SelectJournalDocumentPointer(Tables, TypeDocuments, BaseSelectList, periodStart, periodEnd, typeDocSelect);
+			await Kernel.DataBase.SelectJournalDocumentPointer(Tables, TypeDocuments, BaseSelectList, periodStart, periodEnd, typeDocSelect);
 
 			return Count() > 0;
 		}

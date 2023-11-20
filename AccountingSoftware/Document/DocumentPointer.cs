@@ -134,7 +134,7 @@ namespace AccountingSoftware
 
                 //Видалення з повнотекстового пошуку
                 if (label)
-                    Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                  await  Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
             }
         }
     }

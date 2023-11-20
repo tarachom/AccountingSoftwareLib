@@ -173,10 +173,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="obj">Обєкт</param>
         /// <param name="values">Масив значень полів</param>
-        protected void BaseWriteFullTextSearch(UuidAndText obj, string[] values)
+        protected async ValueTask BaseWriteFullTextSearch(UuidAndText obj, string[] values)
         {
             if (values.Length != 0)
-                Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
+                await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
         }
 
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
@@ -206,7 +206,7 @@ namespace AccountingSoftware
 
                 //Видалення з повнотекстового пошуку
                 if (DeletionLabel)
-                    Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
             }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже встановлювати мітку видалення");
@@ -228,7 +228,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.DeleteDocumentTablePartRecords(UnigueID, tablePartsTable, TransactionID);
 
             //Видалення з повнотекстового пошуку
-            Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
+            await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 

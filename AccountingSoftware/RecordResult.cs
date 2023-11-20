@@ -84,4 +84,22 @@ namespace AccountingSoftware
         /// </summary>
         public DirectoryPointer? DirectoryPointer;
     }
+
+    public record SelectRequestAsync_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Колонки
+        /// </summary>
+        public string[] ColumnsName = new string[] { };
+
+        /// <summary>
+        /// Список рядків
+        /// </summary>
+        public List<Dictionary<string, object>> ListRow = new List<Dictionary<string, object>>();
+    }
 }

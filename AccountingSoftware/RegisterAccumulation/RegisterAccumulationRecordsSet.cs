@@ -86,13 +86,13 @@ namespace AccountingSoftware
         /// <summary>
         /// Зчитування даних
         /// </summary>
-        protected void BaseRead()
+        protected async ValueTask BaseRead()
         {
             BaseClear();
 
             JoinValue.Clear();
 
-            Kernel.DataBase.SelectRegisterAccumulationRecords(QuerySelect, FieldValueList);
+            await Kernel.DataBase.SelectRegisterAccumulationRecords(QuerySelect, FieldValueList);
 
             //Зчитування додаткових полів
             if (QuerySelect.FieldAndAlias.Count > 0)
