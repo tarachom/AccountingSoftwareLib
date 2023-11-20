@@ -116,10 +116,10 @@ namespace AccountingSoftware
         ValueTask SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer);
         ValueTask<FindDirectoryPointer_Record> FindDirectoryPointer(Query QuerySelect, DirectoryPointer directoryPointer);
         ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
-        void DeleteDirectoryTempTable(DirectorySelect directorySelect);
+        ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
-        void SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        void SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
 
         ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);

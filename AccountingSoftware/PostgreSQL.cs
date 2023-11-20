@@ -978,7 +978,7 @@ ORDER BY
         {
             if (DataSource != null)
             {
-                if (obj.IsEmpty() || String.IsNullOrEmpty(obj.Text) || obj.Text.IndexOf(".") == -1)
+                if (obj.IsEmpty() || string.IsNullOrEmpty(obj.Text) || obj.Text.IndexOf(".") == -1)
                     return;
 
                 string[] pointer_and_type = obj.Text.Split(".", StringSplitOptions.None);
@@ -1538,7 +1538,7 @@ FROM
                 return "";
         }
 
-        public void DeleteDirectoryTempTable(DirectorySelect directorySelect)
+        public async ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect)
         {
             /*
             Створення тимчасових таблиць на даний момент не використовується,
@@ -1554,13 +1554,19 @@ FROM
                     string query = $"DROP TABLE IF EXISTS {directorySelect.QuerySelect.TempTable}";
 
                     NpgsqlCommand command = DataSource.CreateCommand(query);
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
         {
+            /*
+
+            !!! Не використовується, можливо треба удалити або закоментувати
+
+            */
+
             if (DataSource != null)
             {
                 string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table} WHERE owner = @owner";
@@ -1568,8 +1574,8 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -1579,11 +1585,11 @@ FROM
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
-        public void SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -1594,8 +1600,8 @@ FROM
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -1608,7 +1614,7 @@ FROM
                     foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
                         fieldValue.Add(field.Value!, reader[field.Value!]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 

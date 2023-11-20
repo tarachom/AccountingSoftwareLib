@@ -173,9 +173,9 @@ namespace AccountingSoftware
 			return directoryPointerList;
 		}
 
-		public void DeleteTempTable()
+		public async ValueTask DeleteTempTable()
 		{
-			Kernel.DataBase.DeleteDirectoryTempTable(this);
+			await Kernel.DataBase.DeleteDirectoryTempTable(this);
 			QuerySelect.CreateTempTable = false;
 		}
 	}
