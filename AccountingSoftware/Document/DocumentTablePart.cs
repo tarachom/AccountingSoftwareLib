@@ -77,7 +77,7 @@ namespace AccountingSoftware
         }
 
         //Зчитування даних
-        protected void BaseRead(UnigueID ownerUnigueID)
+        protected async ValueTask BaseRead(UnigueID ownerUnigueID)
         {
             BaseClear();
 
@@ -86,7 +86,7 @@ namespace AccountingSoftware
             QuerySelect.Where.Clear();
             QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
 
-            Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList);
+            await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList);
 
             //Якщо задані додаткові поля з псевдонімами, їх потрібно зчитати в список JoinValue
             if (QuerySelect.FieldAndAlias.Count > 0)

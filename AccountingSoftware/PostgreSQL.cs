@@ -1798,7 +1798,7 @@ FROM
             }
         }
 
-        public void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer)
+        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer)
         {
             if (DataSource != null)
             {
@@ -1809,8 +1809,8 @@ FROM
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fields = new Dictionary<string, object>();
 
@@ -1828,7 +1828,7 @@ FROM
 
                     listDocumentPointer.Add(elementPointer);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -1858,8 +1858,14 @@ FROM
                 return "";
         }
 
-        public void SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
         {
+            /*
+
+            !!! Не використовується, можливо треба удалити або закоментувати
+
+            */
+
             if (DataSource != null)
             {
                 string query = "SELECT uid";
@@ -1872,8 +1878,8 @@ FROM
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -1883,11 +1889,11 @@ FROM
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
-        public void SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -1898,8 +1904,8 @@ FROM
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
 
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
                     Dictionary<string, object> fieldValue = new Dictionary<string, object>();
                     fieldValueList.Add(fieldValue);
@@ -1912,7 +1918,7 @@ FROM
                     foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
                         fieldValue.Add(field.Value!, reader[field.Value!]);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 

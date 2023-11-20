@@ -133,11 +133,11 @@ namespace AccountingSoftware
         ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
-        void SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
+        ValueTask SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
         ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
-        void SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        void SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
 
         ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);

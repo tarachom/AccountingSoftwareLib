@@ -100,13 +100,13 @@ namespace AccountingSoftware
 		/// Зчитати
 		/// </summary>
 		/// <returns></returns>
-		protected bool BaseSelect()
+		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
 			DocumentPointerPosition = new DocumentPointer();
 			BaseSelectList.Clear();
 
-			Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
+			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
 
 			return Count() > 0;
 		}
@@ -115,12 +115,12 @@ namespace AccountingSoftware
 		/// Зчитати один вказівник
 		/// </summary>
 		/// <returns></returns>
-		protected bool BaseSelectSingle()
+		protected async ValueTask<bool> BaseSelectSingle()
 		{
 			int oldLimitValue = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
 
-			BaseSelect();
+			await BaseSelect();
 
 			QuerySelect.Limit = oldLimitValue;
 
