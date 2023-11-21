@@ -74,13 +74,13 @@ namespace AccountingSoftware
 				new FieldType("datetime", "[ datetime ] - Дата та час"),
 				new FieldType("time", "[ time ] - Час"),
 				new FieldType("enum", "[ enum ] - Перелічення"),
-				new FieldType("pointer", "[ pointer ] - Вказівник на елемент конфігурації"),
-				new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник на різні елементи конфігурації"),
+				new FieldType("pointer", "[ pointer ] - Вказівник статичний"),
+				new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник динамічний"),
 				new FieldType("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор"),
 				new FieldType("bytea", "[ byte ] - Бінарні дані"),
-				new FieldType("string[]", "[ Текст1, Текст2, ... ] - [ string[] ] - Масив текстових даних"),
-				new FieldType("integer[]", "[ Число1, Число2, ... ] - [ integer[] ] - Масив цілих чисел"),
-				new FieldType("numeric[]", "[ Число1.0, Число2.0, ... ] - [ numeric[] ] - Масив чисел з комою")
+				new FieldType("string[]", "[ a, b, ... ]"),
+				new FieldType("integer[]", "[ 1, 2, ... ]"),
+				new FieldType("numeric[]", "[ 1.0, 2.0, ... ]")
 			};
 
 			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807

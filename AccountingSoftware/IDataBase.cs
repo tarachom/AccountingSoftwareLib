@@ -47,7 +47,9 @@ namespace AccountingSoftware
         #region SpetialTable RegAccumTriger
 
         ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
+        //ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
+        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, 
+            Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
 
         #endregion
 

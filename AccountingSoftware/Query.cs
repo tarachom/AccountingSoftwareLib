@@ -174,7 +174,7 @@ namespace AccountingSoftware
                     }
 
                     //FuncToField && FuncToField_Param1
-                    if (!String.IsNullOrEmpty(field.FuncToField))
+                    if (!string.IsNullOrEmpty(field.FuncToField))
                     {
                         query += " " + field.FuncToField + "(" + (Joins.Count > 0 ? Table + "." : "") + field.Name;
 

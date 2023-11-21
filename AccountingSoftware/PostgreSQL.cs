@@ -430,7 +430,8 @@ VALUES
         /// <param name="session">Сесія з якої викликана дана процедура</param>
         /// <param name="ExecuteСalculation">Процедура обчислень</param>
         /// <param name="ExecuteFinalСalculation">Фінальна процедура обчислень</param>
-        public async ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation)
+        public async ValueTask SpetialTableRegAccumTrigerExecute(Guid session,
+            Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
@@ -480,7 +481,7 @@ ORDER BY period
                     // ExecuteСalculation
                     //
 
-                    ExecuteСalculation.Invoke(period, regname);
+                    await ExecuteСalculation.Invoke(period, regname);
 
                     if (!regAccumNameList.Contains(regname))
                         regAccumNameList.Add(regname);
@@ -492,7 +493,7 @@ ORDER BY period
                 //
 
                 if (hasRows)
-                    ExecuteFinalСalculation.Invoke(regAccumNameList);
+                    await ExecuteFinalСalculation.Invoke(regAccumNameList);
 
                 //
                 // Clear
