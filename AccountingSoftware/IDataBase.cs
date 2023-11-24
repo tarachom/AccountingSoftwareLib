@@ -70,7 +70,7 @@ namespace AccountingSoftware
 
         ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid);
         ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid);
-        List<Dictionary<string, object>> SpetialTableActiveUsersSelect();
+        ValueTask<SelectRequestAsync_Record> SpetialTableActiveUsersSelect();
 
         #endregion
 

@@ -945,7 +945,7 @@ DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
             }
         }
 
-        public List<Dictionary<string, object>> SpetialTableActiveUsersSelect()
+        public async ValueTask<SelectRequestAsync_Record> SpetialTableActiveUsersSelect()
         {
             string query = $@"
 SELECT 
@@ -962,13 +962,7 @@ FROM
 ORDER BY
     {SpecialTables.ActiveUsers}.dateupdate DESC
 ";
-
-            string[] columnsName;
-            List<Dictionary<string, object>> listRow;
-
-            SelectRequest(query, null, out columnsName, out listRow);
-
-            return listRow;
+            return await SelectRequestAsync(query);
         }
 
         #endregion
