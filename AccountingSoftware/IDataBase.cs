@@ -57,8 +57,8 @@ namespace AccountingSoftware
 
         ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
         ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect();
-        List<Dictionary<string, object>> SpetialTableUsersExtendetList();
-        Dictionary<string, object>? SpetialTableUsersExtendetUser(Guid user_uid);
+        ValueTask<SelectRequestAsync_Record> SpetialTableUsersExtendetList();
+        ValueTask<SelectRequestAsync_Record?> SpetialTableUsersExtendetUser(Guid user_uid);
         ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
         ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name);
         ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid);
@@ -78,7 +78,7 @@ namespace AccountingSoftware
 
         ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
         ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
-        List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, uint offset = 0);
+        ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0);
 
         #endregion
 
@@ -194,7 +194,7 @@ namespace AccountingSoftware
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
-        void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
+        //void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
         ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null);
 
         #endregion

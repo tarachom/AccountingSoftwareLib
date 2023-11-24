@@ -618,7 +618,7 @@ WHERE
             return users;
         }
 
-        public List<Dictionary<string, object>> SpetialTableUsersExtendetList()
+        public async ValueTask<SelectRequestAsync_Record> SpetialTableUsersExtendetList()
         {
             string query = $@"
 SELECT 
@@ -633,16 +633,10 @@ FROM
 ORDER BY
     name
 ";
-
-            string[] columnsName;
-            List<Dictionary<string, object>> listRow;
-
-            SelectRequest(query, null, out columnsName, out listRow);
-
-            return listRow;
+            return await SelectRequestAsync(query, null);
         }
 
-        public Dictionary<string, object>? SpetialTableUsersExtendetUser(Guid user_uid)
+        public async ValueTask<SelectRequestAsync_Record?> SpetialTableUsersExtendetUser(Guid user_uid)
         {
             Dictionary<string, object> paramQuery = new Dictionary<string, object>
             {
@@ -664,15 +658,8 @@ ORDER BY
     name DESC
 ";
 
-            string[] columnsName;
-            List<Dictionary<string, object>> listRow;
-
-            SelectRequest(query, paramQuery, out columnsName, out listRow);
-
-            if (listRow.Count == 1)
-                return listRow[0];
-            else
-                return null;
+            var recordResult = await SelectRequestAsync(query, paramQuery);
+            return recordResult.Result ? recordResult : null;
         }
 
         public async ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
@@ -1041,7 +1028,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public List<Dictionary<string, object>>? SpetialTableFullTextSearchSelect(string findtext, uint offset = 0)
+        public async ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0)
         {
             if (DataSource != null)
             {
@@ -1078,12 +1065,7 @@ FROM
                     { "findtext", findtext }
                 };
 
-                string[] columnsName;
-                List<Dictionary<string, object>> listRow;
-
-                SelectRequest(query, paramQuery, out columnsName, out listRow);
-
-                return listRow;
+                return await SelectRequestAsync(query, paramQuery);
             }
             else
                 return null;
@@ -1092,8 +1074,8 @@ FROM
         #endregion
 
         #region Transaction
-        readonly object loсked = new object();
-        Dictionary<byte, NpgsqlTransaction> OpenTransaction = new Dictionary<byte, NpgsqlTransaction>();
+        readonly object loсked = new();
+        Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
         volatile byte TransactionCounter = 0;
 
         public async ValueTask<byte> BeginTransaction()
@@ -2717,7 +2699,6 @@ FROM
 
             return record;
         }
-
 
         #endregion
     }
