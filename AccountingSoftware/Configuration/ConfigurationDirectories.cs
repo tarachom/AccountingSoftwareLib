@@ -51,22 +51,22 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> Fields { get; } = [];
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Тригери
         /// </summary>
-        public ConfigurationTriggerFunctions TriggerFunctions { get; set; } = new ConfigurationTriggerFunctions();
+        public ConfigurationTriggerFunctions TriggerFunctions { get; set; } = new();
 
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
         /// Автоматична нумерація

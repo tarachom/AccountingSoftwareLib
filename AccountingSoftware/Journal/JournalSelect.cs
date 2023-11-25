@@ -76,7 +76,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Список вибраних вказівників
 		/// </summary>
-		protected List<JournalDocument> BaseSelectList { get; private set; } = new List<JournalDocument>();
+		protected List<JournalDocument> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на наступну позицію

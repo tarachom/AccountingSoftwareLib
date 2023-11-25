@@ -80,26 +80,13 @@ namespace AccountingSoftware
         protected async ValueTask BaseRead(UnigueID ownerUnigueID)
         {
             BaseClear();
-
             JoinValue.Clear();
-
             QuerySelect.Where.Clear();
+
+            //Відбір по власнику
             QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
 
-            await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList);
-
-            //Якщо задані додаткові поля з псевдонімами, їх потрібно зчитати в список JoinValue
-            if (QuerySelect.FieldAndAlias.Count > 0)
-            {
-                foreach (Dictionary<string, object> fieldValue in FieldValueList)
-                {
-                    Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
-                    JoinValue.Add(fieldValue["uid"].ToString()!, joinFieldValue);
-
-                    foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                        joinFieldValue.Add(fieldAndAlias.Value ?? "", fieldValue[fieldAndAlias.Value ?? ""].ToString() ?? "");
-                }
-            }
+            await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList, JoinValue);
         }
 
         private byte TransactionID = 0;

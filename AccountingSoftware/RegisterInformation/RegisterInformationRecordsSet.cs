@@ -62,12 +62,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Масив значень полів
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = [];
 
         /// <summary>
         /// Додаткові поля
         /// </summary>
-        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = [];
 
         /// <summary>
         /// Очищення вн. списків
@@ -83,23 +83,9 @@ namespace AccountingSoftware
         protected async ValueTask BaseRead()
         {
             BaseClear();
-
             JoinValue.Clear();
 
-            await Kernel.DataBase.SelectRegisterInformationRecords(QuerySelect, FieldValueList);
-
-            //Зчитування додаткових полів
-            if (QuerySelect.FieldAndAlias.Count > 0)
-            {
-                foreach (Dictionary<string, object> fieldValue in FieldValueList)
-                {
-                    Dictionary<string, string> joinFieldValue = new Dictionary<string, string>();
-                    JoinValue.Add(fieldValue["uid"].ToString() ?? "", joinFieldValue);
-
-                    foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                        joinFieldValue.Add(fieldAndAlias.Value ?? "", fieldValue[fieldAndAlias.Value ?? ""].ToString() ?? "");
-                }
-            }
+            await Kernel.DataBase.SelectRegisterInformationRecords(QuerySelect, FieldValueList, JoinValue);
         }
 
         private byte TransactionID = 0;

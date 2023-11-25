@@ -21,8 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using Microsoft.VisualBasic;
-
 namespace AccountingSoftware
 {
     /// <summary>
@@ -58,7 +56,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; } = new Dictionary<string, object>();
+        protected Dictionary<string, object> FieldValue { get; set; } = [];
 
         /// <summary>
         /// Унікальний ідентифікатор запису
@@ -218,6 +216,7 @@ namespace AccountingSoftware
                 Query query = new Query(Table);
                 query.Field.AddRange(fieldPresentation);
 
+                //Відбір по uid
                 query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);

@@ -48,7 +48,7 @@ namespace AccountingSoftware
 
         ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
         //ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
-        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, 
+        ValueTask SpetialTableRegAccumTrigerExecute(Guid session,
             Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
 
         #endregion
@@ -96,7 +96,7 @@ namespace AccountingSoftware
         ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
         ValueTask SaveConstants(string table, string field, object fieldValue);
 
-        ValueTask SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
         ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
 
@@ -120,8 +120,8 @@ namespace AccountingSoftware
         ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
         ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
-        ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        //ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
@@ -138,8 +138,8 @@ namespace AccountingSoftware
         ValueTask SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
         ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
-        ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        //ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
@@ -155,7 +155,7 @@ namespace AccountingSoftware
 
         #region RegisterInformation
 
-        ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
         ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
@@ -168,7 +168,7 @@ namespace AccountingSoftware
 
         #region RegisterAccumulation
 
-        ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList);
+        ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
         ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
         ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);

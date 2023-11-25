@@ -59,7 +59,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Масив полів та значеннь
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = [];
 
         /// <summary>
         /// Очистити вн. масив

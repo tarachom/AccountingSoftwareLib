@@ -62,7 +62,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; } = new Dictionary<string, object>();
+        protected Dictionary<string, object> FieldValue { get; set; } = [];
 
         /// <summary>
         /// Унікальний ідентифікатор запису

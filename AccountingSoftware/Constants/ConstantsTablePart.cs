@@ -39,7 +39,15 @@ namespace AccountingSoftware
             Kernel = kernel;
             Table = table;
             FieldArray = fieldsArray;
+
+            QuerySelect = new Query(Table);
+            QuerySelect.Field.AddRange(fieldsArray);
         }
+
+        /// <summary>
+        /// Запит SELECT
+        /// </summary>
+        public Query QuerySelect { get; set; }
 
         /// <summary>
         /// Ядро
@@ -59,7 +67,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Масив полів та значеннь
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = [];
+
+        /// <summary>
+        /// Значення додаткових полів
+        /// </summary>
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = [];
 
         /// <summary>
         /// Очистити вн. масив
@@ -75,7 +88,9 @@ namespace AccountingSoftware
         protected async ValueTask BaseRead()
         {
             BaseClear();
-            await Kernel.DataBase.SelectConstantsTablePartRecords(Table, FieldArray, FieldValueList);
+            JoinValue.Clear();
+
+            await Kernel.DataBase.SelectConstantsTablePartRecords(QuerySelect, FieldArray, FieldValueList, JoinValue);
         }
 
         private byte TransactionID = 0;

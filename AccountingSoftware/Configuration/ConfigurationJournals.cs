@@ -49,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationJournalField> Fields { get; } = new Dictionary<string, ConfigurationJournalField>();
+        public Dictionary<string, ConfigurationJournalField> Fields { get; } = [];
 
         /// <summary>
         /// Документи які входять в журнал
@@ -59,7 +59,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
         /// Створення копії

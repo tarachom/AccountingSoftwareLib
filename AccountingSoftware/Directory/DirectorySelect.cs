@@ -82,7 +82,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<DirectoryPointer> BaseSelectList { get; private set; } = new List<DirectoryPointer>();
+		protected List<DirectoryPointer> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці

@@ -64,9 +64,9 @@ namespace AccountingSoftware
 		/// <returns>Список типів даних</returns>
 		public static List<FieldType> DefaultList()
 		{
-			List<FieldType> fieldTypes = new List<FieldType>()
-			{
-				new FieldType("string", "[ string ] - Текст"),
+			List<FieldType> fieldTypes =
+            [
+                new FieldType("string", "[ string ] - Текст"),
 				new FieldType("integer", "[ integer ] - Ціле число"), //От -2 147 483 648 до 2 147 483 647
 				new FieldType("numeric", "[ numeric ] - Число з комою"), //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
 				new FieldType("boolean", "[ boolean ] - Логічне значення"),
@@ -81,7 +81,7 @@ namespace AccountingSoftware
 				new FieldType("string[]", "[ a, b, ... ]"),
 				new FieldType("integer[]", "[ 1, 2, ... ]"),
 				new FieldType("numeric[]", "[ 1.0, 2.0, ... ]")
-			};
+			];
 
 			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
 			//fieldTypes.Add(new FieldType("uuid[]", "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));

@@ -58,7 +58,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Константи
         /// </summary>
-        public Dictionary<string, ConfigurationConstants> Constants { get; } = new Dictionary<string, ConfigurationConstants>();
+        public Dictionary<string, ConfigurationConstants> Constants { get; } = [];
 
         /// <summary>
         /// Добавлення константи

@@ -39,7 +39,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Запити
         /// </summary>
-        public Dictionary<string, string> Query { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Query { get; } = [];
 
         /// <summary>
         /// Назва блоку

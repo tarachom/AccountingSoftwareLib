@@ -56,32 +56,32 @@ namespace AccountingSoftware
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = [];
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = [];
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = [];
 
         /// <summary>
         /// Документи які роблять рухи по даному регістру
         /// </summary>
-        public List<string> AllowDocumentSpend { get; } = new List<string>();
+        public List<string> AllowDocumentSpend { get; } = [];
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Блоки запитів
         /// </summary>
-        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; } = new Dictionary<string, ConfigurationObjectQueryBlock>();
+        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; } = [];
 
         /// <summary>
         /// Без віртуальної таблиці підсумки

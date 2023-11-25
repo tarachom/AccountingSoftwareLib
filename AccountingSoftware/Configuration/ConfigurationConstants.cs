@@ -55,7 +55,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Блок
         /// </summary>
-        public ConfigurationConstantsBlock Block { get; set; } = new ConfigurationConstantsBlock();
+        public ConfigurationConstantsBlock Block { get; set; } = new();
 
         /// <summary>
         /// Назва
@@ -85,7 +85,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = new Dictionary<string, ConfigurationObjectTablePart>();
+        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Додати нову табличну частину

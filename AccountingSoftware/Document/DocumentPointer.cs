@@ -102,6 +102,8 @@ namespace AccountingSoftware
             {
                 Query query = new Query(Table);
                 query.Field.AddRange(fieldPresentation);
+
+                //Відбір по uid
                 query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
 
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
@@ -117,7 +119,7 @@ namespace AccountingSoftware
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
         {
             if (Kernel != null && !IsEmpty())
-                await Kernel.DataBase.UpdateDocumentObject(UnigueID, (spend ? false : null), spend, spend_date, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UnigueID, spend ? false : null, spend, spend_date, Table, null, null);
         }
 
         /// <summary>

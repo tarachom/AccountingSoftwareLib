@@ -74,37 +74,37 @@ namespace AccountingSoftware
         /// <summary>
         /// Блоки констант
         /// </summary>
-        public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; } = new Dictionary<string, ConfigurationConstantsBlock>();
+        public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; } = [];
 
         /// <summary>
         /// Довідники
         /// </summary>
-        public Dictionary<string, ConfigurationDirectories> Directories { get; } = new Dictionary<string, ConfigurationDirectories>();
+        public Dictionary<string, ConfigurationDirectories> Directories { get; } = [];
 
         /// <summary>
         /// Документи
         /// </summary>
-        public Dictionary<string, ConfigurationDocuments> Documents { get; } = new Dictionary<string, ConfigurationDocuments>();
+        public Dictionary<string, ConfigurationDocuments> Documents { get; } = [];
 
         /// <summary>
         /// Журнали
         /// </summary>
-        public Dictionary<string, ConfigurationJournals> Journals { get; } = new Dictionary<string, ConfigurationJournals>();
+        public Dictionary<string, ConfigurationJournals> Journals { get; } = [];
 
         /// <summary>
         /// Перелічення
         /// </summary>
-        public Dictionary<string, ConfigurationEnums> Enums { get; } = new Dictionary<string, ConfigurationEnums>();
+        public Dictionary<string, ConfigurationEnums> Enums { get; } = [];
 
         /// <summary>
         /// Регістри відомостей
         /// </summary>
-        public Dictionary<string, ConfigurationRegistersInformation> RegistersInformation { get; } = new Dictionary<string, ConfigurationRegistersInformation>();
+        public Dictionary<string, ConfigurationRegistersInformation> RegistersInformation { get; } = [];
 
         /// <summary>
         /// Регістри накопичення
         /// </summary>
-        public Dictionary<string, ConfigurationRegistersAccumulation> RegistersAccumulation { get; } = new Dictionary<string, ConfigurationRegistersAccumulation>();
+        public Dictionary<string, ConfigurationRegistersAccumulation> RegistersAccumulation { get; } = [];
 
         #endregion
 
@@ -115,13 +115,13 @@ namespace AccountingSoftware
         /// Довідка: коли створюється новий довідник, чи документ 
         /// для нього резервується нова унікальна назва таблиці в базі даних. 
         /// </summary>
-        private List<string> ReservedUnigueTableName { get; set; } = new List<string>();
+        private List<string> ReservedUnigueTableName { get; set; } = [];
 
         /// <summary>
         /// Список зарезервованих назв стовпців.
         /// Ключем виступає назва таблиці для якої резервуються стовпці.
         /// </summary>
-        private Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; } = new Dictionary<string, List<string>>();
+        private Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; } = [];
 
         /// <summary>
         /// Масив з бук анг. алфавіту. Використовується для задання назви таблиці або стовпчика в базі даних
@@ -129,11 +129,11 @@ namespace AccountingSoftware
         /// <returns></returns>
         public static string[] GetEnglishAlphabet()
         {
-            return new string[]
-            {
+            return 
+            [
                 "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "n",
                 "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
-            };
+            ];
         }
 
         #endregion
@@ -999,7 +999,7 @@ namespace AccountingSoftware
 
             configurationObjectName = configurationObjectName.Trim();
 
-            if (String.IsNullOrWhiteSpace(configurationObjectName))
+            if (string.IsNullOrWhiteSpace(configurationObjectName))
             {
                 errorList += "Назва не задана";
                 return errorList;
@@ -1058,7 +1058,7 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Функція об'єдьнює в один масив всі поля регістру
+        /// Функція об'єднує в один масив всі поля регістру
         /// </summary>
         public Dictionary<string, ConfigurationObjectField> CombineAllFieldForRegister(
             Dictionary<string, ConfigurationObjectField>.ValueCollection DimensionFields,
@@ -1543,9 +1543,7 @@ namespace AccountingSoftware
                     throw new Exception("Не оприділений тип регістру");
 
                 ConfigurationRegistersAccumulation configurationRegistersAccumulation =
-                    new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc);
-
-                configurationRegistersAccumulation.NoSummary = (noSummary == "1" ? true : false);
+                    new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" ? true : false };
 
                 Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
 
@@ -2640,7 +2638,7 @@ namespace AccountingSoftware
 
                 File.Copy(pathToConf, pathToCopyConf);
 
-                if (!String.IsNullOrEmpty(oldCopyConf))
+                if (!string.IsNullOrEmpty(oldCopyConf))
                 {
                     string pathToOldCopyConf = Path.Combine(dirName, oldCopyConf);
                     if (File.Exists(pathToOldCopyConf))
@@ -2671,7 +2669,7 @@ namespace AccountingSoftware
                 string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + Guid.NewGuid().ToString().Replace("-", "") + ".xml";
                 string pathToTempConf = Path.Combine(dirName, fileTempName);
 
-                if (!String.IsNullOrEmpty(oldTempConf))
+                if (!string.IsNullOrEmpty(oldTempConf))
                 {
                     if (File.Exists(oldTempConf))
                         File.Delete(oldTempConf);

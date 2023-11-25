@@ -55,7 +55,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationTabularListField> Fields { get; } = new Dictionary<string, ConfigurationTabularListField>();
+        public Dictionary<string, ConfigurationTabularListField> Fields { get; } = [];
 
         /// <summary>
         /// Додати поле

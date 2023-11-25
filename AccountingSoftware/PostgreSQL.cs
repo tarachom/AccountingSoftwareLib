@@ -1232,23 +1232,34 @@ FROM
             }
         }
 
-        public async ValueTask SelectConstantsTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, 
+            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
-                string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table}";
+                string query = QuerySelect.Construct();
+                
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);
 
                     foreach (string field in fieldArray)
                         fieldValue.Add(field, reader[field]);
+
+                    if (QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        Dictionary<string, string> joinValue = [];
+                        joinValueList.Add(reader["uid"].ToString()!, joinValue);
+
+                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                    }
                 }
                 await reader.CloseAsync();
             }
@@ -1538,37 +1549,39 @@ FROM
             }
         }
 
-        public async ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
-        {
-            /*
-
-            !!! Не використовується, можливо треба удалити або закоментувати
-
-            */
-
-            if (DataSource != null)
-            {
-                string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table} WHERE owner = @owner";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+        /*
+                public async ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-                    fieldValueList.Add(fieldValue);
 
-                    fieldValue.Add("uid", reader["uid"]);
 
-                    foreach (string field in fieldArray)
-                        fieldValue.Add(field, reader[field]);
+                    !!! Не використовується, можливо треба удалити або закоментувати
+
+
+
+                    if (DataSource != null)
+                    {
+                        string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table} WHERE owner = @owner";
+
+                        NpgsqlCommand command = DataSource.CreateCommand(query);
+                        command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+
+                        NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                            fieldValueList.Add(fieldValue);
+
+                            fieldValue.Add("uid", reader["uid"]);
+
+                            foreach (string field in fieldArray)
+                                fieldValue.Add(field, reader[field]);
+                        }
+                        await reader.CloseAsync();
+                    }
                 }
-                await reader.CloseAsync();
-            }
-        }
-
-        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        */
+        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect,
+            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -1582,7 +1595,7 @@ FROM
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);
@@ -1590,8 +1603,14 @@ FROM
                     foreach (string field in QuerySelect.Field)
                         fieldValue.Add(field, reader[field]);
 
-                    foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                        fieldValue.Add(field.Value!, reader[field.Value!]);
+                    if (QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        Dictionary<string, string> joinValue = [];
+                        joinValueList.Add(reader["uid"].ToString()!, joinValue);
+
+                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                    }
                 }
                 await reader.CloseAsync();
             }
@@ -1837,42 +1856,42 @@ FROM
                 return "";
         }
 
-        public async ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
-        {
-            /*
-
-            !!! Не використовується, можливо треба удалити або закоментувати
-
-            */
-
-            if (DataSource != null)
-            {
-                string query = "SELECT uid";
-
-                if (fieldArray.Length != 0)
-                    query += ", " + string.Join(", ", fieldArray);
-
-                query += $" FROM {table} WHERE owner = @owner";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+        /*
+                public async ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-                    fieldValueList.Add(fieldValue);
 
-                    fieldValue.Add("uid", reader["uid"]);
+                    !!! Не використовується, можливо треба удалити або закоментувати
 
-                    foreach (string field in fieldArray)
-                        fieldValue.Add(field, reader[field]);
+
+                    if (DataSource != null)
+                    {
+                        string query = "SELECT uid";
+
+                        if (fieldArray.Length != 0)
+                            query += ", " + string.Join(", ", fieldArray);
+
+                        query += $" FROM {table} WHERE owner = @owner";
+
+                        NpgsqlCommand command = DataSource.CreateCommand(query);
+                        command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+
+                        NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                            fieldValueList.Add(fieldValue);
+
+                            fieldValue.Add("uid", reader["uid"]);
+
+                            foreach (string field in fieldArray)
+                                fieldValue.Add(field, reader[field]);
+                        }
+                        await reader.CloseAsync();
+                    }
                 }
-                await reader.CloseAsync();
-            }
-        }
-
-        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+                */
+        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect,
+            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -1894,8 +1913,14 @@ FROM
                     foreach (string field in QuerySelect.Field)
                         fieldValue.Add(field, reader[field]);
 
-                    foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                        fieldValue.Add(field.Value!, reader[field.Value!]);
+                    if (QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        Dictionary<string, string> joinValue = [];
+                        joinValueList.Add(reader["uid"].ToString()!, joinValue);
+
+                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                    }
                 }
                 await reader.CloseAsync();
             }
@@ -2021,7 +2046,8 @@ FROM
 
         #region RegistersInformation
 
-        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect,
+            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2046,8 +2072,14 @@ FROM
                     foreach (string field in QuerySelect.Field)
                         fieldValue.Add(field, reader[field]);
 
-                    foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                        fieldValue.Add(field.Value!, reader[field.Value!]);
+                    if (QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        Dictionary<string, string> joinValue = [];
+                        joinValueList.Add(reader["uid"].ToString()!, joinValue);
+
+                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                    }
                 }
                 await reader.CloseAsync();
             }
@@ -2202,7 +2234,8 @@ FROM
 
         #region RegistersAccumulation
 
-        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList)
+        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect,
+            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2227,8 +2260,14 @@ FROM
                     foreach (string field in QuerySelect.Field)
                         fieldValue.Add(field, reader[field]);
 
-                    foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                        fieldValue.Add(field.Value!, reader[field.Value!]);
+                    if (QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        Dictionary<string, string> joinValue = [];
+                        joinValueList.Add(reader["uid"].ToString()!, joinValue);
+
+                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                    }
                 }
                 await reader.CloseAsync();
             }

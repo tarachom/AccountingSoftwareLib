@@ -66,7 +66,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля перелічення
         /// </summary>
-        public Dictionary<string, ConfigurationEnumField> Fields { get; } = new Dictionary<string, ConfigurationEnumField>();
+        public Dictionary<string, ConfigurationEnumField> Fields { get; } = [];
 
         /// <summary>
         /// Створення копії

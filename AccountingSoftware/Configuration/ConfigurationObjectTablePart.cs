@@ -49,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> Fields { get; } = [];
 
         /// <summary>
         /// Створення копії

@@ -69,17 +69,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Які поля вибирати
         /// </summary>
-        public List<string> Field { get; set; } = new List<string>();
+        public List<string> Field { get; set; } = [];
 
         /// <summary>
         /// Поля із псевдонімами
         /// </summary>
-        public List<NameValue<string>> FieldAndAlias { get; set; } = new List<NameValue<string>>();
+        public List<NameValue<string>> FieldAndAlias { get; set; } = [];
 
         /// <summary>
         /// Таблиці які потрібно приєднати
         /// </summary>
-        public List<Join> Joins { get; set; } = new List<Join>();
+        public List<Join> Joins { get; set; } = [];
 
         /// <summary>
         /// Умови.
@@ -89,14 +89,14 @@ namespace AccountingSoftware
         /// 4. Тип порівняння з наступним блоком (по замовчуванню AND)
         /// Example: Name EQ "Test" AND (Name = "Test" AND ... )
         /// </summary>
-        public List<Where> Where { get; set; } = new List<Where>();
+        public List<Where> Where { get; set; } = [];
 
         /// <summary>
         /// Сортування. 
         /// Назва поля, тип сортування
         /// Name ASC, Code Desc
         /// </summary>
-        public Dictionary<string, SelectOrder> Order { get; set; } = new Dictionary<string, SelectOrder>();
+        public Dictionary<string, SelectOrder> Order { get; set; } = [];
 
         /// <summary>
         /// Обмеження вибірки

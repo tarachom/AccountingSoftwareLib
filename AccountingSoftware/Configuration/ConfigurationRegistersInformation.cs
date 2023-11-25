@@ -50,22 +50,22 @@ namespace AccountingSoftware
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = [];
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = [];
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = new Dictionary<string, ConfigurationObjectField>();
+        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = [];
 
         /// <summary>
         /// Табличні списки
         /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = new Dictionary<string, ConfigurationTabularList>();
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
         /// Створення копії

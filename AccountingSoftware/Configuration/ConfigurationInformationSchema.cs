@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Таблиці
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = new Dictionary<string, ConfigurationInformationSchema_Table>();
+		public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = [];
 
 		/// <summary>
 		/// Дабавлення інформації в структуру
@@ -84,12 +84,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Стовпці
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = new Dictionary<string, ConfigurationInformationSchema_Column>();
+		public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = [];
 
 		/// <summary>
 		/// Індекси
 		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = new Dictionary<string, ConfigurationInformationSchema_Index>();
+		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = [];
 	}
 
 	/// <summary>
