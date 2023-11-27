@@ -745,6 +745,9 @@ ORDER BY
                     Guid user_uid = (Guid)uid;
                     Guid session_uid = await SpetialTableActiveUsersAddSession(user_uid);
 
+                    //Додаткова перевірка всіх наявних сесій на актуальність
+                    await SpetialTableActiveUsersUpdateSession(session_uid);
+
                     return (user_uid, session_uid);
                 }
                 else

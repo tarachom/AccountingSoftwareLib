@@ -66,21 +66,21 @@ namespace AccountingSoftware
 		{
 			List<FieldType> fieldTypes =
             [
-                new FieldType("string", "[ string ] - Текст"),
-				new FieldType("integer", "[ integer ] - Ціле число"), //От -2 147 483 648 до 2 147 483 647
-				new FieldType("numeric", "[ numeric ] - Число з комою"), //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
-				new FieldType("boolean", "[ boolean ] - Логічне значення"),
-				new FieldType("date", "[ date ] - Дата"),
-				new FieldType("datetime", "[ datetime ] - Дата та час"),
-				new FieldType("time", "[ time ] - Час"),
-				new FieldType("enum", "[ enum ] - Перелічення"),
-				new FieldType("pointer", "[ pointer ] - Вказівник статичний"),
-				new FieldType("composite_pointer", "[ composite_pointer ] - Вказівник динамічний"),
-				new FieldType("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор"),
-				new FieldType("bytea", "[ byte ] - Бінарні дані"),
-				new FieldType("string[]", "[ a, b, ... ]"),
-				new FieldType("integer[]", "[ 1, 2, ... ]"),
-				new FieldType("numeric[]", "[ 1.0, 2.0, ... ]")
+                new ("string", "[ string ] - Текст"),
+				new ("integer", "[ integer ] - Ціле число"), //От -2 147 483 648 до 2 147 483 647
+				new ("numeric", "[ numeric ] - Число з комою"), //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
+				new ("boolean", "[ boolean ] - Логічне значення"),
+				new ("date", "[ date ] - Дата"),
+				new ("datetime", "[ datetime ] - Дата та час"),
+				new ("time", "[ time ] - Час"),
+				new ("enum", "[ enum ] - Перелічення"),
+				new ("pointer", "[ pointer ] - Вказівник статичний"),
+				new ("composite_pointer", "[ composite_pointer ] - Вказівник динамічний"),
+				new ("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор"),
+				new ("bytea", "[ byte ] - Бінарні дані"),
+				new ("string[]", "[ a, b, ... ] - Масив текст"),
+				new ("integer[]", "[ 1, 2, ... ] - Масив ціле число"),
+				new ("numeric[]", "[ 1.0, 2.0, ... ] - Масив число з комою")
 			];
 
 			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
