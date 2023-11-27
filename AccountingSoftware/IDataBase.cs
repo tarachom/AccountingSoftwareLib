@@ -30,7 +30,6 @@ namespace AccountingSoftware
     {
         #region Open
 
-        //ValueTask Open(string connectionString, bool startScript = true);
         ValueTask<bool> Open(string Server, string UserId, string Password, int Port, string Database);
         ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database);
         ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database);
@@ -47,7 +46,6 @@ namespace AccountingSoftware
         #region SpetialTable RegAccumTriger
 
         ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        //ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Action<DateTime, string> ExecuteСalculation, Action<List<string>> ExecuteFinalСalculation);
         ValueTask SpetialTableRegAccumTrigerExecute(Guid session,
             Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
 
@@ -120,7 +118,6 @@ namespace AccountingSoftware
         ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
         ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
-        //ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
@@ -138,7 +135,6 @@ namespace AccountingSoftware
         ValueTask SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer);
         ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
-        //ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
@@ -194,7 +190,7 @@ namespace AccountingSoftware
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
-        //void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
+        void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
         ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null);
 
         #endregion

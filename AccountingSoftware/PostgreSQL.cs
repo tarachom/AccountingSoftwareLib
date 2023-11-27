@@ -2632,7 +2632,7 @@ FROM
         /// <param name="listRow">Список рядочків даних</param>
         public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow)
         {
-            columnsName = new string[] { };
+            columnsName = [];
             listRow = new List<object[]>();
 
             if (DataSource != null)
@@ -2673,7 +2673,7 @@ FROM
         /// <param name="listRow">Список рядочків даних</param>
         public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
         {
-            columnsName = new string[] { };
+            columnsName = [];
             listRow = new List<Dictionary<string, object>>();
 
             if (DataSource != null)
