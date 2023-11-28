@@ -44,6 +44,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Простір імен для конфігурації
         /// </summary>
+        public string NameSpaceGenerationCode { get; set; } = "";
+
+        /// <summary>
+        /// Простір імен для програми
+        /// </summary>
         public string NameSpace { get; set; } = "";
 
         /// <summary>
@@ -129,7 +134,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public static string[] GetEnglishAlphabet()
         {
-            return 
+            return
             [
                 "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "n",
                 "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
@@ -1098,6 +1103,7 @@ namespace AccountingSoftware
                 Save(pathToConf, new Configuration()
                 {
                     Name = "Нова конфігурація",
+                    NameSpaceGenerationCode = "НоваКонфігурація",
                     NameSpace = "НоваКонфігурація_1_0"
                 });
 
@@ -1126,6 +1132,7 @@ namespace AccountingSoftware
             XPathNavigator? rootNodeConfiguration = xPathDocNavigator.SelectSingleNode("/Configuration");
 
             Conf.Name = rootNodeConfiguration?.SelectSingleNode("Name")?.Value ?? "";
+            Conf.NameSpaceGenerationCode = rootNodeConfiguration?.SelectSingleNode("NameSpaceGenerationCode")?.Value ?? "";
             Conf.NameSpace = rootNodeConfiguration?.SelectSingleNode("NameSpace")?.Value ?? "";
             Conf.Author = rootNodeConfiguration?.SelectSingleNode("Author")?.Value ?? "";
             Conf.Desc = rootNodeConfiguration?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1641,6 +1648,10 @@ namespace AccountingSoftware
             XmlElement nodeName = xmlConfDocument.CreateElement("Name");
             nodeName.InnerText = Conf.Name;
             rootNode.AppendChild(nodeName);
+
+            XmlElement nodeNameSpaceGenerationCode = xmlConfDocument.CreateElement("NameSpaceGenerationCode");
+            nodeNameSpaceGenerationCode.InnerText = Conf.NameSpaceGenerationCode;
+            rootNode.AppendChild(nodeNameSpaceGenerationCode);
 
             XmlElement nodeNameSpace = xmlConfDocument.CreateElement("NameSpace");
             nodeNameSpace.InnerText = Conf.NameSpace;
