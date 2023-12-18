@@ -181,6 +181,9 @@ namespace AccountingSoftware
                 User = userSession.Value.Item1;
                 Session = userSession.Value.Item2;
 
+                //Фонове обновлення сесії
+                StartUpdateSession();
+
                 return true;
             }
             else
@@ -188,6 +191,20 @@ namespace AccountingSoftware
                 User = Session = Guid.Empty;
 
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Фонове обновлення сесії
+        /// </summary>
+        async void StartUpdateSession()
+        {
+            while (true)
+            {
+                await DataBase.SpetialTableActiveUsersUpdateSession(Session);
+
+                //Затримка на 5 сек
+                await Task.Delay(5000);
             }
         }
 
