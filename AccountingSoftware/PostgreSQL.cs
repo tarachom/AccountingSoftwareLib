@@ -28,7 +28,6 @@ namespace AccountingSoftware
 {
     public class PostgreSQL : IDataBase
     {
-
         #region Connect
         NpgsqlDataSource? DataSource { get; set; }
 
@@ -1197,6 +1196,7 @@ FROM
                 return false;
         }
 
+        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         public async ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
@@ -1220,6 +1220,29 @@ FROM
                 return false;
         }
 
+        public async ValueTask<SelectConstants_Record> SelectConstants(string table, string field)
+        {
+            SelectConstants_Record recordResult = new();
+
+            if (DataSource != null)
+            {
+                string query = $"SELECT {field} FROM {table} WHERE uid = @uid";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("uid", Guid.Empty);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                recordResult.Result = reader.HasRows;
+
+                if (await reader.ReadAsync())
+                    recordResult.Value = reader[field];
+
+                await reader.CloseAsync();
+            }
+
+            return recordResult;
+        }
+
         public async ValueTask SaveConstants(string table, string field, object fieldValue)
         {
             if (DataSource != null)
@@ -1235,13 +1258,13 @@ FROM
             }
         }
 
-        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, 
+        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray,
             List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
                 string query = QuerySelect.Construct();
-                
+
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();

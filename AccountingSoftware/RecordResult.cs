@@ -27,6 +27,28 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
+    #region Константи
+
+    /// <summary>
+    /// Структура для повернення результату з функції зчитування константи
+    /// </summary>
+    public record SelectConstants_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Значення
+        /// </summary>
+        public object Value = new();
+    }
+
+    #endregion
+
+    #region Довідники
+
     /// <summary>
     /// Структура для повернення результату з функції зчитування об'єкту довідника
     /// </summary>
@@ -42,6 +64,26 @@ namespace AccountingSoftware
         /// </summary>
         public bool DeletionLabel;
     }
+
+    /// <summary>
+    /// Структура для повернення результату з функції пошуку вказівника
+    /// </summary>
+    public record FindDirectoryPointer_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Знайдений вказівник
+        /// </summary>
+        public DirectoryPointer? DirectoryPointer;
+    }
+
+    #endregion
+
+    #region Документи
 
     /// <summary>
     /// Структура для повернення результату з функції зчитування об'єкту документу
@@ -69,21 +111,9 @@ namespace AccountingSoftware
         public DateTime SpendDate = DateTime.MinValue;
     }
 
-    /// <summary>
-    /// Структура для повернення результату з функції пошуку вказівника
-    /// </summary>
-    public record FindDirectoryPointer_Record
-    {
-        /// <summary>
-        /// Результат функції
-        /// </summary>
-        public bool Result;
+    #endregion
 
-        /// <summary>
-        /// Знайдений вказівник
-        /// </summary>
-        public DirectoryPointer? DirectoryPointer;
-    }
+    #region Вибірка даних
 
     /// <summary>
     /// Структура для повернення результату з функції SelectRequestAsync
@@ -98,11 +128,14 @@ namespace AccountingSoftware
         /// <summary>
         /// Колонки
         /// </summary>
-        public string[] ColumnsName = new string[] { };
+        public string[] ColumnsName = [];
 
         /// <summary>
         /// Список рядків
         /// </summary>
-        public List<Dictionary<string, object>> ListRow = new List<Dictionary<string, object>>();
+        public List<Dictionary<string, object>> ListRow = [];
     }
+
+    #endregion
+
 }
