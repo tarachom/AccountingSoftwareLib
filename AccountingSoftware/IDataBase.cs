@@ -90,12 +90,13 @@ namespace AccountingSoftware
 
         #region Constants
 
+        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<SelectConstants_Record> SelectConstants(string table, string field);
-
+        
         [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
 
+        ValueTask<SelectConstants_Record> SelectConstants(string table, string field);
         ValueTask SaveConstants(string table, string field, object fieldValue);
 
         ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);

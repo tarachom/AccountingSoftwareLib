@@ -1172,6 +1172,7 @@ FROM
 
         #region Constants
 
+        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         public async ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
