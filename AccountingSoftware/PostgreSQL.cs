@@ -1234,7 +1234,7 @@ FROM
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 recordResult.Result = reader.HasRows;
 
-                if (await reader.ReadAsync())
+                if (reader.HasRows && await reader.ReadAsync())
                     recordResult.Value = reader[field];
 
                 await reader.CloseAsync();
