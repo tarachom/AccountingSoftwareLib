@@ -991,14 +991,14 @@ VALUES
     @uidobj,
     @obj,
     @value,
-    to_tsvector('ukrainian', @value),
+    to_tsvector('russian', @value),
     @groupname,
     CURRENT_TIMESTAMP::timestamp,
     CURRENT_TIMESTAMP::timestamp
 )
 ON CONFLICT (uidobj) DO UPDATE SET 
     value = @value,
-    vector = to_tsvector('ukrainian', @value),
+    vector = to_tsvector('russian', @value),
     dateupdate = CURRENT_TIMESTAMP::timestamp
 ";
 
@@ -1049,7 +1049,7 @@ WITH find_rows AS
     FROM 
         {SpecialTables.FullTextSearch}
     WHERE
-        vector @@ plainto_tsquery('ukrainian', @findtext)
+        vector @@ plainto_tsquery('russian', @findtext)
     ORDER BY
         groupname ASC, 
         dateadd DESC
@@ -1057,7 +1057,7 @@ WITH find_rows AS
 )
 SELECT
     obj,
-    ts_headline('ukrainian', value, plainto_tsquery('ukrainian', @findtext)) AS value,
+    ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value,
     dateadd
 FROM 
     find_rows
