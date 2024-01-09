@@ -77,6 +77,16 @@ namespace AccountingSoftware
         public string PathToTempXmlFileConfiguration { get; set; } = "";
 
         /// <summary>
+        /// Назва словника для повнотектового пошуку
+        /// </summary>
+        public string DictTSearch { get; set; } = DefaultDictTSearch;
+
+        /// <summary>
+        /// Назва словника за замовчуванням для повнотектового пошуку
+        /// </summary>
+        public const string DefaultDictTSearch = "simple";
+
+        /// <summary>
         /// Блоки констант
         /// </summary>
         public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; } = [];
@@ -1136,6 +1146,7 @@ namespace AccountingSoftware
             Conf.NameSpace = rootNodeConfiguration?.SelectSingleNode("NameSpace")?.Value ?? "";
             Conf.Author = rootNodeConfiguration?.SelectSingleNode("Author")?.Value ?? "";
             Conf.Desc = rootNodeConfiguration?.SelectSingleNode("Desc")?.Value ?? "";
+            Conf.DictTSearch = rootNodeConfiguration?.SelectSingleNode("DictTSearch")?.Value ?? DefaultDictTSearch;
         }
 
         private static void LoadConstants(Configuration Conf, XPathNavigator xPathDocNavigator)
@@ -1668,6 +1679,10 @@ namespace AccountingSoftware
             XmlElement nodeDateTimeSave = xmlConfDocument.CreateElement("DateTimeSave");
             nodeDateTimeSave.InnerText = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
             rootNode.AppendChild(nodeDateTimeSave);
+
+            XmlElement nodeDictTSearch = xmlConfDocument.CreateElement("DictTSearch");
+            nodeDictTSearch.InnerText = !string.IsNullOrEmpty(Conf.DictTSearch) ? Conf.DictTSearch : DefaultDictTSearch;
+            rootNode.AppendChild(nodeDictTSearch);
         }
 
         private static void SaveConstantsBlock(Dictionary<string, ConfigurationConstantsBlock> ConfConstantsBlocks, XmlDocument xmlConfDocument, XmlElement rootNode)

@@ -958,7 +958,7 @@ ORDER BY
 
         #region SpetialTable FullTextSearch
 
-        public async ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value)
+        public async ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch)
         {
             if (DataSource != null)
             {
@@ -991,14 +991,14 @@ VALUES
     @uidobj,
     @obj,
     @value,
-    to_tsvector('russian', @value),
+    to_tsvector('{dictTSearch}', @value),
     @groupname,
     CURRENT_TIMESTAMP::timestamp,
     CURRENT_TIMESTAMP::timestamp
 )
 ON CONFLICT (uidobj) DO UPDATE SET 
     value = @value,
-    vector = to_tsvector('russian', @value),
+    vector = to_tsvector('{dictTSearch}', @value),
     dateupdate = CURRENT_TIMESTAMP::timestamp
 ";
 
@@ -1030,13 +1030,10 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public async ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0)
+        public async ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch)
         {
             if (DataSource != null)
             {
-                /*ts_rank(vector, plainto_tsquery('russian', @findtext)) AS rank,*/
-                /*, rank DESC */
-
                 string query = $@"
 WITH find_rows AS 
 (
@@ -1049,7 +1046,7 @@ WITH find_rows AS
     FROM 
         {SpecialTables.FullTextSearch}
     WHERE
-        vector @@ plainto_tsquery('russian', @findtext)
+        vector @@ plainto_tsquery('{dictTSearch}', @findtext)
     ORDER BY
         groupname ASC, 
         dateadd DESC
@@ -1057,20 +1054,33 @@ WITH find_rows AS
 )
 SELECT
     obj,
-    ts_headline('russian', value, plainto_tsquery('russian', @findtext)) AS value,
+    ts_headline('{dictTSearch}', value, plainto_tsquery('{dictTSearch}', @findtext)) AS value,
     dateadd
 FROM 
     find_rows
 ";
-                Dictionary<string, object> paramQuery = new Dictionary<string, object>
-                {
-                    { "findtext", findtext }
-                };
-
-                return await SelectRequestAsync(query, paramQuery);
+                return await SelectRequestAsync(query, new() { { "findtext", findtext } });
             }
             else
                 return null;
+        }
+
+        public async ValueTask<SelectRequestAsync_Record> SpetialTableFullTextSearchDictList()
+        {
+            return await SelectRequestAsync("SELECT cfgname FROM pg_ts_config");
+        }
+
+        public async ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch)
+        {
+            object? count = await ExecuteSQLScalar(@$"
+SELECT 
+    count(cfgname) 
+FROM 
+    pg_ts_config
+WHERE
+    cfgname = '{dictTSearch}'", null);
+
+            return count != null && (long)count != 0;
         }
 
         #endregion

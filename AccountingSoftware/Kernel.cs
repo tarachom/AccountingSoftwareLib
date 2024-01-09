@@ -55,6 +55,10 @@ namespace AccountingSoftware
 
             Conf.PathToXmlFileConfiguration = PathToXmlFileConfiguration;
 
+            //Додаткова перевірка наявності словника в базі даних
+            if (result && Conf.DictTSearch != Configuration.DefaultDictTSearch && !await DataBase.SpetialTableFullTextSearchIfExistDict(Conf.DictTSearch))
+                Conf.DictTSearch = Configuration.DefaultDictTSearch;
+
             return result;
         }
 

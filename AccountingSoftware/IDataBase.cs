@@ -74,9 +74,11 @@ namespace AccountingSoftware
 
         #region SpetialTable FullTextSearch
 
-        ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value);
+        ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch);
         ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
-        ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0);
+        ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch);
+        ValueTask<SelectRequestAsync_Record> SpetialTableFullTextSearchDictList();
+        ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch);
 
         #endregion
 

@@ -176,7 +176,7 @@ namespace AccountingSoftware
         protected async ValueTask BaseWriteFullTextSearch(UuidAndText obj, string[] values)
         {
             if (values.Length != 0)
-                await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values));
+                await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values), Kernel.Conf.DictTSearch);
         }
 
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
