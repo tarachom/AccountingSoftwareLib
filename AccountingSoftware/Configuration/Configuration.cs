@@ -1288,6 +1288,7 @@ namespace AccountingSoftware
                 ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc, isTree == "1");
                 tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
+                //Поля
                 XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
                 while (tabularListFieldNodes!.MoveNext())
                 {
@@ -1302,6 +1303,24 @@ namespace AccountingSoftware
 
                     ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField);
                     ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                }
+
+                //Додаткові поля
+                XPathNodeIterator? tabularListAdditionalFieldsNodes = tabularListsNodes?.Current?.Select("Fields/AdditionalField");
+                while (tabularListAdditionalFieldsNodes!.MoveNext())
+                {
+                    bool visibleField = bool.Parse(tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Visible")?.Value ?? "False");
+                    string nameField = tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Name")?.Value ?? "";
+                    string captionField = tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Caption")?.Value ?? "";
+                    uint sizeField = uint.Parse(tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                    int sortNumField = int.Parse(tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
+                    string typeField = tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Type")?.Value ?? "string";
+                    string valueField = tabularListAdditionalFieldsNodes?.Current?.SelectSingleNode("Value")?.Value ?? "";
+
+                    ConfigurationTabularListAdditionalField ConfTabularListAdditionalField =
+                        new ConfigurationTabularListAdditionalField(visibleField, nameField, captionField, sizeField, sortNumField, typeField, valueField);
+
+                    ConfTabularList.AdditionalFields.Add(ConfTabularListAdditionalField.Name, ConfTabularListAdditionalField);
                 }
             }
         }
@@ -1904,6 +1923,7 @@ namespace AccountingSoftware
 
                 int counterJoin = 0;
 
+                //Поля
                 foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
                 {
                     if (fields.ContainsKey(field.Key))
@@ -2033,6 +2053,41 @@ namespace AccountingSoftware
                         #endregion
 
                     }
+                }
+
+                //Додаткові поля
+                foreach (KeyValuePair<string, ConfigurationTabularListAdditionalField> field in tabularList.Value.AdditionalFields)
+                {
+                    XmlElement nodeTabularListAdditionalField = xmlConfDocument.CreateElement("AdditionalField");
+                    nodeTabularListFields.AppendChild(nodeTabularListAdditionalField);
+
+                    XmlElement nodeVisible = xmlConfDocument.CreateElement("Visible");
+                    nodeVisible.InnerText = field.Value.Visible.ToString();
+                    nodeTabularListAdditionalField.AppendChild(nodeVisible);
+
+                    XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                    nodeName.InnerText = field.Key;
+                    nodeTabularListAdditionalField.AppendChild(nodeName);
+
+                    XmlElement nodeCaption = xmlConfDocument.CreateElement("Caption");
+                    nodeCaption.InnerText = field.Value.Caption;
+                    nodeTabularListAdditionalField.AppendChild(nodeCaption);
+
+                    XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
+                    nodeSize.InnerText = field.Value.Size.ToString();
+                    nodeTabularListAdditionalField.AppendChild(nodeSize);
+
+                    XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
+                    nodeSortNum.InnerText = field.Value.SortNum.ToString();
+                    nodeTabularListAdditionalField.AppendChild(nodeSortNum);
+
+                    XmlElement nodeType = xmlConfDocument.CreateElement("Type");
+                    nodeType.InnerText = field.Value.Type;
+                    nodeTabularListAdditionalField.AppendChild(nodeType);
+
+                    XmlElement nodeValue = xmlConfDocument.CreateElement("Value");
+                    nodeValue.InnerText = field.Value.Value;
+                    nodeTabularListAdditionalField.AppendChild(nodeValue);
                 }
             }
         }

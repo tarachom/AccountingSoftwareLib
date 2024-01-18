@@ -58,12 +58,26 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationTabularListField> Fields { get; } = [];
 
         /// <summary>
+        /// Додаткові поля
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularListAdditionalField> AdditionalFields { get; } = [];
+
+        /// <summary>
         /// Додати поле
         /// </summary>
         /// <param name="field"></param>
         public void AppendField(ConfigurationTabularListField field)
         {
             Fields.Add(field.Name, field);
+        }
+
+        // <summary>
+        /// Додати додаткове поле
+        /// </summary>
+        /// <param name="field"></param>
+        public void AppendAdditionalField(ConfigurationTabularListAdditionalField field)
+        {
+            AdditionalFields.Add(field.Name, field);
         }
 
         /// <summary>
@@ -74,8 +88,13 @@ namespace AccountingSoftware
         {
             ConfigurationTabularList newTabularList = new ConfigurationTabularList(Name, Desc);
 
+            //Поля
             foreach (ConfigurationTabularListField item in Fields.Values)
                 newTabularList.Fields.Add(item.Name, item);
+
+            //Додаткові поля
+            foreach (ConfigurationTabularListAdditionalField item in AdditionalFields.Values)
+                newTabularList.AdditionalFields.Add(item.Name, item);
 
             return newTabularList;
         }
