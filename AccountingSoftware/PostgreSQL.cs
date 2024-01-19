@@ -1354,13 +1354,8 @@ WHERE
         {
             if (DataSource != null)
             {
-                Dictionary<string, object> paramQuery = new Dictionary<string, object>
-                {
-                    { "uid", unigueID.UGuid }
-                };
-
-                object? result = await ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", paramQuery, 0);
-                return result != null ? (long)result == 1 : false;
+                object? result = await ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", new() { { "uid", unigueID.UGuid } });
+                return result != null && (long)result == 1;
             }
             else
                 return false;
