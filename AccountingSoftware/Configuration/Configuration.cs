@@ -1199,11 +1199,21 @@ namespace AccountingSoftware
                 string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 string autoNum = directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
+                string type = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
+                string pointerFolders = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1");
+                TypeDirectories typeDirectory;
+                if (type == "Normal")
+                    typeDirectory = TypeDirectories.Normal;
+                else if (type == "Hierarchical")
+                    typeDirectory = TypeDirectories.Hierarchical;
+                else
+                    typeDirectory = TypeDirectories.Normal;
+
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory, pointerFolders);
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
                 LoadFields(ConfObjectDirectories.Fields, directoryNodes.Current, "Directory");
@@ -1781,6 +1791,14 @@ namespace AccountingSoftware
                 XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
                 nodeDirectoryAutoNum.InnerText = ConfDirectory.Value.AutomaticNumeration ? "1" : "0";
                 nodeDirectory.AppendChild(nodeDirectoryAutoNum);
+
+                XmlElement nodeDirectoryType = xmlConfDocument.CreateElement("Type");
+                nodeDirectoryType.InnerText = ConfDirectory.Value.TypeDirectory.ToString();
+                nodeDirectory.AppendChild(nodeDirectoryType);
+
+                XmlElement nodeDirectoryPointerFolders = xmlConfDocument.CreateElement("PointerFolders");
+                nodeDirectoryPointerFolders.InnerText = ConfDirectory.Value.PointerFolders;
+                nodeDirectory.AppendChild(nodeDirectoryPointerFolders);
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 

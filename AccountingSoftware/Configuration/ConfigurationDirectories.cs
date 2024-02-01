@@ -39,13 +39,17 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationDirectories(string name, string fullname, string table, string desc = "", bool automaticNumeration = false)
+        public ConfigurationDirectories(string name, string fullname, string table,
+            string desc = "", bool automaticNumeration = false,
+            TypeDirectories typeDirectory = TypeDirectories.Normal, string pointerFolders = "")
         {
             Name = name;
             FullName = fullname;
             Table = table;
             Desc = desc;
             AutomaticNumeration = automaticNumeration;
+            TypeDirectory = typeDirectory;
+            PointerFolders = pointerFolders;
         }
 
         /// <summary>
@@ -74,12 +78,24 @@ namespace AccountingSoftware
         public bool AutomaticNumeration { get; set; }
 
         /// <summary>
+        /// Тип довідника
+        /// </summary>
+        public TypeDirectories TypeDirectory { get; set; } = TypeDirectories.Normal;
+
+        /// <summary>
+        /// Вказівник на довідник папок, якщо тип довідника Hierarchical
+        /// </summary>
+        public string PointerFolders { get; set; } = "";
+
+        /// <summary>
         /// Створити копію
         /// </summary>
         /// <returns></returns>
         public ConfigurationDirectories Copy()
         {
-            ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.FullName, this.Table, this.Desc);
+            ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.FullName, this.Table, this.Desc,
+                false, /* Автоматична нумерація не копіюється */
+                this.TypeDirectory, this.PointerFolders);
 
             foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
                 confDirCopy.Fields.Add(fields.Key, fields.Value.Copy());
@@ -118,5 +134,21 @@ namespace AccountingSoftware
         {
             TabularList.Add(tabularList.Name, tabularList);
         }
+    }
+
+    /// <summary>
+    /// Типи довідників
+    /// </summary>
+    public enum TypeDirectories
+    {
+        /// <summary>
+        /// Звичайний, табличний
+        /// </summary>
+        Normal = 1,
+
+        /// <summary>
+        /// Ієрархічний
+        /// </summary>
+        Hierarchical = 2
     }
 }
