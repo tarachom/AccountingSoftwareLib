@@ -1485,7 +1485,7 @@ WHERE
 
                     if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
                     {
-                        fields = new Dictionary<string, object>();
+                        fields = [];
 
                         foreach (string field in QuerySelect.Field)
                             fields.Add(field, reader[field]);
@@ -1770,7 +1770,7 @@ WHERE
             if (DataSource != null)
             {
                 string query = $"UPDATE {table} SET ";
-                List<string> allfield = new List<string>();
+                List<string> allfield = [];
 
                 if (deletion_label != null)
                     allfield.Add("deletion_label = @deletion_label");
@@ -1842,7 +1842,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fields = new Dictionary<string, object>();
+                    Dictionary<string, object> fields = [];
 
                     if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
                     {
@@ -2096,7 +2096,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);
@@ -2284,7 +2284,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);
@@ -2359,7 +2359,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 if (reader.HasRows)
                 {
-                    List<DateTime> result = new List<DateTime>();
+                    List<DateTime> result = [];
 
                     while (await reader.ReadAsync())
                         result.Add((DateTime)reader["period"]);
@@ -2410,7 +2410,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);
@@ -2662,7 +2662,7 @@ WHERE
         public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow)
         {
             columnsName = [];
-            listRow = new List<object[]>();
+            listRow = [];
 
             if (DataSource != null)
             {
@@ -2723,7 +2723,7 @@ WHERE
 
                 while (reader.Read())
                 {
-                    Dictionary<string, object> objRow = new Dictionary<string, object>();
+                    Dictionary<string, object> objRow = [];
 
                     for (int i = 0; i < columnsCount; i++)
                         objRow.Add(columnsName[i], reader[i]);
@@ -2758,7 +2758,7 @@ WHERE
 
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> objRow = new Dictionary<string, object>();
+                    Dictionary<string, object> objRow = [];
 
                     for (int i = 0; i < columnsCount; i++)
                         objRow.Add(record.ColumnsName[i], reader[i]);
