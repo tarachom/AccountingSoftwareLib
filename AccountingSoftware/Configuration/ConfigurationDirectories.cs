@@ -73,6 +73,11 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
+        /// Форми
+        /// </summary>
+        public Dictionary<string, ConfigurationForms> Forms { get; } = [];
+
+        /// <summary>
         /// Автоматична нумерація
         /// </summary>
         public bool AutomaticNumeration { get; set; }
@@ -102,6 +107,10 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+
+            // ??? Чи потрібно копіювати форми?
+            // foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
+            //     confDirCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
             confDirCopy.TriggerFunctions = this.TriggerFunctions.Copy();
 
@@ -134,6 +143,15 @@ namespace AccountingSoftware
         {
             TabularList.Add(tabularList.Name, tabularList);
         }
+
+        /// <summary>
+        /// Додати нову форму
+        /// </summary>
+        /// <param name="forms">Нова форма</param>
+        public void AppendForms(ConfigurationForms forms)
+        {
+            Forms.Add(forms.Name, forms);
+        }
     }
 
     /// <summary>
@@ -149,6 +167,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Ієрархічний
         /// </summary>
-        Hierarchical = 2
+        Hierarchical = 2,
+
+        /// <summary>
+        /// Ієрархія в іншому каталозі
+        /// </summary>
+        HierarchyInAnotherDirectory = 3
     }
 }

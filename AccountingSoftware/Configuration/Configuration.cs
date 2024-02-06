@@ -1210,6 +1210,8 @@ namespace AccountingSoftware
                     typeDirectory = TypeDirectories.Normal;
                 else if (type == "Hierarchical")
                     typeDirectory = TypeDirectories.Hierarchical;
+                else if (type == "HierarchyInAnotherDirectory")
+                    typeDirectory = TypeDirectories.HierarchyInAnotherDirectory;
                 else
                     typeDirectory = TypeDirectories.Normal;
 
@@ -1223,6 +1225,8 @@ namespace AccountingSoftware
                 LoadTabularList(ConfObjectDirectories.TabularList, directoryNodes.Current);
 
                 LoadTriggerFunctions(ConfObjectDirectories.TriggerFunctions, directoryNodes.Current);
+
+                LoadForms(ConfObjectDirectories.Forms, directoryNodes.Current);
             }
         }
 
@@ -1358,6 +1362,23 @@ namespace AccountingSoftware
             }
         }
 
+        private static void LoadForms(Dictionary<string, ConfigurationForms> forms, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? tableForm = xPathDocNavigator?.Select("Forms/Form");
+            while (tableForm != null && tableForm.MoveNext())
+            {
+                string? name = tableForm.Current?.SelectSingleNode("Name")?.Value;
+                string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                if (name == null)
+                    throw new Exception("Не задана назва форми");
+
+                ConfigurationForms form = new ConfigurationForms(name, desc);
+
+                forms.Add(form.Name, form);
+            }
+        }
+        
         private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
@@ -1807,6 +1828,8 @@ namespace AccountingSoftware
                 SaveTabularList(Conf, ConfDirectory.Value.Fields, ConfDirectory.Value.TabularList, xmlConfDocument, nodeDirectory);
 
                 SaveTriggerFunctions(ConfDirectory.Value.TriggerFunctions, xmlConfDocument, nodeDirectory);
+
+                SaveForms(ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
             }
         }
 
@@ -2265,6 +2288,26 @@ namespace AccountingSoftware
                         }
                     }
                 }
+            }
+        }
+
+        public static void SaveForms(Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeForms = xmlConfDocument.CreateElement("Forms");
+            rootNode.AppendChild(nodeForms);
+
+            foreach (KeyValuePair<string, ConfigurationForms> form in forms)
+            {
+                XmlElement nodeForm = xmlConfDocument.CreateElement("Form");
+                nodeForms.AppendChild(nodeForm);
+
+                XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                nodeName.InnerText = form.Key;
+                nodeForm.AppendChild(nodeName);
+
+                XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
+                nodeDesc.InnerText = form.Value.Desc;
+                nodeForm.AppendChild(nodeDesc);
             }
         }
 
