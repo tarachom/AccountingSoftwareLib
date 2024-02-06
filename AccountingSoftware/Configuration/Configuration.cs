@@ -1369,16 +1369,21 @@ namespace AccountingSoftware
             {
                 string? name = tableForm.Current?.SelectSingleNode("Name")?.Value;
                 string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва форми");
 
-                ConfigurationForms form = new ConfigurationForms(name, desc);
+                TypeForms typeForms = TypeForms.None;
+                if (!string.IsNullOrEmpty(type))
+                    Enum.TryParse(type, out typeForms);
+
+                ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
                 forms.Add(form.Name, form);
             }
         }
-        
+
         private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
@@ -2308,6 +2313,10 @@ namespace AccountingSoftware
                 XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
                 nodeDesc.InnerText = form.Value.Desc;
                 nodeForm.AppendChild(nodeDesc);
+
+                XmlElement nodeType = xmlConfDocument.CreateElement("Type");
+                nodeType.InnerText = form.Value.Type.ToString();
+                nodeForm.AppendChild(nodeType);
             }
         }
 

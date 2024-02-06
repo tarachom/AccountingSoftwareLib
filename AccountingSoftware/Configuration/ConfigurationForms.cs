@@ -30,10 +30,11 @@ namespace AccountingSoftware
     {
         public ConfigurationForms() { }
 
-        public ConfigurationForms(string name, string desc = "")
+        public ConfigurationForms(string name, string desc = "", TypeForms type = TypeForms.None)
         {
             Name = name;
             Desc = desc;
+            Type = type;
         }
 
         /// <summary>
@@ -47,13 +48,39 @@ namespace AccountingSoftware
         public string Desc { get; set; } = "";
 
         /// <summary>
+        /// Тип форми
+        /// </summary>
+        public TypeForms Type { get; set; } = TypeForms.None;
+
+        /// <summary>
         /// Створення копії
         /// </summary>
         /// <returns></returns>
         public ConfigurationForms Copy()
         {
-            ConfigurationForms newForms = new ConfigurationForms(Name, Desc);
+            ConfigurationForms newForms = new ConfigurationForms(Name, Desc, Type);
             return newForms;
         }
+    }
+
+    /// <summary>
+    /// Типи форм
+    /// </summary>
+    public enum TypeForms
+    {
+        /// <summary>
+        /// Неопреділено
+        /// </summary>
+        None = 1,
+
+        /// <summary>
+        /// Список
+        /// </summary>
+        List = 2,
+
+        /// <summary>
+        /// Елемент
+        /// </summary>
+        Element = 3
     }
 }
