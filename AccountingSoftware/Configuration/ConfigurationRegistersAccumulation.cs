@@ -56,17 +56,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = [];
+        public Dictionary<string, ConfigurationField> DimensionFields { get; } = [];
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = [];
+        public Dictionary<string, ConfigurationField> ResourcesFields { get; } = [];
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = [];
+        public Dictionary<string, ConfigurationField> PropertyFields { get; } = [];
 
         /// <summary>
         /// Документи які роблять рухи по даному регістру
@@ -76,12 +76,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
+        public Dictionary<string, ConfigurationTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Блоки запитів
         /// </summary>
-        public Dictionary<string, ConfigurationObjectQueryBlock> QueryBlockList { get; } = [];
+        public Dictionary<string, ConfigurationQueryBlock> QueryBlockList { get; } = [];
 
         /// <summary>
         /// Без віртуальної таблиці підсумки
@@ -96,19 +96,19 @@ namespace AccountingSoftware
         {
             ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.FullName, this.Table, this.TypeRegistersAccumulation, this.Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.ResourcesFields)
                 confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.PropertyFields)
                 confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+            foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confRegCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectQueryBlock> query in this.QueryBlockList)
+            foreach (KeyValuePair<string, ConfigurationQueryBlock> query in this.QueryBlockList)
                 confRegCopy.QueryBlockList.Add(query.Key, query.Value.Copy());
 
             return confRegCopy;
@@ -116,17 +116,17 @@ namespace AccountingSoftware
 
         #region Append
 
-        public void AppendDimensionField(ConfigurationObjectField field)
+        public void AppendDimensionField(ConfigurationField field)
         {
             DimensionFields.Add(field.Name, field);
         }
 
-        public void AppendResourcesField(ConfigurationObjectField field)
+        public void AppendResourcesField(ConfigurationField field)
         {
             ResourcesFields.Add(field.Name, field);
         }
 
-        public void AppendPropertyField(ConfigurationObjectField field)
+        public void AppendPropertyField(ConfigurationField field)
         {
             PropertyFields.Add(field.Name, field);
         }
@@ -135,12 +135,12 @@ namespace AccountingSoftware
         /// Додати нову табличну частину
         /// </summary>
         /// <param name="tablePart">Нова таблична частина</param>
-        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        public void AppendTablePart(ConfigurationTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
         }
 
-        public void AppendQueryBlockList(ConfigurationObjectQueryBlock queryBlock)
+        public void AppendQueryBlockList(ConfigurationQueryBlock queryBlock)
         {
             QueryBlockList.Add(queryBlock.Name, queryBlock);
         }

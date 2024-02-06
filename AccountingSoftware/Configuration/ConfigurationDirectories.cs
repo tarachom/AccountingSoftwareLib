@@ -55,12 +55,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; } = [];
+        public Dictionary<string, ConfigurationField> Fields { get; } = [];
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
+        public Dictionary<string, ConfigurationTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Тригери
@@ -102,10 +102,10 @@ namespace AccountingSoftware
                 false, /* Автоматична нумерація не копіюється */
                 this.TypeDirectory, this.PointerFolders);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confDirCopy.Fields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+            foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
             // ??? Чи потрібно копіювати форми?
@@ -121,7 +121,7 @@ namespace AccountingSoftware
         /// Додати нове поле
         /// </summary>
         /// <param name="field">Нове поле</param>
-        public void AppendField(ConfigurationObjectField field)
+        public void AppendField(ConfigurationField field)
         {
             Fields.Add(field.Name, field);
         }
@@ -130,7 +130,7 @@ namespace AccountingSoftware
         /// Додати нову табличну частину
         /// </summary>
         /// <param name="tablePart">Нова таблична частина</param>
-        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        public void AppendTablePart(ConfigurationTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
         }
@@ -152,26 +152,26 @@ namespace AccountingSoftware
         {
             Forms.Add(forms.Name, forms);
         }
-    }
-
-    /// <summary>
-    /// Типи довідників
-    /// </summary>
-    public enum TypeDirectories
-    {
-        /// <summary>
-        /// Звичайний, табличний
-        /// </summary>
-        Normal = 1,
 
         /// <summary>
-        /// Ієрархічний
+        /// Типи довідників
         /// </summary>
-        Hierarchical = 2,
+        public enum TypeDirectories
+        {
+            /// <summary>
+            /// Звичайний, табличний
+            /// </summary>
+            Normal = 1,
 
-        /// <summary>
-        /// Ієрархія в іншому каталозі
-        /// </summary>
-        HierarchyInAnotherDirectory = 3
+            /// <summary>
+            /// Ієрархічний
+            /// </summary>
+            Hierarchical = 2,
+
+            /// <summary>
+            /// Ієрархія в іншому каталозі
+            /// </summary>
+            HierarchyInAnotherDirectory = 3
+        }
     }
 }

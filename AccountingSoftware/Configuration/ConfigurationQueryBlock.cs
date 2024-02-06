@@ -26,11 +26,11 @@ namespace AccountingSoftware
     /// <summary>
     /// Блоки запитів для розрахунків регістрів накопичення
     /// </summary>
-    public class ConfigurationObjectQueryBlock
+    public class ConfigurationQueryBlock
     {
-        public ConfigurationObjectQueryBlock() { }
+        public ConfigurationQueryBlock() { }
 
-        public ConfigurationObjectQueryBlock(string name, bool finalCalculation = false) : this()
+        public ConfigurationQueryBlock(string name, bool finalCalculation = false) : this()
         {
             Name = name;
             FinalCalculation = finalCalculation;
@@ -55,9 +55,9 @@ namespace AccountingSoftware
         /// Стоврення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationObjectQueryBlock Copy()
+        public ConfigurationQueryBlock Copy()
         {
-            ConfigurationObjectQueryBlock newQueryBlock = new ConfigurationObjectQueryBlock(Name);
+            ConfigurationQueryBlock newQueryBlock = new ConfigurationQueryBlock(Name);
 
             foreach (KeyValuePair<string, string> item in Query)
                 newQueryBlock.Query.Add(item.Key, item.Value);

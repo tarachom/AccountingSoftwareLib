@@ -26,12 +26,12 @@ namespace AccountingSoftware
     /// <summary>
     /// Таблична частина
     /// </summary>
-    public class ConfigurationObjectTablePart : ConfigurationObject
+    public class ConfigurationTablePart : ConfigurationObject
     {
         /// <summary>
         /// Таблична частина
         /// </summary>
-        public ConfigurationObjectTablePart() { }
+        public ConfigurationTablePart() { }
 
         /// <summary>
         /// Таблична частина
@@ -39,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationObjectTablePart(string name, string table, string desc = "")
+        public ConfigurationTablePart(string name, string table, string desc = "")
         {
             Name = name;
             Table = table;
@@ -49,17 +49,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; } = [];
+        public Dictionary<string, ConfigurationField> Fields { get; } = [];
 
         /// <summary>
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationObjectTablePart Copy()
+        public ConfigurationTablePart Copy()
         {
-            ConfigurationObjectTablePart confObjectTablePart = new ConfigurationObjectTablePart(this.Name, this.Table, this.Desc);
+            ConfigurationTablePart confObjectTablePart = new ConfigurationTablePart(this.Name, this.Table, this.Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());
 
             return confObjectTablePart;
@@ -69,7 +69,7 @@ namespace AccountingSoftware
         /// Додати нове поле в список полів
         /// </summary>
         /// <param name="field">Нове поле</param>
-        public void AppendField(ConfigurationObjectField field)
+        public void AppendField(ConfigurationField field)
         {
             Fields.Add(field.Name, field);
         }

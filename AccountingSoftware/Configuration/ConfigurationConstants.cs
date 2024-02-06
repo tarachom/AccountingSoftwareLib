@@ -85,13 +85,13 @@ namespace AccountingSoftware
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
+        public Dictionary<string, ConfigurationTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Додати нову табличну частину
         /// </summary>
         /// <param name="tablePart">Нова таблична частина</param>
-        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        public void AppendTablePart(ConfigurationTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
         }
@@ -104,7 +104,7 @@ namespace AccountingSoftware
         {
             ConfigurationConstants newConst = new ConfigurationConstants(Name, NameInTable, Type, Block, Pointer, Desc);
 
-            foreach (ConfigurationObjectTablePart tablePart in TabularParts.Values)
+            foreach (ConfigurationTablePart tablePart in TabularParts.Values)
                 newConst.TabularParts.Add(tablePart.Name, tablePart.Copy());
 
             return newConst;

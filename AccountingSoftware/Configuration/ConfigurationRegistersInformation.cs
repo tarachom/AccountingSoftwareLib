@@ -50,17 +50,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Виміри
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> DimensionFields { get; } = [];
+        public Dictionary<string, ConfigurationField> DimensionFields { get; } = [];
 
         /// <summary>
         /// Русурси
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> ResourcesFields { get; } = [];
+        public Dictionary<string, ConfigurationField> ResourcesFields { get; } = [];
 
         /// <summary>
         /// Реквізити
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> PropertyFields { get; } = [];
+        public Dictionary<string, ConfigurationField> PropertyFields { get; } = [];
 
         /// <summary>
         /// Табличні списки
@@ -75,13 +75,13 @@ namespace AccountingSoftware
         {
             ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.FullName, this.Table, this.Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.DimensionFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.ResourcesFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.ResourcesFields)
                 confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.PropertyFields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.PropertyFields)
                 confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
 
             return confRegCopy;
@@ -89,17 +89,17 @@ namespace AccountingSoftware
 
         #region Append
 
-        public void AppendDimensionField(ConfigurationObjectField field)
+        public void AppendDimensionField(ConfigurationField field)
         {
             DimensionFields.Add(field.Name, field);
         }
 
-        public void AppendResourcesField(ConfigurationObjectField field)
+        public void AppendResourcesField(ConfigurationField field)
         {
             ResourcesFields.Add(field.Name, field);
         }
 
-        public void AppendPropertyField(ConfigurationObjectField field)
+        public void AppendPropertyField(ConfigurationField field)
         {
             PropertyFields.Add(field.Name, field);
         }

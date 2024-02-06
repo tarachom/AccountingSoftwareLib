@@ -61,26 +61,26 @@ namespace AccountingSoftware
             ConfigurationForms newForms = new ConfigurationForms(Name, Desc, Type);
             return newForms;
         }
-    }
-
-    /// <summary>
-    /// Типи форм
-    /// </summary>
-    public enum TypeForms
-    {
-        /// <summary>
-        /// Неопреділено
-        /// </summary>
-        None = 1,
 
         /// <summary>
-        /// Список
+        /// Типи форм
         /// </summary>
-        List = 2,
+        public enum TypeForms
+        {
+            /// <summary>
+            /// Неопреділено
+            /// </summary>
+            None = 1,
 
-        /// <summary>
-        /// Елемент
-        /// </summary>
-        Element = 3
+            /// <summary>
+            /// Список
+            /// </summary>
+            List = 2,
+
+            /// <summary>
+            /// Елемент
+            /// </summary>
+            Element = 3
+        }
     }
 }

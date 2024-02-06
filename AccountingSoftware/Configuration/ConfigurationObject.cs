@@ -44,13 +44,13 @@ namespace AccountingSoftware
 		public string FullName { get; set; } = "";
 
 		/// <summary>
-		/// Таблиця в базі даних
-		/// </summary>
-		public string Table { get; set; } = "";
-
-		/// <summary>
 		/// Опис
 		/// </summary>
 		public string Desc { get; set; } = "";
+
+		/// <summary>
+		/// Таблиця в базі даних
+		/// </summary>
+		public string Table { get; set; } = "";		
 	}
 }

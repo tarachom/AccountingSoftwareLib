@@ -51,12 +51,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> Fields { get; } = [];
+        public Dictionary<string, ConfigurationField> Fields { get; } = [];
 
         /// <summary>
         /// Табличні частини
         /// </summary>
-        public Dictionary<string, ConfigurationObjectTablePart> TabularParts { get; } = [];
+        public Dictionary<string, ConfigurationTablePart> TabularParts { get; } = [];
 
         /// <summary>
         /// Регістри накопичення по яких може робити рухи документ
@@ -91,10 +91,10 @@ namespace AccountingSoftware
         {
             ConfigurationDocuments confDocCopy = new ConfigurationDocuments(this.Name, this.FullName, this.Table, this.Desc);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> fields in this.Fields)
+            foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confDocCopy.Fields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in this.TabularParts)
+            foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
             confDocCopy.TriggerFunctions = this.TriggerFunctions.Copy();
@@ -108,7 +108,7 @@ namespace AccountingSoftware
         /// Додати нове поле в список полів
         /// </summary>
         /// <param name="field">Нове поле</param>
-        public void AppendField(ConfigurationObjectField field)
+        public void AppendField(ConfigurationField field)
         {
             Fields.Add(field.Name, field);
         }
@@ -117,7 +117,7 @@ namespace AccountingSoftware
         /// Додати нову табличну частину
         /// </summary>
         /// <param name="tablePart">Нова таблична частина</param>
-        public void AppendTablePart(ConfigurationObjectTablePart tablePart)
+        public void AppendTablePart(ConfigurationTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
         }

@@ -26,12 +26,12 @@ namespace AccountingSoftware
     /// <summary>
     /// Поле
     /// </summary>
-    public class ConfigurationObjectField
+    public class ConfigurationField
     {
         /// <summary>
         /// Поле
         /// </summary>
-        public ConfigurationObjectField() { }
+        public ConfigurationField() { }
 
         /// <summary>Поле</summary>
         /// <param name="name">Назва поля</param>
@@ -39,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
         /// <param name="pointer">Вказівник</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationObjectField(string name, string nameInTable, string type, string pointer,
+        public ConfigurationField(string name, string nameInTable, string type, string pointer,
             string desc = "", bool isPresentation = false, bool isIndex = false, bool isFullTextSearch = false)
         {
             Name = name;
@@ -101,9 +101,9 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationObjectField Copy()
+        public ConfigurationField Copy()
         {
-            return new ConfigurationObjectField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
+            return new ConfigurationField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
         }
     }
 }

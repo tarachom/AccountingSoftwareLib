@@ -278,7 +278,7 @@ namespace AccountingSoftware
             foreach (ConfigurationDirectories directoryItem in Directories.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField directoryField in directoryItem.Fields.Values)
+                foreach (ConfigurationField directoryField in directoryItem.Fields.Values)
                 {
                     if (directoryField.Type == "pointer" && directoryField.Pointer == searchName)
                     {
@@ -291,10 +291,10 @@ namespace AccountingSoftware
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart directoryTablePart in directoryItem.TabularParts.Values)
+                foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in directoryTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in directoryTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
                         {
@@ -312,7 +312,7 @@ namespace AccountingSoftware
             foreach (ConfigurationDocuments documentItem in Documents.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField documentField in documentItem.Fields.Values)
+                foreach (ConfigurationField documentField in documentItem.Fields.Values)
                 {
                     if (documentField.Type == "pointer" && documentField.Pointer == searchName)
                     {
@@ -325,10 +325,10 @@ namespace AccountingSoftware
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart documentTablePart in documentItem.TabularParts.Values)
+                foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in documentTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in documentTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
                         {
@@ -346,7 +346,7 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersInformation registersInformationItem in RegistersInformation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersInformationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -358,7 +358,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -370,7 +370,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -387,7 +387,7 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersAccumulation registersAccumulationItem in RegistersAccumulation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -399,7 +399,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -411,7 +411,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -470,7 +470,7 @@ namespace AccountingSoftware
             foreach (ConfigurationDirectories directoryItem in Directories.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField directoryField in directoryItem.Fields.Values)
+                foreach (ConfigurationField directoryField in directoryItem.Fields.Values)
                 {
                     if (directoryField.Type == "pointer" && directoryField.Pointer == searchName)
                     {
@@ -487,10 +487,10 @@ namespace AccountingSoftware
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart directoryTablePart in directoryItem.TabularParts.Values)
+                foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in directoryTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in directoryTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
                         {
@@ -514,7 +514,7 @@ namespace AccountingSoftware
             foreach (ConfigurationDocuments documentItem in Documents.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField documentField in documentItem.Fields.Values)
+                foreach (ConfigurationField documentField in documentItem.Fields.Values)
                 {
                     if (documentField.Type == "pointer" && documentField.Pointer == searchName)
                     {
@@ -531,10 +531,10 @@ namespace AccountingSoftware
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart documentTablePart in documentItem.TabularParts.Values)
+                foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in documentTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in documentTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
                         {
@@ -558,7 +558,7 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersInformation registersInformationItem in RegistersInformation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersInformationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -574,7 +574,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -590,7 +590,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -611,7 +611,7 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersAccumulation registersAccumulationItem in RegistersAccumulation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -627,7 +627,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -643,7 +643,7 @@ namespace AccountingSoftware
                     }
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
                     {
@@ -696,17 +696,17 @@ namespace AccountingSoftware
             foreach (ConfigurationDirectories directoryItem in Directories.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField directoryField in directoryItem.Fields.Values)
+                foreach (ConfigurationField directoryField in directoryItem.Fields.Values)
                 {
                     if (directoryField.Type == "enum" && directoryField.Pointer == searchName)
                         ListPointer.Add("Довідники: " + directoryItem.Name + "." + directoryField.Name);
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart directoryTablePart in directoryItem.TabularParts.Values)
+                foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in directoryTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in directoryTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "enum" && tablePartField.Pointer == searchName)
                             ListPointer.Add("Довідники (таблична частина): " + directoryItem.Name + "." + directoryTablePart.Name + "." + tablePartField.Name);
@@ -718,17 +718,17 @@ namespace AccountingSoftware
             foreach (ConfigurationDocuments documentItem in Documents.Values)
             {
                 //Поля довідника
-                foreach (ConfigurationObjectField documentField in documentItem.Fields.Values)
+                foreach (ConfigurationField documentField in documentItem.Fields.Values)
                 {
                     if (documentField.Type == "enum" && documentField.Pointer == searchName)
                         ListPointer.Add("Документи: " + documentItem.Name + "." + documentField.Name);
                 }
 
                 //Табличні частини
-                foreach (ConfigurationObjectTablePart documentTablePart in documentItem.TabularParts.Values)
+                foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
                 {
                     //Поля табличної частини
-                    foreach (ConfigurationObjectField tablePartField in documentTablePart.Fields.Values)
+                    foreach (ConfigurationField tablePartField in documentTablePart.Fields.Values)
                     {
                         if (tablePartField.Type == "enum" && tablePartField.Pointer == searchName)
                             ListPointer.Add("Документи (таблична частина): " + documentItem.Name + "." + documentTablePart.Name + "." + tablePartField.Name);
@@ -740,19 +740,19 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersInformation registersInformationItem in RegistersInformation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersInformationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
                 }
 
-                foreach (ConfigurationObjectField registersField in registersInformationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersInformationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри відомостей: " + registersInformationItem.Name + "." + registersField.Name);
@@ -763,19 +763,19 @@ namespace AccountingSoftware
             foreach (ConfigurationRegistersAccumulation registersAccumulationItem in RegistersAccumulation.Values)
             {
                 //Поля
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.DimensionFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.DimensionFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.ResourcesFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.ResourcesFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
                 }
 
-                foreach (ConfigurationObjectField registersField in registersAccumulationItem.PropertyFields.Values)
+                foreach (ConfigurationField registersField in registersAccumulationItem.PropertyFields.Values)
                 {
                     if (registersField.Type == "enum" && registersField.Pointer == searchName)
                         ListPointer.Add("Регістри накопичення: " + registersAccumulationItem.Name + "." + registersField.Name);
@@ -792,7 +792,7 @@ namespace AccountingSoftware
         /// <param name="table">Назва таблиці для якої генерується нова назва стовпця</param>
         /// <param name="Fields">Список існуючих полів</param>
         /// <returns>Повертає унікальну назву стовпця</returns>
-        public static string GetNewUnigueColumnName(Kernel Kernel, string table, Dictionary<string, ConfigurationObjectField> Fields)
+        public static string GetNewUnigueColumnName(Kernel Kernel, string table, Dictionary<string, ConfigurationField> Fields)
         {
             string[] englishAlphabet = GetEnglishAlphabet();
 
@@ -823,10 +823,10 @@ namespace AccountingSoftware
 
                     noExistInConf = true;
 
-                    foreach (ConfigurationObjectField configurationObjectField in Fields.Values)
+                    foreach (ConfigurationField ConfigurationField in Fields.Values)
                     {
-                        //Console.WriteLine($"{configurationObjectField.NameInTable} = {columnNewName}");
-                        if (configurationObjectField.NameInTable == columnNewName)
+                        //Console.WriteLine($"{ConfigurationField.NameInTable} = {columnNewName}");
+                        if (ConfigurationField.NameInTable == columnNewName)
                         {
                             noExistInConf = false;
                             break;
@@ -896,7 +896,7 @@ namespace AccountingSoftware
                     {
                         foreach (ConfigurationConstants constantsItem in block.Constants.Values)
                         {
-                            foreach (ConfigurationObjectTablePart constantsTablePart in constantsItem.TabularParts.Values)
+                            foreach (ConfigurationTablePart constantsTablePart in constantsItem.TabularParts.Values)
                             {
                                 if (constantsTablePart.Table == tabNewName)
                                 {
@@ -926,7 +926,7 @@ namespace AccountingSoftware
                                 break;
                             }
 
-                            foreach (ConfigurationObjectTablePart directoryTablePart in directoryItem.TabularParts.Values)
+                            foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
                             {
                                 if (directoryTablePart.Table == tabNewName)
                                 {
@@ -950,7 +950,7 @@ namespace AccountingSoftware
                                 break;
                             }
 
-                            foreach (ConfigurationObjectTablePart documentTablePart in documentItem.TabularParts.Values)
+                            foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
                             {
                                 if (documentTablePart.Table == tabNewName)
                                 {
@@ -1075,21 +1075,21 @@ namespace AccountingSoftware
         /// <summary>
         /// Функція об'єднує в один масив всі поля регістру
         /// </summary>
-        public Dictionary<string, ConfigurationObjectField> CombineAllFieldForRegister(
-            Dictionary<string, ConfigurationObjectField>.ValueCollection DimensionFields,
-            Dictionary<string, ConfigurationObjectField>.ValueCollection ResourcesFields,
-            Dictionary<string, ConfigurationObjectField>.ValueCollection PropertyFields
+        public Dictionary<string, ConfigurationField> CombineAllFieldForRegister(
+            Dictionary<string, ConfigurationField>.ValueCollection DimensionFields,
+            Dictionary<string, ConfigurationField>.ValueCollection ResourcesFields,
+            Dictionary<string, ConfigurationField>.ValueCollection PropertyFields
             )
         {
-            Dictionary<string, ConfigurationObjectField> AllFields = new Dictionary<string, ConfigurationObjectField>();
+            Dictionary<string, ConfigurationField> AllFields = new Dictionary<string, ConfigurationField>();
 
-            foreach (ConfigurationObjectField item in DimensionFields)
+            foreach (ConfigurationField item in DimensionFields)
                 AllFields.Add(item.Name, item);
 
-            foreach (ConfigurationObjectField item in ResourcesFields)
+            foreach (ConfigurationField item in ResourcesFields)
                 AllFields.Add(item.Name, item);
 
-            foreach (ConfigurationObjectField item in PropertyFields)
+            foreach (ConfigurationField item in PropertyFields)
                 AllFields.Add(item.Name, item);
 
             return AllFields;
@@ -1205,15 +1205,15 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
 
-                TypeDirectories typeDirectory;
+                ConfigurationDirectories.TypeDirectories typeDirectory;
                 if (type == "Normal")
-                    typeDirectory = TypeDirectories.Normal;
+                    typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
                 else if (type == "Hierarchical")
-                    typeDirectory = TypeDirectories.Hierarchical;
+                    typeDirectory = ConfigurationDirectories.TypeDirectories.Hierarchical;
                 else if (type == "HierarchyInAnotherDirectory")
-                    typeDirectory = TypeDirectories.HierarchyInAnotherDirectory;
+                    typeDirectory = ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory;
                 else
-                    typeDirectory = TypeDirectories.Normal;
+                    typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
 
                 ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory, pointerFolders);
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
@@ -1230,7 +1230,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void LoadFields(Dictionary<string, ConfigurationObjectField> fields, XPathNavigator? xPathDocNavigator, string parentName)
+        private static void LoadFields(Dictionary<string, ConfigurationField> fields, XPathNavigator? xPathDocNavigator, string parentName)
         {
             XPathNodeIterator? fieldNodes = xPathDocNavigator?.Select("Fields/Field");
             while (fieldNodes != null && fieldNodes.MoveNext())
@@ -1248,7 +1248,7 @@ namespace AccountingSoftware
                 bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
                 string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                ConfigurationObjectField ConfObjectField = new ConfigurationObjectField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
+                ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
 
                 //
                 // Для генерування коду
@@ -1261,7 +1261,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void LoadTabularParts(Dictionary<string, ConfigurationObjectTablePart> tabularParts, XPathNavigator? xPathDocNavigator)
+        private static void LoadTabularParts(Dictionary<string, ConfigurationTablePart> tabularParts, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tablePartNodes = xPathDocNavigator?.Select("TabularParts/TablePart");
             while (tablePartNodes != null && tablePartNodes.MoveNext())
@@ -1273,7 +1273,7 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва табличної частини");
 
-                ConfigurationObjectTablePart ConfObjectTablePart = new ConfigurationObjectTablePart(name, table, desc);
+                ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc);
 
                 tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
 
@@ -1374,7 +1374,7 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва форми");
 
-                TypeForms typeForms = TypeForms.None;
+                ConfigurationForms.TypeForms typeForms = ConfigurationForms.TypeForms.None;
                 if (!string.IsNullOrEmpty(type))
                     Enum.TryParse(type, out typeForms);
 
@@ -1634,7 +1634,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void LoadQueryList(Dictionary<string, ConfigurationObjectQueryBlock> queryBlockList, XPathNavigator? xPathDocNavigator)
+        private static void LoadQueryList(Dictionary<string, ConfigurationQueryBlock> queryBlockList, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryBlockList/QueryBlock");
             while (nodeQueryBlock != null && nodeQueryBlock.MoveNext())
@@ -1645,7 +1645,7 @@ namespace AccountingSoftware
                 if (name == null)
                     throw new Exception("Не задана назва регістру накопичення");
 
-                ConfigurationObjectQueryBlock QueryBlock = new ConfigurationObjectQueryBlock(name, finalCalculation);
+                ConfigurationQueryBlock QueryBlock = new ConfigurationQueryBlock(name, finalCalculation);
                 queryBlockList.Add(QueryBlock.Name, QueryBlock);
 
                 XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
@@ -1838,12 +1838,12 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SaveFields(Dictionary<string, ConfigurationObjectField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
+        public static void SaveFields(Dictionary<string, ConfigurationField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
         {
             XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
             rootNode.AppendChild(nodeFields);
 
-            foreach (KeyValuePair<string, ConfigurationObjectField> field in fields)
+            foreach (KeyValuePair<string, ConfigurationField> field in fields)
             {
                 XmlElement nodeField = xmlConfDocument.CreateElement("Field");
                 nodeFields.AppendChild(nodeField);
@@ -1899,12 +1899,12 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SaveTabularParts(Dictionary<string, ConfigurationObjectTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTabularParts(Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularParts = xmlConfDocument.CreateElement("TabularParts");
             rootNode.AppendChild(nodeTabularParts);
 
-            foreach (KeyValuePair<string, ConfigurationObjectTablePart> tablePart in tabularParts)
+            foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in tabularParts)
             {
                 XmlElement nodeTablePart = xmlConfDocument.CreateElement("TablePart");
                 nodeTabularParts.AppendChild(nodeTablePart);
@@ -1925,7 +1925,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveTabularList(Configuration Conf, Dictionary<string, ConfigurationObjectField> fields,
+        private static void SaveTabularList(Configuration Conf, Dictionary<string, ConfigurationField> fields,
             Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             /*
@@ -1992,7 +1992,7 @@ namespace AccountingSoftware
                         // ObjField Info
                         //
 
-                        ConfigurationObjectField objField = fields[field.Key];
+                        ConfigurationField objField = fields[field.Key];
 
                         XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                         nodeType.InnerText = objField.Type;
@@ -2014,7 +2014,7 @@ namespace AccountingSoftware
                                 {
                                     if (Conf.Directories.ContainsKey(nameTypeConf))
                                     {
-                                        Dictionary<string, ConfigurationObjectField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                                        Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
                                         if (directoryPointerFields.Count != 0)
                                         {
                                             XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
@@ -2023,7 +2023,7 @@ namespace AccountingSoftware
 
                                             bool isExistPresentation = false;
 
-                                            foreach (ConfigurationObjectField itemDirectoryPointerFields in directoryPointerFields.Values)
+                                            foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
                                             {
                                                 if (itemDirectoryPointerFields.IsPresentation)
                                                 {
@@ -2037,7 +2037,7 @@ namespace AccountingSoftware
 
                                             if (isExistPresentation == false)
                                             {
-                                                ConfigurationObjectField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+                                                ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
                                                 XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                 nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
@@ -2050,7 +2050,7 @@ namespace AccountingSoftware
                                 {
                                     if (Conf.Documents.ContainsKey(nameTypeConf))
                                     {
-                                        Dictionary<string, ConfigurationObjectField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                                        Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
                                         if (documentPointerFields.Count != 0)
                                         {
                                             XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
@@ -2059,7 +2059,7 @@ namespace AccountingSoftware
 
                                             bool isExistPresentation = false;
 
-                                            foreach (ConfigurationObjectField itemDocumentPointerFields in documentPointerFields.Values)
+                                            foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
                                             {
                                                 if (itemDocumentPointerFields.IsPresentation)
                                                 {
@@ -2073,7 +2073,7 @@ namespace AccountingSoftware
 
                                             if (isExistPresentation == false)
                                             {
-                                                ConfigurationObjectField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+                                                ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
                                                 XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                 nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
@@ -2192,7 +2192,7 @@ namespace AccountingSoftware
                             //Поле документу
                             if (!String.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
                             {
-                                ConfigurationObjectField objField = Doc.Fields[docField];
+                                ConfigurationField objField = Doc.Fields[docField];
 
                                 XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                                 nodeType.InnerText = objField.Type;
@@ -2214,7 +2214,7 @@ namespace AccountingSoftware
                                         {
                                             if (Conf.Directories.ContainsKey(nameTypeConf))
                                             {
-                                                Dictionary<string, ConfigurationObjectField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                                                Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
                                                 if (directoryPointerFields.Count != 0)
                                                 {
                                                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
@@ -2223,7 +2223,7 @@ namespace AccountingSoftware
 
                                                     bool isExistPresentation = false;
 
-                                                    foreach (ConfigurationObjectField itemDirectoryPointerFields in directoryPointerFields.Values)
+                                                    foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
                                                     {
                                                         if (itemDirectoryPointerFields.IsPresentation)
                                                         {
@@ -2238,7 +2238,7 @@ namespace AccountingSoftware
 
                                                     if (isExistPresentation == false)
                                                     {
-                                                        ConfigurationObjectField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+                                                        ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
                                                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
@@ -2251,7 +2251,7 @@ namespace AccountingSoftware
                                         {
                                             if (Conf.Documents.ContainsKey(nameTypeConf))
                                             {
-                                                Dictionary<string, ConfigurationObjectField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                                                Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
                                                 if (documentPointerFields.Count != 0)
                                                 {
                                                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
@@ -2260,7 +2260,7 @@ namespace AccountingSoftware
 
                                                     bool isExistPresentation = false;
 
-                                                    foreach (ConfigurationObjectField itemDocumentPointerFields in documentPointerFields.Values)
+                                                    foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
                                                     {
                                                         if (itemDocumentPointerFields.IsPresentation)
                                                         {
@@ -2275,7 +2275,7 @@ namespace AccountingSoftware
 
                                                     if (isExistPresentation == false)
                                                     {
-                                                        ConfigurationObjectField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationObjectField>>().Value;
+                                                        ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
                                                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
                                                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
@@ -2584,7 +2584,7 @@ namespace AccountingSoftware
                 SaveFields(ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
 
                 //TabularList
-                Dictionary<string, ConfigurationObjectField> AllFields = Conf.CombineAllFieldForRegister
+                Dictionary<string, ConfigurationField> AllFields = Conf.CombineAllFieldForRegister
                 (
                     ConfRegisterInfo.Value.DimensionFields.Values,
                     ConfRegisterInfo.Value.ResourcesFields.Values,
@@ -2665,12 +2665,12 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveQueryBlockList(Dictionary<string, ConfigurationObjectQueryBlock> queryBlockList, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveQueryBlockList(Dictionary<string, ConfigurationQueryBlock> queryBlockList, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeQueryBlockList = xmlConfDocument.CreateElement("QueryBlockList");
             rootNode.AppendChild(nodeQueryBlockList);
 
-            foreach (ConfigurationObjectQueryBlock queryBlock in queryBlockList.Values)
+            foreach (ConfigurationQueryBlock queryBlock in queryBlockList.Values)
             {
                 XmlElement nodeQueryBlock = xmlConfDocument.CreateElement("QueryBlock");
                 nodeQueryBlockList.AppendChild(nodeQueryBlock);
