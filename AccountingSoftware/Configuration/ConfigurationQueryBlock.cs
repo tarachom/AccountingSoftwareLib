@@ -28,8 +28,16 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationQueryBlock
     {
+        /// <summary>
+        /// Блок запитів
+        /// </summary>
         public ConfigurationQueryBlock() { }
 
+        /// <summary>
+        /// Блок запитів
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="finalCalculation">Підсумкове виконання</param>
         public ConfigurationQueryBlock(string name, bool finalCalculation = false) : this()
         {
             Name = name;

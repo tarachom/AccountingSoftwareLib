@@ -28,8 +28,21 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTabularListAdditionalField
     {
+        /// <summary>
+        /// Додаткове поле табличного списку
+        /// </summary>
         public ConfigurationTabularListAdditionalField() { }
 
+        /// <summary>
+        /// Додаткове поле табличного списку
+        /// </summary>
+        /// <param name="visible">Видимість</param>
+        /// <param name="name">Назва</param>
+        /// <param name="caption">Заголовок</param>
+        /// <param name="size">Розмір</param>
+        /// <param name="sortNum">Порядок сортування</param>
+        /// <param name="type">Тип</param>
+        /// <param name="value">Значення</param>
         public ConfigurationTabularListAdditionalField(bool visible, string name, string caption, uint size, int sortNum, string type, string value)
         {
             Visible = visible;

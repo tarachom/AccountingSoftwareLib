@@ -37,8 +37,10 @@ namespace AccountingSoftware
         /// Документ
         /// </summary>
         /// <param name="name">Назва</param>
+        /// <param name="fullname">Повна назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
+        /// <param name="automaticNumeration">Автоматична нумерація</param>
         public ConfigurationDocuments(string name, string fullname, string table, string desc = "", bool automaticNumeration = false)
         {
             Name = name;

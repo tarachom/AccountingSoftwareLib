@@ -28,8 +28,17 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationForms
     {
+        /// <summary>
+        /// Форма
+        /// </summary>
         public ConfigurationForms() { }
 
+        /// <summary>
+        /// Форма
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="desc">Опис</param>
+        /// <param name="type">Тип</param>
         public ConfigurationForms(string name, string desc = "", TypeForms type = TypeForms.None)
         {
             Name = name;

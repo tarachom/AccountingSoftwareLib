@@ -28,8 +28,16 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationJournals
     {
+        /// <summary>
+        /// Журнали
+        /// </summary>
         public ConfigurationJournals() { }
 
+        /// <summary>
+        /// Журнали
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="desc">Опис</param>
         public ConfigurationJournals(string name, string desc = "")
         {
             Name = name;
@@ -54,7 +62,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Документи які входять в журнал
         /// </summary>
-        public List<string> AllowDocuments { get; private set; } = new List<string>();
+        public List<string> AllowDocuments { get; private set; } = [];
 
         /// <summary>
         /// Табличні списки

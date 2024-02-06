@@ -28,8 +28,17 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTabularList
     {
+        /// <summary>
+        /// Табличний список
+        /// </summary>
         public ConfigurationTabularList() { }
 
+        /// <summary>
+        /// Табличний список
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="desc">Опис</param>
+        /// <param name="isTree">Це для дерева</param>
         public ConfigurationTabularList(string name, string desc = "", bool isTree = false)
         {
             Name = name;

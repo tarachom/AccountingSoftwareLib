@@ -28,6 +28,9 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationJournalField
     {
+        /// <summary>
+        /// Поле журналу 
+        /// </summary>
         public ConfigurationJournalField() { }
 
         /// <summary>
@@ -35,7 +38,9 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="desc">Опис</param>
-        /// <param name="desc">Значення за замовчуванням</param>
+        /// <param name="type">Тип</param>
+        /// <param name="sort">Сортувати</param>
+        /// <param name="where_period">Відбір по періоду</param>
         public ConfigurationJournalField(string name, string desc = "", string type = "", bool sort = false, bool where_period = false)
         {
             Name = name;

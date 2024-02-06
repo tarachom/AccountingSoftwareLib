@@ -1057,19 +1057,19 @@ namespace AccountingSoftware
         public void CalculateAllowDocumentSpendForRegistersAccumulation()
         {
             //Очистити список доступних документів для всіх регістрів
-            foreach (ConfigurationRegistersAccumulation registersAccumulationItem in RegistersAccumulation.Values)
-                registersAccumulationItem.AllowDocumentSpend.Clear();
+            foreach (ConfigurationRegistersAccumulation regAccumItem in RegistersAccumulation.Values)
+                regAccumItem.AllowDocumentSpend.Clear();
 
             //Документи
-            foreach (ConfigurationDocuments documentItem in Documents.Values)
-            {
-                foreach (string register in documentItem.AllowRegisterAccumulation)
-                {
-                    ConfigurationRegistersAccumulation confRegAccum = RegistersAccumulation[register];
-                    if (!confRegAccum.AllowDocumentSpend.Contains(documentItem.Name))
-                        confRegAccum.AllowDocumentSpend.Add(documentItem.Name);
-                }
-            }
+            foreach (ConfigurationDocuments docItem in Documents.Values)
+                //Регістри накопичення по яких може робити рухи документ
+                foreach (string reg in docItem.AllowRegisterAccumulation)
+                    if (RegistersAccumulation.ContainsKey(reg))
+                    {
+                        ConfigurationRegistersAccumulation regAccum = RegistersAccumulation[reg];
+                        if (!regAccum.AllowDocumentSpend.Contains(docItem.Name))
+                            regAccum.AllowDocumentSpend.Add(docItem.Name);
+                    }
         }
 
         /// <summary>
@@ -1081,7 +1081,7 @@ namespace AccountingSoftware
             Dictionary<string, ConfigurationField>.ValueCollection PropertyFields
             )
         {
-            Dictionary<string, ConfigurationField> AllFields = new Dictionary<string, ConfigurationField>();
+            Dictionary<string, ConfigurationField> AllFields = [];
 
             foreach (ConfigurationField item in DimensionFields)
                 AllFields.Add(item.Name, item);
@@ -1154,7 +1154,7 @@ namespace AccountingSoftware
         private static void LoadConstants(Configuration Conf, XPathNavigator xPathDocNavigator)
         {
             XPathNodeIterator constantsBlockNodes = xPathDocNavigator.Select("/Configuration/ConstantsBlocks/ConstantsBlock");
-            while (constantsBlockNodes != null && constantsBlockNodes.MoveNext())
+            while (constantsBlockNodes.MoveNext())
             {
                 string? blockName = constantsBlockNodes.Current?.SelectSingleNode("Name")?.Value;
                 string blockDesc = constantsBlockNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1166,33 +1166,34 @@ namespace AccountingSoftware
                 Conf.ConstantsBlock.Add(configurationConstantsBlock.BlockName, configurationConstantsBlock);
 
                 XPathNodeIterator? constantsNodes = constantsBlockNodes.Current?.Select("Constants/Constant");
-                while (constantsNodes != null && constantsNodes.MoveNext())
-                {
-                    string? constName = constantsNodes.Current?.SelectSingleNode("Name")?.Value;
-                    string nameInTable = constantsNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
-                    string constType = constantsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
-                    string constDesc = constantsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                if (constantsNodes != null)
+                    while (constantsNodes.MoveNext())
+                    {
+                        string? constName = constantsNodes.Current?.SelectSingleNode("Name")?.Value;
+                        string nameInTable = constantsNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
+                        string constType = constantsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
+                        string constDesc = constantsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    if (constName == null)
-                        throw new Exception("Не задана назва константи");
+                        if (constName == null)
+                            throw new Exception("Не задана назва константи");
 
-                    string constPointer = (constType == "pointer" || constType == "enum") ?
-                        (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
+                        string constPointer = (constType == "pointer" || constType == "enum") ?
+                            (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationConstants configurationConstants = new ConfigurationConstants(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc);
+                        ConfigurationConstants configurationConstants = new ConfigurationConstants(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc);
 
-                    configurationConstantsBlock.Constants.Add(configurationConstants.Name, configurationConstants);
+                        configurationConstantsBlock.Constants.Add(configurationConstants.Name, configurationConstants);
 
-                    LoadTabularParts(configurationConstants.TabularParts, constantsNodes.Current);
-                }
+                        LoadTabularParts(configurationConstants.TabularParts, constantsNodes.Current);
+                    }
             }
         }
 
         private static void LoadDirectories(Configuration Conf, XPathNavigator xPathDocNavigator)
         {
             //Довідники
-            XPathNodeIterator? directoryNodes = xPathDocNavigator.Select("/Configuration/Directories/Directory");
-            while (directoryNodes != null && directoryNodes.MoveNext())
+            XPathNodeIterator directoryNodes = xPathDocNavigator.Select("/Configuration/Directories/Directory");
+            while (directoryNodes.MoveNext())
             {
                 string? name = directoryNodes.Current?.SelectSingleNode("Name")?.Value;
                 string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
@@ -1233,169 +1234,178 @@ namespace AccountingSoftware
         private static void LoadFields(Dictionary<string, ConfigurationField> fields, XPathNavigator? xPathDocNavigator, string parentName)
         {
             XPathNodeIterator? fieldNodes = xPathDocNavigator?.Select("Fields/Field");
-            while (fieldNodes != null && fieldNodes.MoveNext())
-            {
-                string? name = fieldNodes.Current?.SelectSingleNode("Name")?.Value;
-                string nameInTable = fieldNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
-                string type = fieldNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
-                string desc = fieldNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+            if (fieldNodes != null)
+                while (fieldNodes.MoveNext())
+                {
+                    string? name = fieldNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string nameInTable = fieldNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
+                    string type = fieldNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
+                    string desc = fieldNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва поля");
+                    if (name == null)
+                        throw new Exception("Не задана назва поля");
 
-                bool isPresentation = (parentName == "Directory" || parentName == "Document") && (fieldNodes.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
-                bool isIndex = (fieldNodes.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
-                bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
-                string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
+                    bool isPresentation = (parentName == "Directory" || parentName == "Document") && (fieldNodes.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
+                    bool isIndex = (fieldNodes.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
+                    bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
+                    string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
+                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
 
-                //
-                // Для генерування коду
-                //
+                    //
+                    // Для генерування коду
+                    //
 
-                if (type == "string")
-                    ConfObjectField.Multiline = (fieldNodes.Current?.SelectSingleNode("Multiline")?.Value ?? "") == "1";
+                    if (type == "string")
+                        ConfObjectField.Multiline = (fieldNodes.Current?.SelectSingleNode("Multiline")?.Value ?? "") == "1";
 
-                fields.Add(name, ConfObjectField);
-            }
+                    fields.Add(name, ConfObjectField);
+                }
         }
 
         private static void LoadTabularParts(Dictionary<string, ConfigurationTablePart> tabularParts, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tablePartNodes = xPathDocNavigator?.Select("TabularParts/TablePart");
-            while (tablePartNodes != null && tablePartNodes.MoveNext())
-            {
-                string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value;
-                string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
-                string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+            if (tablePartNodes != null)
+                while (tablePartNodes.MoveNext())
+                {
+                    string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
+                    string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва табличної частини");
+                    if (name == null)
+                        throw new Exception("Не задана назва табличної частини");
 
-                ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc);
+                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc);
 
-                tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
+                    tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
 
-                LoadFields(ConfObjectTablePart.Fields, tablePartNodes.Current, "TablePart");
-            }
+                    LoadFields(ConfObjectTablePart.Fields, tablePartNodes.Current, "TablePart");
+                }
         }
 
         private static void LoadTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
-            while (tabularListsNodes != null && tabularListsNodes.MoveNext())
-            {
-                string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value;
-                string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                string isTree = tabularListsNodes.Current?.SelectSingleNode("IsTree")?.Value ?? "";
-
-                if (name == null)
-                    throw new Exception("Не задана назва табличного списку");
-
-                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc, isTree == "1");
-                tabularLists.Add(ConfTabularList.Name, ConfTabularList);
-
-                //Поля
-                XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
-                while (tabularListFieldNodes != null && tabularListFieldNodes.MoveNext())
+            if (tabularListsNodes != null)
+                while (tabularListsNodes!.MoveNext())
                 {
-                    string? nameField = tabularListFieldNodes.Current?.SelectSingleNode("Name")?.Value;
-                    string captionField = tabularListFieldNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
-                    uint sizeField = uint.Parse(tabularListFieldNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
-                    int sortNumField = int.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
-                    bool sortField = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortField")?.Value ?? "False");
+                    string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string isTree = tabularListsNodes.Current?.SelectSingleNode("IsTree")?.Value ?? "";
 
-                    if (nameField == null)
-                        throw new Exception("Не задана назва поля табличного списку");
+                    if (name == null)
+                        throw new Exception("Не задана назва табличного списку");
 
-                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField);
-                    ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc, isTree == "1");
+                    tabularLists.Add(ConfTabularList.Name, ConfTabularList);
+
+                    //Поля
+                    XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
+                    if (tabularListFieldNodes != null)
+                        while (tabularListFieldNodes.MoveNext())
+                        {
+                            string? nameField = tabularListFieldNodes.Current?.SelectSingleNode("Name")?.Value;
+                            string captionField = tabularListFieldNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
+                            uint sizeField = uint.Parse(tabularListFieldNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                            int sortNumField = int.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
+                            bool sortField = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortField")?.Value ?? "False");
+
+                            if (nameField == null)
+                                throw new Exception("Не задана назва поля табличного списку");
+
+                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField);
+                            ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                        }
+
+                    //Додаткові поля
+                    XPathNodeIterator? tabularListAdditionalFieldsNodes = tabularListsNodes?.Current?.Select("Fields/AdditionalField");
+                    if (tabularListAdditionalFieldsNodes != null)
+                        while (tabularListAdditionalFieldsNodes.MoveNext())
+                        {
+                            bool visibleField = bool.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Visible")?.Value ?? "False");
+                            string nameField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Name")?.Value ?? "";
+                            string captionField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
+                            uint sizeField = uint.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                            int sortNumField = int.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
+                            string typeField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Type")?.Value ?? "string";
+                            string valueField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "";
+
+                            ConfigurationTabularListAdditionalField ConfTabularListAdditionalField =
+                                new ConfigurationTabularListAdditionalField(visibleField, nameField, captionField, sizeField, sortNumField, typeField, valueField);
+
+                            ConfTabularList.AdditionalFields.Add(ConfTabularListAdditionalField.Name, ConfTabularListAdditionalField);
+                        }
                 }
-
-                //Додаткові поля
-                XPathNodeIterator? tabularListAdditionalFieldsNodes = tabularListsNodes?.Current?.Select("Fields/AdditionalField");
-                while (tabularListAdditionalFieldsNodes != null && tabularListAdditionalFieldsNodes.MoveNext())
-                {
-                    bool visibleField = bool.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Visible")?.Value ?? "False");
-                    string nameField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Name")?.Value ?? "";
-                    string captionField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
-                    uint sizeField = uint.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
-                    int sortNumField = int.Parse(tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
-                    string typeField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Type")?.Value ?? "string";
-                    string valueField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "";
-
-                    ConfigurationTabularListAdditionalField ConfTabularListAdditionalField =
-                        new ConfigurationTabularListAdditionalField(visibleField, nameField, captionField, sizeField, sortNumField, typeField, valueField);
-
-                    ConfTabularList.AdditionalFields.Add(ConfTabularListAdditionalField.Name, ConfTabularListAdditionalField);
-                }
-            }
         }
 
         private static void LoadJournalTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
-            while (tabularListsNodes != null && tabularListsNodes.MoveNext())
-            {
-                string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value;
-                string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-
-                if (name == null)
-                    throw new Exception("Не задана назва табличного списку");
-
-                ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
-                tabularLists.Add(ConfTabularList.Name, ConfTabularList);
-
-                XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
-                while (tabularListFieldNodes != null && tabularListFieldNodes.MoveNext())
+            if (tabularListsNodes != null)
+                while (tabularListsNodes!.MoveNext())
                 {
-                    string? nameField = tabularListFieldNodes.Current?.SelectSingleNode("Name")?.Value;
-                    string docField = tabularListFieldNodes.Current?.SelectSingleNode("DocField")?.Value ?? "";
+                    string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    if (nameField == null)
-                        throw new Exception("Не задана назва поля табличного списку");
+                    if (name == null)
+                        throw new Exception("Не задана назва табличного списку");
 
-                    ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, docField);
-                    ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                    tabularLists.Add(ConfTabularList.Name, ConfTabularList);
+
+                    XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
+                    if (tabularListFieldNodes != null)
+                        while (tabularListFieldNodes.MoveNext())
+                        {
+                            string? nameField = tabularListFieldNodes.Current?.SelectSingleNode("Name")?.Value;
+                            string docField = tabularListFieldNodes.Current?.SelectSingleNode("DocField")?.Value ?? "";
+
+                            if (nameField == null)
+                                throw new Exception("Не задана назва поля табличного списку");
+
+                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, docField);
+                            ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
+                        }
                 }
-            }
         }
 
         private static void LoadForms(Dictionary<string, ConfigurationForms> forms, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tableForm = xPathDocNavigator?.Select("Forms/Form");
-            while (tableForm != null && tableForm.MoveNext())
-            {
-                string? name = tableForm.Current?.SelectSingleNode("Name")?.Value;
-                string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
+            if (tableForm != null)
+                while (tableForm.MoveNext())
+                {
+                    string? name = tableForm.Current?.SelectSingleNode("Name")?.Value;
+                    string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва форми");
+                    if (name == null)
+                        throw new Exception("Не задана назва форми");
 
-                ConfigurationForms.TypeForms typeForms = ConfigurationForms.TypeForms.None;
-                if (!string.IsNullOrEmpty(type))
-                    Enum.TryParse(type, out typeForms);
+                    ConfigurationForms.TypeForms typeForms = ConfigurationForms.TypeForms.None;
+                    if (!string.IsNullOrEmpty(type))
+                        Enum.TryParse(type, out typeForms);
 
-                ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
+                    ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
-                forms.Add(form.Name, form);
-            }
+                    forms.Add(form.Name, form);
+                }
         }
 
         private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
-            while (allowRegisterAccumulationNodes != null && allowRegisterAccumulationNodes.MoveNext())
-            {
-                string? name = allowRegisterAccumulationNodes?.Current?.Value;
+            if (allowRegisterAccumulationNodes != null)
+                while (allowRegisterAccumulationNodes!.MoveNext())
+                {
+                    string? name = allowRegisterAccumulationNodes?.Current?.Value;
 
-                if (name == null)
-                    throw new Exception("Не задана назва доступного регістру");
+                    if (name == null)
+                        throw new Exception("Не задана назва доступного регістру");
 
-                allowRegisterAccumulation.Add(name);
-            }
+                    allowRegisterAccumulation.Add(name);
+                }
         }
 
         private static void LoadTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
@@ -1426,237 +1436,248 @@ namespace AccountingSoftware
         {
             //Перелічення
             XPathNodeIterator? enumsNodes = xPathDocNavigator?.Select("/Configuration/Enums/Enum");
-            while (enumsNodes != null && enumsNodes.MoveNext())
-            {
-                string? name = enumsNodes.Current?.SelectSingleNode("Name")?.Value;
-                string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
-
-                if (name == null)
-                    throw new Exception("Не задана назва перелічення");
-
-                ConfigurationEnums configurationEnums = new ConfigurationEnums(name, serialNumber, desc);
-                Conf.Enums.Add(configurationEnums.Name, configurationEnums);
-
-                XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
-                while (enumFieldsNodes != null && enumFieldsNodes.MoveNext())
+            if (enumsNodes != null)
+                while (enumsNodes!.MoveNext())
                 {
-                    string? nameField = enumFieldsNodes.Current?.SelectSingleNode("Name")?.Value;
-                    int valueField = int.Parse(enumFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "0");
-                    string descField = enumFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string? name = enumsNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
 
-                    if (nameField == null)
-                        throw new Exception("Не задана назва елементу перелічення");
+                    if (name == null)
+                        throw new Exception("Не задана назва перелічення");
 
-                    configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField));
+                    ConfigurationEnums configurationEnums = new ConfigurationEnums(name, serialNumber, desc);
+                    Conf.Enums.Add(configurationEnums.Name, configurationEnums);
+
+                    XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
+                    if (enumFieldsNodes != null)
+                        while (enumFieldsNodes.MoveNext())
+                        {
+                            string? nameField = enumFieldsNodes.Current?.SelectSingleNode("Name")?.Value;
+                            int valueField = int.Parse(enumFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "0");
+                            string descField = enumFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+
+                            if (nameField == null)
+                                throw new Exception("Не задана назва елементу перелічення");
+
+                            configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField));
+                        }
                 }
-            }
         }
 
         private static void LoadJournals(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Журнали
             XPathNodeIterator? journalsNodes = xPathDocNavigator?.Select("/Configuration/Journals/Journal");
-            while (journalsNodes != null && journalsNodes.MoveNext())
-            {
-                string? name = journalsNodes.Current?.SelectSingleNode("Name")?.Value;
-                string desc = journalsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-
-                if (name == null)
-                    throw new Exception("Не задана назва журналу");
-
-                ConfigurationJournals configurationJournals = new ConfigurationJournals(name, desc);
-                Conf.Journals.Add(configurationJournals.Name, configurationJournals);
-
-                XPathNodeIterator? journalFieldsNodes = journalsNodes?.Current?.Select("Fields/Field");
-                while (journalFieldsNodes != null && journalFieldsNodes.MoveNext())
+            if (journalsNodes != null)
+                while (journalsNodes!.MoveNext())
                 {
-                    string? nameField = journalFieldsNodes.Current?.SelectSingleNode("Name")?.Value;
-                    string descField = journalFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                    string sortType = journalFieldsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
-                    string sortField = journalFieldsNodes.Current?.SelectSingleNode("SortField")?.Value ?? "";
-                    string sortWherePeriod = journalFieldsNodes.Current?.SelectSingleNode("WherePeriod")?.Value ?? "";
+                    string? name = journalsNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string desc = journalsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    if (nameField == null)
-                        throw new Exception("Не задана назва поля журналу");
+                    if (name == null)
+                        throw new Exception("Не задана назва журналу");
 
-                    bool isSort = sortField == "1";
-                    bool isWherePeriod = sortWherePeriod == "1";
+                    ConfigurationJournals configurationJournals = new ConfigurationJournals(name, desc);
+                    Conf.Journals.Add(configurationJournals.Name, configurationJournals);
 
-                    configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField, sortType, isSort, isWherePeriod));
+                    XPathNodeIterator? journalFieldsNodes = journalsNodes?.Current?.Select("Fields/Field");
+                    if (journalFieldsNodes != null)
+                        while (journalFieldsNodes.MoveNext())
+                        {
+                            string? nameField = journalFieldsNodes.Current?.SelectSingleNode("Name")?.Value;
+                            string descField = journalFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                            string sortType = journalFieldsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
+                            string sortField = journalFieldsNodes.Current?.SelectSingleNode("SortField")?.Value ?? "";
+                            string sortWherePeriod = journalFieldsNodes.Current?.SelectSingleNode("WherePeriod")?.Value ?? "";
+
+                            if (nameField == null)
+                                throw new Exception("Не задана назва поля журналу");
+
+                            bool isSort = sortField == "1";
+                            bool isWherePeriod = sortWherePeriod == "1";
+
+                            configurationJournals.AppendField(new ConfigurationJournalField(nameField, descField, sortType, isSort, isWherePeriod));
+                        }
+
+                    LoadJournalsAllowDocument(configurationJournals.AllowDocuments, journalsNodes?.Current);
+
+                    LoadJournalTabularList(configurationJournals.TabularList, journalsNodes?.Current);
                 }
-
-                LoadJournalsAllowDocument(configurationJournals.AllowDocuments, journalsNodes?.Current);
-
-                LoadJournalTabularList(configurationJournals.TabularList, journalsNodes?.Current);
-            }
         }
 
         private static void LoadJournalsAllowDocument(List<string> allowDocument, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowDocumentNodes = xPathDocNavigator?.Select("AllowDocument/Item");
-            while (allowDocumentNodes != null && allowDocumentNodes.MoveNext())
-            {
-                string? name = allowDocumentNodes.Current?.SelectSingleNode("Name")?.Value;
+            if (allowDocumentNodes != null)
+                while (allowDocumentNodes.MoveNext())
+                {
+                    string? name = allowDocumentNodes.Current?.SelectSingleNode("Name")?.Value;
 
-                if (name == null)
-                    throw new Exception("Не задана назва документу");
+                    if (name == null)
+                        throw new Exception("Не задана назва документу");
 
-                allowDocument.Add(name);
-            }
+                    allowDocument.Add(name);
+                }
         }
 
         private static void LoadDocuments(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Документи
             XPathNodeIterator? documentsNode = xPathDocNavigator?.Select("/Configuration/Documents/Document");
-            while (documentsNode != null && documentsNode.MoveNext())
-            {
-                string? name = documentsNode.Current?.SelectSingleNode("Name")?.Value;
-                string fullName = documentsNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
-                string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
-                string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                string autoNum = documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
+            if (documentsNode != null)
+                while (documentsNode!.MoveNext())
+                {
+                    string? name = documentsNode.Current?.SelectSingleNode("Name")?.Value;
+                    string fullName = documentsNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
+                    string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string autoNum = documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва документу");
+                    if (name == null)
+                        throw new Exception("Не задана назва документу");
 
-                ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum == "1");
-                Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
+                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum == "1");
+                    Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
-                LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
+                    LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
 
-                LoadTabularParts(configurationDocuments.TabularParts, documentsNode?.Current);
+                    LoadTabularParts(configurationDocuments.TabularParts, documentsNode?.Current);
 
-                LoadTabularList(configurationDocuments.TabularList, documentsNode?.Current);
+                    LoadTabularList(configurationDocuments.TabularList, documentsNode?.Current);
 
-                LoadAllowRegisterAccumulation(configurationDocuments.AllowRegisterAccumulation, documentsNode?.Current);
+                    LoadAllowRegisterAccumulation(configurationDocuments.AllowRegisterAccumulation, documentsNode?.Current);
 
-                LoadTriggerFunctions(configurationDocuments.TriggerFunctions, documentsNode?.Current);
+                    LoadTriggerFunctions(configurationDocuments.TriggerFunctions, documentsNode?.Current);
 
-                LoadSpendFunctions(configurationDocuments.SpendFunctions, documentsNode?.Current);
-            }
+                    LoadSpendFunctions(configurationDocuments.SpendFunctions, documentsNode?.Current);
+                }
         }
 
         private static void LoadRegistersInformation(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Регістри відомостей
             XPathNodeIterator? registerInformationNode = xPathDocNavigator?.Select("/Configuration/RegistersInformation/RegisterInformation");
-            while (registerInformationNode != null && registerInformationNode.MoveNext())
-            {
-                string? name = registerInformationNode.Current?.SelectSingleNode("Name")?.Value;
-                string fullName = registerInformationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
-                string table = registerInformationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
-                string desc = registerInformationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
+            if (registerInformationNode != null)
+                while (registerInformationNode!.MoveNext())
+                {
+                    string? name = registerInformationNode.Current?.SelectSingleNode("Name")?.Value;
+                    string fullName = registerInformationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string table = registerInformationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
+                    string desc = registerInformationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва регістру відомостей");
+                    if (name == null)
+                        throw new Exception("Не задана назва регістру відомостей");
 
-                ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, fullName, table, desc);
-                Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
+                    ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, fullName, table, desc);
+                    Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
-                XPathNavigator? dimensionFieldsNode = registerInformationNode.Current?.SelectSingleNode("DimensionFields");
-                if (dimensionFieldsNode != null)
-                    LoadFields(configurationRegistersInformation.DimensionFields, dimensionFieldsNode, "RegisterInformation");
+                    XPathNavigator? dimensionFieldsNode = registerInformationNode.Current?.SelectSingleNode("DimensionFields");
+                    if (dimensionFieldsNode != null)
+                        LoadFields(configurationRegistersInformation.DimensionFields, dimensionFieldsNode, "RegisterInformation");
 
-                XPathNavigator? resourcesFieldsNode = registerInformationNode.Current?.SelectSingleNode("ResourcesFields");
-                if (resourcesFieldsNode != null)
-                    LoadFields(configurationRegistersInformation.ResourcesFields, resourcesFieldsNode, "RegisterInformation");
+                    XPathNavigator? resourcesFieldsNode = registerInformationNode.Current?.SelectSingleNode("ResourcesFields");
+                    if (resourcesFieldsNode != null)
+                        LoadFields(configurationRegistersInformation.ResourcesFields, resourcesFieldsNode, "RegisterInformation");
 
-                XPathNavigator? propertyFieldsNode = registerInformationNode.Current?.SelectSingleNode("PropertyFields");
-                if (propertyFieldsNode != null)
-                    LoadFields(configurationRegistersInformation.PropertyFields, propertyFieldsNode, "RegisterInformation");
+                    XPathNavigator? propertyFieldsNode = registerInformationNode.Current?.SelectSingleNode("PropertyFields");
+                    if (propertyFieldsNode != null)
+                        LoadFields(configurationRegistersInformation.PropertyFields, propertyFieldsNode, "RegisterInformation");
 
-                LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
-            }
+                    LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
+                }
         }
 
         private static void LoadAllowDocumentSpendRegisterAccumulation(List<string> allowDocumentSpend, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowDocumentSpendNodes = xPathDocNavigator?.Select("AllowDocumentSpend/Name");
-            while (allowDocumentSpendNodes != null && allowDocumentSpendNodes.MoveNext())
-            {
-                string? name = allowDocumentSpendNodes.Current?.Value;
+            if (allowDocumentSpendNodes != null)
+                while (allowDocumentSpendNodes.MoveNext())
+                {
+                    string? name = allowDocumentSpendNodes.Current?.Value;
 
-                if (name == null)
-                    throw new Exception("Не задана назва доступного регістру");
+                    if (name == null)
+                        throw new Exception("Не задана назва доступного регістру");
 
-                allowDocumentSpend.Add(name);
-            }
+                    allowDocumentSpend.Add(name);
+                }
         }
 
         private static void LoadRegistersAccumulation(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Регістри накопичення
             XPathNodeIterator? registerAccumulationNode = xPathDocNavigator?.Select("/Configuration/RegistersAccumulation/RegisterAccumulation");
-            while (registerAccumulationNode != null && registerAccumulationNode.MoveNext())
-            {
-                string? name = registerAccumulationNode.Current?.SelectSingleNode("Name")?.Value;
-                string fullName = registerAccumulationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
-                string table = registerAccumulationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
-                string type = registerAccumulationNode.Current?.SelectSingleNode("Type")?.Value ?? "";
-                string desc = registerAccumulationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                string noSummary = registerAccumulationNode.Current?.SelectSingleNode("NoSummary")?.Value ?? "";
+            if (registerAccumulationNode != null)
+                while (registerAccumulationNode!.MoveNext())
+                {
+                    string? name = registerAccumulationNode.Current?.SelectSingleNode("Name")?.Value;
+                    string fullName = registerAccumulationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string table = registerAccumulationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
+                    string type = registerAccumulationNode.Current?.SelectSingleNode("Type")?.Value ?? "";
+                    string desc = registerAccumulationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    string noSummary = registerAccumulationNode.Current?.SelectSingleNode("NoSummary")?.Value ?? "";
 
-                if (name == null)
-                    throw new Exception("Не задана назва регістру накопичення");
+                    if (name == null)
+                        throw new Exception("Не задана назва регістру накопичення");
 
-                TypeRegistersAccumulation typeRegistersAccumulation;
-                if (type == "Residues")
-                    typeRegistersAccumulation = TypeRegistersAccumulation.Residues;
-                else if (type == "Turnover")
-                    typeRegistersAccumulation = TypeRegistersAccumulation.Turnover;
-                else
-                    throw new Exception("Не оприділений тип регістру");
+                    TypeRegistersAccumulation typeRegistersAccumulation;
+                    if (type == "Residues")
+                        typeRegistersAccumulation = TypeRegistersAccumulation.Residues;
+                    else if (type == "Turnover")
+                        typeRegistersAccumulation = TypeRegistersAccumulation.Turnover;
+                    else
+                        throw new Exception("Не оприділений тип регістру");
 
-                ConfigurationRegistersAccumulation configurationRegistersAccumulation =
-                    new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" };
+                    ConfigurationRegistersAccumulation configurationRegistersAccumulation =
+                        new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" };
 
-                Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
+                    Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
 
-                XPathNavigator? dimensionFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("DimensionFields");
-                if (dimensionFieldsNode != null)
-                    LoadFields(configurationRegistersAccumulation.DimensionFields, dimensionFieldsNode, "RegisterAccumulation");
+                    XPathNavigator? dimensionFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("DimensionFields");
+                    if (dimensionFieldsNode != null)
+                        LoadFields(configurationRegistersAccumulation.DimensionFields, dimensionFieldsNode, "RegisterAccumulation");
 
-                XPathNavigator? resourcesFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("ResourcesFields");
-                if (resourcesFieldsNode != null)
-                    LoadFields(configurationRegistersAccumulation.ResourcesFields, resourcesFieldsNode, "RegisterAccumulation");
+                    XPathNavigator? resourcesFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("ResourcesFields");
+                    if (resourcesFieldsNode != null)
+                        LoadFields(configurationRegistersAccumulation.ResourcesFields, resourcesFieldsNode, "RegisterAccumulation");
 
-                XPathNavigator? propertyFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("PropertyFields");
-                if (propertyFieldsNode != null)
-                    LoadFields(configurationRegistersAccumulation.PropertyFields, propertyFieldsNode, "RegisterAccumulation");
+                    XPathNavigator? propertyFieldsNode = registerAccumulationNode.Current?.SelectSingleNode("PropertyFields");
+                    if (propertyFieldsNode != null)
+                        LoadFields(configurationRegistersAccumulation.PropertyFields, propertyFieldsNode, "RegisterAccumulation");
 
-                LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode?.Current);
+                    LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode?.Current);
 
-                LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
+                    LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
 
-                LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
-            }
+                    LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
+                }
         }
 
         private static void LoadQueryList(Dictionary<string, ConfigurationQueryBlock> queryBlockList, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryBlockList/QueryBlock");
-            while (nodeQueryBlock != null && nodeQueryBlock.MoveNext())
-            {
-                string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value;
-                bool finalCalculation = (nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "") == "1";
-
-                if (name == null)
-                    throw new Exception("Не задана назва регістру накопичення");
-
-                ConfigurationQueryBlock QueryBlock = new ConfigurationQueryBlock(name, finalCalculation);
-                queryBlockList.Add(QueryBlock.Name, QueryBlock);
-
-                XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
-                while (nodeQuery != null && nodeQuery.MoveNext())
+            if (nodeQueryBlock != null)
+                while (nodeQueryBlock!.MoveNext())
                 {
-                    string key = nodeQuery.Current?.GetAttribute("key", "") ?? "";
-                    string query = nodeQuery.Current?.Value ?? "";
+                    string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value;
+                    bool finalCalculation = (nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "") == "1";
 
-                    QueryBlock.Query.Add(key, query);
+                    if (name == null)
+                        throw new Exception("Не задана назва регістру накопичення");
+
+                    ConfigurationQueryBlock QueryBlock = new ConfigurationQueryBlock(name, finalCalculation);
+                    queryBlockList.Add(QueryBlock.Name, QueryBlock);
+
+                    XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
+                    if (nodeQuery != null)
+                        while (nodeQuery.MoveNext())
+                        {
+                            string key = nodeQuery.Current?.GetAttribute("key", "") ?? "";
+                            string query = nodeQuery.Current?.Value ?? "";
+
+                            QueryBlock.Query.Add(key, query);
+                        }
                 }
-            }
         }
 
         #endregion

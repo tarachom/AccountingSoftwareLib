@@ -37,8 +37,12 @@ namespace AccountingSoftware
         /// Довідник
         /// </summary>
         /// <param name="name">Назва</param>
+        /// <param name="fullname">Повна назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
+        /// <param name="automaticNumeration">Автоматична нумерація</param>
+        /// <param name="typeDirectory">Тип довідника</param>
+        /// <param name="pointerFolders">Вказівник на ієрархію у іншому довіднику</param>
         public ConfigurationDirectories(string name, string fullname, string table,
             string desc = "", bool automaticNumeration = false,
             TypeDirectories typeDirectory = TypeDirectories.Normal, string pointerFolders = "")
@@ -108,9 +112,8 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
-            // ??? Чи потрібно копіювати форми?
-            // foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
-            //     confDirCopy.Forms.Add(forms.Key, forms.Value.Copy());
+            foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
+                confDirCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
             confDirCopy.TriggerFunctions = this.TriggerFunctions.Copy();
 
@@ -169,7 +172,7 @@ namespace AccountingSoftware
             Hierarchical = 2,
 
             /// <summary>
-            /// Ієрархія в іншому каталозі
+            /// Ієрархія в іншому довіднику
             /// </summary>
             HierarchyInAnotherDirectory = 3
         }

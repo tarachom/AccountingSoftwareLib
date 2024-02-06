@@ -24,15 +24,10 @@ limitations under the License.
 namespace AccountingSoftware
 {
 	/// <summary>
-	/// Об'єкт конфігурації
+	/// Об'єкт конфігурації (Довідники, Документи, Табличні частини, Регістри і т.д)
 	/// </summary>
 	public abstract class ConfigurationObject
 	{
-		/// <summary>
-		/// Унікальний ключ обєкту
-		/// </summary>
-		public string UID { get; set; } = "";
-
 		/// <summary>
 		/// Назва
 		/// </summary>

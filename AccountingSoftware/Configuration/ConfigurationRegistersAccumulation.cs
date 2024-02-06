@@ -37,7 +37,9 @@ namespace AccountingSoftware
         /// Регістри накопичення
         /// </summary>
         /// <param name="name">Назва</param>
+        /// <param name="fullname">Повна назва</param>
         /// <param name="table">Таблиця в базі даних</param>
+        /// <param name="type">Тип</param>
         /// <param name="desc">Опис</param>
         public ConfigurationRegistersAccumulation(string name, string fullname, string table, TypeRegistersAccumulation type, string desc = "")
         {

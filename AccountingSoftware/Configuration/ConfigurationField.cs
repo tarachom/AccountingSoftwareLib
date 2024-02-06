@@ -39,6 +39,9 @@ namespace AccountingSoftware
         /// <param name="type">Тип поля (Всі типи описані в класі FieldType)</param>
         /// <param name="pointer">Вказівник</param>
         /// <param name="desc">Опис</param>
+        /// <param name="isPresentation">Признак того що поле презентаційне</param>
+        /// <param name="isIndex">Індексування</param>
+        /// <param name="isFullTextSearch">Повнотекстовий пошук по полю</param>
         public ConfigurationField(string name, string nameInTable, string type, string pointer,
             string desc = "", bool isPresentation = false, bool isIndex = false, bool isFullTextSearch = false)
         {

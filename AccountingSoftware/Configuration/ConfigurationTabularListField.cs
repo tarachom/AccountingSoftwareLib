@@ -28,13 +28,28 @@ namespace AccountingSoftware
     /// </summary>
     public class ConfigurationTabularListField
     {
+        /// <summary>
+        /// Поле табличного списку
+        /// </summary>
         public ConfigurationTabularListField() { }
 
+        /// <summary>
+        /// Поле табличного списку
+        /// </summary>
+        /// <param name="name">Назва</param>
         public ConfigurationTabularListField(string name)
         {
             Name = Caption = name;
         }
 
+        /// <summary>
+        /// Поле табличного списку
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="caption">Заголовок</param>
+        /// <param name="size">Розмір</param>
+        /// <param name="sortNum">Порядок</param>
+        /// <param name="sortField">Сортувати</param>
         public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false)
         {
             Name = name;
@@ -44,11 +59,20 @@ namespace AccountingSoftware
             SortField = sortField;
         }
 
+        #region ForJournals
+
+        /// <summary>
+        /// Поле табличного списку
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="docfield">Поле документу</param>
         public ConfigurationTabularListField(string name, string docfield)
         {
             Name = name;
             DocField = docfield;
         }
+
+        #endregion
 
         /// <summary>
         /// Назва
@@ -74,7 +98,6 @@ namespace AccountingSoftware
         /// Сортувати по даному полю
         /// </summary>
         public bool SortField { get; set; }
-
 
         #region ForJournals
 

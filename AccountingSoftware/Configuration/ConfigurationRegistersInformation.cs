@@ -37,6 +37,7 @@ namespace AccountingSoftware
         /// Регістри відомостей
         /// </summary>
         /// <param name="name">Назва</param>
+        /// <param name="fullname">Повна назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
         public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "")
