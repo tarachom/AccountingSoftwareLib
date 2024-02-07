@@ -87,6 +87,11 @@ namespace AccountingSoftware
         public const string DefaultDictTSearch = "simple";
 
         /// <summary>
+        /// Варіант завантаження конфігурації
+        /// </summary>
+        public VariantLoadConf VariantLoadConfiguration { get; private set; } = VariantLoadConf.Full;
+
+        /// <summary>
         /// Блоки констант
         /// </summary>
         public Dictionary<string, ConfigurationConstantsBlock> ConstantsBlock { get; } = [];
@@ -232,12 +237,6 @@ namespace AccountingSoftware
         #endregion
 
         #region Function
-
-        public enum VariantWorkSearchForPointers
-        {
-            Info,
-            Tables
-        }
 
         /// <summary>
         /// Пошук ссилок довідників і документів
@@ -1104,9 +1103,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="pathToConf">Шлях до файлу конфігурації</param>
         /// <param name="Conf">Конфігурація</param>
-        public static void Load(string pathToConf, out Configuration Conf)
+        /// <param name="variantLoadConf">Варіант завантаження конфігурації</param>
+        public static void Load(string pathToConf, out Configuration Conf, VariantLoadConf variantLoadConf = VariantLoadConf.Full)
         {
-            Conf = new Configuration();
+            Conf = new Configuration() { VariantLoadConfiguration = variantLoadConf };
 
             //Якщо конфігурація не знайдена, створюю нову пусту конфігурацію і записую
             if (!File.Exists(pathToConf))
@@ -1130,7 +1130,8 @@ namespace AccountingSoftware
 
             LoadEnums(Conf, xPathDocNavigator);
 
-            LoadJournals(Conf, xPathDocNavigator);
+            if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                LoadJournals(Conf, xPathDocNavigator);
 
             LoadRegistersInformation(Conf, xPathDocNavigator);
 
@@ -1223,11 +1224,14 @@ namespace AccountingSoftware
 
                 LoadTabularParts(ConfObjectDirectories.TabularParts, directoryNodes.Current);
 
-                LoadTabularList(ConfObjectDirectories.TabularList, directoryNodes.Current);
+                if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                {
+                    LoadTabularList(ConfObjectDirectories.TabularList, directoryNodes.Current);
 
-                LoadTriggerFunctions(ConfObjectDirectories.TriggerFunctions, directoryNodes.Current);
+                    LoadTriggerFunctions(ConfObjectDirectories.TriggerFunctions, directoryNodes.Current);
 
-                LoadForms(ConfObjectDirectories.Forms, directoryNodes.Current);
+                    LoadForms(ConfObjectDirectories.Forms, directoryNodes.Current);
+                }
             }
         }
 
@@ -1544,13 +1548,16 @@ namespace AccountingSoftware
 
                     LoadTabularParts(configurationDocuments.TabularParts, documentsNode?.Current);
 
-                    LoadTabularList(configurationDocuments.TabularList, documentsNode?.Current);
-
                     LoadAllowRegisterAccumulation(configurationDocuments.AllowRegisterAccumulation, documentsNode?.Current);
 
-                    LoadTriggerFunctions(configurationDocuments.TriggerFunctions, documentsNode?.Current);
+                    if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                    {
+                        LoadTabularList(configurationDocuments.TabularList, documentsNode?.Current);
 
-                    LoadSpendFunctions(configurationDocuments.SpendFunctions, documentsNode?.Current);
+                        LoadTriggerFunctions(configurationDocuments.TriggerFunctions, documentsNode?.Current);
+
+                        LoadSpendFunctions(configurationDocuments.SpendFunctions, documentsNode?.Current);
+                    }
                 }
         }
 
@@ -1584,7 +1591,8 @@ namespace AccountingSoftware
                     if (propertyFieldsNode != null)
                         LoadFields(configurationRegistersInformation.PropertyFields, propertyFieldsNode, "RegisterInformation");
 
-                    LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
+                    if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                        LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
                 }
         }
 
@@ -1649,7 +1657,8 @@ namespace AccountingSoftware
 
                     LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
 
-                    LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
+                    if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                        LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
                 }
         }
 
@@ -1843,9 +1852,12 @@ namespace AccountingSoftware
                 nodeDirectoryType.InnerText = ConfDirectory.Value.TypeDirectory.ToString();
                 nodeDirectory.AppendChild(nodeDirectoryType);
 
-                XmlElement nodeDirectoryPointerFolders = xmlConfDocument.CreateElement("PointerFolders");
-                nodeDirectoryPointerFolders.InnerText = ConfDirectory.Value.PointerFolders;
-                nodeDirectory.AppendChild(nodeDirectoryPointerFolders);
+                if (ConfDirectory.Value.TypeDirectory == ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory)
+                {
+                    XmlElement nodeDirectoryPointerFolders = xmlConfDocument.CreateElement("PointerFolders");
+                    nodeDirectoryPointerFolders.InnerText = ConfDirectory.Value.PointerFolders;
+                    nodeDirectory.AppendChild(nodeDirectoryPointerFolders);
+                }
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 
@@ -3060,6 +3072,35 @@ namespace AccountingSoftware
             }
 
             return slqList;
+        }
+
+        #endregion
+
+        #region Enums
+
+        /// <summary>
+        /// Варіант пошуку вказівників
+        /// </summary>
+        public enum VariantWorkSearchForPointers
+        {
+            Info,
+            Tables
+        }
+
+        /// <summary>
+        /// Варіант завантаження конфігурації
+        /// </summary>
+        public enum VariantLoadConf
+        {
+            /// <summary>
+            /// Повна загрузка (для конфігуратора)
+            /// </summary>
+            Full,
+
+            /// <summary>
+            /// Тільки необхідні (для готової програми)
+            /// </summary>
+            Small
         }
 
         #endregion

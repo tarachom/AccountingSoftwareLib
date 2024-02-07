@@ -37,15 +37,16 @@ namespace AccountingSoftware
         /// <param name="Password">Пароль</param>
         /// <param name="Port">Порт</param>
         /// <param name="Database">База даних</param>
+        /// <param name="variantLoadConf">Варіант завантаження конфігурації</param>
         /// <returns>True якщо підключення відбулось нормально</returns>
-        public async ValueTask<bool> Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database)
+        public async ValueTask<bool> Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database,
+            Configuration.VariantLoadConf variantLoadConf = Configuration.VariantLoadConf.Full)
         {
             bool result = await OpenOnlyDataBase(Server, UserId, Password, Port, Database);
 
             try
             {
-                Configuration conf;
-                Configuration.Load(PathToXmlFileConfiguration, out conf);
+                Configuration.Load(PathToXmlFileConfiguration, out Configuration conf, variantLoadConf);
                 Conf = conf;
             }
             catch
