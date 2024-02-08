@@ -1417,12 +1417,29 @@ namespace AccountingSoftware
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
             if (nodeTriggerFunctions != null)
             {
-                triggerFunctions.New = nodeTriggerFunctions.SelectSingleNode("New")?.Value ?? "";
-                triggerFunctions.Copying = nodeTriggerFunctions.SelectSingleNode("Copying")?.Value ?? "";
-                triggerFunctions.BeforeSave = nodeTriggerFunctions.SelectSingleNode("BeforeSave")?.Value ?? "";
-                triggerFunctions.AfterSave = nodeTriggerFunctions.SelectSingleNode("AfterSave")?.Value ?? "";
-                triggerFunctions.SetDeletionLabel = nodeTriggerFunctions.SelectSingleNode("SetDeletionLabel")?.Value ?? "";
-                triggerFunctions.BeforeDelete = nodeTriggerFunctions.SelectSingleNode("BeforeDelete")?.Value ?? "";
+                var nodeNew = nodeTriggerFunctions.SelectSingleNode("New");
+                triggerFunctions.New = nodeNew?.Value ?? "";
+                triggerFunctions.NewAction = nodeNew?.GetAttribute("Action", "") == "1";
+
+                var nodeCopying = nodeTriggerFunctions.SelectSingleNode("Copying");
+                triggerFunctions.Copying = nodeCopying?.Value ?? "";
+                triggerFunctions.CopyingAction = nodeCopying?.GetAttribute("Action", "") == "1";
+
+                var nodeBeforeSave = nodeTriggerFunctions.SelectSingleNode("BeforeSave");
+                triggerFunctions.BeforeSave = nodeBeforeSave?.Value ?? "";
+                triggerFunctions.BeforeSaveAction = nodeBeforeSave?.GetAttribute("Action", "") == "1";
+
+                var nodeAfterSave = nodeTriggerFunctions.SelectSingleNode("AfterSave");
+                triggerFunctions.AfterSave = nodeAfterSave?.Value ?? "";
+                triggerFunctions.AfterSaveAction = nodeAfterSave?.GetAttribute("Action", "") == "1";
+
+                var nodeSetDeletionLabel = nodeTriggerFunctions.SelectSingleNode("SetDeletionLabel");
+                triggerFunctions.SetDeletionLabel = nodeSetDeletionLabel?.Value ?? "";
+                triggerFunctions.SetDeletionLabelAction = nodeSetDeletionLabel?.GetAttribute("Action", "") == "1";
+
+                var nodeBeforeDelete = nodeTriggerFunctions.SelectSingleNode("BeforeDelete");
+                triggerFunctions.BeforeDelete = nodeBeforeDelete?.Value ?? "";
+                triggerFunctions.BeforeDeleteAction = nodeBeforeDelete?.GetAttribute("Action", "") == "1";
             }
         }
 
@@ -2371,28 +2388,41 @@ namespace AccountingSoftware
             XmlElement nodeTriggerFunctions = xmlConfDocument.CreateElement("TriggerFunctions");
             rootNode.AppendChild(nodeTriggerFunctions);
 
+            void AddAttributeAction(XmlElement node, bool value)
+            {
+                XmlAttribute actionAttr = xmlConfDocument.CreateAttribute("Action");
+                actionAttr.Value = value ? "1" : "0";
+                node.Attributes.Append(actionAttr);
+            }
+
             XmlElement nodeNew = xmlConfDocument.CreateElement("New");
             nodeNew.InnerText = triggerFunctions.New;
+            AddAttributeAction(nodeNew, triggerFunctions.NewAction);
             nodeTriggerFunctions.AppendChild(nodeNew);
 
             XmlElement nodeCopying = xmlConfDocument.CreateElement("Copying");
             nodeCopying.InnerText = triggerFunctions.Copying;
+            AddAttributeAction(nodeCopying, triggerFunctions.CopyingAction);
             nodeTriggerFunctions.AppendChild(nodeCopying);
 
             XmlElement nodeBeforeSave = xmlConfDocument.CreateElement("BeforeSave");
             nodeBeforeSave.InnerText = triggerFunctions.BeforeSave;
+            AddAttributeAction(nodeBeforeSave, triggerFunctions.BeforeSaveAction);
             nodeTriggerFunctions.AppendChild(nodeBeforeSave);
 
             XmlElement nodeAfterSave = xmlConfDocument.CreateElement("AfterSave");
             nodeAfterSave.InnerText = triggerFunctions.AfterSave;
+            AddAttributeAction(nodeAfterSave, triggerFunctions.AfterSaveAction);
             nodeTriggerFunctions.AppendChild(nodeAfterSave);
 
             XmlElement nodeSetDeletionLabel = xmlConfDocument.CreateElement("SetDeletionLabel");
             nodeSetDeletionLabel.InnerText = triggerFunctions.SetDeletionLabel;
+            AddAttributeAction(nodeSetDeletionLabel, triggerFunctions.SetDeletionLabelAction);
             nodeTriggerFunctions.AppendChild(nodeSetDeletionLabel);
 
             XmlElement nodeBeforeDelete = xmlConfDocument.CreateElement("BeforeDelete");
             nodeBeforeDelete.InnerText = triggerFunctions.BeforeDelete;
+            AddAttributeAction(nodeBeforeDelete, triggerFunctions.BeforeDeleteAction);
             nodeTriggerFunctions.AppendChild(nodeBeforeDelete);
         }
 

@@ -34,9 +34,19 @@ namespace AccountingSoftware
         public string New { get; set; } = "";
 
         /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool NewAction { get; set; }
+
+        /// <summary>
         /// При копіюванні
         /// </summary>
         public string Copying { get; set; } = "";
+
+        /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool CopyingAction { get; set; }
 
         /// <summary>
         /// Перед записом
@@ -44,9 +54,19 @@ namespace AccountingSoftware
         public string BeforeSave { get; set; } = "";
 
         /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool BeforeSaveAction { get; set; }
+
+        /// <summary>
         /// Після запису
         /// </summary>
         public string AfterSave { get; set; } = "";
+
+        /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool AfterSaveAction { get; set; }
 
         /// <summary>
         /// Встановлення мітки на видалення
@@ -54,9 +74,19 @@ namespace AccountingSoftware
         public string SetDeletionLabel { get; set; } = "";
 
         /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool SetDeletionLabelAction { get; set; }
+
+        /// <summary>
         /// Перед видаленням
         /// </summary>
         public string BeforeDelete { get; set; } = "";
+
+        /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool BeforeDeleteAction { get; set; }
 
         /// <summary>
         /// Створення копії
@@ -67,11 +97,22 @@ namespace AccountingSoftware
             return new ConfigurationTriggerFunctions()
             {
                 New = this.New,
+                NewAction = this.NewAction,
+
                 Copying = this.Copying,
+                CopyingAction = this.CopyingAction,
+
                 BeforeSave = this.BeforeSave,
+                BeforeSaveAction = this.BeforeSaveAction,
+
                 AfterSave = this.AfterSave,
+                AfterSaveAction = this.AfterSaveAction,
+
                 SetDeletionLabel = this.SetDeletionLabel,
-                BeforeDelete = this.BeforeDelete
+                SetDeletionLabelAction = this.SetDeletionLabelAction,
+
+                BeforeDelete = this.BeforeDelete,
+                BeforeDeleteAction = this.BeforeDeleteAction
             };
         }
     }

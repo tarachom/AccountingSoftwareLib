@@ -962,7 +962,7 @@ ORDER BY
         {
             if (DataSource != null)
             {
-                if (obj.IsEmpty() || string.IsNullOrEmpty(obj.Text) || obj.Text.IndexOf(".") == -1)
+                if (obj.IsEmpty() || string.IsNullOrEmpty(obj.Text) || !obj.Text.Contains('.'))
                     return;
 
                 string[] pointer_and_type = obj.Text.Split(".", StringSplitOptions.None);
