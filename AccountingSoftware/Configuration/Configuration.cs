@@ -1130,8 +1130,7 @@ namespace AccountingSoftware
 
             LoadEnums(Conf, xPathDocNavigator);
 
-            if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
-                LoadJournals(Conf, xPathDocNavigator);
+            LoadJournals(Conf, xPathDocNavigator);
 
             LoadRegistersInformation(Conf, xPathDocNavigator);
 
