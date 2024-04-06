@@ -392,15 +392,6 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
         /// <param name="transactionID">Ід транзакції</param>
         public async ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>
-            {
-                { "period", period },
-                { "regname", regAccumName },
-                { "document", document },
-                { "execute", false },
-                { "info", info }
-            };
-
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.RegAccumTriger} 
 (
@@ -417,10 +408,17 @@ VALUES
     @period,
     @regname,
     @document,
-    @execute,
+    false,
     @info
-)", paramQuery, transactionID);
-
+)",
+new Dictionary<string, object>
+{
+    { "period", period },
+    { "regname", regAccumName },
+    { "document", document },
+    { "info", info }
+},
+transactionID);
         }
 
         /// <summary>
@@ -469,7 +467,7 @@ ORDER BY period
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 bool hasRows = reader.HasRows;
-                List<string> regAccumNameList = new List<string>();
+                List<string> regAccumNameList = [];
 
                 while (await reader.ReadAsync())
                 {
