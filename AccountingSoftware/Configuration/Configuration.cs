@@ -1313,11 +1313,12 @@ namespace AccountingSoftware
                             uint sizeField = uint.Parse(tabularListFieldNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
                             int sortNumField = int.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
                             bool sortField = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortField")?.Value ?? "False");
+                            bool sortDirection = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortDirection")?.Value ?? "False");
 
                             if (nameField == null)
                                 throw new Exception("Не задана назва поля табличного списку");
 
-                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField);
+                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField, sortDirection);
                             ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                         }
 
@@ -2034,6 +2035,10 @@ namespace AccountingSoftware
                         XmlElement nodeSortField = xmlConfDocument.CreateElement("SortField");
                         nodeSortField.InnerText = field.Value.SortField.ToString();
                         nodeTabularListField.AppendChild(nodeSortField);
+
+                        XmlElement nodeSortDirection = xmlConfDocument.CreateElement("SortDirection");
+                        nodeSortDirection.InnerText = field.Value.SortDirection.ToString();
+                        nodeTabularListField.AppendChild(nodeSortDirection);
 
                         #region Додаткова інформація для полегшення генерування коду
 
