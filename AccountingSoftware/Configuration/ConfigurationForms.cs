@@ -62,12 +62,33 @@ namespace AccountingSoftware
         public TypeForms Type { get; set; } = TypeForms.None;
 
         /// <summary>
+        /// Поля для форми елементу
+        /// </summary>
+        public Dictionary<string, ConfigurationFormsElementField> ElementFields { get; set; } = [];
+
+        /// <summary>
+        /// Додати додаткове поле
+        /// </summary>
+        public void AppendElementField(ConfigurationFormsElementField field)
+        {
+            ElementFields.Add(field.Name, field);
+        }
+
+        /// <summary>
         /// Створення копії
         /// </summary>
         /// <returns></returns>
         public ConfigurationForms Copy()
         {
             ConfigurationForms newForms = new ConfigurationForms(Name, Desc, Type);
+
+            //Поля для форми елементу
+            foreach (KeyValuePair<string, ConfigurationFormsElementField> item in ElementFields)
+            {
+                ConfigurationFormsElementField ElementFieldCopy = new(item.Value.Name, item.Value.Caption);
+                newForms.ElementFields.Add(item.Key, ElementFieldCopy);
+            }
+
             return newForms;
         }
 

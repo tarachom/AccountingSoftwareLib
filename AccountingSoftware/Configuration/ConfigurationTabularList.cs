@@ -80,7 +80,7 @@ namespace AccountingSoftware
             Fields.Add(field.Name, field);
         }
 
-        // <summary>
+        /// <summary>
         /// Додати додаткове поле
         /// </summary>
         /// <param name="field"></param>

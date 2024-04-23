@@ -1393,7 +1393,26 @@ namespace AccountingSoftware
 
                     ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
+                    if (typeForms == ConfigurationForms.TypeForms.Element)
+                        LoadFormElementField(form.ElementFields, tableForm.Current);
+
                     forms.Add(form.Name, form);
+                }
+        }
+
+        private static void LoadFormElementField(Dictionary<string, ConfigurationFormsElementField> elementFields, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? elementFieldNodes = xPathDocNavigator?.Select("ElementFields/ElementField");
+            if (elementFieldNodes != null)
+                while (elementFieldNodes.MoveNext())
+                {
+                    string? name = elementFieldNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string caption = elementFieldNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
+
+                    if (name == null)
+                        throw new Exception("Не задана назва поля");
+
+                    elementFields.Add(name, new ConfigurationFormsElementField(name, caption));
                 }
         }
 
@@ -2350,7 +2369,7 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SaveForms(Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveForms(Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeForms = xmlConfDocument.CreateElement("Forms");
             rootNode.AppendChild(nodeForms);
@@ -2371,6 +2390,29 @@ namespace AccountingSoftware
                 XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
+
+                if (form.Value.Type == ConfigurationForms.TypeForms.Element)
+                    SaveFormElementField(form.Value.ElementFields, xmlConfDocument, nodeForm);
+            }
+        }
+
+        public static void SaveFormElementField(Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeElementFields = xmlConfDocument.CreateElement("ElementFields");
+            rootNode.AppendChild(nodeElementFields);
+
+            foreach (KeyValuePair<string, ConfigurationFormsElementField> elementField in elementFields)
+            {
+                XmlElement nodeElementField = xmlConfDocument.CreateElement("ElementField");
+                nodeElementFields.AppendChild(nodeElementField);
+
+                XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
+                nodeFieldName.InnerText = elementField.Key;
+                nodeElementField.AppendChild(nodeFieldName);
+
+                XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
+                nodeFieldCaption.InnerText = elementField.Value.Caption;
+                nodeElementField.AppendChild(nodeFieldCaption);
             }
         }
 
