@@ -1,8 +1,8 @@
 # Бібліотека
 
-<img src="https://accounting.org.ua/images/configuration.png?v=lib" /> <b>Ядро</b>  | .net 8, Linux, Windows 
+<b>Ядро</b>  | .net 8, Linux, Windows 
 
- <b>Класи:</b>
+<b>Класи:</b>
     
     Конфігурація (Configuration) - колекції об'єктів (блоки констант, костанти, довідники, документи, перелічення, регістри)
     Ядро (Kernel) - підключення до бази даних, завантаження конфігурації
