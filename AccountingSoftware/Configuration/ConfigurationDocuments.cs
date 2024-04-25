@@ -81,6 +81,11 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
+        /// Форми
+        /// </summary>
+        public Dictionary<string, ConfigurationForms> Forms { get; } = [];
+
+        /// <summary>
         /// Автоматична нумерація
         /// </summary>
         public bool AutomaticNumeration { get; set; }
@@ -98,6 +103,9 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
+
+            foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
+                confDocCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
             confDocCopy.TriggerFunctions = this.TriggerFunctions.Copy();
 
@@ -131,6 +139,15 @@ namespace AccountingSoftware
         public void AppendTableList(ConfigurationTabularList tabularList)
         {
             TabularList.Add(tabularList.Name, tabularList);
+        }
+
+        /// <summary>
+        /// Додати нову форму
+        /// </summary>
+        /// <param name="forms">Нова форма</param>
+        public void AppendForms(ConfigurationForms forms)
+        {
+            Forms.Add(forms.Name, forms);
         }
     }
 }

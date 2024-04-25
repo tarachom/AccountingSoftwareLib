@@ -24,21 +24,21 @@ limitations under the License.
 namespace AccountingSoftware
 {
     /// <summary>
-    /// Поля для форми елементу
+    /// Табличні частини для форми елементу
     /// </summary>
-    public class ConfigurationFormsElementField
+    public class ConfigurationFormsElementTablePart
     {
         /// <summary>
-        /// Поля для форми елементу
+        /// Табличні частини для форми елементу
         /// </summary>
-        public ConfigurationFormsElementField() { }
+        public ConfigurationFormsElementTablePart() { }
 
         /// <summary>
-        /// Поля для форми елементу
+        /// Табличні частини для форми елементу
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="caption">Заголовок</param>
-        public ConfigurationFormsElementField(string name, string caption = "")
+        public ConfigurationFormsElementTablePart(string name, string caption = "")
         {
             Name = name;
             Caption = caption;

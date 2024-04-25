@@ -1394,7 +1394,10 @@ namespace AccountingSoftware
                     ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
                     if (typeForms == ConfigurationForms.TypeForms.Element)
+                    {
                         LoadFormElementField(form.ElementFields, tableForm.Current);
+                        LoadFormElementTablePart(form.ElementTableParts, tableForm.Current);
+                    }
 
                     forms.Add(form.Name, form);
                 }
@@ -1413,6 +1416,22 @@ namespace AccountingSoftware
                         throw new Exception("Не задана назва поля");
 
                     elementFields.Add(name, new ConfigurationFormsElementField(name, caption));
+                }
+        }
+
+        private static void LoadFormElementTablePart(Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNodeIterator? elementTablePartNodes = xPathDocNavigator?.Select("ElementTableParts/ElementTablePart");
+            if (elementTablePartNodes != null)
+                while (elementTablePartNodes.MoveNext())
+                {
+                    string? name = elementTablePartNodes.Current?.SelectSingleNode("Name")?.Value;
+                    string caption = elementTablePartNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
+
+                    if (name == null)
+                        throw new Exception("Не задана назва поля");
+
+                    elementTableParts.Add(name, new ConfigurationFormsElementTablePart(name, caption));
                 }
         }
 
@@ -1593,6 +1612,8 @@ namespace AccountingSoftware
                         LoadTriggerFunctions(configurationDocuments.TriggerFunctions, documentsNode?.Current);
 
                         LoadSpendFunctions(configurationDocuments.SpendFunctions, documentsNode?.Current);
+
+                        LoadForms(configurationDocuments.Forms, documentsNode?.Current);
                     }
                 }
         }
@@ -2392,7 +2413,10 @@ namespace AccountingSoftware
                 nodeForm.AppendChild(nodeType);
 
                 if (form.Value.Type == ConfigurationForms.TypeForms.Element)
+                {
                     SaveFormElementField(form.Value.ElementFields, xmlConfDocument, nodeForm);
+                    SaveFormElementTablePart(form.Value.ElementTableParts, xmlConfDocument, nodeForm);
+                }
             }
         }
 
@@ -2413,6 +2437,26 @@ namespace AccountingSoftware
                 XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
                 nodeFieldCaption.InnerText = elementField.Value.Caption;
                 nodeElementField.AppendChild(nodeFieldCaption);
+            }
+        }
+
+        public static void SaveFormElementTablePart(Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeElementTableParts = xmlConfDocument.CreateElement("ElementTableParts");
+            rootNode.AppendChild(nodeElementTableParts);
+
+            foreach (KeyValuePair<string, ConfigurationFormsElementTablePart> elementTablePart in elementTableParts)
+            {
+                XmlElement nodeElementTablePart = xmlConfDocument.CreateElement("ElementTablePart");
+                nodeElementTableParts.AppendChild(nodeElementTablePart);
+
+                XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
+                nodeFieldName.InnerText = elementTablePart.Key;
+                nodeElementTablePart.AppendChild(nodeFieldName);
+
+                XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
+                nodeFieldCaption.InnerText = elementTablePart.Value.Caption;
+                nodeElementTablePart.AppendChild(nodeFieldCaption);
             }
         }
 
@@ -2648,6 +2692,8 @@ namespace AccountingSoftware
                 SaveTriggerFunctions(ConfDocument.Value.TriggerFunctions, xmlConfDocument, nodeDocument);
 
                 SaveSpendFunctions(ConfDocument.Value.SpendFunctions, xmlConfDocument, nodeDocument);
+
+                SaveForms(ConfDocument.Value.Forms, xmlConfDocument, nodeDocument);
             }
         }
 

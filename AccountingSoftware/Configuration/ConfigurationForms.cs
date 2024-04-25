@@ -61,18 +61,35 @@ namespace AccountingSoftware
         /// </summary>
         public TypeForms Type { get; set; } = TypeForms.None;
 
+        #region Для форми елементу (Type == TypeForms.Element)
+
         /// <summary>
         /// Поля для форми елементу
         /// </summary>
         public Dictionary<string, ConfigurationFormsElementField> ElementFields { get; set; } = [];
 
         /// <summary>
-        /// Додати додаткове поле
+        /// Табличні частини для форми елементу
+        /// </summary>
+        public Dictionary<string, ConfigurationFormsElementTablePart> ElementTableParts { get; set; } = [];
+
+        /// <summary>
+        /// Додати поле для форми елементу
         /// </summary>
         public void AppendElementField(ConfigurationFormsElementField field)
         {
             ElementFields.Add(field.Name, field);
         }
+
+        /// <summary>
+        /// Додати табличну частину для форми елементу
+        /// </summary>
+        public void AppendElementTablePart(ConfigurationFormsElementTablePart tablePart)
+        {
+            ElementTableParts.Add(tablePart.Name, tablePart);
+        }
+
+        #endregion
 
         /// <summary>
         /// Створення копії
@@ -87,6 +104,13 @@ namespace AccountingSoftware
             {
                 ConfigurationFormsElementField ElementFieldCopy = new(item.Value.Name, item.Value.Caption);
                 newForms.ElementFields.Add(item.Key, ElementFieldCopy);
+            }
+
+            //Табличні частини для форми елементу
+            foreach (KeyValuePair<string, ConfigurationFormsElementTablePart> item in ElementTableParts)
+            {
+                ConfigurationFormsElementTablePart ElementTablePartCopy = new(item.Value.Name, item.Value.Caption);
+                newForms.ElementTableParts.Add(item.Key, ElementTablePartCopy);
             }
 
             return newForms;
