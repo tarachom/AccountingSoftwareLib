@@ -69,6 +69,7 @@ namespace AccountingSoftware
 		/// <returns>Текстовий масив</returns>
 		public static string[] Convert(string xmlValue)
 		{
+			//Може і так бути, без заголовку "<root><e>1</e><e>2</e></root>"
 			xmlValue = $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<root>" + xmlValue + "\n</root>";
 
 			XmlDocument xmlDocument = new XmlDocument();
