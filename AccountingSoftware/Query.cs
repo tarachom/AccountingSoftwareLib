@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,17 +26,9 @@ namespace AccountingSoftware
     /// <summary>
     /// Конструктор SELECT запиту
     /// </summary>
-    public class Query
+    /// <param name="table">Таблиця</param>
+    public class Query(string table)
     {
-        /// <summary>
-        /// Конструктор SELECT запиту
-        /// </summary>
-        /// <param name="table">Таблиця</param>
-        public Query(string table)
-        {
-            Table = table;
-        }
-
         private static int ParamGuidState { get; set; }
 
         /// <summary>
@@ -54,7 +46,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва таблиці
         /// </summary>
-        public string Table { get; set; } = "";
+        public string Table { get; set; } = table;
 
         /// <summary>
         /// Назва тимчасової таблиці
@@ -287,13 +279,15 @@ namespace AccountingSoftware
             return query;
         }
 
-        //Очистка колекцій
+        /// <summary>
+        /// Очистка колекцій
+        /// </summary>
         public void Clear()
         {
-            FieldAndAlias = new List<NameValue<string>>();
-            Joins = new List<Join>();
-            Where = new List<Where>();
-            Order = new Dictionary<string, SelectOrder>();
+            FieldAndAlias = [];
+            Joins = [];
+            Where = [];
+            Order = [];
 
             ParamGuidState = 0;
         }

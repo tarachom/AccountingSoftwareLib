@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ namespace AccountingSoftware
             FieldArray = fieldsArray;
 
             QuerySelect = new Query(Table);
-            QuerySelect.Field.AddRange(new string[] { "period", "owner" });
+            QuerySelect.Field.AddRange(["period", "owner"]);
             QuerySelect.Field.AddRange(fieldsArray);
         }
 
@@ -78,6 +78,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Чи вже зчитувалися дані?
+        /// </summary>
+        public bool IsRead { get; private set; }
+
+        /// <summary>
         /// Зчитування даних
         /// </summary>
         protected async ValueTask BaseRead()
@@ -86,6 +91,8 @@ namespace AccountingSoftware
             JoinValue.Clear();
 
             await Kernel.DataBase.SelectRegisterInformationRecords(QuerySelect, FieldValueList, JoinValue);
+
+            IsRead = true;
         }
 
         private byte TransactionID = 0;

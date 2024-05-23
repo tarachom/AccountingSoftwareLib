@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,12 +70,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected DocumentPointer DocumentPointerPosition { get; private set; } = new DocumentPointer();
+		protected (UnigueID, Dictionary<string, object>?)? DocumentPointerPosition { get; private set; } = null;
 
 		/// <summary>
-		/// Список вибраних вказівників
+		/// Список вибраних вказівників (UnigueID and Dictionary<string, object>?)
 		/// </summary>
-		protected List<DocumentPointer> BaseSelectList { get; private set; } = [];
+		protected List<(UnigueID, Dictionary<string, object>?)> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на наступну позицію
@@ -85,13 +85,12 @@ namespace AccountingSoftware
 		{
 			if (Position < BaseSelectList.Count)
 			{
-				DocumentPointerPosition = BaseSelectList[Position];
-				Position++;
+				DocumentPointerPosition = BaseSelectList[Position++];
 				return true;
 			}
 			else
 			{
-				DocumentPointerPosition = new DocumentPointer();
+				DocumentPointerPosition = null;
 				return false;
 			}
 		}
@@ -103,7 +102,7 @@ namespace AccountingSoftware
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DocumentPointerPosition = new DocumentPointer();
+			DocumentPointerPosition = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);

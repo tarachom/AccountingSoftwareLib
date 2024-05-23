@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,12 +61,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Значення полів
         /// </summary>
-        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = new List<Dictionary<string, object>>();
+        protected List<Dictionary<string, object>> FieldValueList { get; private set; } = [];
 
         /// <summary>
         /// Значення додаткових полів
         /// </summary>
-        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, Dictionary<string, string>> JoinValue { get; private set; } = [];
 
         /// <summary>
         /// Очистка вн. списків
@@ -76,17 +76,27 @@ namespace AccountingSoftware
             FieldValueList.Clear();
         }
 
-        //Зчитування даних
+        /// <summary>
+        /// Чи вже зчитувалися дані?
+        /// </summary>
+        public bool IsRead { get; private set; }
+
+        /// <summary>
+        /// Зчитати дані з бази даних
+        /// </summary>
+        /// <param name="ownerUnigueID"></param>
         protected async ValueTask BaseRead(UnigueID ownerUnigueID)
         {
             BaseClear();
             JoinValue.Clear();
-            QuerySelect.Where.Clear();
-
+            
             //Відбір по власнику
+            QuerySelect.Where.Clear();
             QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
 
             await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList, JoinValue);
+
+            IsRead = true;
         }
 
         private byte TransactionID = 0;

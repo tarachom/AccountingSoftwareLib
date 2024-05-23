@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -1465,7 +1465,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<DirectoryPointer> listDirectoryPointer)
+        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers)
         {
             if (DataSource != null)
             {
@@ -1492,18 +1492,15 @@ WHERE
                             fields.Add(field.Value!, reader[field.Value!]);
                     }
 
-                    DirectoryPointer elementPointer = new DirectoryPointer();
-                    elementPointer.Init(new UnigueID((Guid)reader["uid"]), fields);
-
-                    listDirectoryPointer.Add(elementPointer);
+                    listPointers.Add((new UnigueID(reader["uid"]), fields));
                 }
                 await reader.CloseAsync();
             }
         }
 
-        public async ValueTask<FindDirectoryPointer_Record> FindDirectoryPointer(Query QuerySelect, DirectoryPointer directoryPointer)
+        public async ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect)
         {
-            FindDirectoryPointer_Record record = new();
+            UnigueID? directoryPointer = null;
 
             if (DataSource != null)
             {
@@ -1518,18 +1515,14 @@ WHERE
                         command.Parameters.AddWithValue(field.Alias, field.Value);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                record.Result = reader.HasRows;
 
                 if (await reader.ReadAsync())
-                {
-                    directoryPointer.Init(new UnigueID(reader["uid"]));
-                    record.DirectoryPointer = directoryPointer;
-                }
+                    directoryPointer = new UnigueID(reader["uid"]);
 
                 await reader.CloseAsync();
             }
 
-            return record;
+            return directoryPointer;
         }
 
         public async ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
@@ -1826,7 +1819,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<DocumentPointer> listDocumentPointer)
+        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers)
         {
             if (DataSource != null)
             {
@@ -1840,10 +1833,12 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fields = [];
+                    Dictionary<string, object>? fields = null;
 
                     if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
                     {
+                        fields = [];
+
                         foreach (string field in QuerySelect.Field)
                             fields.Add(field, reader[field]);
 
@@ -1851,10 +1846,7 @@ WHERE
                             fields.Add(field.Value!, reader[field.Value!]);
                     }
 
-                    DocumentPointer elementPointer = new DocumentPointer();
-                    elementPointer.Init(new UnigueID(reader["uid"]), fields);
-
-                    listDocumentPointer.Add(elementPointer);
+                    listPointers.Add((new UnigueID(reader["uid"]), fields));
                 }
                 await reader.CloseAsync();
             }
@@ -1935,7 +1927,7 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    Dictionary<string, object> fieldValue = new Dictionary<string, object>();
+                    Dictionary<string, object> fieldValue = [];
                     fieldValueList.Add(fieldValue);
 
                     fieldValue.Add("uid", reader["uid"]);

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -83,6 +83,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Чи вже зчитувалися дані?
+        /// </summary>
+        public bool IsRead { get; private set; }
+
+        /// <summary>
         /// Прочитати значення у вн. масив
         /// </summary>
         protected async ValueTask BaseRead()
@@ -91,6 +96,8 @@ namespace AccountingSoftware
             JoinValue.Clear();
 
             await Kernel.DataBase.SelectConstantsTablePartRecords(QuerySelect, FieldArray, FieldValueList, JoinValue);
+
+            IsRead = true;
         }
 
         private byte TransactionID = 0;

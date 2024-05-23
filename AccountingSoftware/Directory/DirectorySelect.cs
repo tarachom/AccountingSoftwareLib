@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,12 +77,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected DirectoryPointer DirectoryPointerPosition { get; private set; } = new DirectoryPointer();
+		protected (UnigueID, Dictionary<string, object>?)? DirectoryPointerPosition { get; private set; } = null;
 
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<DirectoryPointer> BaseSelectList { get; private set; } = [];
+		protected List<(UnigueID, Dictionary<string, object>?)> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці
@@ -92,13 +92,12 @@ namespace AccountingSoftware
 		{
 			if (Position < BaseSelectList.Count)
 			{
-				DirectoryPointerPosition = BaseSelectList[Position];
-				Position++;
+				DirectoryPointerPosition = BaseSelectList[Position++];
 				return true;
 			}
 			else
 			{
-				DirectoryPointerPosition = new DirectoryPointer();
+				DirectoryPointerPosition = null;
 				return false;
 			}
 		}
@@ -110,7 +109,7 @@ namespace AccountingSoftware
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DirectoryPointerPosition = new DirectoryPointer();
+			DirectoryPointerPosition = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
@@ -140,17 +139,12 @@ namespace AccountingSoftware
 		/// <param name="fieldName">Назва поля в базі даних</param>
 		/// <param name="fieldValue">Значення поля</param>
 		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected async ValueTask<DirectoryPointer> BaseFindByField(string fieldName, object fieldValue)
+		protected async ValueTask<UnigueID?> BaseFindByField(string fieldName, object fieldValue)
 		{
-			DirectoryPointer directoryPointer = new DirectoryPointer(Kernel, Table);
-
-			Query querySelect = new Query(Table);
+			Query querySelect = new(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
-			var record = await Kernel.DataBase.FindDirectoryPointer(querySelect, directoryPointer);
-			if (record.Result && record.DirectoryPointer != null) directoryPointer = record.DirectoryPointer;
-
-			return directoryPointer;
+			return await Kernel.DataBase.FindDirectoryPointer(querySelect);
 		}
 
 		/// <summary>
@@ -161,11 +155,11 @@ namespace AccountingSoftware
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
 		/// <returns>Повертає список знайдених вказівників</returns>
-		protected async ValueTask<List<DirectoryPointer>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		protected async ValueTask<List<(UnigueID, Dictionary<string, object>?)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
-			List<DirectoryPointer> directoryPointerList = new List<DirectoryPointer>();
+			List<(UnigueID, Dictionary<string, object>?)> directoryPointerList = [];
 
-			Query querySelect = new Query(Table) { Limit = limit, Offset = offset };
+			Query querySelect = new(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
 			await Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);

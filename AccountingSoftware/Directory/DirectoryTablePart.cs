@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,6 +77,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Чи вже зчитувалися дані?
+        /// </summary>
+        public bool IsRead { get; private set; }
+
+        /// <summary>
         /// Зчитати дані з бази даних
         /// </summary>
         /// <param name="ownerUnigueID"></param>
@@ -84,12 +89,14 @@ namespace AccountingSoftware
         {
             BaseClear();
             JoinValue.Clear();
-            QuerySelect.Where.Clear();
 
             //Відбір по власнику
+            QuerySelect.Where.Clear();
             QuerySelect.Where.Add(new("owner", Comparison.EQ, ownerUnigueID.UGuid));
 
             await Kernel.DataBase.SelectDirectoryTablePartRecords(QuerySelect, FieldValueList, JoinValue);
+
+            IsRead = true;
         }
 
         private byte TransactionID = 0;

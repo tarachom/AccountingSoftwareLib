@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,10 +26,8 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Вказівник
     /// </summary>
-    public class DirectoryPointer
+    public abstract class DirectoryPointer
     {
-        public DirectoryPointer() { }
-
         public DirectoryPointer(Kernel kernel, string table)
         {
             Table = table;
@@ -41,7 +39,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор</param>
         /// <param name="fields">Поля які потрібно додатково зчитати з бази даних</param>
-        public void Init(UnigueID uid, Dictionary<string, object>? fields = null)
+        protected void Init(UnigueID uid, Dictionary<string, object>? fields = null)
         {
             UnigueID = uid;
             Fields = fields;
@@ -50,7 +48,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Ядро
         /// </summary>
-        private Kernel? Kernel { get; set; }
+        private Kernel Kernel { get; set; }
 
         /// <summary>
         /// Таблиця
@@ -85,7 +83,7 @@ namespace AccountingSoftware
         {
             if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
             {
-                Query query = new Query(Table);
+                Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
 
                 //Відбір по uid
@@ -100,7 +98,6 @@ namespace AccountingSoftware
         /// Встановлення мітки на видалення
         /// </summary>
         /// <param name="label">Мітка</param>
-        /// <exception cref="Exception">Не записаний</exception>
         protected async ValueTask BaseDeletionLabel(bool label)
         {
             if (Kernel != null && !IsEmpty())
