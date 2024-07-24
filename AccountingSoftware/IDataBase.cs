@@ -46,8 +46,10 @@ namespace AccountingSoftware
         #region SpetialTable RegAccumTriger
 
         ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        ValueTask SpetialTableRegAccumTrigerExecute(Guid session,
-            Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
+        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
+
+        ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid document, string info, byte transactionID = 0);
+        ValueTask SpetialTableRegAccumTrigerDocIgnoreClear();
 
         #endregion
 
@@ -94,7 +96,7 @@ namespace AccountingSoftware
 
         [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        
+
         [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
         ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
 
@@ -152,7 +154,7 @@ namespace AccountingSoftware
         #region Journal
 
         ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
-            DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null);
+            DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null);
 
         #endregion
 

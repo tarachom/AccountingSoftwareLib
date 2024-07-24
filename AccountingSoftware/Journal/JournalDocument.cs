@@ -51,7 +51,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Дата документу
 		/// </summary>
-		public string DocDate { get; set; } = "";
+		public DateTime DocDate { get; set; } = DateTime.MinValue;
 
 		/// <summary>
 		/// Мітка видалення

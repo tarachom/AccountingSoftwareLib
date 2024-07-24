@@ -26,14 +26,19 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Журнал Вибірка Документів
 	/// </summary>
-	public abstract class JournalSelect
+	public abstract class JournalSelectA
 	{
-		public JournalSelect(Kernel kernel, string[] table, string[] typeDocument)
+		public JournalSelectA(Kernel kernel, string[] table, string[] typeDocument)
 		{
 			Kernel = kernel;
 			Tables = table;
 			TypeDocuments = typeDocument;
 		}
+
+		/// <summary>
+		/// Ядро
+		/// </summary>
+		protected Kernel Kernel { get; private set; }
 
 		/// <summary>
 		/// Масив таблиць
@@ -64,11 +69,6 @@ namespace AccountingSoftware
 		}
 
 		/// <summary>
-		/// Ядро
-		/// </summary>
-		protected Kernel Kernel { get; private set; }
-
-		/// <summary>
 		/// Поточна позиція
 		/// </summary>
 		protected int Position { get; private set; }
@@ -92,24 +92,24 @@ namespace AccountingSoftware
 			}
 			else
 			{
-				Current = new JournalDocument();
+				Current = null;
 				return false;
 			}
 		}
 
-		public JournalDocument Current { get; private set; } = new JournalDocument();
+		public JournalDocument? Current { get; private set; } = null;
 
 		/// <summary>
 		/// Зчитати
 		/// </summary>
 		/// <returns></returns>
-		public async ValueTask<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
+		public async ValueTask<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
 		{
 			Position = 0;
-			Current = new JournalDocument();
+			Current = null;
 			BaseSelectList.Clear();
 
-			await Kernel.DataBase.SelectJournalDocumentPointer(Tables, TypeDocuments, BaseSelectList, periodStart, periodEnd, typeDocSelect);
+			await Kernel.DataBase.SelectJournalDocumentPointer(Tables, TypeDocuments, BaseSelectList, periodStart, periodEnd, typeDocSelect, spendDocSelect);
 
 			return Count() > 0;
 		}

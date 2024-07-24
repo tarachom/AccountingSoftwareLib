@@ -39,6 +39,11 @@ namespace AccountingSoftware
         public static readonly string RegAccumTriger = "tab_special_regaccum_triger";
 
         /// <summary>
+        /// Список документів які ігноруються при обробці тригерів розрахунку регістрів накопичення
+        /// </summary>
+        public static readonly string RegAccumTrigerDocIgnore = "tab_special_regaccum_triger_docignore";
+
+        /// <summary>
         /// Заблоковані обєкти
         /// </summary>
         public static readonly string LockedObject = "tab_special_locked_object";

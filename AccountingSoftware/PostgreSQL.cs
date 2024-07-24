@@ -257,6 +257,30 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
 )");
 
                 /*
+                Таблиця для запису інформації про документи які потрібно проігнорувати 
+                при обробці тригерів для розрахунку регістрів накопичення.
+
+                Це потрібно для оптимізації розрахунку регістрів накопичення, 
+                щоб тимчасово проігнорувати розрахунки для певних документів 
+                допоки наприклад не будуть проведені документи за певну дату, а тоді
+                вже пачкою розрахувати 
+                
+                @datewrite - дата запису
+                @document - документ
+                @info - додаткова інформація
+
+                */
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore} 
+(
+    uid serial NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    document uuid NOT NULL,
+    info text,
+    PRIMARY KEY(uid)
+)");
+
+                /*
                 Таблиця заблокованих обєктів
 
                 @uidobj - обєкт
@@ -440,6 +464,7 @@ transactionID);
 
                 /*
                 1. Вибираються всі завдання для обчислень
+                    1.1. Завдання фільтруються по документах які потрібно проігнорувати (документ вважається устарівшим якщо він знаходиться у таблиці більше 5 хв)
                 2. Помічаються признаком execute = true. Після обчислень завдання з признаком execute = true будуть видалені
                 3. Завдання групуються по періоду і регістру
                 */
@@ -451,6 +476,12 @@ WITH trigers AS
         date_trunc('day', period::timestamp) AS period,
         regname
     FROM {SpecialTables.RegAccumTriger}
+    WHERE 
+        document NOT IN (
+            SELECT document 
+            FROM {SpecialTables.RegAccumTrigerDocIgnore}
+            WHERE datewrite > (CURRENT_TIMESTAMP::timestamp - INTERVAL '5 minute')
+        )
 ),
 trigers_update AS
 (
@@ -512,6 +543,31 @@ ORDER BY period
         {
             string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
             await ExecuteSQL(query);
+        }
+
+        /// <summary>
+        /// Додати документ який потрібно проігнорувати при виконанні тригерів
+        /// </summary>
+        /// <param name="document">Документ</param>
+        /// <param name="info">Додаткова інформація</param>
+        /// <param name="transactionID">Ід транзакції</param>
+        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid document, string info, byte transactionID = 0)
+        {
+            //Очистка запису для документу, щоб не було лишніх дублів
+            await ExecuteSQL($"DELETE FROM {SpecialTables.RegAccumTrigerDocIgnore} WHERE document = @document",
+                new Dictionary<string, object> { { "document", document } }, transactionID);
+
+            //Добавлення запису про документ
+            await ExecuteSQL($"INSERT INTO {SpecialTables.RegAccumTrigerDocIgnore} (datewrite, document, info) VALUES(CURRENT_TIMESTAMP, @document, @info)",
+                new Dictionary<string, object> { { "document", document }, { "info", info } }, transactionID);
+        }
+
+        /// <summary>
+        /// Очистка таблиці документів які потрібно проігнорувати при виконанні тригерів
+        /// </summary>
+        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreClear()
+        {
+            await ExecuteSQL($"DELETE FROM {SpecialTables.RegAccumTrigerDocIgnore}");
         }
 
         #endregion
@@ -762,7 +818,7 @@ ORDER BY
         {
             Guid session_uid = Guid.NewGuid();
 
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            Dictionary<string, object> paramQuery = new()
             {
                 { "user", user_uid },
                 { "session", session_uid }
@@ -2000,7 +2056,7 @@ WHERE
         #region Journal
 
         public async ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
-            DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null)
+            DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
         {
             if (DataSource != null)
             {
@@ -2029,9 +2085,21 @@ WHERE
                         //	}
                         //}
 
+                        string whereSpendDoc = "";
+
+                        //Відбір тільки проведених або не проведених
+                        if (spendDocSelect.HasValue)
+                        {
+                            whereSpendDoc = $"AND spend = {spendDocSelect.Value}";
+
+                            //Якщо відбір тільки проведених, тоді додатковий фільтр щоб туди не попали помічені на видалення
+                            if (spendDocSelect.Value)
+                                whereSpendDoc += " AND deletion_label = false";
+                        }
+
                         query += (counter > 0 ? "\nUNION " : "") +
                             $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
-                            "WHERE docdate >= @periodstart AND docdate <= @periodend)";
+                            $"WHERE docdate >= @periodstart AND docdate <= @periodend {whereSpendDoc})";
 
                         counter++;
                     }
@@ -2049,7 +2117,7 @@ WHERE
                         {
                             UnigueID = new UnigueID(reader["uid"]),
                             DocName = reader["docname"].ToString() ?? "",
-                            DocDate = reader["docdate"].ToString() ?? "",
+                            DocDate = DateTime.Parse(reader["docdate"].ToString() ?? DateTime.MinValue.ToString()),
                             DocNomer = reader["docnomer"].ToString() ?? "",
                             DeletionLabel = (bool)reader["deletion_label"],
                             Spend = (bool)reader["spend"],

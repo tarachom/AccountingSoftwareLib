@@ -118,12 +118,16 @@ namespace AccountingSoftware
 
             if (Field.Count > 0)
             {
+                //Оригінальні поля
                 foreach (string field in Field)
                     query += ", " + (Joins.Count > 0 ? Table + "." : "") + field;
             }
 
             if (FieldAndAlias.Count > 0)
             {
+                query += "\n";
+
+                //Поля з псевдонімами
                 foreach (NameValue<string> field in FieldAndAlias)
                     query += ", " + field.Name + " AS " + field.Value;
             }
@@ -143,8 +147,12 @@ namespace AccountingSoftware
                     else if (join.JoinType == JoinType.INNER)
                         query += "INNER ";
 
-                    query += "JOIN " + join.JoinTable + (join.JoinTableAlias != "" ? " AS " + join.JoinTableAlias : "") + " ON " +
-                        join.ParentTable + "." + join.JoinField + " = " + (join.JoinTableAlias != "" ? join.JoinTableAlias : join.JoinTable) + ".uid ";
+                    //Псевдонім таблиці
+                    string aliasTable = !string.IsNullOrEmpty(join.JoinTableAlias) ? $" AS {join.JoinTableAlias}" : "";
+                    //Псевдонім або назва таблиці
+                    string aliasTableOrJoinTable = !string.IsNullOrEmpty(join.JoinTableAlias) ? join.JoinTableAlias : join.JoinTable;
+
+                    query += $"JOIN {join.JoinTable}{aliasTable} ON {join.ParentTable}.{join.JoinField} = {aliasTableOrJoinTable}.uid";
                 }
             }
 
@@ -265,7 +273,7 @@ namespace AccountingSoftware
 
                 foreach (KeyValuePair<string, SelectOrder> field in Order)
                 {
-                    query += (count > 0 ? ", " : "") + /* (Joins.Count > 0 ? Table + "." : "") + */ field.Key + " " + field.Value;
+                    query += (count > 0 ? ", " : "") + field.Key + " " + field.Value;
                     count++;
                 }
             }
