@@ -101,7 +101,6 @@ namespace AccountingSoftware
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
-        /// <returns></returns>
         protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
             if (uid == null || uid.IsEmpty())
@@ -175,8 +174,8 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
-                if (DeletionLabel)
-                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                /* if (DeletionLabel)
+                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
             else
                 throw new Exception("Елемент спочатку треба записати, а потім вже встановлювати мітку видалення");
@@ -208,7 +207,6 @@ namespace AccountingSoftware
         /// Отримати представлення вказівника
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
-        /// <returns></returns>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
             if (Kernel != null && !UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)

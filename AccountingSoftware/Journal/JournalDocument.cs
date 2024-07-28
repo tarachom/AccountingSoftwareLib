@@ -23,9 +23,6 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public class JournalDocument
 	{
 		/// <summary>

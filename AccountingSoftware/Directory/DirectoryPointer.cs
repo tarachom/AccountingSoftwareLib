@@ -68,7 +68,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Чи це пустий ідентифікатор
         /// </summary>
-        /// <returns></returns>
         public bool IsEmpty()
         {
             return UnigueID.IsEmpty();
@@ -78,7 +77,6 @@ namespace AccountingSoftware
         /// Отримати представлення вказівника
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
-        /// <returns></returns>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
             if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
@@ -106,15 +104,14 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
-                if (label)
-                   await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                /* if (label)
+                   await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
         }
 
         /// <summary>
         /// Отримати ункальний ідентифікатор у форматі Guid
         /// </summary>
-        /// <returns></returns>
         public Guid GetPointer()
         {
             return UnigueID.UGuid;

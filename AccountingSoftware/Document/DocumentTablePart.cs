@@ -132,7 +132,6 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="ownerUnigueID">Ід власника</param>
         /// <param name="ownerTable">Таблиця власника</param>
-        /// <returns></returns>
         protected async ValueTask<bool> IsExistOwner(UnigueID ownerUnigueID, string ownerTable)
         {
             return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);

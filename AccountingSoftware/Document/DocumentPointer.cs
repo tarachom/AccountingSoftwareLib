@@ -74,7 +74,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Чи пустий ідентифікатор?
         /// </summary>
-        /// <returns></returns>
         public bool IsEmpty()
         {
             return UnigueID.IsEmpty();
@@ -83,7 +82,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Отримати ідентифікатор
         /// </summary>
-        /// <returns></returns>
         public Guid GetPointer()
         {
             return UnigueID.UGuid;
@@ -133,8 +131,8 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
-                if (label)
-                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                /* if (label)
+                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
         }
     }

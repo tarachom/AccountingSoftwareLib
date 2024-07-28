@@ -51,7 +51,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Кількість елементів вибірки
 		/// </summary>
-		/// <returns></returns>
 		public int Count()
 		{
 			return BaseSelectList.Count;
@@ -80,7 +79,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Переміститися на наступну позицію
 		/// </summary>
-		/// <returns></returns>
 		protected bool MoveToPosition()
 		{
 			if (Position < BaseSelectList.Count)
@@ -98,7 +96,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати
 		/// </summary>
-		/// <returns></returns>
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
@@ -113,7 +110,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати один вказівник
 		/// </summary>
-		/// <returns></returns>
 		protected async ValueTask<bool> BaseSelectSingle()
 		{
 			int oldLimitValue = QuerySelect.Limit;

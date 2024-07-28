@@ -102,7 +102,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Структура для повернення результату з функції SelectRequestAsync
     /// </summary>
-    public record SelectRequestAsync_Record
+    public record SelectRequest_Record
     {
         /// <summary>
         /// Результат функції

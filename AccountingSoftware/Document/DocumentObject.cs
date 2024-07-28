@@ -117,7 +117,6 @@ namespace AccountingSoftware
         /// Зчитати дані
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
-        /// <returns></returns>
         protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
             BaseClear();
@@ -205,8 +204,8 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
 
                 //Видалення з повнотекстового пошуку
-                if (DeletionLabel)
-                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0);
+                /* if (DeletionLabel)
+                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже встановлювати мітку видалення");

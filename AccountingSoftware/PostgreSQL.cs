@@ -653,7 +653,7 @@ WHERE
 
         public async ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect()
         {
-            Dictionary<string, string> users = new Dictionary<string, string>();
+            Dictionary<string, string> users = [];
 
             if (DataSource != null)
             {
@@ -671,7 +671,7 @@ WHERE
             return users;
         }
 
-        public async ValueTask<SelectRequestAsync_Record> SpetialTableUsersExtendetList()
+        public async ValueTask<SelectRequest_Record> SpetialTableUsersExtendetList()
         {
             string query = $@"
 SELECT 
@@ -686,16 +686,11 @@ FROM
 ORDER BY
     name
 ";
-            return await SelectRequestAsync(query, null);
+            return await SelectRequest(query, null);
         }
 
-        public async ValueTask<SelectRequestAsync_Record?> SpetialTableUsersExtendetUser(Guid user_uid)
+        public async ValueTask<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>
-            {
-                { "user_uid", user_uid }
-            };
-
             string query = $@"
 SELECT 
     name,
@@ -711,7 +706,7 @@ ORDER BY
     name DESC
 ";
 
-            var recordResult = await SelectRequestAsync(query, paramQuery);
+            var recordResult = await SelectRequest(query, new() { { "user_uid", user_uid } });
             return recordResult.Result ? recordResult : null;
         }
 
@@ -988,24 +983,24 @@ DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
             }
         }
 
-        public async ValueTask<SelectRequestAsync_Record> SpetialTableActiveUsersSelect()
+        public async ValueTask<SelectRequest_Record> SpetialTableActiveUsersSelect()
         {
             string query = $@"
 SELECT 
-    {SpecialTables.ActiveUsers}.uid,
-    {SpecialTables.ActiveUsers}.usersuid,
-    {SpecialTables.Users}.fullname AS username,
-    {SpecialTables.ActiveUsers}.datelogin,
-    {SpecialTables.ActiveUsers}.dateupdate, 
-    {SpecialTables.ActiveUsers}.master
+    ActiveUsers.uid,
+    ActiveUsers.usersuid,
+    Users.fullname AS username,
+    ActiveUsers.datelogin,
+    ActiveUsers.dateupdate, 
+    ActiveUsers.master
 FROM 
-    {SpecialTables.ActiveUsers}
-    JOIN {SpecialTables.Users} ON {SpecialTables.Users}.uid =
-        {SpecialTables.ActiveUsers}.usersuid
+    {SpecialTables.ActiveUsers} AS ActiveUsers
+    JOIN {SpecialTables.Users} AS Users ON Users.uid =
+        ActiveUsers.usersuid
 ORDER BY
-    {SpecialTables.ActiveUsers}.dateupdate DESC
+    ActiveUsers.dateupdate DESC
 ";
-            return await SelectRequestAsync(query);
+            return await SelectRequest(query);
         }
 
         #endregion
@@ -1084,7 +1079,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public async ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch)
+        public async ValueTask<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch)
         {
             if (DataSource != null)
             {
@@ -1113,15 +1108,15 @@ SELECT
 FROM 
     find_rows
 ";
-                return await SelectRequestAsync(query, new() { { "findtext", findtext } });
+                return await SelectRequest(query, new() { { "findtext", findtext } });
             }
             else
                 return null;
         }
 
-        public async ValueTask<SelectRequestAsync_Record> SpetialTableFullTextSearchDictList()
+        public async ValueTask<SelectRequest_Record> SpetialTableFullTextSearchDictList()
         {
-            return await SelectRequestAsync("SELECT cfgname FROM pg_ts_config");
+            return await SelectRequest("SELECT cfgname FROM pg_ts_config");
         }
 
         public async ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch)
@@ -1174,9 +1169,9 @@ WHERE
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
 
-            if (OpenTransaction.ContainsKey(transactionID))
+            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value))
             {
-                NpgsqlTransaction Transaction = OpenTransaction[transactionID];
+                NpgsqlTransaction Transaction = value;
 
                 lock (loсked)
                 {
@@ -1200,9 +1195,9 @@ WHERE
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
 
-            if (OpenTransaction.ContainsKey(transactionID))
+            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value))
             {
-                NpgsqlTransaction Transaction = OpenTransaction[transactionID];
+                NpgsqlTransaction Transaction = value;
 
                 lock (loсked)
                 {
@@ -1223,21 +1218,16 @@ WHERE
 
         private NpgsqlTransaction? GetTransactionByID(byte transactionID)
         {
-            if (transactionID == 0)
-                return null;
-
-            if (OpenTransaction.ContainsKey(transactionID))
-                return OpenTransaction[transactionID];
-            else
-                return null;
+            if (transactionID == 0) return null;
+            return OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value) ? value : null;
         }
 
         #endregion
 
         #region Constants
 
-        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        public async ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        //[Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
+        /*public async ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1259,10 +1249,10 @@ WHERE
             }
             else
                 return false;
-        }
+        }*/
 
-        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        public async ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
+        //[Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
+        /*public async ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -1283,7 +1273,7 @@ WHERE
             }
             else
                 return false;
-        }
+        }*/
 
         public async ValueTask<SelectConstants_Record> SelectConstants(string table, string field)
         {
@@ -1323,8 +1313,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray,
-            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -1372,9 +1361,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
 
@@ -1392,9 +1379,7 @@ WHERE
                 string query = $"DELETE FROM {table}";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -1483,8 +1468,12 @@ WHERE
 
             if (DataSource != null)
             {
-                string query = $"SELECT deletion_label" + (fieldArray.Length > 0 ? "," : "") +
-                               $"{string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
+                string query = $"SELECT deletion_label";
+
+                if (fieldArray.Length != 0)
+                    query += ", " + string.Join(", ", fieldArray);
+
+                query += $" FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
@@ -1511,9 +1500,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE uid = @uid";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
@@ -1628,39 +1615,7 @@ WHERE
             }
         }
 
-        /*
-                public async ValueTask SelectDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
-                {
-
-
-                    !!! Не використовується, можливо треба удалити або закоментувати
-
-
-
-                    if (DataSource != null)
-                    {
-                        string query = $"SELECT uid, {string.Join(", ", fieldArray)} FROM {table} WHERE owner = @owner";
-
-                        NpgsqlCommand command = DataSource.CreateCommand(query);
-                        command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
-
-                        NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                        while (await reader.ReadAsync())
-                        {
-                            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-                            fieldValueList.Add(fieldValue);
-
-                            fieldValue.Add("uid", reader["uid"]);
-
-                            foreach (string field in fieldArray)
-                                fieldValue.Add(field, reader[field]);
-                        }
-                        await reader.CloseAsync();
-                    }
-                }
-        */
-        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect,
-            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -1711,9 +1666,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
@@ -1732,9 +1685,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -1752,7 +1703,7 @@ WHERE
 
             if (DataSource != null)
             {
-                string query = "SELECT uid, deletion_label, spend, spend_date ";
+                string query = "SELECT uid, deletion_label, spend, spend_date";
 
                 if (fieldArray.Length != 0)
                     query += ", " + string.Join(", ", fieldArray);
@@ -1865,9 +1816,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE uid = @uid";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
@@ -1934,42 +1883,7 @@ WHERE
                 return "";
         }
 
-        /*
-                public async ValueTask SelectDocumentTablePartRecords(UnigueID ownerUnigueID, string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
-                {
-
-                    !!! Не використовується, можливо треба удалити або закоментувати
-
-
-                    if (DataSource != null)
-                    {
-                        string query = "SELECT uid";
-
-                        if (fieldArray.Length != 0)
-                            query += ", " + string.Join(", ", fieldArray);
-
-                        query += $" FROM {table} WHERE owner = @owner";
-
-                        NpgsqlCommand command = DataSource.CreateCommand(query);
-                        command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
-
-                        NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                        while (await reader.ReadAsync())
-                        {
-                            Dictionary<string, object> fieldValue = new Dictionary<string, object>();
-                            fieldValueList.Add(fieldValue);
-
-                            fieldValue.Add("uid", reader["uid"]);
-
-                            foreach (string field in fieldArray)
-                                fieldValue.Add(field, reader[field]);
-                        }
-                        await reader.CloseAsync();
-                    }
-                }
-                */
-        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect,
-            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2020,9 +1934,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
@@ -2041,9 +1953,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -2136,8 +2046,7 @@ WHERE
 
         #region RegistersInformation
 
-        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect,
-            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2191,9 +2100,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
@@ -2213,9 +2120,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("owner", owner);
 
@@ -2324,8 +2229,7 @@ WHERE
 
         #region RegistersAccumulation
 
-        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect,
-            List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2379,9 +2283,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
@@ -2399,15 +2301,13 @@ WHERE
         {
             if (DataSource != null)
             {
-                string query = $"SELECT DISTINCT period FROM {table} WHERE owner = @owner ";
+                string query = $"SELECT DISTINCT period FROM {table} WHERE owner = @owner";
 
                 if (periodCurrent != null)
                     query += " AND date_trunc('day', period::timestamp) != date_trunc('day', @period_current::timestamp)";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("owner", owner);
 
@@ -2442,9 +2342,7 @@ WHERE
                 string query = $"DELETE FROM {table} WHERE owner = @owner";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("owner", owner);
 
@@ -2496,9 +2394,7 @@ WHERE
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 command.Parameters.AddWithValue("uid", UID);
 
@@ -2516,9 +2412,7 @@ WHERE
                 string query = $"DELETE FROM {table}";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -2643,9 +2537,7 @@ WHERE
                 string insertQuery = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})"; ;
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(insertQuery, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(insertQuery);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(insertQuery, transaction.Connection, transaction) : DataSource.CreateCommand(insertQuery);
 
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
@@ -2677,9 +2569,7 @@ WHERE
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                await using NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                await using NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)
@@ -2696,9 +2586,7 @@ WHERE
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)
@@ -2717,7 +2605,7 @@ WHERE
         /// <param name="paramQuery">Параметри запиту</param>
         /// <param name="columnsName">Масив стовпців даних</param>
         /// <param name="listRow">Список рядочків даних</param>
-        public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow)
+        /*public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow)
         {
             columnsName = [];
             listRow = [];
@@ -2749,7 +2637,7 @@ WHERE
                 }
                 reader.Close();
             }
-        }
+        }*/
 
         /// <summary>
         /// Виконання запиту SELECT
@@ -2758,7 +2646,7 @@ WHERE
         /// <param name="paramQuery">Параметри запиту</param>
         /// <param name="columnsName">Масив стовпців даних</param>
         /// <param name="listRow">Список рядочків даних</param>
-        public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
+        /*public void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow)
         {
             columnsName = [];
             listRow = new List<Dictionary<string, object>>();
@@ -2790,11 +2678,11 @@ WHERE
                 }
                 reader.Close();
             }
-        }
+        }*/
 
-        public async ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null)
+        public async ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null)
         {
-            SelectRequestAsync_Record record = new();
+            SelectRequest_Record record = new();
 
             if (DataSource != null)
             {

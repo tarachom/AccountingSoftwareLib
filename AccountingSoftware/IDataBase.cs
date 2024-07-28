@@ -57,8 +57,8 @@ namespace AccountingSoftware
 
         ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
         ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect();
-        ValueTask<SelectRequestAsync_Record> SpetialTableUsersExtendetList();
-        ValueTask<SelectRequestAsync_Record?> SpetialTableUsersExtendetUser(Guid user_uid);
+        ValueTask<SelectRequest_Record> SpetialTableUsersExtendetList();
+        ValueTask<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid);
         ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
         ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name);
         ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid);
@@ -70,7 +70,7 @@ namespace AccountingSoftware
 
         ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid);
         ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid);
-        ValueTask<SelectRequestAsync_Record> SpetialTableActiveUsersSelect();
+        ValueTask<SelectRequest_Record> SpetialTableActiveUsersSelect();
 
         #endregion
 
@@ -78,8 +78,8 @@ namespace AccountingSoftware
 
         ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch);
         ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0);
-        ValueTask<SelectRequestAsync_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch);
-        ValueTask<SelectRequestAsync_Record> SpetialTableFullTextSearchDictList();
+        ValueTask<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch);
+        ValueTask<SelectRequest_Record> SpetialTableFullTextSearchDictList();
         ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch);
 
         #endregion
@@ -93,12 +93,6 @@ namespace AccountingSoftware
         #endregion
 
         #region Constants
-
-        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-
-        [Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue);
 
         ValueTask<SelectConstants_Record> SelectConstants(string table, string field);
         ValueTask SaveConstants(string table, string field, object fieldValue);
@@ -198,9 +192,7 @@ namespace AccountingSoftware
         ValueTask<int> ExecuteSQL(string query, byte transactionID = 0);
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
-        void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<object[]> listRow);
-        void SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery, out string[] columnsName, out List<Dictionary<string, object>> listRow);
-        ValueTask<SelectRequestAsync_Record> SelectRequestAsync(string selectQuery, Dictionary<string, object>? paramQuery = null);
+        ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null);
 
         #endregion
     }

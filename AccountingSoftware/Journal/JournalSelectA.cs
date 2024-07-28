@@ -62,7 +62,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Кількість елементів вибірки
 		/// </summary>
-		/// <returns></returns>
 		public int Count()
 		{
 			return BaseSelectList.Count;
@@ -81,7 +80,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Переміститися на наступну позицію
 		/// </summary>
-		/// <returns></returns>
 		public bool MoveNext()
 		{
 			if (Position < BaseSelectList.Count)
@@ -102,7 +100,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати
 		/// </summary>
-		/// <returns></returns>
 		public async ValueTask<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
 		{
 			Position = 0;
