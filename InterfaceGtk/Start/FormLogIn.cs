@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,14 +47,14 @@ namespace InterfaceGtk
             if (File.Exists(ico_file_name))
                 SetDefaultIconFromFile(ico_file_name);
 
-            VBox vBox = new VBox();
+            Box vBox = new Box(Orientation.Vertical, 0);
 
-            HBox hBoxLogin = new HBox();
+            Box hBoxLogin = new Box(Orientation.Horizontal, 0);
             hBoxLogin.PackStart(new Label("Користувач:"), false, false, 5);
             hBoxLogin.PackEnd(comboBoxAllUsers, false, false, 5);
             vBox.PackStart(hBoxLogin, false, false, 5);
 
-            HBox hBoxPassword = new HBox();
+            Box hBoxPassword = new Box(Orientation.Horizontal, 0);
             hBoxPassword.PackStart(new Label("Пароль:"), false, false, 5);
             hBoxPassword.PackEnd(passwordUser, false, false, 5);
             passwordUser.KeyReleaseEvent += OnKeyReleaseEvent;
@@ -63,7 +63,7 @@ namespace InterfaceGtk
             bLogIn.Clicked += OnLogIn;
             bCancel.Clicked += OnCancel;
 
-            HBox hBoxButton = new HBox();
+            Box hBoxButton = new Box(Orientation.Horizontal, 0);
             hBoxButton.PackStart(bLogIn, false, false, 5);
             hBoxButton.PackStart(bCancel, false, false, 5);
             vBox.PackStart(hBoxButton, false, false, 5);

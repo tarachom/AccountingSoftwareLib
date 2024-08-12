@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,12 @@ using Gtk;
 
 namespace InterfaceGtk
 {
-    public class IntegerControl : HBox
+    public class IntegerControl : Box
     {
         Entry entryInteger = new Entry();
-        HBox hBoxInfoValid = new HBox() { WidthRequest = 16 };
+        Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
 
-        public IntegerControl() : base()
+        public IntegerControl() : base(Orientation.Horizontal, 0)
         {
             PackStart(hBoxInfoValid, false, false, 1);
 

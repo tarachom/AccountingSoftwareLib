@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,13 @@ using Gtk;
 
 namespace InterfaceGtk
 {
-    public class TimeControl : HBox
+    public class TimeControl : Box
     {
         Entry entryTime = new Entry();
-        HBox hBoxInfoValid = new HBox() { WidthRequest = 16 };
+        Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
         Button bOpenPopover;
 
-        public TimeControl() : base()
+        public TimeControl() : base(Orientation.Horizontal, 0)
         {
             PackStart(hBoxInfoValid, false, false, 1);
 
@@ -91,9 +91,9 @@ namespace InterfaceGtk
         {
             Popover popoverCalendar = new Popover(bOpenPopover) { BorderWidth = 5 };
 
-            VBox vBox = new VBox();
+            Box vBox = new Box(Orientation.Vertical, 0);
 
-            HBox hBoxTime = new HBox() { Halign = Align.Center };
+            Box hBoxTime = new Box(Orientation.Horizontal, 0) { Halign = Align.Center };
             vBox.PackStart(hBoxTime, false, false, 5);
 
             SpinButton hourSpin = new SpinButton(0, 23, 1) { Orientation = Orientation.Vertical };

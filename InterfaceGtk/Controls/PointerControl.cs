@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,12 @@ using Gtk;
 
 namespace InterfaceGtk
 {
-    public abstract class PointerControl : HBox
+    public abstract class PointerControl : Box
     {
         Label labelCaption = new Label();
         Entry entryText = new Entry() { IsEditable = false };
 
-        public PointerControl() : base()
+        public PointerControl() : base(Orientation.Horizontal, 0)
         {
             PackStart(labelCaption, false, false, 5);
             PackStart(entryText, false, false, 1);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ namespace InterfaceGtk
 
             BorderWidth = 5;
 
-            VBox vbox = new VBox(false, 2);
+            Box vbox = new Box(Orientation.Vertical, 0);
 
             AddNameAndField(vbox, "Назва", ConfName);
             AddNameAndField(vbox, "Сервер", Server);
@@ -63,7 +63,7 @@ namespace InterfaceGtk
             Separator separator = new Separator(Orientation.Vertical);
             vbox.PackStart(separator, false, false, 5);
 
-            HBox hBoxButton = new HBox();
+            Box hBoxButton = new Box(Orientation.Horizontal, 0);
 
             Button buttonSave = new Button("Зберегти");
             buttonSave.SetSizeRequest(0, 35);
@@ -109,7 +109,7 @@ namespace InterfaceGtk
             }
         }
 
-        private void AddNameAndField(VBox vbox, string name, Entry field)
+        private void AddNameAndField(Box vbox, string name, Entry field)
         {
             Fixed fix = new Fixed();
             Label label = new Label(name);

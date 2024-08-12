@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,23 +53,23 @@ namespace InterfaceGtk
 
             DeleteEvent += delegate { Application.Quit(); };
 
-            VBox vBox = new VBox();
+            Box vBox = new Box(Orientation.Vertical, 0);
             Add(vBox);
 
             CreateToolbar(vBox);
 
-            HBox hBoxContainer = new HBox();
+            Box hBoxContainer = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBoxContainer, false, false, 0);
 
-            VBox vBoxContainerLeft = new VBox() { WidthRequest = 500 };
+            Box vBoxContainerLeft = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
             hBoxContainer.PackStart(vBoxContainerLeft, false, false, 0);
 
-            VBox vBoxContainerRight = new VBox() { WidthRequest = 100 };
+            Box vBoxContainerRight = new Box(Orientation.Vertical, 0) { WidthRequest = 100 };
             hBoxContainer.PackStart(vBoxContainerRight, false, false, 0);
 
             //Список
             {
-                HBox hBox = new HBox();
+                Box hBox = new Box(Orientation.Horizontal, 0);
                 vBoxContainerLeft.PackStart(hBox, false, false, 2);
 
                 ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In };
@@ -86,7 +86,7 @@ namespace InterfaceGtk
             //Кнопка Відкрити
             if (TypeOpenForm == TypeForm.WorkingProgram)
             {
-                HBox hBoxOpen = new HBox() { Halign = Align.Start };
+                Box hBoxOpen = new Box(Orientation.Horizontal, 0) { Halign = Align.Start };
                 vBoxContainerRight.PackStart(hBoxOpen, false, false, 2);
 
                 buttonOpen = new Button("Відкрити") { WidthRequest = 140 };
@@ -103,7 +103,7 @@ namespace InterfaceGtk
 
             //Кнопка Конфігуратор
             {
-                HBox hBoxConfigurator = new HBox() { Halign = Align.Start };
+                Box hBoxConfigurator = new Box(Orientation.Horizontal, 0) { Halign = Align.Start };
                 vBoxContainerRight.PackStart(hBoxConfigurator, false, false, 2);
 
                 buttonConfigurator = new Button("Конфігуратор") { WidthRequest = 140 };
@@ -121,7 +121,7 @@ namespace InterfaceGtk
 
             //Spinner
             {
-                HBox hBoxSpinner = new HBox() { Halign = Align.Center };
+                Box hBoxSpinner = new Box(Orientation.Horizontal, 0) { Halign = Align.Center };
                 vBoxContainerRight.PackStart(hBoxSpinner, true, false, 0);
 
                 spinner = new Spinner();
@@ -134,11 +134,11 @@ namespace InterfaceGtk
             FillListBoxDataBase();
         }
 
-        void CreateToolbar(VBox vBox)
+        void CreateToolbar(Box vBox)
         {
             toolBar = new Toolbar();
 
-            HBox hBoxContainerToolbar = new HBox();
+            Box hBoxContainerToolbar = new Box(Orientation.Horizontal, 0);
             hBoxContainerToolbar.PackStart(toolBar, true, true, 0);
 
             ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
