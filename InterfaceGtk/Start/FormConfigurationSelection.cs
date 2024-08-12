@@ -35,7 +35,7 @@ namespace InterfaceGtk
         public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
 
         Toolbar? toolBar;
-        protected ListBox listBox;
+        ListBox listBox;
         Button? buttonOpen;
         Button buttonConfigurator;
         Spinner spinner;
