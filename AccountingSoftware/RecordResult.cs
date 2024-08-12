@@ -27,6 +27,17 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
+    #region CompositePointerControl
+
+    public record CompositePointerPresentation_Record
+    {
+        public string result = "";
+        public string pointer = "";
+        public string type = "";
+    }
+
+    #endregion
+
     #region Константи
 
     /// <summary>
