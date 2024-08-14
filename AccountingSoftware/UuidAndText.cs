@@ -43,6 +43,12 @@ namespace AccountingSoftware
             Text = text;
         }
 
+        public UuidAndText(string text)
+        {
+            Uuid = Guid.Empty;
+            Text = text;
+        }
+
         /// <summary>
         /// Вказівник
         /// </summary>

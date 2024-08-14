@@ -49,6 +49,10 @@ namespace InterfaceGtk
             pointer = new UuidAndText();
             WidthPresentation = 300;
             Caption = "Основа:";
+
+            Button bTypeInfo = new Button(new Image(Stock.GoDown, IconSize.Menu));
+            PackStart(bTypeInfo, false, false, 1);
+            bTypeInfo.Clicked += OnTypeInfo;
         }
 
         UuidAndText pointer;
@@ -153,23 +157,85 @@ namespace InterfaceGtk
 
         protected override void OnClear(object? sender, EventArgs args)
         {
-            Pointer = new UuidAndText();
+            Pointer = new UuidAndText(GetBasisName());
+        }
+
+        protected virtual void OnTypeInfo(object? sender, EventArgs args)
+        {
+            Popover PopoverOpenInfo = new Popover((Button)sender!) { Position = PositionType.Bottom, BorderWidth = 2 };
+
+            Box vBoxContainer = new Box(Orientation.Vertical, 0);
+
+            Box hBoxCaption = new Box(Orientation.Horizontal, 0);
+            hBoxCaption.PackStart(new Label("<b>Тип даних</b>") { UseMarkup = true, Halign = Align.Center }, true, false, 5);
+            vBoxContainer.PackStart(hBoxCaption, false, false, 5);
+
+            Label labelInfo = new Label() { Halign = Align.Center };
+
+            void Info()
+            {
+                if (PointerName == "Документи" || PointerName == "Довідники")
+                {
+                    string typeCaption = TypeCaption;
+
+                    Type? objectConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.{PointerName}.{TypeCaption}_Const");
+                    if (objectConst != null)
+                        typeCaption = objectConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? typeCaption;
+
+                    labelInfo.Text = $"{PointerName}: {typeCaption}";
+                }
+                else
+                    labelInfo.Text = "Тип не заданий";
+            }
+
+            //Інформація про тип даних
+            {
+                Box hBoxInfo = new Box(Orientation.Horizontal, 0);
+                hBoxInfo.PackStart(labelInfo, true, false, 5);
+                vBoxContainer.PackStart(hBoxInfo, false, false, 5);
+                
+                Info();
+            }
+
+            //Кнопка вибору типу
+            {
+                Box hBoxSelect = new Box(Orientation.Horizontal, 0);
+                vBoxContainer.PackStart(hBoxSelect, false, false, 5);
+
+                Button bSelectType = new Button("Вибрати тип");
+                bSelectType.Clicked += (object? sender, EventArgs args) => { ВибірТипуДаних(bSelectType, Info); };
+                hBoxSelect.PackStart(bSelectType, false, false, 5);
+
+                Button bClearType = new Button("Скинути тип");
+                bClearType.Clicked += (object? sender, EventArgs args) =>
+                {
+                    Pointer = new UuidAndText();
+                    Info();
+                };
+                hBoxSelect.PackEnd(bClearType, false, false, 5);
+            }
+
+            PopoverOpenInfo.Add(vBoxContainer);
+            PopoverOpenInfo.ShowAll();
         }
 
         /// <summary>
         /// Відкриває спливаюче вікно для вибору типу даних
         /// </summary>
         /// <param name="button">Кнопка привязки спливаючого вікна</param>
-        void ВибірТипуДаних(Button button)
+        void ВибірТипуДаних(Button button, System.Action? CallBackSelect = null)
         {
-            Popover PopoverSmallSelect = new Popover(button) { Position = PositionType.Bottom, BorderWidth = 2 };
+            Popover PopoverSelect = new Popover(button) { Position = PositionType.Bottom, BorderWidth = 2 };
 
-            void CallBack_Select(string p, string t)
+            void Select(string p, string t)
             {
                 PointerName = p;
                 TypeCaption = t;
+                Pointer = new UuidAndText(Guid.Empty, GetBasisName());
 
-                PopoverSmallSelect.Hide();
+                PopoverSelect.Hide();
+
+                CallBackSelect?.Invoke();
             }
 
             Box vBoxContainer = new Box(Orientation.Vertical, 0);
@@ -234,7 +300,7 @@ namespace InterfaceGtk
                 listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                        CallBack_Select("Довідники", listBox.SelectedRows[0].Name);
+                        Select("Довідники", listBox.SelectedRows[0].Name);
                 };
 
                 ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 400, ShadowType = ShadowType.In };
@@ -266,7 +332,7 @@ namespace InterfaceGtk
                 listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                        CallBack_Select("Документи", listBox.SelectedRows[0].Name);
+                        Select("Документи", listBox.SelectedRows[0].Name);
                 };
 
                 ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 400, ShadowType = ShadowType.In };
@@ -287,8 +353,8 @@ namespace InterfaceGtk
                             AddToList(listBox, documents.Name, documents.FullName);
             }
 
-            PopoverSmallSelect.Add(vBoxContainer);
-            PopoverSmallSelect.ShowAll();
+            PopoverSelect.Add(vBoxContainer);
+            PopoverSelect.ShowAll();
         }
 
         /// <summary>

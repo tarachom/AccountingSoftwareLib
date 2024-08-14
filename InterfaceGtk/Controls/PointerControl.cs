@@ -42,7 +42,7 @@ namespace InterfaceGtk
             bClear.Clicked += OnClear;
 
             PackStart(bOpen, false, false, 1);
-            PackStart(bClear, false, false, 1);
+            PackEnd(bClear, false, false, 1);
         }
 
         protected virtual void OpenSelect(object? sender, EventArgs args) { }
