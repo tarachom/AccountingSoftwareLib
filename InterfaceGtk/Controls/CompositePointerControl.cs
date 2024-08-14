@@ -69,7 +69,7 @@ namespace InterfaceGtk
         {
             if (pointer != null)
             {
-                var record = await CompositePointerPresentation(pointer);
+                CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
 
                 Presentation = record.result;
                 PointerName = record.pointer;
@@ -82,43 +82,25 @@ namespace InterfaceGtk
         /// <summary>
         /// Документи або Довідники
         /// </summary>
-        public string PointerName = "";
+        public string PointerName { get; private set; } = "";
 
         /// <summary>
         /// Назва обєкту як в конфігурації
         /// </summary>
-        public string TypeCaption = "";
+        public string TypeCaption { get; private set; } = "";
 
         /// <summary>
-        /// Функція формує назву
+        /// Прив'язка до типу даних в конфігурації щоб задіяти додаткові налаштування
+        /// Потрібно задавати повний шлях до поля. 
+        /// Наприклад: 
+        ///     Довідники.Номенклатура.Основа або 
+        ///     Документи.Поступлення.НаОснові
         /// </summary>
-        string GetBasisName()
-        {
-            return !string.IsNullOrEmpty(PointerName) ? PointerName + "." + TypeCaption : "";
-        }
+        public string BoundConfType { get; set; } = "";
 
         protected override void OpenSelect(object? sender, EventArgs args)
         {
-            if (string.IsNullOrEmpty(PointerName))
-            {
-                //
-                // Вибір типу
-                //
-
-                Popover PopoverSmallSelect = new Popover((Button)sender!) { Position = PositionType.Bottom, BorderWidth = 2 };
-
-                Action<string, string> CallBackAction = (string p, string t) =>
-                {
-                    PointerName = p;
-                    TypeCaption = t;
-
-                    PopoverSmallSelect.Hide();
-                };
-
-                PopoverSmallSelect.Add(ВибірТипуДаних(CallBackAction));
-                PopoverSmallSelect.ShowAll();
-            }
-            else if (PointerName == "Документи" || PointerName == "Довідники")
+            if (PointerName == "Документи" || PointerName == "Довідники")
             {
                 object? listPage;
 
@@ -165,10 +147,31 @@ namespace InterfaceGtk
                         listPage.GetType().InvokeMember("LoadRecords", BindingFlags.InvokeMethod, null, listPage, null);
                 }
             }
+            else
+                ВибірТипуДаних((Button)sender!);
         }
 
-        Box ВибірТипуДаних(Action<string, string> CallBackAction)
+        protected override void OnClear(object? sender, EventArgs args)
         {
+            Pointer = new UuidAndText();
+        }
+
+        /// <summary>
+        /// Відкриває спливаюче вікно для вибору типу даних
+        /// </summary>
+        /// <param name="button">Кнопка привязки спливаючого вікна</param>
+        void ВибірТипуДаних(Button button)
+        {
+            Popover PopoverSmallSelect = new Popover(button) { Position = PositionType.Bottom, BorderWidth = 2 };
+
+            void CallBack_Select(string p, string t)
+            {
+                PointerName = p;
+                TypeCaption = t;
+
+                PopoverSmallSelect.Hide();
+            }
+
             Box vBoxContainer = new Box(Orientation.Vertical, 0);
 
             Box hBoxCaption = new Box(Orientation.Horizontal, 0);
@@ -177,6 +180,47 @@ namespace InterfaceGtk
 
             Box hBox = new Box(Orientation.Horizontal, 0);
             vBoxContainer.PackStart(hBox, false, false, 0);
+
+            //Списки доступних для вибору типів
+            List<string>? AllowDirectories = null, AllowDocuments = null;
+
+            //Обробка прив'язаного типу
+            if (!string.IsNullOrEmpty(BoundConfType))
+            {
+                string[] bound_conf_type = BoundConfType.Split(".", StringSplitOptions.None);
+                if (bound_conf_type.Length == 3)
+                {
+                    string group = bound_conf_type[0], element = bound_conf_type[1], field = bound_conf_type[2];
+
+                    void Fill(ConfigurationField configurationField)
+                    {
+                        if (!configurationField.CompositePointerNotUseDirectories)
+                            AllowDirectories = configurationField.CompositePointerAllowDirectories;
+
+                        if (!configurationField.CompositePointerNotUseDocuments)
+                            AllowDocuments = configurationField.CompositePointerAllowDocuments;
+                    }
+
+                    if (group == "Довідники")
+                    {
+                        if (Kernel.Conf.Directories.TryGetValue(element, out ConfigurationDirectories? configurationDirectories) &&
+                            configurationDirectories.Fields.TryGetValue(field, out ConfigurationField? configurationField))
+                            Fill(configurationField);
+                    }
+                    else if (group == "Документи")
+                        if (Kernel.Conf.Documents.TryGetValue(element, out ConfigurationDocuments? configurationDocuments) &&
+                            configurationDocuments.Fields.TryGetValue(field, out ConfigurationField? configurationField))
+                            Fill(configurationField);
+                }
+            }
+
+            void AddToList(ListBox listBox, string name, string fullName)
+            {
+                ListBoxRow row = new ListBoxRow() { Name = name };
+                row.Add(new Label(fullName) { Halign = Align.Start });
+
+                listBox.Add(row);
+            }
 
             //Довідники
             {
@@ -188,9 +232,8 @@ namespace InterfaceGtk
                 ListBox listBox = new ListBox();
                 listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
                 {
-                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress)
-                        if (listBox.SelectedRows.Length != 0)
-                            CallBackAction.Invoke("Довідники", listBox.SelectedRows[0].Name);
+                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                        CallBack_Select("Довідники", listBox.SelectedRows[0].Name);
                 };
 
                 ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 400, ShadowType = ShadowType.In };
@@ -199,13 +242,16 @@ namespace InterfaceGtk
 
                 vBox.PackStart(scrollList, false, false, 2);
 
-                foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories)
-                {
-                    ListBoxRow row = new ListBoxRow() { Name = directories.Key };
-                    row.Add(new Label(directories.Value.FullName) { Halign = Align.Start });
-
-                    listBox.Add(row);
-                }
+                if (AllowDirectories != null)
+                    if (AllowDirectories.Count != 0)
+                    {
+                        foreach (string name in AllowDirectories)
+                            if (Kernel.Conf.Directories.TryGetValue(name, out ConfigurationDirectories? directories))
+                                AddToList(listBox, directories.Name, directories.FullName);
+                    }
+                    else
+                        foreach (ConfigurationDirectories directories in Kernel.Conf.Directories.Values)
+                            AddToList(listBox, directories.Name, directories.FullName);
             }
 
             //Документи
@@ -218,9 +264,8 @@ namespace InterfaceGtk
                 ListBox listBox = new ListBox();
                 listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
                 {
-                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress)
-                        if (listBox.SelectedRows.Length != 0)
-                            CallBackAction.Invoke("Документи", listBox.SelectedRows[0].Name);
+                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                        CallBack_Select("Документи", listBox.SelectedRows[0].Name);
                 };
 
                 ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 400, ShadowType = ShadowType.In };
@@ -229,23 +274,28 @@ namespace InterfaceGtk
 
                 vBox.PackStart(scrollList, false, false, 2);
 
-                foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents)
-                {
-                    ListBoxRow row = new ListBoxRow() { Name = documents.Key };
-                    row.Add(new Label(documents.Value.FullName) { Halign = Align.Start });
-
-                    listBox.Add(row);
-                }
+                if (AllowDocuments != null)
+                    if (AllowDocuments.Count != 0)
+                    {
+                        foreach (string name in AllowDocuments)
+                            if (Kernel.Conf.Documents.TryGetValue(name, out ConfigurationDocuments? documents))
+                                AddToList(listBox, documents.Name, documents.FullName);
+                    }
+                    else
+                        foreach (ConfigurationDocuments documents in Kernel.Conf.Documents.Values)
+                            AddToList(listBox, documents.Name, documents.FullName);
             }
 
-            vBoxContainer.ShowAll();
-
-            return vBoxContainer;
+            PopoverSmallSelect.Add(vBoxContainer);
+            PopoverSmallSelect.ShowAll();
         }
 
-        protected override void OnClear(object? sender, EventArgs args)
+        /// <summary>
+        /// Функція формує назву
+        /// </summary>
+        string GetBasisName()
         {
-            Pointer = new UuidAndText();
+            return !string.IsNullOrEmpty(PointerName) ? PointerName + "." + TypeCaption : "";
         }
     }
 }

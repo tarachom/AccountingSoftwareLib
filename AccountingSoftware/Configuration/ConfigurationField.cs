@@ -95,15 +95,42 @@ namespace AccountingSoftware
         /// </summary>
         public bool IsFullTextSearch { get; set; }
 
+        #region Додаткові поля які залежать від типу (string)
+
         /// <summary>
-        /// Багатострічкове поле (тільки для типу string)
+        /// Багатострічкове поле
         /// </summary>
         public bool Multiline { get; set; }
+
+        #endregion
+
+        #region Додаткові поля які залежать від типу (composite_pointer)
+
+        /// <summary>
+        /// Не використовувати довідники
+        /// </summary>
+        public bool CompositePointerNotUseDirectories { get; set; }
+
+        /// <summary>
+        /// Не використовувати документи
+        /// </summary>
+        public bool CompositePointerNotUseDocuments { get; set; }
+
+        /// <summary>
+        /// Доступні довідники для вибору
+        /// </summary>
+        public List<string> CompositePointerAllowDirectories { get; set; } = [];
+
+        /// <summary>
+        /// Доступні документи для вибору
+        /// </summary>
+        public List<string> CompositePointerAllowDocuments { get; set; } = [];
+
+        #endregion
 
         /// <summary>
         /// Створення копії
         /// </summary>
-        /// <returns></returns>
         public ConfigurationField Copy()
         {
             return new ConfigurationField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);

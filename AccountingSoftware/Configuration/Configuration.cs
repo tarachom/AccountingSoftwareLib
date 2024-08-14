@@ -1256,11 +1256,39 @@ namespace AccountingSoftware
                     ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
 
                     //
-                    // Для генерування коду
+                    // Додаткові поля які залежать від типу
                     //
 
                     if (type == "string")
+                    {
                         ConfObjectField.Multiline = (fieldNodes.Current?.SelectSingleNode("Multiline")?.Value ?? "") == "1";
+                    }
+                    else if (type == "composite_pointer")
+                    {
+                        //Не використовувати довідники
+                        ConfObjectField.CompositePointerNotUseDirectories = (fieldNodes.Current?.SelectSingleNode("CompositePointerNotUseDirectories")?.Value ?? "") == "1";
+
+                        //Не використовувати документи
+                        ConfObjectField.CompositePointerNotUseDocuments = (fieldNodes.Current?.SelectSingleNode("CompositePointerNotUseDocuments")?.Value ?? "") == "1";
+
+                        List<string> Get(string nameAllowBlock)
+                        {
+                            List<string> listAllow = [];
+
+                            XPathNodeIterator? allowNodes = fieldNodes.Current?.Select($"{nameAllowBlock}/Name");
+                            if (allowNodes != null)
+                                while (allowNodes.MoveNext())
+                                {
+                                    string? name = allowNodes.Current?.Value;
+                                    if (name != null) listAllow.Add(name);
+                                }
+
+                            return listAllow;
+                        }
+
+                        ConfObjectField.CompositePointerAllowDirectories = Get("CompositePointerAllowDirectories");
+                        ConfObjectField.CompositePointerAllowDocuments = Get("CompositePointerAllowDocuments");
+                    }
 
                     fields.Add(name, ConfObjectField);
                 }
@@ -1660,11 +1688,7 @@ namespace AccountingSoftware
                 while (allowDocumentSpendNodes.MoveNext())
                 {
                     string? name = allowDocumentSpendNodes.Current?.Value;
-
-                    if (name == null)
-                        throw new Exception("Не задана назва доступного регістру");
-
-                    allowDocumentSpend.Add(name);
+                    if (name != null) allowDocumentSpend.Add(name);
                 }
         }
 
@@ -1977,7 +2001,7 @@ namespace AccountingSoftware
                 nodeField.AppendChild(nodeFieldIsFullTextSearch);
 
                 //
-                // Для генерування коду
+                // Додаткові поля які залежать від типу
                 //
 
                 if (field.Value.Type == "string")
@@ -1985,6 +2009,42 @@ namespace AccountingSoftware
                     XmlElement nodeFieldMultiline = xmlConfDocument.CreateElement("Multiline");
                     nodeFieldMultiline.InnerText = field.Value.Multiline ? "1" : "0";
                     nodeField.AppendChild(nodeFieldMultiline);
+                }
+                else if (field.Value.Type == "composite_pointer")
+                {
+                    //Не використовувати довідники
+                    if (field.Value.CompositePointerNotUseDirectories)
+                    {
+                        XmlElement nodeFieldNotUseDirectories = xmlConfDocument.CreateElement("CompositePointerNotUseDirectories");
+                        nodeFieldNotUseDirectories.InnerText = field.Value.CompositePointerNotUseDirectories ? "1" : "0";
+                        nodeField.AppendChild(nodeFieldNotUseDirectories);
+                    }
+
+                    //Не використовувати документи
+                    if (field.Value.CompositePointerNotUseDocuments)
+                    {
+                        XmlElement nodeFieldNotUseDocuments = xmlConfDocument.CreateElement("CompositePointerNotUseDocuments");
+                        nodeFieldNotUseDocuments.InnerText = field.Value.CompositePointerNotUseDocuments ? "1" : "0";
+                        nodeField.AppendChild(nodeFieldNotUseDocuments);
+                    }
+
+                    void Add(string nameAllowBlock, List<string> listAllow)
+                    {
+                        if (listAllow.Count == 0) return;
+
+                        XmlElement nodeAllow = xmlConfDocument.CreateElement(nameAllowBlock);
+                        nodeField.AppendChild(nodeAllow);
+
+                        foreach (string name in listAllow)
+                        {
+                            XmlElement nodeName = xmlConfDocument.CreateElement("Name");
+                            nodeName.InnerText = name;
+                            nodeAllow.AppendChild(nodeName);
+                        }
+                    }
+
+                    Add("CompositePointerAllowDirectories", field.Value.CompositePointerAllowDirectories);
+                    Add("CompositePointerAllowDocuments", field.Value.CompositePointerAllowDocuments);
                 }
             }
         }
