@@ -50,7 +50,8 @@ namespace AccountingSoftware
         /// <param name="size">Розмір</param>
         /// <param name="sortNum">Порядок</param>
         /// <param name="sortField">Сортувати</param>
-        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false, bool sortDirection = false)
+        public ConfigurationTabularListField(string name, string caption, uint size = 0, int sortNum = 100, bool sortField = false, bool sortDirection = false,
+            bool filterField = false)
         {
             Name = name;
             Caption = caption;
@@ -58,6 +59,7 @@ namespace AccountingSoftware
             SortNum = sortNum;
             SortField = sortField;
             SortDirection = sortDirection;
+            FilterField = filterField;
         }
 
         #region ForJournals
@@ -99,6 +101,11 @@ namespace AccountingSoftware
         /// Сортувати по даному полю
         /// </summary>
         public bool SortField { get; set; }
+
+        /// <summary>
+        /// Фільтрувати по даному полю
+        /// </summary>
+        public bool FilterField { get; set; }
 
         /// <summary>
         /// Напрямок сортування (false - звичайний ASC, true - у зворотньому напрямку DESC)
