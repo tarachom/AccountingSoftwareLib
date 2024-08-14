@@ -185,7 +185,7 @@ namespace InterfaceGtk
                     labelInfo.Text = $"{PointerName}: {typeCaption}";
                 }
                 else
-                    labelInfo.Text = "Тип не заданий";
+                    labelInfo.Text = "Тип даних не заданий";
             }
 
             //Інформація про тип даних
@@ -193,25 +193,30 @@ namespace InterfaceGtk
                 Box hBoxInfo = new Box(Orientation.Horizontal, 0);
                 hBoxInfo.PackStart(labelInfo, true, false, 5);
                 vBoxContainer.PackStart(hBoxInfo, false, false, 5);
-                
+
                 Info();
             }
 
             //Кнопка вибору типу
             {
                 Box hBoxSelect = new Box(Orientation.Horizontal, 0);
-                vBoxContainer.PackStart(hBoxSelect, false, false, 5);
+                vBoxContainer.PackStart(hBoxSelect, false, false, 10);
 
-                Button bSelectType = new Button("Вибрати тип");
-                bSelectType.Clicked += (object? sender, EventArgs args) => { ВибірТипуДаних(bSelectType, Info); };
+                Button bSelectType = new Button("Вибрати");
+                bSelectType.Clicked += (object? sender, EventArgs args) =>
+                {
+                    ВибірТипуДаних(bSelectType, Info);
+                };
+
                 hBoxSelect.PackStart(bSelectType, false, false, 5);
 
-                Button bClearType = new Button("Скинути тип");
+                Button bClearType = new Button("Скинути");
                 bClearType.Clicked += (object? sender, EventArgs args) =>
                 {
                     Pointer = new UuidAndText();
                     Info();
                 };
+
                 hBoxSelect.PackEnd(bClearType, false, false, 5);
             }
 
