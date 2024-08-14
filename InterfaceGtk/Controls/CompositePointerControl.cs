@@ -182,7 +182,9 @@ namespace InterfaceGtk
             vBoxContainer.PackStart(hBox, false, false, 0);
 
             //Списки доступних для вибору типів
-            List<string>? AllowDirectories = null, AllowDocuments = null;
+            List<string> AllowDirectories = [], AllowDocuments = [];
+            bool NotUseDirectories = false;
+            bool NotUseDocuments = false;
 
             //Обробка прив'язаного типу
             if (!string.IsNullOrEmpty(BoundConfType))
@@ -194,11 +196,10 @@ namespace InterfaceGtk
 
                     void Fill(ConfigurationField configurationField)
                     {
-                        if (!configurationField.CompositePointerNotUseDirectories)
-                            AllowDirectories = configurationField.CompositePointerAllowDirectories;
-
-                        if (!configurationField.CompositePointerNotUseDocuments)
-                            AllowDocuments = configurationField.CompositePointerAllowDocuments;
+                        NotUseDirectories = configurationField.CompositePointerNotUseDirectories;
+                        if (!NotUseDirectories) AllowDirectories = configurationField.CompositePointerAllowDirectories;
+                        NotUseDocuments = configurationField.CompositePointerNotUseDocuments;
+                        if (!NotUseDocuments) AllowDocuments = configurationField.CompositePointerAllowDocuments;
                     }
 
                     if (group == "Довідники")
@@ -242,7 +243,7 @@ namespace InterfaceGtk
 
                 vBox.PackStart(scrollList, false, false, 2);
 
-                if (AllowDirectories != null)
+                if (!NotUseDirectories)
                     if (AllowDirectories.Count != 0)
                     {
                         foreach (string name in AllowDirectories)
@@ -274,7 +275,7 @@ namespace InterfaceGtk
 
                 vBox.PackStart(scrollList, false, false, 2);
 
-                if (AllowDocuments != null)
+                if (!NotUseDocuments)
                     if (AllowDocuments.Count != 0)
                     {
                         foreach (string name in AllowDocuments)
