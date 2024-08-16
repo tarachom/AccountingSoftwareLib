@@ -25,6 +25,9 @@ using Gtk;
 
 namespace InterfaceGtk
 {
+    /// <summary>
+    /// Основа для класів ДовідникЕлемент, ДокументЕлемент, РегістриЕлемент
+    /// </summary>
     public abstract class ФормаЕлемент : Box
     {
         public ФормаЕлемент() : base(Orientation.Vertical, 0)

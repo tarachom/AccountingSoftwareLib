@@ -36,11 +36,12 @@ namespace InterfaceGtk
         protected abstract string NameSpageProgram { get; }
         protected abstract string NameSpageCodeGeneration { get; }
         protected abstract Kernel Kernel { get; }
-        protected abstract Assembly ExecutingAssembly { get; }
         protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
         protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
 
         #endregion
+
+        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
         public CompositePointerControl()
         {

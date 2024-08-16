@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,60 +26,36 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ДовідникДерево : VBox
+    public abstract class РегістриЖурнал : ФормаЖурнал
     {
-        /// <summary>
-        /// Поточний елемент
-        /// </summary>
-        //public UnigueID? SelectPointerItem { get; set; }
+        public UnigueID? SelectPointerItem { get; set; }
 
-        /// <summary>
-        /// Для вибору
-        /// </summary>
-        public UnigueID? DirectoryPointerItem { get; set; }
-
-        /// <summary>
-        /// Відкрита папка.
-        /// Використовується при загрузці дерева щоб приховати вітку.
-        /// Актуальну у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
-        /// </summary>
-        public UnigueID? OpenFolder { get; set; }
-
-        /// <summary>
-        /// Функція яка викликається коли в дереві активується вітка.
-        /// Це зазвичай завантаження списку елементів у таблиці
-        /// </summary>
-        public System.Action? CallBack_RowActivated { get; set; }
-
-        /// <summary>
-        /// Функція вибору
-        /// </summary>
-        public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
-
-        /// <summary>
-        /// Верхній набір меню
-        /// </summary>
         protected Toolbar ToolbarTop = new Toolbar();
-
-        /// <summary>
-        /// Дерево
-        /// </summary>
+        protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
         protected TreeView TreeViewGrid = new TreeView();
+        SearchControl ПошукПовнотекстовий = new SearchControl();
 
-        public ДовідникДерево() : base()
+        public РегістриЖурнал() : base()
         {
-            BorderWidth = 0;
+            //Кнопки
+            PackStart(HBoxTop, false, false, 10);
+
+            //Пошук
+            ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
+            ПошукПовнотекстовий.Clear = LoadRecords;
+            HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
 
             CreateToolbar();
 
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Single;
+            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
             TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
-
+            TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
+            TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
             scrollTree.Add(TreeViewGrid);
 
             PackStart(scrollTree, true, true, 0);
@@ -118,9 +94,9 @@ namespace InterfaceGtk
         {
             Menu Menu = new Menu();
 
-            MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");
-            setDeletionLabel.Activated += OnDeleteClick;
-            Menu.Append(setDeletionLabel);
+            MenuItem delete = new MenuItem("Видалити");
+            delete.Activated += OnDeleteClick;
+            Menu.Append(delete);
 
             Menu.ShowAll();
 
@@ -129,86 +105,57 @@ namespace InterfaceGtk
 
         #endregion
 
-        #region Virtual & Abstract Function
+        #region Virtual Function
 
-        public abstract void LoadTree();
+        public virtual void LoadRecords() { }
 
-        protected abstract void OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected virtual void LoadRecords_OnSearch(string searchText) { }
 
-        protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+        protected virtual void OpenPageElement(bool IsNew, UnigueID? unigueID = null) { }
 
-        protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
+        protected virtual ValueTask Delete(UnigueID unigueID) { return new ValueTask(); }
 
-        protected virtual void CallBack_LoadTree(UnigueID? selectPointer)
+        protected virtual ValueTask<UnigueID?> Copy(UnigueID unigueID) { return new ValueTask<UnigueID?>(); }
+
+        public virtual void CallBack_LoadRecords(UnigueID? selectPointer)
         {
-            DirectoryPointerItem = selectPointer;
-            LoadTree();
+            SelectPointerItem = selectPointer;
+            LoadRecords();
         }
 
         #endregion
 
         #region  TreeView
 
-        protected void RowActivated()
+        void OnRowActivated(object sender, RowActivatedArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
-                TreeIter iter;
-                TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
-
-                DirectoryPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                if (CallBack_RowActivated != null)
-                    CallBack_RowActivated.Invoke();
+                TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
+                SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
             }
-        }
-
-        void OnRowActivated(object sender, RowActivatedArgs args)
-        {
-            RowActivated();
         }
 
         void OnButtonReleaseEvent(object? sender, ButtonReleaseEventArgs args)
         {
             if (args.Event.Button == 3 && TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreeIter iter;
-                if (TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
-                    DirectoryPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
                     PopUpContextMenu().Popup();
                 }
-            }
         }
 
         void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
         {
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreeIter iter;
-                if (TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                    if (DirectoryPointerItem == null)
-                    {
-                        if (unigueID.IsEmpty())
-                            return;
-
-                        OpenPageElement(false, unigueID);
-                    }
-                    else
-                    {
-                        if (CallBack_OnSelectPointer != null)
-                            CallBack_OnSelectPointer.Invoke(unigueID);
-
-                        Program.GeneralForm?.CloseNotebookPageToCode(this.Name);
-                    }
+                    OpenPageElement(false, unigueID);
                 }
-            }
         }
 
-        /*
         void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
@@ -220,7 +167,7 @@ namespace InterfaceGtk
                     }
                 case Gdk.Key.F5:
                     {
-                        LoadTree();
+                        LoadRecords();
                         break;
                     }
                 case Gdk.Key.KP_Enter:
@@ -246,7 +193,6 @@ namespace InterfaceGtk
                     }
             }
         }
-        */
 
         #endregion
 
@@ -261,73 +207,59 @@ namespace InterfaceGtk
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
-                TreeIter iter;
-                if (TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
-                {
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                    if (unigueID.IsEmpty())
-                        return;
-
-                    OpenPageElement(false, unigueID);
-                }
+                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                foreach (TreePath itemPath in selectionRows)
+                    if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
+                    {
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                        OpenPageElement(false, unigueID);
+                    }
             }
         }
 
         void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadTree();
+            LoadRecords();
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
-                    TreePath selectionRow = TreeViewGrid.Selection.GetSelectedRows()[0];
+                    TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                    foreach (TreePath itemPath in selectionRows)
+                    {
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                    TreeIter iter;
-                    TreeViewGrid.Model.GetIter(out iter, selectionRow);
+                        await Delete(unigueID);
 
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                        SelectPointerItem = unigueID;
+                    }
 
-                    if (unigueID.IsEmpty())
-                        return;
-
-                    await SetDeletionLabel(unigueID);
-
-                    DirectoryPointerItem = unigueID;
-
-                    LoadTree();
+                    LoadRecords();
                 }
-            }
         }
 
         async void OnCopyClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
-                    TreePath selectionRow = TreeViewGrid.Selection.GetSelectedRows()[0];
+                    TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                    foreach (TreePath itemPath in selectionRows)
+                    {
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                        UnigueID? newUnigueID = await Copy(unigueID);
 
-                    TreeIter iter;
-                    TreeViewGrid.Model.GetIter(out iter, selectionRow);
+                        if (newUnigueID != null)
+                            SelectPointerItem = newUnigueID;
+                    }
 
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                    if (unigueID.IsEmpty())
-                        return;
-
-                    UnigueID? newUnigueID = await Copy(unigueID);
-
-                    if (newUnigueID != null)
-                        DirectoryPointerItem = newUnigueID;
-
-                    LoadTree();
+                    LoadRecords();
                 }
-            }
         }
 
         #endregion

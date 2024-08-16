@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2023 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ДовідникЖурнал : VBox
+    public abstract class ДовідникЖурнал : ФормаЖурнал
     {
         /// <summary>
         /// Елемент на який треба спозиціонувати список при обновленні
@@ -52,13 +52,13 @@ namespace InterfaceGtk
         /// Верхній горизонтальний бокс.
         /// можна додаткові кнопки і різні лінки добавляти
         /// </summary>
-        protected HBox HBoxTop = new HBox();
+        protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
         /// <summary>
         /// Панелька яка містить одну область за замовчуванням і туди добавляється список
         /// У випадку якщо потрібно можна додати ще одну область, це використовується для ієрархічних довідників
         /// </summary>
-        protected HPaned HPanedTable = new HPaned();
+        protected Paned HPanedTable = new Paned(Orientation.Horizontal);
 
         /// <summary>
         /// Дерево
@@ -77,8 +77,6 @@ namespace InterfaceGtk
 
         public ДовідникЖурнал() : base()
         {
-            BorderWidth = 0;
-
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
 
@@ -134,6 +132,10 @@ namespace InterfaceGtk
             ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
+
+            ToolButton filterButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
+            filterButton.Clicked += OnFilterClick;
+            ToolbarTop.Add(filterButton);
         }
 
         Menu PopUpContextMenu()
@@ -169,6 +171,8 @@ namespace InterfaceGtk
             await LoadRecords();
         }
 
+        protected virtual void FilterRecords(Box vBox) { }
+
         #endregion
 
         #region  TreeView
@@ -177,9 +181,7 @@ namespace InterfaceGtk
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
-                TreeIter iter;
-                TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
-
+                TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
                 SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
             }
         }
@@ -187,22 +189,17 @@ namespace InterfaceGtk
         void OnButtonReleaseEvent(object? sender, ButtonReleaseEventArgs args)
         {
             if (args.Event.Button == 3 && TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreeIter iter;
-                if (TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
                     PopUpContextMenu().Popup();
                 }
-            }
         }
 
         void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
         {
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreeIter iter;
-                if (TreeViewGrid.Model.GetIter(out iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
@@ -210,13 +207,10 @@ namespace InterfaceGtk
                         OpenPageElement(false, unigueID);
                     else
                     {
-                        if (CallBack_OnSelectPointer != null)
-                            CallBack_OnSelectPointer.Invoke(unigueID);
-
-                        Program.GeneralForm?.CloseNotebookPageToCode(this.Name);
+                        CallBack_OnSelectPointer?.Invoke(unigueID);
+                        NotebookFunction.CloseNotebookPageToCode(NotebookFunction.GetNotebookFromWidget(this), this.Name);
                     }
                 }
-            }
         }
 
         async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
@@ -301,14 +295,11 @@ namespace InterfaceGtk
                 TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
 
                 foreach (TreePath itemPath in selectionRows)
-                {
-                    TreeIter iter;
-                    if (TreeViewGrid.Model.GetIter(out iter, itemPath))
+                    if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
                         OpenPageElement(false, unigueID);
                     }
-                }
             }
         }
 
@@ -320,16 +311,13 @@ namespace InterfaceGtk
         async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
                 if (Message.Request(null, MessageRequestText) == ResponseType.Yes)
                 {
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
 
                     foreach (TreePath itemPath in selectionRows)
                     {
-                        TreeIter iter;
-                        TreeViewGrid.Model.GetIter(out iter, itemPath);
-
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                         await SetDeletionLabel(unigueID);
@@ -339,24 +327,19 @@ namespace InterfaceGtk
 
                     await LoadRecords();
                 }
-            }
         }
 
         async void OnCopyClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
 
                     foreach (TreePath itemPath in selectionRows)
                     {
-                        TreeIter iter;
-                        TreeViewGrid.Model.GetIter(out iter, itemPath);
-
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
                         UnigueID? newUnigueID = await Copy(unigueID);
 
                         if (newUnigueID != null)
@@ -365,7 +348,22 @@ namespace InterfaceGtk
 
                     await LoadRecords();
                 }
-            }
+        }
+
+        void OnFilterClick(object? sender, EventArgs args)
+        {
+            Popover popover = new Popover((ToolButton)sender!)
+            {
+                Position = PositionType.Bottom,
+                BorderWidth = 2
+            };
+
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            FilterRecords(vBox);
+
+            popover.Add(vBox);
+            popover.ShowAll();
         }
 
         #endregion

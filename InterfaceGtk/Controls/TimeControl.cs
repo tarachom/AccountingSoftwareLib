@@ -39,7 +39,7 @@ namespace InterfaceGtk
             PackStart(entryTime, false, false, 2);
 
             //Button
-            bOpenPopover = new Button(new Image(AppContext.BaseDirectory + "images/find.png"));
+            bOpenPopover = new Button(new Image(Іконки.ДляКнопок.Find));
             bOpenPopover.Clicked += OnOpenPopover;
 
             PackStart(bOpenPopover, false, false, 1);
@@ -73,14 +73,14 @@ namespace InterfaceGtk
             {
                 mValue = value;
 
-                hBoxInfoValid.Add(new Image(AppContext.BaseDirectory + "images/16/ok.png"));
+                hBoxInfoValid.Add(new Image(Іконки.ДляІнформування.Ok));
                 hBoxInfoValid.ShowAll();
 
                 return true;
             }
             else
             {
-                hBoxInfoValid.Add(new Image(AppContext.BaseDirectory + "images/16/error.png"));
+                hBoxInfoValid.Add(new Image(Іконки.ДляІнформування.Error));
                 hBoxInfoValid.ShowAll();
 
                 return false;

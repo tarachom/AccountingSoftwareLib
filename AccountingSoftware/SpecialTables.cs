@@ -62,5 +62,10 @@ namespace AccountingSoftware
         /// Повнотекстовий пошук
         /// </summary>
         public static readonly string FullTextSearch = "tab_special_full_text_search";
+
+        /// <summary>
+        /// Помилки
+        /// </summary>
+        public static readonly string MessageError = "tab_special_message_error";
     }
 }

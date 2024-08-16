@@ -221,7 +221,7 @@ CREATE TYPE uuidtext AS
                 }
 
                 //
-                // ПідключитиДодаток_UUID_OSSP
+                // Підключити Додаток_UUID_OSSP
                 //
 
                 await ExecuteSQL(@"
@@ -230,6 +230,29 @@ CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
                 //
                 // Системні таблиці
                 //
+
+                /*
+                Таблиця для запису інформації про помилки
+
+                @datewrite - дата запису
+                @processname - Проведення, запис, видалення і т.д
+                @objectuid - Об'єкт
+                @objecttype - так як задано в конфігураторі
+                @objectname - Назва
+                @message - Повідомлення
+                */
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError} 
+(
+    uid serial NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    processname text NOT NULL,
+    objectuid uuid NOT NULL,
+    objecttype text NOT NULL,
+    objectname text NOT NULL,
+    message text NOT NULL,
+    PRIMARY KEY(uid)
+)");
 
                 /*
                 Таблиця для запису інформації про зміни в регістрах накопичення.
@@ -401,6 +424,83 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
         #region Exception
 
         public Exception? Exception { get; private set; }
+
+        #endregion
+
+        #region SpetialTable MessageError
+
+        public async ValueTask SpetialTableMessageErrorAdd(string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, byte transactionID = 0)
+        {
+            await ExecuteSQL($@"
+INSERT INTO {SpecialTables.MessageError} 
+(
+    datewrite,
+    processname,
+    objectuid,
+    objecttype,
+    objectname,
+    message
+)
+VALUES
+(
+    CURRENT_TIMESTAMP,
+    @processname,
+    @objectuid,
+    @objecttype,
+    @objectname,
+    @message
+)",
+new Dictionary<string, object>
+{
+    { "processname", nameProcess },
+    { "objectuid", uidObject },
+    { "objecttype", typeObject },
+    { "objectname", nameObject },
+    { "message", message }
+},
+transactionID);
+        }
+
+        public async ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(UnigueID? unigueIDObjectWhere = null, int? limit = null)
+        {
+            string query = $@"
+SELECT
+    datewrite AS date,
+    to_char(datewrite, 'HH24:MI:SS') AS time,
+    processname AS process,
+    objectuid AS uid,
+    objecttype AS type,
+    objectname AS name,
+    message
+FROM {SpecialTables.MessageError}
+";
+            if (unigueIDObjectWhere != null && !unigueIDObjectWhere.IsEmpty())
+            {
+                query += $@"
+WHERE
+    objectuid = '{unigueIDObjectWhere}'
+";
+            }
+
+            query += $@"
+ORDER BY date DESC
+LIMIT 
+    {limit ?? 100}
+";
+            return await SelectRequest(query);
+        }
+
+        public async ValueTask SpetialTableMessageErrorClear()
+        {
+            await ExecuteSQL($@"DELETE FROM {SpecialTables.MessageError}");
+        }
+
+        public async ValueTask SpetialTableMessageErrorClearOld()
+        {
+            await ExecuteSQL($@"
+DELETE FROM {SpecialTables.MessageError}
+WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '7 day')");
+        }
 
         #endregion
 

@@ -43,6 +43,15 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region SpetialTable MessageError
+
+        ValueTask SpetialTableMessageErrorAdd(string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, byte transactionID = 0);
+        ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(UnigueID? unigueIDObjectWhere = null, int? limit = null);
+        ValueTask SpetialTableMessageErrorClear();
+        ValueTask SpetialTableMessageErrorClearOld();
+
+        #endregion
+
         #region SpetialTable RegAccumTriger
 
         ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
