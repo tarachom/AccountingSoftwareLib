@@ -114,8 +114,6 @@ namespace AccountingSoftware
             UnigueID unigueID = new(UID);
             if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
                 await Kernel.DataBase.RemoveRegisterAccumulationTablePartRecords(UID, Table, TransactionID);
-            else
-                throw new Exception("Спроба видалити неіснуючий елемент табличної частини");
         }
 
         /// <summary>

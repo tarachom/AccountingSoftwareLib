@@ -61,7 +61,7 @@ namespace InterfaceGtk
 
                 if (OnlyDate)
                 {
-                    mValue = new DateTime(mValue.Year, mValue.Month, mValue.Day);
+                    mValue = mValue.Date;
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy");
                 }
                 else

@@ -29,12 +29,34 @@ namespace InterfaceGtk
 {
     public abstract class Журнал : ФормаЖурнал
     {
+        /// <summary>
+        /// Для позиціювання в списку
+        /// </summary>
         public UnigueID? SelectPointerItem { get; set; }
-        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
 
+        /// <summary>
+        /// Період для журналу
+        /// </summary>
+        //public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
+
+        /// <summary>
+        /// Період
+        /// </summary>
+        protected PeriodControl Період = new PeriodControl();
+
+        /// <summary>
+        /// Дерево
+        /// </summary>
         protected TreeView TreeViewGrid = new TreeView();
-        protected ComboBoxText ComboBoxPeriodWhere = new ComboBoxText();
-        protected ToolButton? TypeDocToolButton; //Список документів
+
+        /// <summary>
+        /// Список документів
+        /// </summary>
+        protected ToolButton? TypeDocToolButton;
+
+        /// <summary>
+        /// Прокрутка дерева
+        /// </summary>
         protected ScrolledWindow ScrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
 
         #region Динамічне створення обєктів
@@ -46,16 +68,12 @@ namespace InterfaceGtk
 
         public Журнал() : base()
         {
-            Box hBoxTop = new Box(Orientation.Horizontal, 0);
-            PackStart(hBoxTop, false, false, 10);
+            Box HBoxTop = new Box(Orientation.Horizontal, 0);
+            PackStart(HBoxTop, false, false, 10);
 
-            //Відбір по періоду
-            hBoxTop.PackStart(new Label("Період:"), false, false, 5);
-
-            ComboBoxPeriodWhere = ПеріодДляЖурналу.СписокВідбірПоПеріоду();
-            ComboBoxPeriodWhere.Changed += OnComboBoxPeriodWhereChanged;
-
-            hBoxTop.PackStart(ComboBoxPeriodWhere, false, false, 0);
+            //Період
+            Період.Changed = PeriodChanged;
+            HBoxTop.PackStart(Період, false, false, 2);
 
             CreateToolbar();
 
@@ -166,15 +184,15 @@ namespace InterfaceGtk
         {
             await BeforeSetValue();
 
-            if (PeriodWhere != 0)
-                ComboBoxPeriodWhere.ActiveId = PeriodWhere.ToString();
+            //if (PeriodWhere != 0)
+                //Період.Period = PeriodWhere;
         }
 
         public virtual void LoadRecords() { }
 
         public virtual void OpenTypeListDocs(Widget relative_to) { }
 
-        public virtual void PeriodWhereChanged() { }
+        public virtual void PeriodChanged() { }
 
         #region TreeView
 
@@ -260,11 +278,6 @@ namespace InterfaceGtk
         #endregion
 
         #region ToolBar
-
-        void OnComboBoxPeriodWhereChanged(object? sender, EventArgs args)
-        {
-            PeriodWhereChanged();
-        }
 
         void OFindClick(object? sender, EventArgs args)
         {

@@ -9,6 +9,7 @@ namespace InterfaceGtk
         public enum ТипПеріоду
         {
             ВесьПеріод = 1,
+            Особливий,
             Рік,
             ПівРоку,
             Квартал,
@@ -25,6 +26,7 @@ namespace InterfaceGtk
             return value switch
             {
                 ТипПеріоду.ВесьПеріод => "Весь період",
+                ТипПеріоду.Особливий => "Особливий",
                 ТипПеріоду.Рік => "Рік",
                 ТипПеріоду.ПівРоку => "Пів року",
                 ТипПеріоду.Квартал => "Три місяці",
@@ -48,7 +50,7 @@ namespace InterfaceGtk
             return сomboBox;
         }
 
-        public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду)
+        public static DateTime? ДатаПочатокЗПеріоду(ТипПеріоду типПеріоду)
         {
             DateTime? dateTime = типПеріоду switch
             {
@@ -64,7 +66,22 @@ namespace InterfaceGtk
                 _ => null
             };
 
-            return dateTime != null ? new Where(fieldWhere, Comparison.QT_EQ, dateTime.Value.Date) : null;
+            return dateTime != null ? dateTime.Value.Date : null;
+        }
+
+        public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду, DateTime? start = null, DateTime? stop = null)
+        {
+            DateTime? dateTime = ДатаПочатокЗПеріоду(типПеріоду);
+
+            if (типПеріоду == ТипПеріоду.Особливий && start != null && stop != null)
+            {
+                string start_format = start.Value.ToString("yyyy-MM-dd");
+                string stop_format = stop.Value.ToString("yyyy-MM-dd");
+
+                return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
+            }
+            else
+                return dateTime != null ? new Where(fieldWhere, Comparison.QT_EQ, dateTime.Value) : null;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Період для журналу
         /// </summary>
-        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
+        //public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
 
         /// <summary>
         /// Верхній набір меню
@@ -64,9 +64,9 @@ namespace InterfaceGtk
         protected TreeView TreeViewGrid = new TreeView();
 
         /// <summary>
-        /// Набір варіантів періодів
+        /// Період
         /// </summary>
-        protected ComboBoxText ComboBoxPeriodWhere = new ComboBoxText();
+        protected PeriodControl Період = new PeriodControl();
 
         /// <summary>
         /// Пошук
@@ -84,16 +84,13 @@ namespace InterfaceGtk
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
 
-            //Відбір по періоду
-            HBoxTop.PackStart(new Label("Період:"), false, false, 5);
-
-            ComboBoxPeriodWhere = ПеріодДляЖурналу.СписокВідбірПоПеріоду();
-            ComboBoxPeriodWhere.Changed += (object? sender, EventArgs args) => { PeriodWhereChanged(); };
-            HBoxTop.PackStart(ComboBoxPeriodWhere, false, false, 0);
+            //Період
+            Період.Changed = PeriodChanged;
+            HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
             ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
-            ПошукПовнотекстовий.Clear = PeriodWhereChanged;
+            ПошукПовнотекстовий.Clear = PeriodChanged;
             HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
 
             CreateToolbar();
@@ -120,8 +117,8 @@ namespace InterfaceGtk
         {
             await BeforeSetValue();
 
-            if (PeriodWhere != 0)
-                ComboBoxPeriodWhere.ActiveId = PeriodWhere.ToString();
+            // if (PeriodWhere != 0)
+            //     Період.Period = PeriodWhere;
         }
 
         #region Toolbar & Menu
@@ -266,7 +263,7 @@ namespace InterfaceGtk
             LoadRecords();
         }
 
-        protected abstract void PeriodWhereChanged();
+        protected abstract void PeriodChanged();
 
         protected abstract ValueTask SpendTheDocument(UnigueID unigueID, bool spendDoc);
 
