@@ -1421,6 +1421,9 @@ WHERE
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
+                foreach (Where field in QuerySelect.Where)
+                    command.Parameters.AddWithValue(field.Alias, field.Value);
+
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
@@ -1467,6 +1470,21 @@ WHERE
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async ValueTask RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $"DELETE FROM {table} WHERE uid = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -1778,6 +1796,22 @@ WHERE
             }
         }
 
+        public async ValueTask RemoveDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $"DELETE FROM {table} WHERE owner = @owner AND uid = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+                command.Parameters.AddWithValue("uid", UID);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
@@ -2041,6 +2075,22 @@ WHERE
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async ValueTask RemoveDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $"DELETE FROM {table} WHERE owner = @owner AND uid = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
+                command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -2500,6 +2550,21 @@ WHERE
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async ValueTask RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $"DELETE FROM {table} WHERE uid = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
             }

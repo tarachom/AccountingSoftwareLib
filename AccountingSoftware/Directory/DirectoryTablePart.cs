@@ -119,6 +119,21 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Видалити запис
+        /// </summary>
+        /// <param name="UID">Ключ</param>
+        /// <param name="ownerUnigueID">Вкласник</param>
+        /// <exception cref="Exception"></exception>
+        protected async ValueTask BaseRemove(Guid UID, UnigueID ownerUnigueID)
+        {
+            UnigueID unigueID = new(UID);
+            if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
+                await Kernel.DataBase.RemoveDirectoryTablePartRecords(UID, ownerUnigueID, Table, TransactionID);
+            else
+                throw new Exception("Спроба видалити неіснуючий елемент табличної частини");
+        }
+
+        /// <summary>
         /// Видалити всі записи з таб. частини.
         /// Функція очищає всю таб. частину
         /// </summary>

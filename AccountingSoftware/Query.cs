@@ -38,8 +38,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public static string GetParamGuid()
         {
-            if (ParamGuidState == 0) ParamGuidState = 1;
-            if (ParamGuidState >= int.MaxValue - 1) ParamGuidState = 1;
+            if (ParamGuidState == 0 || ParamGuidState >= int.MaxValue - 1) ParamGuidState = 1;
             return "p" + ParamGuidState++.ToString();
         }
 

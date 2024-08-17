@@ -9,15 +9,15 @@ namespace InterfaceGtk
         public enum ТипПеріоду
         {
             ВесьПеріод = 1,
-            ЗПочаткуРоку = 2,
-            Квартал = 6,
-            ЗМинулогоМісяця = 7,
-            Місяць = 8,
-            ЗПочаткуМісяця = 3,
-            ЗПочаткуТижня = 4,
-            ПоточнийДень = 5,
-            ДваДні = 9,
-            ТриДні = 10
+            Рік,
+            ПівРоку,
+            Квартал,
+            ДваМісяці,
+            Місяць,
+            Тиждень,
+            ТриДні,
+            ДваДні,
+            День
         }
 
         static string ТипПеріоду_Alias(ТипПеріоду value)
@@ -25,15 +25,15 @@ namespace InterfaceGtk
             return value switch
             {
                 ТипПеріоду.ВесьПеріод => "Весь період",
-                ТипПеріоду.ЗПочаткуРоку => "Рік (з початку року)",
-                ТипПеріоду.Квартал => "Квартал (три місяці)",
-                ТипПеріоду.ЗМинулогоМісяця => "Два місяці (з 1 числа)",
+                ТипПеріоду.Рік => "Рік",
+                ТипПеріоду.ПівРоку => "Пів року",
+                ТипПеріоду.Квартал => "Три місяці",
+                ТипПеріоду.ДваМісяці => "Два місяці",
                 ТипПеріоду.Місяць => "Місяць",
-                ТипПеріоду.ЗПочаткуМісяця => "Місяць (з 1 числа)",
-                ТипПеріоду.ЗПочаткуТижня => "Тиждень",
-                ТипПеріоду.ПоточнийДень => "День",
-                ТипПеріоду.ДваДні => "Два дні",
+                ТипПеріоду.Тиждень => "Тиждень",
                 ТипПеріоду.ТриДні => "Три дні",
+                ТипПеріоду.ДваДні => "Два дні",
+                ТипПеріоду.День => "День",
                 _ => ""
             };
         }
@@ -50,44 +50,21 @@ namespace InterfaceGtk
 
         public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду)
         {
-            switch (типПеріоду)
+            DateTime? dateTime = типПеріоду switch
             {
-                case ТипПеріоду.ЗПочаткуРоку:
-                    return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(DateTime.Now.Year, 1, 1));
-                case ТипПеріоду.Квартал:
-                    {
-                        DateTime ДатаТриМісцяНазад = DateTime.Now.AddMonths(-3);
-                        return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(ДатаТриМісцяНазад.Year, ДатаТриМісцяНазад.Month, 1));
-                    }
-                case ТипПеріоду.ЗМинулогоМісяця:
-                    {
-                        DateTime ДатаМісцьНазад = DateTime.Now.AddMonths(-1);
-                        return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(ДатаМісцьНазад.Year, ДатаМісцьНазад.Month, 1));
-                    }
-                case ТипПеріоду.Місяць:
-                    return new Where(fieldWhere, Comparison.QT_EQ, DateTime.Now.AddMonths(-1));
-                case ТипПеріоду.ЗПочаткуМісяця:
-                    return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1));
-                case ТипПеріоду.ЗПочаткуТижня:
-                    {
-                        DateTime СімДнівНазад = DateTime.Now.AddDays(-7);
-                        return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(СімДнівНазад.Year, СімДнівНазад.Month, СімДнівНазад.Day));
-                    }
-                case ТипПеріоду.ДваДні:
-                    {
-                        DateTime ДваДніНазад = DateTime.Now.AddDays(-1);
-                        return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(ДваДніНазад.Year, ДваДніНазад.Month, ДваДніНазад.Day));
-                    }
-                case ТипПеріоду.ТриДні:
-                    {
-                        DateTime ТриДніНазад = DateTime.Now.AddDays(-2);
-                        return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(ТриДніНазад.Year, ТриДніНазад.Month, ТриДніНазад.Day));
-                    }
-                case ТипПеріоду.ПоточнийДень:
-                    return new Where(fieldWhere, Comparison.QT_EQ, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day));
-                default:
-                    return null;
-            }
+                ТипПеріоду.Рік => DateTime.Now.AddYears(-1),
+                ТипПеріоду.ПівРоку => DateTime.Now.AddMonths(-6),
+                ТипПеріоду.Квартал => DateTime.Now.AddMonths(-3),
+                ТипПеріоду.ДваМісяці => DateTime.Now.AddMonths(-2),
+                ТипПеріоду.Місяць => DateTime.Now.AddMonths(-1),
+                ТипПеріоду.Тиждень => DateTime.Now.AddDays(-7),
+                ТипПеріоду.ТриДні => DateTime.Now.AddDays(-2),
+                ТипПеріоду.ДваДні => DateTime.Now.AddDays(-1),
+                ТипПеріоду.День => DateTime.Now,
+                _ => null
+            };
+
+            return dateTime != null ? new Where(fieldWhere, Comparison.QT_EQ, dateTime.Value.Date) : null;
         }
     }
 }

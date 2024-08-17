@@ -108,6 +108,9 @@ namespace InterfaceGtk
                     scroll.Add(widget);
 
                     widget.Name = codePage;
+
+                    //Додатковий вказівник на блокнот вкладаю у віджет
+                    //Функція GetNotebookFromWidget() отримує вказівник на блокнот з віджету
                     widget.Data.Add(DataKey_ParentNotebook, notebook);
                 }
 
@@ -129,7 +132,7 @@ namespace InterfaceGtk
             Box hBoxLabel = new Box(Orientation.Horizontal, 0);
 
             //Ico
-            hBoxLabel.PackStart(new Image($"{AppContext.BaseDirectory}images/doc.png"), false, false, 2);
+            hBoxLabel.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 2);
 
             //Текст
             Label label = new Label { Text = SubstringPageName(caption), TooltipText = caption, Expand = false, Halign = Align.Start };
@@ -138,7 +141,7 @@ namespace InterfaceGtk
             //Лінк закриття сторінки
             LinkButton lbClose = new LinkButton("Закрити", "")
             {
-                Image = new Image(AppContext.BaseDirectory + "images/clean.png"),
+                Image = new Image(Іконки.ДляКнопок.Clean),
                 AlwaysShowImage = true,
                 Name = codePage
             };

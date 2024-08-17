@@ -108,6 +108,7 @@ namespace AccountingSoftware
 
         ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
         ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0);
         ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
 
         #endregion
@@ -133,6 +134,7 @@ namespace AccountingSoftware
         ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask RemoveDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0);
         ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
@@ -150,6 +152,7 @@ namespace AccountingSoftware
         ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
         ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask RemoveDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0);
         ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
@@ -183,6 +186,7 @@ namespace AccountingSoftware
 
         ValueTask SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
         ValueTask InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0);
         ValueTask DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0);
 
         #endregion

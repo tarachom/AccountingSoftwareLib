@@ -46,7 +46,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Період для журналу
         /// </summary>
-        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = 0;
+        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
 
         /// <summary>
         /// Верхній набір меню
@@ -72,6 +72,12 @@ namespace InterfaceGtk
         /// Пошук
         /// </summary>
         SearchControl ПошукПовнотекстовий = new SearchControl();
+
+        /// <summary>
+        /// Додатковий ключ форми журналу для налаштувань
+        /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
+        /// </summary>
+        public string KeyForSetting { get; set; } = "";
 
         public ДокументЖурнал() : base()
         {
@@ -108,12 +114,14 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public void SetValue()
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+
+        public async ValueTask SetValue()
         {
+            await BeforeSetValue();
+
             if (PeriodWhere != 0)
                 ComboBoxPeriodWhere.ActiveId = PeriodWhere.ToString();
-            //else if (Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const != 0)
-            //    ComboBoxPeriodWhere.ActiveId = Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const.ToString();
         }
 
         #region Toolbar & Menu

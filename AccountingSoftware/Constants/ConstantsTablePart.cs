@@ -120,6 +120,20 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Видалити запис
+        /// </summary>
+        /// <param name="UID">Ключ</param>
+        /// <exception cref="Exception"></exception>
+        protected async ValueTask BaseRemove(Guid UID)
+        {
+            UnigueID unigueID = new(UID);
+            if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
+                await Kernel.DataBase.RemoveConstantsTablePartRecords(UID, Table, TransactionID);
+            else
+                throw new Exception("Спроба видалити неіснуючий елемент табличної частини");
+        }
+
+        /// <summary>
         /// Очистити табличну частину
         /// </summary>
         protected async ValueTask BaseDelete()

@@ -30,7 +30,7 @@ namespace InterfaceGtk
     public abstract class Журнал : ФормаЖурнал
     {
         public UnigueID? SelectPointerItem { get; set; }
-        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = 0;
+        public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
 
         protected TreeView TreeViewGrid = new TreeView();
         protected ComboBoxText ComboBoxPeriodWhere = new ComboBoxText();
@@ -160,12 +160,14 @@ namespace InterfaceGtk
 
         #endregion
 
-        public void SetValue()
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+
+        public async ValueTask SetValue()
         {
+            await BeforeSetValue();
+
             if (PeriodWhere != 0)
                 ComboBoxPeriodWhere.ActiveId = PeriodWhere.ToString();
-            // else if (!string.IsNullOrEmpty(Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const))
-            //     ComboBoxPeriodWhere.ActiveId = Константи.ЖурналиДокументів.ОсновнийТипПеріоду_Const;
         }
 
         public virtual void LoadRecords() { }
