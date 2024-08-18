@@ -46,7 +46,15 @@ namespace InterfaceGtk
             PackStart(bOpenCalendar, false, false, 1);
         }
 
+        /// <summary>
+        /// Тільки дата, без часу
+        /// </summary>
         public bool OnlyDate { get; set; } = false;
+
+        /// <summary>
+        /// Не відображати мінімальне значення дати DateTime.MinValue
+        /// </summary>
+        public bool HideMinValue { get; set; } = false;
 
         DateTime mValue;
         public DateTime Value
@@ -59,7 +67,9 @@ namespace InterfaceGtk
             {
                 mValue = value;
 
-                if (OnlyDate)
+                if (HideMinValue && mValue.Date == DateTime.MinValue.Date)
+                    entryDateTimeValue.Text = "";
+                else if (OnlyDate)
                 {
                     mValue = mValue.Date;
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy");
@@ -88,6 +98,9 @@ namespace InterfaceGtk
         public bool IsValidValue()
         {
             ClearHBoxInfoValid();
+
+            if (string.IsNullOrEmpty(entryDateTimeValue.Text))
+                return false;
 
             if (DateTime.TryParse(entryDateTimeValue.Text, out DateTime value))
             {

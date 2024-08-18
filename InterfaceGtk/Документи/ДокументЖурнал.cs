@@ -44,11 +44,6 @@ namespace InterfaceGtk
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
         /// <summary>
-        /// Період для журналу
-        /// </summary>
-        //public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
-
-        /// <summary>
         /// Верхній набір меню
         /// </summary>
         protected Toolbar ToolbarTop = new Toolbar();
@@ -116,9 +111,6 @@ namespace InterfaceGtk
         public async ValueTask SetValue()
         {
             await BeforeSetValue();
-
-            // if (PeriodWhere != 0)
-            //     Період.Period = PeriodWhere;
         }
 
         #region Toolbar & Menu

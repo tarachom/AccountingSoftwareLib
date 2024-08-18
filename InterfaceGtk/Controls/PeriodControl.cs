@@ -34,7 +34,7 @@ namespace InterfaceGtk
     public class PeriodControl : Box
     {
         ComboBoxText comboBoxPeriod; //Набір варіантів періодів
-        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true/*, Value = DateTime.Now*/, Sensitive = false };
+        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true, HideMinValue = true, Sensitive = false };
         DateTimeControl dateStop = new DateTimeControl() { OnlyDate = true, Value = DateTime.Now, Sensitive = false };
         Button bSelect = new Button(new Image(Stock.GoForward, IconSize.Menu)) { Sensitive = false };
         public System.Action? Changed { get; set; }
@@ -61,10 +61,14 @@ namespace InterfaceGtk
                 bool ОсобливийПеріод = Period == ПеріодДляЖурналу.ТипПеріоду.Особливий;
                 dateStart.Sensitive = dateStop.Sensitive = bSelect.Sensitive = ОсобливийПеріод;
 
-                DateTime? dateTime = ПеріодДляЖурналу.ДатаПочатокЗПеріоду(Period);
-
-                if (dateTime != null)
-                    dateStart.Value = dateTime.Value;
+                if (Period == ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод)
+                    dateStart.Value = DateTime.MinValue;
+                else
+                {
+                    DateTime? dateTime = ПеріодДляЖурналу.ДатаПочатокЗПеріоду(Period);
+                    if (dateTime != null)
+                        dateStart.Value = dateTime.Value;
+                }
 
                 if (!ОсобливийПеріод)
                     dateStop.Value = DateTime.Now;

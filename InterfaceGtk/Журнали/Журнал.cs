@@ -35,11 +35,6 @@ namespace InterfaceGtk
         public UnigueID? SelectPointerItem { get; set; }
 
         /// <summary>
-        /// Період для журналу
-        /// </summary>
-        //public ПеріодДляЖурналу.ТипПеріоду PeriodWhere { get; set; } = ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод;
-
-        /// <summary>
         /// Період
         /// </summary>
         protected PeriodControl Період = new PeriodControl();
@@ -183,9 +178,6 @@ namespace InterfaceGtk
         public async ValueTask SetValue()
         {
             await BeforeSetValue();
-
-            //if (PeriodWhere != 0)
-                //Період.Period = PeriodWhere;
         }
 
         public virtual void LoadRecords() { }

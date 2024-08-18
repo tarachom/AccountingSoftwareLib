@@ -75,8 +75,8 @@ namespace InterfaceGtk
             {
                 if (start != null && stop != null)
                 {
-                    string start_format = start.Value.ToString("yyyy-MM-dd");
-                    string stop_format = stop.Value.ToString("yyyy-MM-dd");
+                    string start_format = start.Value.ToString("yyyy-MM-dd 00:00:00");
+                    string stop_format = stop.Value.ToString("yyyy-MM-dd 23:59:59");
 
                     return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
                 }
