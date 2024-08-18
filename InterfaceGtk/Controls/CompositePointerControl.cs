@@ -29,22 +29,12 @@ namespace InterfaceGtk
 {
     public abstract class CompositePointerControl : PointerControl
     {
-        event EventHandler<UuidAndText>? PointerChanged;
-
-        #region Abstract
-
-        protected abstract string NameSpageProgram { get; }
-        protected abstract string NameSpageCodeGeneration { get; }
-        protected abstract Kernel Kernel { get; }
-        protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
-        protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
-
-        #endregion
-
-        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-
-        public CompositePointerControl()
+        public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration)
         {
+            Kernel = kernel;
+            NameSpageProgram = nameSpageProgram;
+            NameSpageCodeGeneration = nameSpageCodeGeneration;
+
             PointerChanged += OnPointerChanged;
 
             pointer = new UuidAndText();
@@ -55,6 +45,15 @@ namespace InterfaceGtk
             PackStart(bTypeInfo, false, false, 1);
             bTypeInfo.Clicked += OnTypeInfo;
         }
+
+        private Kernel Kernel { get; set; }
+        private string NameSpageProgram { get; set; }
+        private string NameSpageCodeGeneration { get; set; }
+        private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+        private event EventHandler<UuidAndText>? PointerChanged;
+
+        protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+        protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
 
         UuidAndText pointer;
         public UuidAndText Pointer

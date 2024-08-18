@@ -71,17 +71,23 @@ namespace InterfaceGtk
 
         public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду, DateTime? start = null, DateTime? stop = null)
         {
-            DateTime? dateTime = ДатаПочатокЗПеріоду(типПеріоду);
-
-            if (типПеріоду == ТипПеріоду.Особливий && start != null && stop != null)
+            if (типПеріоду == ТипПеріоду.Особливий)
             {
-                string start_format = start.Value.ToString("yyyy-MM-dd");
-                string stop_format = stop.Value.ToString("yyyy-MM-dd");
+                if (start != null && stop != null)
+                {
+                    string start_format = start.Value.ToString("yyyy-MM-dd");
+                    string stop_format = stop.Value.ToString("yyyy-MM-dd");
 
-                return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
+                    return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
+                }
+                else
+                    return null;
             }
             else
+            {
+                DateTime? dateTime = ДатаПочатокЗПеріоду(типПеріоду);
                 return dateTime != null ? new Where(fieldWhere, Comparison.QT_EQ, dateTime.Value) : null;
+            }
         }
     }
 }

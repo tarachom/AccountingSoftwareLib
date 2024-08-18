@@ -32,43 +32,37 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ФункціїДляПовідомлень
+    public abstract class ФункціїДляПовідомлень(Kernel kernel)
     {
-        protected abstract Kernel? Kernel { get; }
+        private Kernel Kernel { get; set; } = kernel;
 
         public async ValueTask ДодатиПовідомленняПроПомилку(string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення)
         {
-            if (Kernel != null)
-                await Kernel.DataBase.SpetialTableMessageErrorAdd
-                (
-                     НазваПроцесу,
-                     Обєкт != null ? (Guid)Обєкт : Guid.Empty,
-                     ТипОбєкту,
-                     НазваОбєкту,
-                     Повідомлення
-                );
+            await Kernel.DataBase.SpetialTableMessageErrorAdd
+            (
+                 НазваПроцесу,
+                 Обєкт != null ? (Guid)Обєкт : Guid.Empty,
+                 ТипОбєкту,
+                 НазваОбєкту,
+                 Повідомлення
+            );
 
             await ОчиститиУстарівшіПовідомлення();
         }
 
         public async ValueTask ОчиститиВсіПовідомлення()
         {
-            if (Kernel != null)
-                await Kernel.DataBase.SpetialTableMessageErrorClear();
+            await Kernel.DataBase.SpetialTableMessageErrorClear();
         }
 
         public async ValueTask ОчиститиУстарівшіПовідомлення()
         {
-            if (Kernel != null)
-                await Kernel.DataBase.SpetialTableMessageErrorClearOld();
+            await Kernel.DataBase.SpetialTableMessageErrorClearOld();
         }
 
         public async ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки(UnigueID? ВідбірПоОбєкту = null, int? limit = null)
         {
-            if (Kernel != null)
-                return await Kernel.DataBase.SpetialTableMessageErrorSelect(ВідбірПоОбєкту, limit);
-            else
-                return new SelectRequest_Record();
+            return await Kernel.DataBase.SpetialTableMessageErrorSelect(ВідбірПоОбєкту, limit);
         }
     }
 }

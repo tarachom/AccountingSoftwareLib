@@ -30,7 +30,12 @@ namespace InterfaceGtk
         public const string DataKey_HistorySwitchList = "history_switch_list";
         public const string DataKey_ParentNotebook = "parent_notebook";
 
-        public static Notebook CreateNotebook(bool enable_history_switch_list = true)
+        /// <summary>
+        /// Функція створює блокнок з верхнім положенням вкладок
+        /// </summary>
+        /// <param name="history_switch_list">Збереження історії переключення вкладок</param>
+        /// <returns></returns>
+        public static Notebook CreateNotebook(bool history_switch_list = true)
         {
             Notebook notebook = new Notebook()
             {
@@ -41,11 +46,12 @@ namespace InterfaceGtk
                 TabPos = PositionType.Top
             };
 
-            if (enable_history_switch_list)
+            if (history_switch_list)
             {
                 //Список для збереження історії переключення вкладок
                 notebook.Data.Add(DataKey_HistorySwitchList, new List<string>());
 
+                //Обробка переключення вкладок
                 notebook.SwitchPage += (object? sender, SwitchPageArgs args) =>
                 {
                     string currPageUID = args.Page.Name;
@@ -175,6 +181,7 @@ namespace InterfaceGtk
                             if (historySwitchList.Count > 0)
                                 CurrentNotebookPageToCode(notebook, historySwitchList[historySwitchList.Count - 1]);
                         }
+                        
                         notebook.DetachTab(wg);
                     }
                 });

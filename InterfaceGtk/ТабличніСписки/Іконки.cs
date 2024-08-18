@@ -6,6 +6,7 @@ namespace InterfaceGtk.Іконки
     public static class ДляФорми
     {
         public static string General = $"{AppContext.BaseDirectory}images/form.ico";
+        public static string Configurator = $"{AppContext.BaseDirectory}images/configurator.ico";
     }
 
     public static class ДляКнопок

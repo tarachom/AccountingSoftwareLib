@@ -28,9 +28,10 @@ namespace InterfaceGtk
 {
     public class FormConfigurationSelection : Window
     {
-        public virtual TypeForm TypeOpenForm { get; } = TypeForm.Configurator;
-        public virtual Kernel? ProgramKernel { get; }
-        public virtual Kernel? ConfiguratorKernel { get; }
+        private TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
+        private Kernel? ProgramKernel { get; set; }
+        private Kernel? ConfiguratorKernel { get; set; }
+
         public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
         public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
 
@@ -40,16 +41,18 @@ namespace InterfaceGtk
         Button buttonConfigurator;
         Spinner spinner;
 
-        public FormConfigurationSelection() : base("Вибір бази даних")
+        public FormConfigurationSelection(Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm) : base("Вибір бази даних")
         {
+            TypeOpenForm = typeOpenForm;
+            ProgramKernel = programKernel;
+            ConfiguratorKernel = configuratorKernel;
+
             SetPosition(WindowPosition.Center);
             Resizable = false;
             BorderWidth = 4;
 
-            string ico_file_name = AppContext.BaseDirectory + "images/form.ico";
-
-            if (File.Exists(ico_file_name))
-                SetDefaultIconFromFile(ico_file_name);
+            if (File.Exists(Іконки.ДляФорми.General))
+                SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
             DeleteEvent += delegate { Application.Quit(); };
 

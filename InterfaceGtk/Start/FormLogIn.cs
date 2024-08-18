@@ -42,10 +42,8 @@ namespace InterfaceGtk
             BorderWidth = 5;
             DeleteEvent += delegate { OnCancel(null, new EventArgs()); };
 
-            string ico_file_name = AppContext.BaseDirectory + "images/form.ico";
-
-            if (File.Exists(ico_file_name))
-                SetDefaultIconFromFile(ico_file_name);
+            if (File.Exists(Іконки.ДляФорми.General))
+                SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
             Box vBox = new Box(Orientation.Vertical, 0);
 

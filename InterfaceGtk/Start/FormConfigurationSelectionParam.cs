@@ -44,10 +44,8 @@ namespace InterfaceGtk
             SetDefaultSize(420, 0);
             SetPosition(WindowPosition.Center);
 
-            string ico_file_name = AppContext.BaseDirectory + "images/configurator.ico";
-
-            if (File.Exists(ico_file_name))
-                SetDefaultIconFromFile(ico_file_name);
+            if (File.Exists(Іконки.ДляФорми.Configurator))
+                SetDefaultIconFromFile(Іконки.ДляФорми.Configurator);
 
             BorderWidth = 5;
 

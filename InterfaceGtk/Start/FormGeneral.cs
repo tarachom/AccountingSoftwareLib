@@ -44,7 +44,8 @@ namespace InterfaceGtk
 
             DeleteEvent += delegate { Application.Quit(); };
 
-            SetDefaultIconFromFile(Іконки.ДляФорми.General);
+            if (File.Exists(Іконки.ДляФорми.General))
+                SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
             //Блок кнопок у шапці головного вікна
             {
