@@ -78,9 +78,14 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        public async ValueTask SetValue()
+        {
+            await LoadRecords();
+        }
+
         #region Virtual Function
 
-        public virtual ValueTask LoadRecords() { return new ValueTask(); }
+        protected virtual ValueTask LoadRecords() { return new ValueTask(); }
 
         protected virtual ValueTask LoadRecords_OnSearch(string searchText) { return new ValueTask(); }
 

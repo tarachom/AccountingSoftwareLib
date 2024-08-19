@@ -1678,7 +1678,11 @@ namespace AccountingSoftware
                         LoadFields(configurationRegistersInformation.PropertyFields, propertyFieldsNode, "RegisterInformation");
 
                     if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                    {
                         LoadTabularList(configurationRegistersInformation.TabularList, registerInformationNode?.Current);
+
+                        LoadForms(configurationRegistersInformation.Forms, registerInformationNode?.Current);
+                    }
                 }
         }
 
@@ -2811,6 +2815,8 @@ namespace AccountingSoftware
                     ConfRegisterInfo.Value.ResourcesFields.Values,
                     ConfRegisterInfo.Value.PropertyFields.Values);
                 SaveTabularList(Conf, AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
+
+                SaveForms(ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 

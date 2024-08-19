@@ -182,11 +182,11 @@ namespace InterfaceGtk
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
-        public virtual void LoadRecords() { }
+        protected virtual void LoadRecords() { }
 
-        public virtual void OpenTypeListDocs(Widget relative_to) { }
+        protected virtual void OpenTypeListDocs(Widget relative_to) { }
 
-        public virtual void PeriodChanged() { }
+        protected virtual void PeriodChanged() { }
 
         #endregion
 

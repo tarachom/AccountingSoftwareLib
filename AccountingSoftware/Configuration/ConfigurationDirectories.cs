@@ -112,6 +112,9 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDirCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
+            foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in this.TabularList)
+                confDirCopy.TabularList.Add(tabularList.Key, tabularList.Value.Copy());
+
             foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
                 confDirCopy.Forms.Add(forms.Key, forms.Value.Copy());
 

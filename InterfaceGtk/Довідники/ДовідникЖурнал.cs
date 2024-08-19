@@ -107,6 +107,11 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        public async ValueTask SetValue()
+        {
+           await LoadRecords();
+        }
+
         #region Toolbar & Menu
 
         void CreateToolbar()
@@ -155,7 +160,7 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
-        public abstract ValueTask LoadRecords();
+        protected abstract ValueTask LoadRecords();
 
         protected abstract ValueTask LoadRecords_OnSearch(string searchText);
 
@@ -165,7 +170,7 @@ namespace InterfaceGtk
 
         protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
-        public virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
+        protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
             await LoadRecords();

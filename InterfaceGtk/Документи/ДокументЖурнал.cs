@@ -239,7 +239,7 @@ namespace InterfaceGtk
 
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
 
-        public abstract void LoadRecords();
+        protected abstract void LoadRecords();
 
         protected abstract void LoadRecords_OnSearch(string searchText);
 
@@ -249,7 +249,7 @@ namespace InterfaceGtk
 
         protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
-        public virtual void CallBack_LoadRecords(UnigueID? selectPointer)
+        protected virtual void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
             LoadRecords();

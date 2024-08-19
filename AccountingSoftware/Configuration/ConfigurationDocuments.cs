@@ -104,6 +104,9 @@ namespace AccountingSoftware
             foreach (KeyValuePair<string, ConfigurationTablePart> tablePart in this.TabularParts)
                 confDocCopy.TabularParts.Add(tablePart.Key, tablePart.Value.Copy());
 
+            foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in this.TabularList)
+                confDocCopy.TabularList.Add(tabularList.Key, tabularList.Value.Copy());
+
             foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
                 confDocCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
@@ -135,7 +138,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Додати новий табличний список
         /// </summary>
-        /// <param name="tablePart">Новий табличний список</param>
+        /// <param name="tabularList">Новий табличний список</param>
         public void AppendTableList(ConfigurationTabularList tabularList)
         {
             TabularList.Add(tabularList.Name, tabularList);
