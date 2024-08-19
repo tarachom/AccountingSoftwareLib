@@ -106,8 +106,6 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
-
         public async ValueTask SetValue()
         {
             await BeforeSetValue();
@@ -236,6 +234,8 @@ namespace InterfaceGtk
         #endregion
 
         #region Virtual & Abstract Function
+        
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
 

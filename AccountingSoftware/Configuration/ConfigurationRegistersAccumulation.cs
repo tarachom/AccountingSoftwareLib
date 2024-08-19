@@ -86,7 +86,12 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationQueryBlock> QueryBlockList { get; } = [];
 
         /// <summary>
-        /// Без віртуальної таблиці підсумки
+        /// Табличні списки
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
+
+        /// <summary>
+        /// Без віртуальної таблиці Підсумки
         /// </summary>
         public bool NoSummary { get; set; }
 
@@ -145,6 +150,11 @@ namespace AccountingSoftware
         public void AppendQueryBlockList(ConfigurationQueryBlock queryBlock)
         {
             QueryBlockList.Add(queryBlock.Name, queryBlock);
+        }
+
+        public void AppendTableList(ConfigurationTabularList tabularList)
+        {
+            TabularList.Add(tabularList.Name, tabularList);
         }
 
         #endregion

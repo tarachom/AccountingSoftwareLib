@@ -28,22 +28,55 @@ namespace InterfaceGtk
 {
     public abstract class РегістриЖурнал : ФормаЖурнал
     {
+        /// <summary>
+        /// Для позиціювання в списку
+        /// </summary>
         public UnigueID? SelectPointerItem { get; set; }
 
+        /// <summary>
+        /// Період
+        /// </summary>
+        protected PeriodControl Період = new PeriodControl();
+
+        /// <summary>
+        /// Верхній набір меню
+        /// </summary>
         protected Toolbar ToolbarTop = new Toolbar();
+
+        /// <summary>
+        /// Верхній бок для періоду
+        /// </summary>
+        protected Box HBoxPeriod = new Box(Orientation.Horizontal, 0);
+
+        /// <summary>
+        /// Верхній бок для додаткових кнопок
+        /// </summary>
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+
+        /// <summary>
+        /// Дерево
+        /// </summary>
         protected TreeView TreeViewGrid = new TreeView();
+
+        /// <summary>
+        /// Пошук
+        /// </summary>
         SearchControl ПошукПовнотекстовий = new SearchControl();
 
         public РегістриЖурнал() : base()
         {
-            //Кнопки
-            PackStart(HBoxTop, false, false, 10);
+            //Період
+            PackStart(HBoxPeriod, false, false, 10);
+            Період.Changed = PeriodChanged;
+            HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
             ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
             ПошукПовнотекстовий.Clear = LoadRecords;
-            HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
+            HBoxPeriod.PackStart(ПошукПовнотекстовий, false, false, 2);
+
+            //Кнопки
+            PackStart(HBoxTop, false, false, 5);
 
             CreateToolbar();
 
@@ -61,6 +94,11 @@ namespace InterfaceGtk
             PackStart(scrollTree, true, true, 0);
 
             ShowAll();
+        }
+
+        public async ValueTask SetValue()
+        {
+            await BeforeSetValue();
         }
 
         #region Toolbar & Menu
@@ -107,7 +145,9 @@ namespace InterfaceGtk
 
         #region Virtual Function
 
-        public virtual void LoadRecords() { }
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+
+        protected virtual void LoadRecords() { }
 
         protected virtual void LoadRecords_OnSearch(string searchText) { }
 
@@ -117,11 +157,13 @@ namespace InterfaceGtk
 
         protected virtual ValueTask<UnigueID?> Copy(UnigueID unigueID) { return new ValueTask<UnigueID?>(); }
 
-        public virtual void CallBack_LoadRecords(UnigueID? selectPointer)
+        protected virtual void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
             LoadRecords();
         }
+
+        protected abstract void PeriodChanged();
 
         #endregion
 

@@ -168,8 +168,8 @@ namespace AccountingSoftware
 
                     if (count > 1)
                     {
-                        if (field.ComparisonPreceding != Comparison.Empty)
-                            query += " " + field.ComparisonPreceding;
+                        //За замовчуванням відбори об'єднуються AND
+                        query += " " + (field.ComparisonPreceding != Comparison.Empty ? field.ComparisonPreceding : Comparison.AND);
                     }
 
                     //FuncToField && FuncToField_Param1
@@ -256,12 +256,6 @@ namespace AccountingSoftware
                                 break;
                             }
                     }
-
-                    if (count < lenght)
-                    {
-                        if (field.ComparisonNext != Comparison.Empty)
-                            query += " " + field.ComparisonNext;
-                    }
                 }
             }
 
@@ -313,14 +307,13 @@ namespace AccountingSoftware
         /// <param name="value">Значення поля</param>
         /// <param name="usingSQLToValue">Використання запиту SQL в якості значення поля</param>
         /// <param name="comparisonNext">Звязок між блоками відборів</param>
-        public Where(string name, Comparison comparison, object value, bool usingSQLToValue = false, Comparison comparisonNext = Comparison.Empty)
+        public Where(string name, Comparison comparison, object value, bool usingSQLToValue = false)
         {
             ComparisonPreceding = Comparison.Empty;
             Name = name;
             Comparison = comparison;
             Value = value;
             UsingSQLToValue = usingSQLToValue;
-            ComparisonNext = comparisonNext;
 
             Init();
         }
@@ -340,7 +333,6 @@ namespace AccountingSoftware
             Comparison = comparison;
             Value = value;
             UsingSQLToValue = usingSQLToValue;
-            ComparisonNext = Comparison.Empty;
 
             Init();
         }
@@ -374,11 +366,6 @@ namespace AccountingSoftware
         /// Звязок між блоками відборів
         /// </summary>
         public Comparison ComparisonPreceding { get; set; }
-
-        /// <summary>
-        /// Звязок між блоками відборів
-        /// </summary>
-        public Comparison ComparisonNext { get; set; }
 
         /// <summary>
         /// Використання запиту SQL в якості значення поля

@@ -1740,7 +1740,10 @@ namespace AccountingSoftware
                     LoadTabularParts(configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
 
                     if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
+                    {
                         LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
+                        LoadTabularList(configurationRegistersAccumulation.TabularList, registerAccumulationNode?.Current);
+                    }
                 }
         }
 
@@ -1805,7 +1808,7 @@ namespace AccountingSoftware
 
             SaveRegistersInformation(Conf, Conf.RegistersInformation, xmlConfDocument, rootNode);
 
-            SaveRegistersAccumulation(Conf.RegistersAccumulation, xmlConfDocument, rootNode);
+            SaveRegistersAccumulation(Conf, Conf.RegistersAccumulation, xmlConfDocument, rootNode);
 
             xmlConfDocument.Save(pathToConf);
         }
@@ -2803,14 +2806,10 @@ namespace AccountingSoftware
 
                 SaveFields(ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
 
-                //TabularList
-                Dictionary<string, ConfigurationField> AllFields = Conf.CombineAllFieldForRegister
-                (
+                Dictionary<string, ConfigurationField> AllFields = Conf.CombineAllFieldForRegister(
                     ConfRegisterInfo.Value.DimensionFields.Values,
                     ConfRegisterInfo.Value.ResourcesFields.Values,
-                    ConfRegisterInfo.Value.PropertyFields.Values
-                );
-
+                    ConfRegisterInfo.Value.PropertyFields.Values);
                 SaveTabularList(Conf, AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
             }
         }
@@ -2828,7 +2827,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveRegistersAccumulation(Dictionary<string, ConfigurationRegistersAccumulation> ConfRegistersAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveRegistersAccumulation(Configuration Conf, Dictionary<string, ConfigurationRegistersAccumulation> ConfRegistersAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootRegistersAccumulation = xmlConfDocument.CreateElement("RegistersAccumulation");
             rootNode.AppendChild(rootRegistersAccumulation);
@@ -2882,6 +2881,12 @@ namespace AccountingSoftware
                 SaveTabularParts(ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
 
                 SaveQueryBlockList(ConfRegisterAccml.Value.QueryBlockList, xmlConfDocument, nodeRegister);
+
+                Dictionary<string, ConfigurationField> AllFields = Conf.CombineAllFieldForRegister(
+                    ConfRegisterAccml.Value.DimensionFields.Values,
+                    ConfRegisterAccml.Value.ResourcesFields.Values,
+                    ConfRegisterAccml.Value.PropertyFields.Values);
+                SaveTabularList(Conf, AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
             }
         }
 

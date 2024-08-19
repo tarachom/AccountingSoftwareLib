@@ -34,9 +34,9 @@ namespace InterfaceGtk
     public class PeriodControl : Box
     {
         ComboBoxText comboBoxPeriod; //Набір варіантів періодів
-        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true, HideMinValue = true, Sensitive = false };
-        DateTimeControl dateStop = new DateTimeControl() { OnlyDate = true, Value = DateTime.Now, Sensitive = false };
-        Button bSelect = new Button(new Image(Stock.GoForward, IconSize.Menu)) { Sensitive = false };
+        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true, HideMinValue = true/*, Sensitive = false*/ };
+        DateTimeControl dateStop = new DateTimeControl() { OnlyDate = true, Value = DateTime.Now/*, Sensitive = false*/ };
+        Button bSelect = new Button(new Image(Stock.GoForward, IconSize.Menu)) { /*Sensitive = false*/ };
         public System.Action? Changed { get; set; }
 
         public PeriodControl() : base(Orientation.Horizontal, 0)
@@ -51,6 +51,8 @@ namespace InterfaceGtk
             {
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.Особливий)
                     Changed?.Invoke();
+                else
+                    Period = ПеріодДляЖурналу.ТипПеріоду.Особливий;
             };
 
             PackStart(bSelect, false, false, 1);
@@ -58,8 +60,8 @@ namespace InterfaceGtk
             comboBoxPeriod = ПеріодДляЖурналу.СписокВідбірПоПеріоду();
             comboBoxPeriod.Changed += (object? sender, EventArgs args) =>
             {
-                bool ОсобливийПеріод = Period == ПеріодДляЖурналу.ТипПеріоду.Особливий;
-                dateStart.Sensitive = dateStop.Sensitive = bSelect.Sensitive = ОсобливийПеріод;
+                //bool ОсобливийПеріод = Period == ПеріодДляЖурналу.ТипПеріоду.Особливий;
+                //dateStart.Sensitive = dateStop.Sensitive = bSelect.Sensitive = ОсобливийПеріод;
 
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод)
                     dateStart.Value = DateTime.MinValue;
@@ -70,13 +72,22 @@ namespace InterfaceGtk
                         dateStart.Value = dateTime.Value;
                 }
 
-                if (!ОсобливийПеріод)
+                if (Period != ПеріодДляЖурналу.ТипПеріоду.Особливий)
                     dateStop.Value = DateTime.Now;
 
                 Changed?.Invoke();
             };
 
             PackStart(comboBoxPeriod, false, false, 2);
+        }
+
+        public bool OnlyDate
+        {
+            set
+            {
+                dateStart.OnlyDate = value;
+                dateStop.OnlyDate = value;
+            }
         }
 
         public DateTime DateStart
@@ -103,6 +114,22 @@ namespace InterfaceGtk
             }
         }
 
+        public DateTimeControl DateStartControl
+        {
+            get
+            {
+                return dateStart;
+            }
+        }
+
+        public DateTimeControl DateStopControl
+        {
+            get
+            {
+                return dateStop;
+            }
+        }
+
         public ПеріодДляЖурналу.ТипПеріоду Period
         {
             get
@@ -112,6 +139,18 @@ namespace InterfaceGtk
             set
             {
                 comboBoxPeriod.ActiveId = value.ToString();
+            }
+        }
+
+        public bool SensitiveSelectButton
+        {
+            get
+            {
+                return bSelect.Sensitive;
+            }
+            set
+            {
+                bSelect.Sensitive = value;
             }
         }
 

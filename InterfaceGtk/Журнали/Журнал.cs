@@ -88,6 +88,11 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        public async ValueTask SetValue()
+        {
+            await BeforeSetValue();
+        }
+
         #region Menu
 
         void CreateToolbar()
@@ -173,18 +178,17 @@ namespace InterfaceGtk
 
         #endregion
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+        #region Virtual & Abstract Function
 
-        public async ValueTask SetValue()
-        {
-            await BeforeSetValue();
-        }
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         public virtual void LoadRecords() { }
 
         public virtual void OpenTypeListDocs(Widget relative_to) { }
 
         public virtual void PeriodChanged() { }
+
+        #endregion
 
         #region TreeView
 
