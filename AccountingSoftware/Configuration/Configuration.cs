@@ -1422,7 +1422,11 @@ namespace AccountingSoftware
 
                     ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
-                    if (typeForms == ConfigurationForms.TypeForms.Element)
+                    if (typeForms == ConfigurationForms.TypeForms.List)
+                    {
+                        form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
+                    }
+                    else if (typeForms == ConfigurationForms.TypeForms.Element)
                     {
                         LoadFormElementField(form.ElementFields, tableForm.Current);
                         LoadFormElementTablePart(form.ElementTableParts, tableForm.Current);
@@ -2484,7 +2488,13 @@ namespace AccountingSoftware
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
 
-                if (form.Value.Type == ConfigurationForms.TypeForms.Element)
+                if (form.Value.Type == ConfigurationForms.TypeForms.List)
+                {
+                    XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
+                    nodeTabularList.InnerText = form.Value.TabularList.ToString();
+                    nodeForm.AppendChild(nodeTabularList);
+                }
+                else if (form.Value.Type == ConfigurationForms.TypeForms.Element)
                 {
                     SaveFormElementField(form.Value.ElementFields, xmlConfDocument, nodeForm);
                     SaveFormElementTablePart(form.Value.ElementTableParts, xmlConfDocument, nodeForm);

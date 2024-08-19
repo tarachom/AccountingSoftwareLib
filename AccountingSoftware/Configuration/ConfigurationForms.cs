@@ -91,6 +91,12 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region Для форми списку (Type == TypeForms.List)
+
+        public string TabularList { get; set; } = "";
+
+        #endregion
+
         /// <summary>
         /// Створення копії
         /// </summary>
