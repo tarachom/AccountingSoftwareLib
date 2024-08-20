@@ -2118,7 +2118,7 @@ namespace AccountingSoftware
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
 
-                int counterJoin = 0;
+                //int counterJoin = 0;
 
                 //Поля
                 foreach (KeyValuePair<string, ConfigurationTabularListField> field in tabularList.Value.Fields)
@@ -2172,88 +2172,88 @@ namespace AccountingSoftware
                         nodePointer.InnerText = objField.Pointer;
                         nodeTabularListField.AppendChild(nodePointer);
 
-                        if (objField.Type == "pointer")
-                        {
-                            string[] typeConf = objField.Pointer.Split(".");
-                            if (typeConf.Length == 2)
-                            {
-                                string groupTypeConf = typeConf[0];
-                                string nameTypeConf = typeConf[1];
+                        // if (objField.Type == "pointer")
+                        // {
+                        //     string[] typeConf = objField.Pointer.Split(".");
+                        //     if (typeConf.Length == 2)
+                        //     {
+                        //         string groupTypeConf = typeConf[0];
+                        //         string nameTypeConf = typeConf[1];
 
-                                if (groupTypeConf == "Довідники")
-                                {
-                                    if (Conf.Directories.ContainsKey(nameTypeConf))
-                                    {
-                                        Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
-                                        if (directoryPointerFields.Count != 0)
-                                        {
-                                            XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                            nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                            nodeTabularListField.AppendChild(nodeJoinTable);
+                        //         if (groupTypeConf == "Довідники")
+                        //         {
+                        //             if (Conf.Directories.ContainsKey(nameTypeConf))
+                        //             {
+                        //                 Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                        //                 if (directoryPointerFields.Count != 0)
+                        //                 {
+                        //                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                        //                     nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                        //                     nodeTabularListField.AppendChild(nodeJoinTable);
 
-                                            bool isExistPresentation = false;
+                        //                     /*bool isExistPresentation = false;
 
-                                            foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
-                                            {
-                                                if (itemDirectoryPointerFields.IsPresentation)
-                                                {
-                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
-                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                        //                     foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
+                        //                     {
+                        //                         if (itemDirectoryPointerFields.IsPresentation)
+                        //                         {
+                        //                             XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                        //                             nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                        //                             nodeTabularListField.AppendChild(nodeFieldAndAlias);
 
-                                                    isExistPresentation = true;
-                                                }
-                                            }
+                        //                             isExistPresentation = true;
+                        //                         }
+                        //                     }
 
-                                            if (isExistPresentation == false)
-                                            {
-                                                ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
+                        //                     if (isExistPresentation == false)
+                        //                     {
+                        //                         ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
-                                                XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
-                                                nodeTabularListField.AppendChild(nodeFieldAndAlias);
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (groupTypeConf == "Документи")
-                                {
-                                    if (Conf.Documents.ContainsKey(nameTypeConf))
-                                    {
-                                        Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
-                                        if (documentPointerFields.Count != 0)
-                                        {
-                                            XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                            nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                            nodeTabularListField.AppendChild(nodeJoinTable);
+                        //                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                        //                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                        //                         nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                        //                     }*/
+                        //                 }
+                        //             }
+                        //         }
+                        //         else if (groupTypeConf == "Документи")
+                        //         {
+                        //             if (Conf.Documents.ContainsKey(nameTypeConf))
+                        //             {
+                        //                 Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                        //                 if (documentPointerFields.Count != 0)
+                        //                 {
+                        //                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                        //                     nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Key}</field><alias>join_tab_{++counterJoin}</alias>"; ;
+                        //                     nodeTabularListField.AppendChild(nodeJoinTable);
 
-                                            bool isExistPresentation = false;
+                        //                     /*bool isExistPresentation = false;
 
-                                            foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
-                                            {
-                                                if (itemDocumentPointerFields.IsPresentation)
-                                                {
-                                                    XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                    nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
-                                                    nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                        //                     foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
+                        //                     {
+                        //                         if (itemDocumentPointerFields.IsPresentation)
+                        //                         {
+                        //                             XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                        //                             nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                        //                             nodeTabularListField.AppendChild(nodeFieldAndAlias);
 
-                                                    isExistPresentation = true;
-                                                }
-                                            }
+                        //                             isExistPresentation = true;
+                        //                         }
+                        //                     }
 
-                                            if (isExistPresentation == false)
-                                            {
-                                                ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
+                        //                     if (isExistPresentation == false)
+                        //                     {
+                        //                         ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
-                                                XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
-                                                nodeTabularListField.AppendChild(nodeFieldAndAlias);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        //                         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                        //                         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                        //                         nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                        //                     }*/
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // }
 
                         #endregion
 
@@ -2307,7 +2307,7 @@ namespace AccountingSoftware
             {
                 if (Conf.Documents.ContainsKey(tabularList.Key))
                 {
-                    int counterJoin = 0;
+                    //int counterJoin = 0;
                     ConfigurationDocuments Doc = Conf.Documents[tabularList.Key];
 
                     XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
@@ -2360,7 +2360,7 @@ namespace AccountingSoftware
                             //
 
                             //Поле документу
-                            if (!String.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
+                            if (!string.IsNullOrEmpty(docField) && Doc.Fields.ContainsKey(docField))
                             {
                                 ConfigurationField objField = Doc.Fields[docField];
 
@@ -2372,90 +2372,90 @@ namespace AccountingSoftware
                                 nodePointer.InnerText = objField.Pointer;
                                 nodeTabularListField.AppendChild(nodePointer);
 
-                                if (objField.Type == "pointer")
-                                {
-                                    string[] typeConf = objField.Pointer.Split(".");
-                                    if (typeConf.Length == 2)
-                                    {
-                                        string groupTypeConf = typeConf[0];
-                                        string nameTypeConf = typeConf[1];
+                                // if (objField.Type == "pointer")
+                                // {
+                                //     string[] typeConf = objField.Pointer.Split(".");
+                                //     if (typeConf.Length == 2)
+                                //     {
+                                //         string groupTypeConf = typeConf[0];
+                                //         string nameTypeConf = typeConf[1];
 
-                                        if (groupTypeConf == "Довідники")
-                                        {
-                                            if (Conf.Directories.ContainsKey(nameTypeConf))
-                                            {
-                                                Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
-                                                if (directoryPointerFields.Count != 0)
-                                                {
-                                                    XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                                    nodeJoinTable.InnerXml = $"<table>Довідники.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                                    nodeTabularListField.AppendChild(nodeJoinTable);
+                                //         if (groupTypeConf == "Довідники")
+                                //         {
+                                //             if (Conf.Directories.ContainsKey(nameTypeConf))
+                                //             {
+                                //                 Dictionary<string, ConfigurationField> directoryPointerFields = Conf.Directories[nameTypeConf].Fields;
+                                //                 if (directoryPointerFields.Count != 0)
+                                //                 {
+                                //                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                //                     nodeJoinTable.InnerXml = $"<field>{field.Value.DocField}</field>"; 
+                                //                     nodeTabularListField.AppendChild(nodeJoinTable);
 
-                                                    bool isExistPresentation = false;
+                                //                     // bool isExistPresentation = false;
 
-                                                    foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
-                                                    {
-                                                        if (itemDirectoryPointerFields.IsPresentation)
-                                                        {
-                                                            XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                            nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
-                                                            nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                //                     // foreach (ConfigurationField itemDirectoryPointerFields in directoryPointerFields.Values)
+                                //                     // {
+                                //                     //     if (itemDirectoryPointerFields.IsPresentation)
+                                //                     //     {
+                                //                     //         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                //                     //         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                                //                     //         nodeTabularListField.AppendChild(nodeFieldAndAlias);
 
-                                                            isExistPresentation = true;
-                                                            break; /* Для журналу документів береться тільки перше презентаційне поле */
-                                                        }
-                                                    }
+                                //                     //         isExistPresentation = true;
+                                //                     //         break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                //                     //     }
+                                //                     // }
 
-                                                    if (isExistPresentation == false)
-                                                    {
-                                                        ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
+                                //                     // if (isExistPresentation == false)
+                                //                     // {
+                                //                     //     ConfigurationField itemDirectoryPointerFields = directoryPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
-                                                        XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                        nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
-                                                        nodeTabularListField.AppendChild(nodeFieldAndAlias);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        else if (groupTypeConf == "Документи")
-                                        {
-                                            if (Conf.Documents.ContainsKey(nameTypeConf))
-                                            {
-                                                Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
-                                                if (documentPointerFields.Count != 0)
-                                                {
-                                                    XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
-                                                    nodeJoinTable.InnerXml = $"<table>Документи.{nameTypeConf}_Const.TABLE</table><field>{field.Value.DocField}</field><alias>join_tab_{++counterJoin}</alias>"; ;
-                                                    nodeTabularListField.AppendChild(nodeJoinTable);
+                                //                     //     XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                //                     //     nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDirectoryPointerFields.Name}</field>";
+                                //                     //     nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                //                     // }
+                                //                 }
+                                //             }
+                                //         }
+                                //         else if (groupTypeConf == "Документи")
+                                //         {
+                                //             if (Conf.Documents.ContainsKey(nameTypeConf))
+                                //             {
+                                //                 Dictionary<string, ConfigurationField> documentPointerFields = Conf.Documents[nameTypeConf].Fields;
+                                //                 if (documentPointerFields.Count != 0)
+                                //                 {
+                                //                     XmlElement nodeJoinTable = xmlConfDocument.CreateElement("Join");
+                                //                     nodeJoinTable.InnerXml = $"<field>{field.Value.DocField}</field>";
+                                //                     nodeTabularListField.AppendChild(nodeJoinTable);
 
-                                                    bool isExistPresentation = false;
+                                //                     // bool isExistPresentation = false;
 
-                                                    foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
-                                                    {
-                                                        if (itemDocumentPointerFields.IsPresentation)
-                                                        {
-                                                            XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                            nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
-                                                            nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                //                     // foreach (ConfigurationField itemDocumentPointerFields in documentPointerFields.Values)
+                                //                     // {
+                                //                     //     if (itemDocumentPointerFields.IsPresentation)
+                                //                     //     {
+                                //                     //         XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                //                     //         nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                                //                     //         nodeTabularListField.AppendChild(nodeFieldAndAlias);
 
-                                                            isExistPresentation = true;
-                                                            break; /* Для журналу документів береться тільки перше презентаційне поле */
-                                                        }
-                                                    }
+                                //                     //         isExistPresentation = true;
+                                //                     //         break; /* Для журналу документів береться тільки перше презентаційне поле */
+                                //                     //     }
+                                //                     // }
 
-                                                    if (isExistPresentation == false)
-                                                    {
-                                                        ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
+                                //                     // if (isExistPresentation == false)
+                                //                     // {
+                                //                     //     ConfigurationField itemDocumentPointerFields = documentPointerFields.First<KeyValuePair<string, ConfigurationField>>().Value;
 
-                                                        XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
-                                                        nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
-                                                        nodeTabularListField.AppendChild(nodeFieldAndAlias);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                //                     //     XmlElement nodeFieldAndAlias = xmlConfDocument.CreateElement("FieldAndAlias");
+                                //                     //     nodeFieldAndAlias.InnerXml = $"<table>join_tab_{counterJoin}</table><field>{objField.Pointer}_Const.{itemDocumentPointerFields.Name}</field>";
+                                //                     //     nodeTabularListField.AppendChild(nodeFieldAndAlias);
+                                //                     // }
+                                //                 }
+                                //             }
+                                //         }
+                                //     }
+                                // }
 
                             }
 

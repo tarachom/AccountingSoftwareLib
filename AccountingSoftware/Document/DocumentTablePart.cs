@@ -89,11 +89,13 @@ namespace AccountingSoftware
         {
             BaseClear();
             JoinValue.Clear();
-            
-            //Відбір по власнику
-            QuerySelect.Where.Clear();
-            QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
 
+            //Відбір по власнику
+            {
+                QuerySelect.Where.RemoveAll((Where w) => w.Name == "owner");
+                QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
+            }
+            
             await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList, JoinValue);
 
             IsRead = true;

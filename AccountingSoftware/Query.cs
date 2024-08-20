@@ -158,7 +158,6 @@ namespace AccountingSoftware
             if (Where.Count > 0)
             {
                 int count = 0;
-                int lenght = Where.Count;
 
                 query += "\nWHERE ";
 
