@@ -91,6 +91,11 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
+        /// Форми
+        /// </summary>
+        public Dictionary<string, ConfigurationForms> Forms { get; } = [];
+
+        /// <summary>
         /// Без віртуальної таблиці Підсумки
         /// </summary>
         public bool NoSummary { get; set; }
@@ -117,6 +122,9 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationQueryBlock> query in this.QueryBlockList)
                 confRegCopy.QueryBlockList.Add(query.Key, query.Value.Copy());
+
+            foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
+                confRegCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
             return confRegCopy;
         }
@@ -145,6 +153,15 @@ namespace AccountingSoftware
         public void AppendTablePart(ConfigurationTablePart tablePart)
         {
             TabularParts.Add(tablePart.Name, tablePart);
+        }
+
+        /// <summary>
+        /// Додати нову форму
+        /// </summary>
+        /// <param name="forms">Нова форма</param>
+        public void AppendForms(ConfigurationForms forms)
+        {
+            Forms.Add(forms.Name, forms);
         }
 
         public void AppendQueryBlockList(ConfigurationQueryBlock queryBlock)

@@ -42,5 +42,15 @@ namespace AccountingSoftware
 		/// Власник запису
 		/// </summary>
 		public Guid Owner { get; set; }
+
+		/// <summary>
+		/// Тип власника запису
+		/// </summary>
+		public string OwnerType { get; set; } = "";
+
+		/// <summary>
+		/// Назва власника запису
+		/// </summary>
+		public string OwnerName { get; set; } = "";
 	}
 }

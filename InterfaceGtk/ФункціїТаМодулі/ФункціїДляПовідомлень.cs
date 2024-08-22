@@ -32,7 +32,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ФункціїДляПовідомлень(Kernel kernel)
+    public abstract class ФункціїДляПовідомлень(Kernel kernel) /// !!!! переробити на статичний
     {
         private Kernel Kernel { get; set; } = kernel;
 

@@ -1751,6 +1751,7 @@ namespace AccountingSoftware
                     {
                         LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
                         LoadTabularList(configurationRegistersAccumulation.TabularList, registerAccumulationNode?.Current);
+                        LoadForms(configurationRegistersAccumulation.Forms, registerAccumulationNode?.Current);
                     }
                 }
         }
@@ -2903,6 +2904,8 @@ namespace AccountingSoftware
                     ConfRegisterAccml.Value.ResourcesFields.Values,
                     ConfRegisterAccml.Value.PropertyFields.Values);
                 SaveTabularList(Conf, AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
+
+                SaveForms(ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 

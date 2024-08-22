@@ -234,7 +234,7 @@ namespace InterfaceGtk
         #endregion
 
         #region Virtual & Abstract Function
-        
+
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
@@ -259,7 +259,7 @@ namespace InterfaceGtk
 
         protected abstract ValueTask SpendTheDocument(UnigueID unigueID, bool spendDoc);
 
-        protected abstract DocumentPointer? ReportSpendTheDocument(UnigueID unigueID);
+        protected abstract void ReportSpendTheDocument(UnigueID unigueID);
 
         protected virtual void ExportXML(UnigueID unigueID) { }
 
@@ -418,16 +418,7 @@ namespace InterfaceGtk
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                    DocumentPointer? documentPointer = ReportSpendTheDocument(unigueID);
-
-                    /* !!!! if (documentPointer != null)
-                        Program.GeneralForm?.CreateNotebookPage($"Проводки", () =>
-                        {
-                            Звіт_РухДокументівПоРегістрах page = new Звіт_РухДокументівПоРегістрах();
-                            page.CreateReport(documentPointer);
-                            return page;
-                        });*/
+                    ReportSpendTheDocument(unigueID);
                 }
         }
 

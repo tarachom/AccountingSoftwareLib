@@ -182,11 +182,17 @@ namespace InterfaceGtk
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
-        protected virtual void LoadRecords() { }
+        protected abstract void LoadRecords();
 
-        protected virtual void OpenTypeListDocs(Widget relative_to) { }
+        protected abstract void OpenTypeListDocs(Widget relative_to);
 
-        protected virtual void PeriodChanged() { }
+        protected abstract void PeriodChanged();
+
+        protected abstract void ReportSpendTheDocument(DocumentPointer documentPointer);
+
+        protected abstract void ErrorSpendTheDocument(UnigueID unigueID);
+
+        protected abstract void OpenDoc(string typeDoc, UnigueID unigueID);
 
         #endregion
 
@@ -226,9 +232,7 @@ namespace InterfaceGtk
                 {
                     string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                     string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
-
-                    // ФункціїДляДокументів.ВідкритиДокументВідповідноДоВиду(typeDoc, new UnigueID(uid),
-                    //     Enum.Parse<ПеріодДляЖурналу.ТипПеріоду>(ComboBoxPeriodWhere.ActiveId));
+                    OpenDoc(typeDoc, new UnigueID(uid));
                 }
         }
 
@@ -341,18 +345,9 @@ namespace InterfaceGtk
                     string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
                     UnigueID unigueID = new UnigueID(uid);
-
                     object? documentPointer = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer", false, BindingFlags.CreateInstance, null, [unigueID, null!], null, null);
                     if (documentPointer != null)
-                    {
-                        // NotebookFunction.CreateNotebookPage(Program.GeneralNotebook,$"Проводки", () =>
-                        // {
-                        //     Звіт_РухДокументівПоРегістрах page = new Звіт_РухДокументівПоРегістрах();
-                        //     page.CreateReport((DocumentPointer)documentPointer);
-
-                        //     return page;
-                        // });
-                    }
+                        ReportSpendTheDocument((DocumentPointer)documentPointer);
                 }
         }
 
@@ -375,8 +370,8 @@ namespace InterfaceGtk
                         DateTime dateDoc = (DateTime)(documentObjest.GetType().GetProperty("ДатаДок")?.GetValue(documentObjest) ?? DateTime.MinValue);
 
                         object? documentObjestSpend = documentObjest.GetType().InvokeMember("SpendTheDocumentSync", BindingFlags.InvokeMethod, null, documentObjest, [dateDoc]);
-                        // if (documentObjestSpend != null && !(bool)documentObjestSpend)
-                        //     ФункціїДляПовідомлень.ПоказатиПовідомлення(unigueID);
+                        if (documentObjestSpend != null && !(bool)documentObjestSpend)
+                            ErrorSpendTheDocument(unigueID);
                     }
                     else
                         documentObjest.GetType().InvokeMember("ClearSpendTheDocumentSync", BindingFlags.InvokeMethod, null, documentObjest, null);
