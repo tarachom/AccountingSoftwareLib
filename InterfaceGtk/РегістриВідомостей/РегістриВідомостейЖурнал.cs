@@ -26,7 +26,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class РегістриЖурнал : ФормаЖурнал
+    public abstract class РегістриВідомостейЖурнал : ФормаЖурнал
     {
         /// <summary>
         /// Для позиціювання в списку
@@ -63,7 +63,7 @@ namespace InterfaceGtk
         /// </summary>
         SearchControl ПошукПовнотекстовий = new SearchControl();
 
-        public РегістриЖурнал() : base()
+        public РегістриВідомостейЖурнал() : base()
         {
             //Період
             PackStart(HBoxPeriod, false, false, 10);
@@ -267,7 +267,7 @@ namespace InterfaceGtk
         async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-                if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
+                if (Message.Request(null, "Видалити?") == ResponseType.Yes)
                 {
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
                     foreach (TreePath itemPath in selectionRows)
