@@ -37,17 +37,17 @@ namespace AccountingSoftware
             Uuid = uuid;
         }
 
-        public UuidAndText(Guid uuid, string text)
-        {
-            Uuid = uuid;
-            Text = text;
-        }
-
         public UuidAndText(string text)
         {
             Uuid = Guid.Empty;
             Text = text;
         }
+
+        public UuidAndText(Guid uuid, string text)
+        {
+            Uuid = uuid;
+            Text = text;
+        }        
 
         /// <summary>
         /// Вказівник

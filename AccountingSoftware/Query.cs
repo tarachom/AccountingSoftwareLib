@@ -107,7 +107,7 @@ namespace AccountingSoftware
         {
             string query = "";
 
-            if (CreateTempTable == true)
+            if (CreateTempTable)
             {
                 TempTable = "tmp_" + Guid.NewGuid().ToString().Replace("-", "");
                 query = "CREATE TEMP TABLE " + TempTable + " AS \n";
@@ -146,12 +146,13 @@ namespace AccountingSoftware
                     else if (join.JoinType == JoinType.INNER)
                         query += "INNER ";
 
-                    //Псевдонім таблиці
-                    string aliasTable = !string.IsNullOrEmpty(join.JoinTableAlias) ? $" AS {join.JoinTableAlias}" : "";
-                    //Псевдонім або назва таблиці
-                    string aliasTableOrJoinTable = !string.IsNullOrEmpty(join.JoinTableAlias) ? join.JoinTableAlias : join.JoinTable;
+                    //Псевдонім таблиці sql код
+                    string aliasTableQueryPart = string.IsNullOrEmpty(join.JoinTableAlias) ? "" : $" AS {join.JoinTableAlias}";
 
-                    query += $"JOIN {join.JoinTable}{aliasTable} ON {join.ParentTable}.{join.JoinField} = {aliasTableOrJoinTable}.uid";
+                    //Псевдонім або назва таблиці
+                    string aliasTable = string.IsNullOrEmpty(join.JoinTableAlias) ? join.JoinTable : join.JoinTableAlias;
+
+                    query += $"JOIN {join.JoinTable}{aliasTableQueryPart} ON {join.ParentTable}.{join.JoinField} = {aliasTable}.uid";
                 }
             }
 
@@ -387,10 +388,8 @@ namespace AccountingSoftware
     /// </summary>
     public class Join
     {
-        public Join() { }
-
         /// <summary>
-        /// 
+        /// Приєднання таблиці
         /// </summary>
         /// <param name="joinTable">Таблиця яку треба приєднати</param>
         /// <param name="joinField">Поле з основної таблиці (ParentTable) із ключами</param>

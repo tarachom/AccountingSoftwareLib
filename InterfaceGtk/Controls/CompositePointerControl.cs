@@ -145,10 +145,7 @@ namespace InterfaceGtk
 
                     CreateNotebookPage(listName, () => { return (Widget)listPage; });
 
-                    if (PointerName == "Документи")
-                        listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
-                    else
-                        listPage.GetType().InvokeMember("LoadRecords", BindingFlags.InvokeMethod, null, listPage, null);
+                    listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
                 }
             }
             else

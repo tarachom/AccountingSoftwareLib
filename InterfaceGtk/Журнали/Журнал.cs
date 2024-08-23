@@ -49,11 +49,6 @@ namespace InterfaceGtk
         /// </summary>
         protected ToolButton? TypeDocToolButton;
 
-        /// <summary>
-        /// Прокрутка дерева
-        /// </summary>
-        protected ScrolledWindow ScrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
-
         #region Динамічне створення обєктів
 
         protected abstract Assembly ExecutingAssembly { get; }
@@ -72,7 +67,8 @@ namespace InterfaceGtk
 
             CreateToolbar();
 
-            ScrollTree.SetPolicy(PolicyType.Never, PolicyType.Automatic);
+            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
+            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
             TreeViewGrid.ActivateOnSingleClick = true;
@@ -80,10 +76,9 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
+            scrollTree.Add(TreeViewGrid);
 
-            ScrollTree.Add(TreeViewGrid);
-
-            PackStart(ScrollTree, true, true, 0);
+            PackStart(scrollTree, true, true, 0);
 
             ShowAll();
         }

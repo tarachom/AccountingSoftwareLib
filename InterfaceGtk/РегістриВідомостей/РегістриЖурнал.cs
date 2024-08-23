@@ -76,7 +76,7 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(ПошукПовнотекстовий, false, false, 2);
 
             //Кнопки
-            PackStart(HBoxTop, false, false, 5);
+            PackStart(HBoxTop, false, false, 0);
 
             CreateToolbar();
 

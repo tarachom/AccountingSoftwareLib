@@ -62,7 +62,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Стоврення копії
         /// </summary>
-        /// <returns></returns>
         public ConfigurationQueryBlock Copy()
         {
             ConfigurationQueryBlock newQueryBlock = new ConfigurationQueryBlock(Name);

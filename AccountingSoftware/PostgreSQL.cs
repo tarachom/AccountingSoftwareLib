@@ -876,7 +876,7 @@ ORDER BY
                 return false;
         }
 
-        public async ValueTask<(Guid, Guid)?> SpetialTableUsersLogIn(string user, string password)
+        public async ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password)
         {
             if (DataSource != null)
             {

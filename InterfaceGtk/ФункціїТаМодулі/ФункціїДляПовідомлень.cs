@@ -32,10 +32,8 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ФункціїДляПовідомлень(Kernel kernel) /// !!!! переробити на статичний
+    public abstract class ФункціїДляПовідомлень(Kernel Kernel)
     {
-        private Kernel Kernel { get; set; } = kernel;
-
         public async ValueTask ДодатиПовідомленняПроПомилку(string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення)
         {
             await Kernel.DataBase.SpetialTableMessageErrorAdd

@@ -95,23 +95,11 @@ namespace InterfaceGtk
 
             //Проводки
             {
-                LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(AppContext.BaseDirectory + "images/doc.png"), AlwaysShowImage = true };
+                LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
                 linkNew.Clicked += (object? sender, EventArgs args) =>
                 {
                     if (UnigueID != null)
-                    {
-                        DocumentPointer? documentPointer = ReportSpendTheDocument(UnigueID);
-
-                        if (documentPointer != null)
-                        {
-                            // NotebookFunction.CreateNotebookPage(Program.GeneralNotebook, $"Проводки", () =>
-                            // {
-                            //     Звіт_РухДокументівПоРегістрах page = new Звіт_РухДокументівПоРегістрах();
-                            //     page.CreateReport(documentPointer);
-                            //     return page;
-                            // });
-                        }
-                    }
+                        ReportSpendTheDocument(UnigueID);
                 };
 
                 HBoxTop.PackStart(linkNew, false, false, 0);
@@ -264,22 +252,10 @@ namespace InterfaceGtk
         protected abstract ValueTask<bool> SpendTheDocument(bool spendDoc);
 
         /// <summary>
-        /// Записати повідомлення про помилку і вивести меседж
-        /// </summary>
-        /// <param name="ex">Помилка</param>
-        protected async void MsgError(Exception ex)
-        {
-            //await ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Документи", Caption, ex.Message + "\n" + ex.StackTrace + "\n" + ex.Source);
-            //ФункціїДляПовідомлень.ПоказатиПовідомлення();
-
-            Message.Info(null, "Не вдалось записати");
-        }
-
-        /// <summary>
         /// Для звіту Проводки
         /// </summary>
         /// <param name="unigueID"></param>
         /// <returns></returns>
-        protected abstract DocumentPointer? ReportSpendTheDocument(UnigueID unigueID);
+        protected abstract void ReportSpendTheDocument(UnigueID unigueID);
     }
 }

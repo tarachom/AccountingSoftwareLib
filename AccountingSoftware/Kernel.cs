@@ -179,12 +179,11 @@ namespace AccountingSoftware
         /// <returns></returns>
         public async Task<bool> UserLogIn(string user, string password)
         {
-            (Guid, Guid)? userSession = await DataBase.SpetialTableUsersLogIn(user, password);
-
+            var userSession = await DataBase.SpetialTableUsersLogIn(user, password);
             if (userSession != null)
             {
-                User = userSession.Value.Item1;
-                Session = userSession.Value.Item2;
+                User = userSession.Value.User;
+                Session = userSession.Value.Session;
 
                 //Фонове обновлення сесії
                 StartUpdateSession();

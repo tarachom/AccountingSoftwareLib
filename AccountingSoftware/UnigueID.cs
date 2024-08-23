@@ -63,9 +63,7 @@ namespace AccountingSoftware
         /// <param name="uGuid">Унікальний ідентифікатор</param>
         public UnigueID(string uGuid)
         {
-            Guid resultUGuid;
-
-            if (Guid.TryParse(uGuid, out resultUGuid))
+            if (Guid.TryParse(uGuid, out Guid resultUGuid))
                 UGuid = resultUGuid;
             else
                 UGuid = Guid.Empty;

@@ -147,18 +147,14 @@ namespace InterfaceGtk
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
             else
                 NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
-        }
-
-        /// <summary>
-        /// Записати повідомлення про помилку і вивести меседж
-        /// </summary>
-        /// <param name="ex">Помилка</param>
-        protected async void MsgError(Exception ex)
-        {
-            // await ФункціїДляПовідомлень.ДодатиПовідомленняПроПомилку(DateTime.Now, "Запис", UnigueID?.UGuid, "Довідники", Caption, ex.Message);
-            // ФункціїДляПовідомлень.ПоказатиПовідомлення();
-
-            Message.Info(null, "Не вдалось записати");
-        }
+        }        
     }
 }
+
+/*
+ФункціїДляПовідомлень Повідомлення = new ФункціїДляПовідомлень();
+await Повідомлення.ДодатиПовідомленняПроПомилку("Запис", UnigueID?.UGuid, "Довідники", Caption, ex.Message);
+Повідомлення.ПоказатиПовідомлення(UnigueID);
+
+Message.Info(null, "Не вдалось записати");
+*/

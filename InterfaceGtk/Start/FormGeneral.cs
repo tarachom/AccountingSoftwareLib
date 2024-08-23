@@ -118,16 +118,17 @@ namespace InterfaceGtk
         {
             Box vbox = new Box(Orientation.Vertical, 0) { BorderWidth = 0 };
 
-            ScrolledWindow scrolLeftMenu = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = 170 };
+            ScrolledWindow scrolLeftMenu = new ScrolledWindow();
             scrolLeftMenu.SetPolicy(PolicyType.Never, PolicyType.Never);
             scrolLeftMenu.Add(vbox);
 
             CreateItemLeftMenu(vbox, "Документи", Документи, "images/documents.png");
             CreateItemLeftMenu(vbox, "Журнали", Журнали, "images/journal.png");
             CreateItemLeftMenu(vbox, "Звіти", Звіти, "images/report.png");
-            CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");
-            CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
+            CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");           
+            CreateItemLeftMenu(vbox, "Регістри", Регістри, "images/register.png");
             CreateItemLeftMenu(vbox, "Сервіс", Сервіс, "images/service.png");
+            CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
 
             hbox.PackStart(scrolLeftMenu, false, false, 0);
         }
@@ -151,6 +152,7 @@ namespace InterfaceGtk
         protected abstract void Журнали(LinkButton lb);
         protected abstract void Звіти(LinkButton lb);
         protected abstract void Довідники(LinkButton lb);
+        protected abstract void Регістри(LinkButton lb);
         protected abstract void Налаштування(LinkButton lb);
         protected abstract void Сервіс(LinkButton lb);
 

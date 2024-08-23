@@ -256,7 +256,7 @@ namespace AccountingSoftware
             else
                 throw new Exception("Назва для пошуку має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
 
-            List<string> ListPointer = new List<string>();
+            List<string> ListPointer = [];
 
             //Перевірити константи
             foreach (ConfigurationConstantsBlock constantsBlockItem in ConstantsBlock.Values)
@@ -444,7 +444,7 @@ namespace AccountingSoftware
             else
                 throw new Exception("Назва для пошуку має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
 
-            List<ConfigurationDependencies> ListDependencies = new List<ConfigurationDependencies>();
+            List<ConfigurationDependencies> ListDependencies = [];
 
             //Перевірити константи
             foreach (ConfigurationConstantsBlock constantsBlockItem in ConstantsBlock.Values)
