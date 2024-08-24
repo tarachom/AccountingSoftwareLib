@@ -29,6 +29,7 @@ namespace InterfaceGtk
     {
         Label labelCaption = new Label();
         Entry entryText = new Entry() { IsEditable = false };
+        Button bClear = new Button(new Image(Іконки.ДляКнопок.Clean));
 
         public PointerControl() : base(Orientation.Horizontal, 0)
         {
@@ -38,7 +39,6 @@ namespace InterfaceGtk
             Button bOpen = new Button(new Image(Іконки.ДляКнопок.Find));
             bOpen.Clicked += OpenSelect;
 
-            Button bClear = new Button(new Image(Іконки.ДляКнопок.Clean));
             bClear.Clicked += OnClear;
 
             PackStart(bOpen, false, false, 1);
@@ -91,6 +91,14 @@ namespace InterfaceGtk
             set
             {
                 entryText.Text = value;
+            }
+        }
+
+        public bool ClearSensetive
+        {
+            set
+            {
+                bClear.Sensitive = value;
             }
         }
     }

@@ -20,6 +20,7 @@ namespace InterfaceGtk.Іконки
     {
         public static Pixbuf Ok = new Pixbuf($"{AppContext.BaseDirectory}images/16/ok.png");
         public static Pixbuf Error = new Pixbuf($"{AppContext.BaseDirectory}images/16/error.png");
+        public static Pixbuf Info = new Pixbuf($"{AppContext.BaseDirectory}images/16/info.png");
     }
 
     public static class ДляТабличногоСписку

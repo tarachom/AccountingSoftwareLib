@@ -26,9 +26,9 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Журнал Вибірка Документів
 	/// </summary>
-	public abstract class JournalSelectA
+	public abstract class JournalSelect
 	{
-		public JournalSelectA(Kernel kernel, string[] table, string[] typeDocument)
+		public JournalSelect(Kernel kernel, string[] table, string[] typeDocument)
 		{
 			Kernel = kernel;
 			Tables = table;

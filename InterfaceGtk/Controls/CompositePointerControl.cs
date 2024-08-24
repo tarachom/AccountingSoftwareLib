@@ -24,6 +24,7 @@ limitations under the License.
 using Gtk;
 using AccountingSoftware;
 using System.Reflection;
+using System.Data.Common;
 
 namespace InterfaceGtk
 {
@@ -123,17 +124,21 @@ namespace InterfaceGtk
                     //Елемент який потрібно виділити в списку
                     listPage.GetType().GetProperty("SelectPointerItem")?.SetValue(listPage, pointer.UnigueID());
 
-                    //Елемент для вибору
-                    if (PointerName == "Документи")
-                        listPage.GetType().GetProperty("DocumentPointerItem")?.SetValue(listPage, pointer.UnigueID());
-                    else
-                        listPage.GetType().GetProperty("DirectoryPointerItem")?.SetValue(listPage, pointer.UnigueID());
-
-                    //Функція зворотнього виклику при виборі
-                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UnigueID selectPointer) =>
+                    //Вибір дозволено коли TypeSelectSensetive == true
+                    if (TypeSelectSensetive)
                     {
-                        Pointer = new UuidAndText(selectPointer.UGuid, GetBasisName());
-                    });
+                        //Елемент для вибору
+                        if (PointerName == "Документи")
+                            listPage.GetType().GetProperty("DocumentPointerItem")?.SetValue(listPage, pointer.UnigueID());
+                        else
+                            listPage.GetType().GetProperty("DirectoryPointerItem")?.SetValue(listPage, pointer.UnigueID());
+
+                        //Функція зворотнього виклику при виборі
+                        listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UnigueID selectPointer) =>
+                        {
+                            Pointer = new UuidAndText(selectPointer.UGuid, GetBasisName());
+                        });
+                    }
 
                     //Заголовок журналу з константи конфігурації
                     string listName = "Список";
@@ -148,7 +153,7 @@ namespace InterfaceGtk
                     listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
                 }
             }
-            else
+            else if (TypeSelectSensetive)
                 ВибірТипуДаних((Button)sender!);
         }
 
@@ -199,7 +204,7 @@ namespace InterfaceGtk
                 Box hBoxSelect = new Box(Orientation.Horizontal, 0);
                 vBoxContainer.PackStart(hBoxSelect, false, false, 10);
 
-                Button bSelectType = new Button("Вибрати");
+                Button bSelectType = new Button("Вибрати") { Sensitive = TypeSelectSensetive };
                 bSelectType.Clicked += (object? sender, EventArgs args) =>
                 {
                     ВибірТипуДаних(bSelectType, Info);
@@ -207,7 +212,7 @@ namespace InterfaceGtk
 
                 hBoxSelect.PackStart(bSelectType, false, false, 5);
 
-                Button bClearType = new Button("Скинути");
+                Button bClearType = new Button("Скинути") { Sensitive = TypeSelectSensetive };
                 bClearType.Clicked += (object? sender, EventArgs args) =>
                 {
                     Pointer = new UuidAndText();
@@ -220,6 +225,11 @@ namespace InterfaceGtk
             PopoverOpenInfo.Add(vBoxContainer);
             PopoverOpenInfo.ShowAll();
         }
+
+        /// <summary>
+        /// Доступність задання типу і можливість вибору. Ікнакше тільки перегляд і відкриття
+        /// </summary>
+        public bool TypeSelectSensetive { get; set; } = true;
 
         /// <summary>
         /// Відкриває спливаюче вікно для вибору типу даних

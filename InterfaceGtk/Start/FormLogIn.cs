@@ -87,7 +87,6 @@ namespace InterfaceGtk
         async void OnLogIn(object? sender, EventArgs args)
         {
             if (ProgramKernel != null)
-            {
                 if (await ProgramKernel.UserLogIn(comboBoxAllUsers.ActiveId, passwordUser.Text))
                 {
                     ModalResult = ResponseType.Ok;
@@ -95,7 +94,6 @@ namespace InterfaceGtk
                 }
                 else
                     Message.Error(this, "Невірний пароль");
-            }
         }
 
         void OnCancel(object? sender, EventArgs args)

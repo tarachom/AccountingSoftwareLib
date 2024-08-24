@@ -34,9 +34,9 @@ namespace InterfaceGtk
     public class PeriodControl : Box
     {
         ComboBoxText comboBoxPeriod; //Набір варіантів періодів
-        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true, HideMinValue = true/*, Sensitive = false*/ };
-        DateTimeControl dateStop = new DateTimeControl() { OnlyDate = true, Value = DateTime.Now/*, Sensitive = false*/ };
-        Button bSelect = new Button(new Image(Stock.GoForward, IconSize.Menu)) { /*Sensitive = false*/ };
+        DateTimeControl dateStart = new DateTimeControl() { OnlyDate = true, HideMinValue = true };
+        DateTimeControl dateStop = new DateTimeControl() { OnlyDate = true, Value = DateTime.Now };
+        Button bSelect = new Button(new Image(Stock.GoForward, IconSize.Menu)) { };
         public System.Action? Changed { get; set; }
 
         public PeriodControl() : base(Orientation.Horizontal, 0)
@@ -60,9 +60,6 @@ namespace InterfaceGtk
             comboBoxPeriod = ПеріодДляЖурналу.СписокВідбірПоПеріоду();
             comboBoxPeriod.Changed += (object? sender, EventArgs args) =>
             {
-                //bool ОсобливийПеріод = Period == ПеріодДляЖурналу.ТипПеріоду.Особливий;
-                //dateStart.Sensitive = dateStop.Sensitive = bSelect.Sensitive = ОсобливийПеріод;
-
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод)
                     dateStart.Value = DateTime.MinValue;
                 else
@@ -153,47 +150,5 @@ namespace InterfaceGtk
                 bSelect.Sensitive = value;
             }
         }
-
-        /*
-        #region Caption
-
-        public string Caption
-        {
-            get
-            {
-                return labelCaption.Text;
-            }
-            set
-            {
-                labelCaption.Text = value;
-            }
-        }
-
-        public string CaptionDateStart
-        {
-            get
-            {
-                return labelCaptionStart.Text;
-            }
-            set
-            {
-                labelCaptionStart.Text = value;
-            }
-        }
-
-        public string CaptionDateStop
-        {
-            get
-            {
-                return labelCaptionStop.Text;
-            }
-            set
-            {
-                labelCaptionStop.Text = value;
-            }
-        }
-
-        #endregion
-        */
     }
 }

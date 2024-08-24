@@ -178,6 +178,16 @@ namespace AccountingSoftware
                 await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values), Kernel.Conf.DictTSearch);
         }
 
+        protected async ValueTask BaseAddIgnoreDocumentList()
+        {
+            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UnigueID.UGuid, "");
+        }
+
+        protected async ValueTask BaseRemoveIgnoreDocumentList()
+        {
+            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UnigueID.UGuid);
+        }
+
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
         {
             Spend = spend;

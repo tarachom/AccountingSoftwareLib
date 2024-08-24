@@ -289,15 +289,20 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 вже пачкою розрахувати 
                 
                 @datewrite - дата запису
+                @user - користувач
+                @session - сесія
                 @document - документ
                 @info - додаткова інформація
 
                 */
+                await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.RegAccumTrigerDocIgnore}");
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore} 
 (
     uid serial NOT NULL,
     datewrite timestamp without time zone NOT NULL,
+    users uuid NOT NULL,
+    session uuid NOT NULL,
     document uuid NOT NULL,
     info text,
     PRIMARY KEY(uid)
@@ -594,6 +599,8 @@ GROUP BY period, regname
 ORDER BY period
 ";
 
+                Console.WriteLine("select");
+
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -604,6 +611,8 @@ ORDER BY period
                 {
                     DateTime period = (DateTime)reader["period"];
                     string regname = (string)reader["regname"];
+
+                    Console.WriteLine(period);
 
                     //
                     // ExecuteСalculation
@@ -651,23 +660,42 @@ ORDER BY period
         /// <param name="document">Документ</param>
         /// <param name="info">Додаткова інформація</param>
         /// <param name="transactionID">Ід транзакції</param>
-        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid document, string info, byte transactionID = 0)
+        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid users, Guid session, Guid document, string info, byte transactionID = 0)
         {
             //Очистка запису для документу, щоб не було лишніх дублів
-            await ExecuteSQL($"DELETE FROM {SpecialTables.RegAccumTrigerDocIgnore} WHERE document = @document",
-                new Dictionary<string, object> { { "document", document } }, transactionID);
+            await SpetialTableRegAccumTrigerDocIgnoreClear(users, session, document);
+
+            Dictionary<string, object> queryParam = new()
+            {
+                { "users", users },
+                { "session", session },
+                { "document", document },
+                { "info", info }
+            };
 
             //Добавлення запису про документ
-            await ExecuteSQL($"INSERT INTO {SpecialTables.RegAccumTrigerDocIgnore} (datewrite, document, info) VALUES(CURRENT_TIMESTAMP, @document, @info)",
-                new Dictionary<string, object> { { "document", document }, { "info", info } }, transactionID);
+            await ExecuteSQL(@$"
+INSERT INTO {SpecialTables.RegAccumTrigerDocIgnore} (datewrite, users, session, document, info) 
+VALUES(CURRENT_TIMESTAMP, @users, @session, @document, @info)", queryParam, transactionID);
         }
 
         /// <summary>
         /// Очистка таблиці документів які потрібно проігнорувати при виконанні тригерів
         /// </summary>
-        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreClear()
+        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreClear(Guid users, Guid session, Guid? document = null, byte transactionID = 0)
         {
-            await ExecuteSQL($"DELETE FROM {SpecialTables.RegAccumTrigerDocIgnore}");
+            Dictionary<string, object> queryParam = new()
+            {
+                { "users", users },
+                { "session", session }
+            };
+
+            if (document != null)
+                queryParam.Add("document", document);
+
+            await ExecuteSQL(@$"
+DELETE FROM {SpecialTables.RegAccumTrigerDocIgnore}
+WHERE users = @users AND session = @session" + (document != null ? " AND document = @document" : ""), queryParam, transactionID);
         }
 
         #endregion

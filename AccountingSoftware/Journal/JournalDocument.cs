@@ -65,5 +65,13 @@ namespace AccountingSoftware
 		/// </summary>
 		public DateTime SpendDate { get; set; }
 
+		/// <summary>
+		/// Базис для композитного типу
+		/// </summary>
+		/// <returns></returns>
+		public UuidAndText GetBasis()
+		{
+			return new UuidAndText(UnigueID.UGuid, $"Документи.{TypeDocument}");
+		}
 	}
 }
