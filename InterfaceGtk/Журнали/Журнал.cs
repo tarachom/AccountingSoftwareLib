@@ -51,13 +51,15 @@ namespace InterfaceGtk
 
         #region Динамічне створення обєктів
 
-        protected abstract Assembly ExecutingAssembly { get; }
-        protected abstract string NameSpageCodeGeneration { get; }
+        private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+        private string NameSpageCodeGeneration { get; set; }
 
         #endregion
 
-        public Журнал() : base()
+        public Журнал(string nameSpageCodeGeneration) : base()
         {
+            NameSpageCodeGeneration = nameSpageCodeGeneration;
+
             Box HBoxTop = new Box(Orientation.Horizontal, 0);
             PackStart(HBoxTop, false, false, 10);
 
@@ -289,7 +291,7 @@ namespace InterfaceGtk
             OpenTypeListDocs((ToolButton)sender!);
         }
 
-        void OnDeleteClick(object? sender, EventArgs args)
+        async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -305,20 +307,13 @@ namespace InterfaceGtk
 
                         UnigueID unigueID = new UnigueID(uid);
 
-                        object? docObjest = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
-                        if (docObjest != null)
+                        object? docObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
+                        if (docObjestInstance != null)
                         {
-                            /*
-                            Використовується виклик асинхронних методів через синхронні які додатково згенеровані
-                            Тобто функція Read викликається через ReadSync, хотя можна викликати Read, 
-                            але є проблеми з отриманням результату, треба подумати
-                            */
-                            object? readObj = docObjest.GetType().InvokeMember("ReadSync", BindingFlags.InvokeMethod, null, docObjest, [unigueID, false]);
-                            if (readObj != null && (bool)readObj)
+                            dynamic docObjest = docObjestInstance;
+                            if (await docObjest.Read(unigueID, false))
                             {
-                                bool DeletionLabel = (bool)(docObjest.GetType().GetProperty("DeletionLabel")?.GetValue(docObjest) ?? false);
-                                docObjest.GetType().InvokeMember("SetDeletionLabelSync", BindingFlags.InvokeMethod, null, docObjest, [!DeletionLabel]);
-
+                                await docObjest.SetDeletionLabel(!docObjest.DeletionLabel);
                                 SelectPointerItem = new UnigueID(uid);
                             }
                             else
@@ -350,26 +345,23 @@ namespace InterfaceGtk
 
         #region Проведення
 
-        void SpendTheDocument(string uid, string typeDoc, bool spendDoc)
+        async ValueTask SpendTheDocument(string uid, string typeDoc, bool spendDoc)
         {
             UnigueID unigueID = new UnigueID(uid);
 
-            object? documentObjest = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
-            if (documentObjest != null)
+            object? documentObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
+            if (documentObjestInstance != null)
             {
-                object? readObj = documentObjest.GetType().InvokeMember("ReadSync", BindingFlags.InvokeMethod, null, documentObjest, [unigueID, true]);
-                if (readObj != null && (bool)readObj)
+                dynamic documentObjest = documentObjestInstance;
+                if (await documentObjest.Read(unigueID, true))
                 {
                     if (spendDoc)
                     {
-                        DateTime dateDoc = (DateTime)(documentObjest.GetType().GetProperty("ДатаДок")?.GetValue(documentObjest) ?? DateTime.MinValue);
-
-                        object? documentObjestSpend = documentObjest.GetType().InvokeMember("SpendTheDocumentSync", BindingFlags.InvokeMethod, null, documentObjest, [dateDoc]);
-                        if (documentObjestSpend != null && !(bool)documentObjestSpend)
+                        if (!await documentObjest.SpendTheDocument(documentObjest.ДатаДок))
                             ErrorSpendTheDocument(unigueID);
                     }
                     else
-                        documentObjest.GetType().InvokeMember("ClearSpendTheDocumentSync", BindingFlags.InvokeMethod, null, documentObjest, null);
+                        await documentObjest.ClearSpendTheDocument();
                 }
                 else
                     Message.Error(null, "Не вдалось прочитати!");
@@ -380,7 +372,7 @@ namespace InterfaceGtk
         // Проведення або очищення проводок для вибраних документів
         //
 
-        void SpendTheDocumentOrClear(bool spend)
+        async void SpendTheDocumentOrClear(bool spend)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -392,7 +384,7 @@ namespace InterfaceGtk
                     string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                     string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
-                    SpendTheDocument(uid, typeDoc, spend);
+                    await SpendTheDocument(uid, typeDoc, spend);
                 }
 
                 LoadRecords();
