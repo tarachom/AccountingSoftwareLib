@@ -107,14 +107,14 @@ namespace InterfaceGtk
             CreateMessage("", TypeMessage.None);
         }
 
-        public Box CreateWidget(Widget widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
+        public Box CreateWidget(Widget? widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
         {
             Box hBoxInfo = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBoxInfo, false, false, 2);
 
             AddImage(hBoxInfo, typeMsg);
 
-            hBoxInfo.PackStart(widget, false, false, 0);
+            hBoxInfo.PackStart(widget ?? new Label("Error: Widget null"), false, false, 0);
             hBoxInfo.ShowAll();
 
             if (appendEmpty)

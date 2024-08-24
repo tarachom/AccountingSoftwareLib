@@ -41,7 +41,7 @@ namespace InterfaceGtk
         private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
         protected PeriodControl Період = new PeriodControl();
-        protected LogMessage Лог = new LogMessage();
+        LogMessage Лог = new LogMessage();
 
         public PageService(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration) : base(Orientation.Vertical, 0)
         {
@@ -177,7 +177,7 @@ namespace InterfaceGtk
 
         #region Функції
 
-        protected Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
+        Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
         {
             object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
             if (compositControlInstance != null)
@@ -207,7 +207,7 @@ namespace InterfaceGtk
 
         #region ПроведенняДокументів
 
-        protected async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, System.Action CallBack)
+        async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, System.Action CallBack)
         {
             object? journalSelectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Журнали.JournalSelect");
             if (journalSelectInstance != null)
@@ -217,7 +217,7 @@ namespace InterfaceGtk
                 int counterDocs = 0;
                 DateTime dateTimeCurrDoc = DateTime.MinValue.Date;
 
-                Лог.CreateMessage($"Період з <b>{Період.DateStartControl.ПочатокДня()}</b> по <b>{Період.DateStopControl.КінецьДня()}</b>", LogMessage.TypeMessage.Info);              
+                Лог.CreateMessage($"Період з <b>{Період.DateStartControl.ПочатокДня()}</b> по <b>{Період.DateStopControl.КінецьДня()}</b>", LogMessage.TypeMessage.Info);
 
                 Box hBoxFindDoc = Лог.CreateMessage($"Пошук проведених документів:", LogMessage.TypeMessage.Info, true);
                 if (await journalSelect.Select(Період.DateStartControl.ПочатокДня(), Період.DateStopControl.КінецьДня(), null, true))
@@ -233,11 +233,11 @@ namespace InterfaceGtk
                             if (dateTimeCurrDoc != journalSelect.Current.DocDate.Date)
                             {
                                 dateTimeCurrDoc = journalSelect.Current.DocDate.Date;
-                                await ОчиститиСписокІгноруванняДокументів();
+                                await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session);
                                 Лог.CreateMessage($"{dateTimeCurrDoc.ToString("dd-MM-yyyy")}", LogMessage.TypeMessage.None);
                             }
 
-                            await ДодатиДокументВСписокІгнорування(journalSelect.Current.UnigueID.UGuid, journalSelect.Current.DocName);
+                            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, journalSelect.Current.UnigueID.UGuid, journalSelect.Current.DocName);
 
                             DocumentObject? doc = await journalSelect.GetDocumentObject(true);
                             if (doc != null)
@@ -245,41 +245,35 @@ namespace InterfaceGtk
                                 Box hBox = Лог.CreateMessage($"Проведення <b>{journalSelect.Current.DocName}</b>", LogMessage.TypeMessage.Info);
 
                                 //Для документу викликається функція проведення
-                                object? obj = doc.GetType().InvokeMember("SpendTheDocumentSync", BindingFlags.InvokeMethod, null, doc, [journalSelect.Current.SpendDate]);
-                                if (obj != null)
-                                    if ((bool)obj)
-                                    {
-                                        //Документ проведений ОК
-                                        Лог.AppendMessage(hBox, "Проведено");
+                                if (await ((dynamic)doc).SpendTheDocument(journalSelect.Current.SpendDate))
+                                {
+                                    //Документ проведений ОК
+                                    Лог.AppendMessage(hBox, "Проведено");
 
-                                        counterDocs++;
-                                    }
-                                    else
-                                    {
-                                        //Документ НЕ проведений Error
-                                        Лог.AppendMessage(hBox, "Помилка", LogMessage.TypeMessage.Error);
+                                    counterDocs++;
+                                }
+                                else
+                                {
+                                    //Документ НЕ проведений Error
+                                    Лог.AppendMessage(hBox, "Помилка", LogMessage.TypeMessage.Error);
 
-                                        //Додатково вивід помилок у це вікно
-                                        SelectRequest_Record record = await Kernel.DataBase.SpetialTableMessageErrorSelect(doc.UnigueID, 1);
+                                    //Додатково вивід помилок у це вікно
+                                    SelectRequest_Record record = await Kernel.DataBase.SpetialTableMessageErrorSelect(doc.UnigueID, 1);
 
-                                        string msg = "";
-                                        foreach (Dictionary<string, object> row in record.ListRow)
-                                            msg += "<i>" + row["message"].ToString() + "</i>";
+                                    string msg = "";
+                                    foreach (Dictionary<string, object> row in record.ListRow)
+                                        msg += "<i>" + row["message"].ToString() + "</i>";
 
-                                        Лог.CreateMessage(msg, LogMessage.TypeMessage.None, true);
+                                    Лог.CreateMessage(msg, LogMessage.TypeMessage.None, true);
+                                    Лог.CreateWidget(CreateCompositControl("Документи:", journalSelect.Current.GetBasis()), LogMessage.TypeMessage.None, true);
+                                    Лог.CreateMessage("Проведення документів перервано!", LogMessage.TypeMessage.Info, true);
 
-                                        Widget? composit = CreateCompositControl("Документи:", journalSelect.Current.GetBasis());
-                                        if (composit != null)
-                                            Лог.CreateWidget(composit, LogMessage.TypeMessage.None, true);
-
-                                        Лог.CreateMessage("Проведення документів перервано!", LogMessage.TypeMessage.Info, true);
-
-                                        break;
-                                    }
+                                    break;
+                                }
                             }
                         }
 
-                    await ОчиститиСписокІгноруванняДокументів();
+                    await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session);
 
                     CallBack.Invoke();
 
@@ -293,21 +287,11 @@ namespace InterfaceGtk
             }
         }
 
-        public async ValueTask ДодатиДокументВСписокІгнорування(Guid document, string info)
-        {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, document, info);
-        }
-
-        public async ValueTask ОчиститиСписокІгноруванняДокументів()
-        {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session);
-        }
-
         #endregion
 
         #region ОчисткаПоміченихНаВидалення
 
-        protected async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
+        async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
         {
             Лог.CreateMessage($"<b>Обробка довідників</b>", LogMessage.TypeMessage.Info);
             foreach (ConfigurationDirectories confDirectories in Kernel.Conf.Directories.Values)
@@ -316,42 +300,36 @@ namespace InterfaceGtk
                     break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Довідник <b>{confDirectories.Name}</b>", LogMessage.TypeMessage.Info);
-
                 var recordResult = await Kernel.DataBase.SelectRequest($"SELECT uid FROM {confDirectories.Table} WHERE deletion_label = true");
                 if (recordResult.ListRow.Count > 0)
                 {
                     Лог.AppendMessage(hBoxInfo, $"Помічених на видалення: {recordResult.ListRow.Count}", LogMessage.TypeMessage.Ok);
+                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Довідники." + confDirectories.Name); //Пошук залежностей
 
-                    //Пошук залежностей
-                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Довідники." + confDirectories.Name);
-
-                    //Обєкт довідника
-                    object? directoryObject = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Довідники.{confDirectories.Name}_Objest");
-                    if (directoryObject != null)
+                    object? directoryObjectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Довідники.{confDirectories.Name}_Objest");
+                    if (directoryObjectInstance != null)
+                    {
+                        dynamic directoryObject = directoryObjectInstance;
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
                             UnigueID unigueID = new(row["uid"]);
-                            string nameObj = "";
 
-                            object? objRead = directoryObject.GetType().InvokeMember("ReadSync", BindingFlags.InvokeMethod, null, directoryObject, [unigueID]);
-                            if (objRead != null && (bool)objRead)
+                            if (await directoryObject.Read(unigueID))
                             {
-                                object? objName = directoryObject.GetType().InvokeMember("GetPresentationSync", BindingFlags.InvokeMethod, null, directoryObject, null);
-                                if (objName != null) nameObj = (string)objName;
-
-                                long allCountDependencies = await SearchDependencies(listDependencies, unigueID.UGuid, nameObj);
-                                if (allCountDependencies == 0)
+                                string nameObj = await directoryObject.GetPresentation();
+                                if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
                                 {
-                                    directoryObject.GetType().InvokeMember("DeleteSync", BindingFlags.InvokeMethod, null, directoryObject, null);
+                                    await directoryObject.Delete();
                                     Лог.CreateMessage(" --> Видалено: " + nameObj, LogMessage.TypeMessage.Ok);
                                 }
                             }
                         }
-
+                    }
                 }
             }
 
             Лог.CreateEmptyMsg();
+
             Лог.CreateMessage($"<b>Обробка документів</b>", LogMessage.TypeMessage.Info);
             foreach (ConfigurationDocuments confDocuments in Kernel.Conf.Documents.Values)
             {
@@ -359,34 +337,29 @@ namespace InterfaceGtk
                     break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Документ <b>{confDocuments.Name}</b>", LogMessage.TypeMessage.Info);
-
                 var recordResult = await Kernel.DataBase.SelectRequest(@$"SELECT uid, docname FROM {confDocuments.Table} WHERE deletion_label = true");
                 if (recordResult.ListRow.Count > 0)
                 {
                     Лог.AppendMessage(hBoxInfo, $"Помічених на видалення: {recordResult.ListRow.Count}", LogMessage.TypeMessage.Ok);
+                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Документи." + confDocuments.Name); //Пошук залежностей
 
-                    //Пошук залежностей
-                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Документи." + confDocuments.Name);
-
-                    //Обєкт документу
-                    object? documentObject = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{confDocuments.Name}_Objest");
-                    if (documentObject != null)
+                    object? documentObjectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{confDocuments.Name}_Objest");
+                    if (documentObjectInstance != null)
+                    {
+                        dynamic documentObject = documentObjectInstance;
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
                             UnigueID unigueID = new(row["uid"]);
                             string nameObj = (string)row["docname"];
 
-                            object? objRead = documentObject.GetType().InvokeMember("ReadSync", BindingFlags.InvokeMethod, null, documentObject, [unigueID, false]);
-                            if (objRead != null && (bool)objRead)
-                            {
-                                long allCountDependencies = await SearchDependencies(listDependencies, unigueID.UGuid, nameObj);
-                                if (allCountDependencies == 0)
+                            if (await documentObject.Read(unigueID, false))
+                                if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
                                 {
-                                    documentObject.GetType().InvokeMember("DeleteSync", BindingFlags.InvokeMethod, null, documentObject, null);
+                                    await documentObject.Delete();
                                     Лог.CreateMessage(" --> Видалено: " + nameObj, LogMessage.TypeMessage.Ok);
                                 }
-                            }
                         }
+                    }
                 }
             }
 
@@ -409,9 +382,7 @@ namespace InterfaceGtk
                 Dictionary<string, object> paramQuery = new() { { "uid", uid } };
 
                 Лог.CreateMessage(name, LogMessage.TypeMessage.Error);
-
-                //Обробка залежностей
-                foreach (ConfigurationDependencies dependence in listDependencies)
+                foreach (ConfigurationDependencies dependence in listDependencies) //Обробка залежностей
                 {
                     string query = "";
 
@@ -438,8 +409,7 @@ namespace InterfaceGtk
                             if (dependence.ConfigurationGroupName == "Довідники" || dependence.ConfigurationGroupName == "Документи")
                             {
                                 Widget? composit = CreateCompositControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
-                                if (composit != null)
-                                    Лог.CreateWidget(composit, LogMessage.TypeMessage.None, false);
+                                Лог.CreateWidget(composit, LogMessage.TypeMessage.None, false);
                             }
                     }
                 }
