@@ -295,7 +295,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @info - додаткова інформація
 
                 */
-                await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.RegAccumTrigerDocIgnore}");
+                /*await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.RegAccumTrigerDocIgnore}");*/
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore} 
 (
@@ -599,8 +599,6 @@ GROUP BY period, regname
 ORDER BY period
 ";
 
-                Console.WriteLine("select");
-
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -611,8 +609,6 @@ ORDER BY period
                 {
                     DateTime period = (DateTime)reader["period"];
                     string regname = (string)reader["regname"];
-
-                    Console.WriteLine(period);
 
                     //
                     // ExecuteСalculation

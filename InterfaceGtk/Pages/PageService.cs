@@ -175,19 +175,123 @@ namespace InterfaceGtk
             return vBox;
         }
 
+        #region Функції
+
+        protected Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
+        {
+            object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
+            if (compositControlInstance != null)
+            {
+                dynamic compositControl = compositControlInstance;
+
+                compositControl.Caption = caption;
+                compositControl.ClearSensetive = false;
+                compositControl.TypeSelectSensetive = false;
+                compositControl.Pointer = uuidAndText;
+
+                return compositControl;
+            }
+            else
+                return null;
+        }
+
+        #endregion
+
         #region Virtual & Abstract Function
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         protected abstract void PeriodChanged();
 
-        protected abstract ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, System.Action CallBack);
-
-        protected abstract Widget CreateCompositControl(string caption, UuidAndText uuidAndText);
-
         #endregion
 
         #region ПроведенняДокументів
+
+        protected async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, System.Action CallBack)
+        {
+            object? journalSelectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Журнали.JournalSelect");
+            if (journalSelectInstance != null)
+            {
+                dynamic journalSelect = journalSelectInstance;
+
+                int counterDocs = 0;
+                DateTime dateTimeCurrDoc = DateTime.MinValue.Date;
+
+                Лог.CreateMessage($"Період з <b>{Період.DateStartControl.ПочатокДня()}</b> по <b>{Період.DateStopControl.КінецьДня()}</b>", LogMessage.TypeMessage.Info);              
+
+                Box hBoxFindDoc = Лог.CreateMessage($"Пошук проведених документів:", LogMessage.TypeMessage.Info, true);
+                if (await journalSelect.Select(Період.DateStartControl.ПочатокДня(), Період.DateStopControl.КінецьДня(), null, true))
+                {
+                    Лог.AppendMessage(hBoxFindDoc, $"знайдено {journalSelect.Count()} документів");
+                    while (journalSelect.MoveNext())
+                        if (journalSelect.Current != null)
+                        {
+                            if (cancellationToken!.IsCancellationRequested)
+                                break;
+
+                            //Список документів які ігноруються при обрахунку регістрів накопичення
+                            if (dateTimeCurrDoc != journalSelect.Current.DocDate.Date)
+                            {
+                                dateTimeCurrDoc = journalSelect.Current.DocDate.Date;
+                                await ОчиститиСписокІгноруванняДокументів();
+                                Лог.CreateMessage($"{dateTimeCurrDoc.ToString("dd-MM-yyyy")}", LogMessage.TypeMessage.None);
+                            }
+
+                            await ДодатиДокументВСписокІгнорування(journalSelect.Current.UnigueID.UGuid, journalSelect.Current.DocName);
+
+                            DocumentObject? doc = await journalSelect.GetDocumentObject(true);
+                            if (doc != null)
+                            {
+                                Box hBox = Лог.CreateMessage($"Проведення <b>{journalSelect.Current.DocName}</b>", LogMessage.TypeMessage.Info);
+
+                                //Для документу викликається функція проведення
+                                object? obj = doc.GetType().InvokeMember("SpendTheDocumentSync", BindingFlags.InvokeMethod, null, doc, [journalSelect.Current.SpendDate]);
+                                if (obj != null)
+                                    if ((bool)obj)
+                                    {
+                                        //Документ проведений ОК
+                                        Лог.AppendMessage(hBox, "Проведено");
+
+                                        counterDocs++;
+                                    }
+                                    else
+                                    {
+                                        //Документ НЕ проведений Error
+                                        Лог.AppendMessage(hBox, "Помилка", LogMessage.TypeMessage.Error);
+
+                                        //Додатково вивід помилок у це вікно
+                                        SelectRequest_Record record = await Kernel.DataBase.SpetialTableMessageErrorSelect(doc.UnigueID, 1);
+
+                                        string msg = "";
+                                        foreach (Dictionary<string, object> row in record.ListRow)
+                                            msg += "<i>" + row["message"].ToString() + "</i>";
+
+                                        Лог.CreateMessage(msg, LogMessage.TypeMessage.None, true);
+
+                                        Widget? composit = CreateCompositControl("Документи:", journalSelect.Current.GetBasis());
+                                        if (composit != null)
+                                            Лог.CreateWidget(composit, LogMessage.TypeMessage.None, true);
+
+                                        Лог.CreateMessage("Проведення документів перервано!", LogMessage.TypeMessage.Info, true);
+
+                                        break;
+                                    }
+                            }
+                        }
+
+                    await ОчиститиСписокІгноруванняДокументів();
+
+                    CallBack.Invoke();
+
+                    Лог.CreateEmptyMsg();
+                    Лог.CreateMessage($"Обробку завершено!", LogMessage.TypeMessage.None, true);
+                    Лог.CreateMessage($"Проведено документів: {counterDocs}", LogMessage.TypeMessage.Info, true);
+
+                    await Task.Delay(1000);
+                    Лог.CreateEmptyMsg();
+                }
+            }
+        }
 
         public async ValueTask ДодатиДокументВСписокІгнорування(Guid document, string info)
         {
@@ -305,7 +409,7 @@ namespace InterfaceGtk
                 Dictionary<string, object> paramQuery = new() { { "uid", uid } };
 
                 Лог.CreateMessage(name, LogMessage.TypeMessage.Error);
-                
+
                 //Обробка залежностей
                 foreach (ConfigurationDependencies dependence in listDependencies)
                 {
@@ -333,8 +437,9 @@ namespace InterfaceGtk
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                             if (dependence.ConfigurationGroupName == "Довідники" || dependence.ConfigurationGroupName == "Документи")
                             {
-                                Widget composit = CreateCompositControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
-                                Лог.CreateWidget(composit, LogMessage.TypeMessage.None, false);
+                                Widget? composit = CreateCompositControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
+                                if (composit != null)
+                                    Лог.CreateWidget(composit, LogMessage.TypeMessage.None, false);
                             }
                     }
                 }
