@@ -82,7 +82,12 @@ namespace AccountingSoftware
             /// <summary>
             /// Таблична частина
             /// </summary>
-            TablePart
+            TablePart,
+
+            /// <summary>
+            /// Таблична частина без власника (Константи, Регістри накопичення)
+            /// </summary>
+            TablePartWithoutOwner,
         }
     }
 }

@@ -243,5 +243,25 @@ namespace AccountingSoftware
 
             BaseClear();
         }
+
+        /// <summary>
+        /// Представлення обєкта
+        /// </summary>
+        /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
+        /// <returns>Представлення обєкта</returns>
+        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
+        {
+            if (Kernel != null && !UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
+            {
+                Query query = new(Table);
+                query.Field.AddRange(fieldPresentation);
+
+                //Відбір по uid
+                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
+
+                return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
+            }
+            else return "";
+        }
     }
 }

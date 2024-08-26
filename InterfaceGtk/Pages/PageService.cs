@@ -72,8 +72,8 @@ namespace InterfaceGtk
                     vBox.PackStart(hBox, true, true, 5);
                 }
 
-                stackSwitcher.Stack.AddTitled(ПроведенняДокументів(), "ПроведенняДокументів", "Проведення документів");
                 stackSwitcher.Stack.AddTitled(ОчисткаПоміченихНаВидалення(), "ОчисткаПоміченихНаВидалення", "Очистка помічених на видалення");
+                stackSwitcher.Stack.AddTitled(ПроведенняДокументів(), "ПроведенняДокументів", "Проведення документів");
             }
 
             //Для виводу результатів
@@ -110,7 +110,7 @@ namespace InterfaceGtk
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 hBox.PackStart(bSpendTheDocument, false, false, 5);
                 hBox.PackStart(bStop, false, false, 5);
-                hBox.PackStart(bClear, false, false, 5);
+                hBox.PackEnd(bClear, false, false, 5);
 
                 vBox.PackStart(hBox, false, false, 5);
             }
@@ -149,7 +149,7 @@ namespace InterfaceGtk
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 hBox.PackStart(bClearDeletionLabel, false, false, 5);
                 hBox.PackStart(bStop, false, false, 5);
-                hBox.PackStart(bClear, false, false, 5);
+                hBox.PackEnd(bClear, false, false, 5);
 
                 vBox.PackStart(hBox, false, false, 5);
             }
@@ -293,6 +293,9 @@ namespace InterfaceGtk
 
         async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
         {
+            //Шаблон запиту для вибірки елементів помічених на видалення
+            string querySelectDeletion = "SELECT uid FROM @TABLE WHERE deletion_label = true";
+
             Лог.CreateMessage($"<b>Обробка довідників</b>", LogMessage.TypeMessage.Info);
             foreach (ConfigurationDirectories confDirectories in Kernel.Conf.Directories.Values)
             {
@@ -300,7 +303,7 @@ namespace InterfaceGtk
                     break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Довідник <b>{confDirectories.Name}</b>", LogMessage.TypeMessage.Info);
-                var recordResult = await Kernel.DataBase.SelectRequest($"SELECT uid FROM {confDirectories.Table} WHERE deletion_label = true");
+                var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDirectories.Table));
                 if (recordResult.ListRow.Count > 0)
                 {
                     Лог.AppendMessage(hBoxInfo, $"Помічених на видалення: {recordResult.ListRow.Count}", LogMessage.TypeMessage.Ok);
@@ -313,7 +316,6 @@ namespace InterfaceGtk
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
                             UnigueID unigueID = new(row["uid"]);
-
                             if (await directoryObject.Read(unigueID))
                             {
                                 string nameObj = await directoryObject.GetPresentation();
@@ -337,11 +339,13 @@ namespace InterfaceGtk
                     break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Документ <b>{confDocuments.Name}</b>", LogMessage.TypeMessage.Info);
-                var recordResult = await Kernel.DataBase.SelectRequest(@$"SELECT uid, docname FROM {confDocuments.Table} WHERE deletion_label = true");
+                var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDocuments.Table));
                 if (recordResult.ListRow.Count > 0)
                 {
                     Лог.AppendMessage(hBoxInfo, $"Помічених на видалення: {recordResult.ListRow.Count}", LogMessage.TypeMessage.Ok);
-                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Документи." + confDocuments.Name); //Пошук залежностей
+
+                    //Залежності
+                    List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Документи." + confDocuments.Name);
 
                     object? documentObjectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{confDocuments.Name}_Objest");
                     if (documentObjectInstance != null)
@@ -350,14 +354,15 @@ namespace InterfaceGtk
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
                             UnigueID unigueID = new(row["uid"]);
-                            string nameObj = (string)row["docname"];
-
-                            if (await documentObject.Read(unigueID, false))
+                            if (await documentObject.Read(unigueID))
+                            {
+                                string nameObj = await documentObject.GetPresentation();
                                 if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
                                 {
                                     await documentObject.Delete();
                                     Лог.CreateMessage(" --> Видалено: " + nameObj, LogMessage.TypeMessage.Ok);
                                 }
+                            }
                         }
                     }
                 }
@@ -381,7 +386,6 @@ namespace InterfaceGtk
             {
                 Dictionary<string, object> paramQuery = new() { { "uid", uid } };
 
-                Лог.CreateMessage(name, LogMessage.TypeMessage.Error);
                 foreach (ConfigurationDependencies dependence in listDependencies) //Обробка залежностей
                 {
                     string query = "";
@@ -390,20 +394,26 @@ namespace InterfaceGtk
                         query = $"SELECT uid FROM {dependence.Table} WHERE {dependence.Field} = @uid LIMIT 3";
                     else if (dependence.ConfigurationGroupLevel == ConfigurationDependencies.GroupLevel.TablePart)
                         query = $"SELECT DISTINCT owner AS uid FROM {dependence.Table} WHERE {dependence.Field} = @uid LIMIT 3";
+                    else if (dependence.ConfigurationGroupLevel == ConfigurationDependencies.GroupLevel.TablePartWithoutOwner)
+                        // Для табличних частин Константи та Регістри Накопичення вибирається тільки 1 елемент як факт наявності запису
+                        query = $"SELECT uid FROM {dependence.Table} WHERE {dependence.Field} = @uid LIMIT 1";
 
                     var recordResult = await Kernel.DataBase.SelectRequest(query, paramQuery);
                     if (recordResult.ListRow.Count > 0)
                     {
                         if (!existUse)
                         {
-                            Лог.CreateMessage("<u>Використовується:</u>", LogMessage.TypeMessage.None);
+                            Лог.CreateMessage($"{name}. <u>Використовується:</u>", LogMessage.TypeMessage.Error);
                             existUse = true;
                         }
 
                         allCountDependencies += recordResult.ListRow.Count;
-                        Лог.CreateMessage($"<i>{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}" +
-                            (dependence.ConfigurationGroupLevel == ConfigurationDependencies.GroupLevel.TablePart ? $", таблична частина {dependence.ConfigurationTablePartName}" : "") +
-                            $", поле {dependence.ConfigurationFieldName}</i>", LogMessage.TypeMessage.None);
+                        Лог.CreateMessage(
+                            $"<i>{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}" +
+                            (dependence.ConfigurationGroupLevel == ConfigurationDependencies.GroupLevel.TablePart ||
+                             dependence.ConfigurationGroupLevel == ConfigurationDependencies.GroupLevel.TablePartWithoutOwner ? $", таблична частина {dependence.ConfigurationTablePartName}" : "") +
+                            (dependence.ConfigurationGroupName != "Константи" ? $", поле {dependence.ConfigurationFieldName}" : "") +
+                            "</i>", LogMessage.TypeMessage.None);
 
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                             if (dependence.ConfigurationGroupName == "Довідники" || dependence.ConfigurationGroupName == "Документи")

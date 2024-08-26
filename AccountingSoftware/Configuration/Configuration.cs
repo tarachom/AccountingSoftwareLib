@@ -448,11 +448,9 @@ namespace AccountingSoftware
 
             //Перевірити константи
             foreach (ConfigurationConstantsBlock constantsBlockItem in ConstantsBlock.Values)
-            {
                 foreach (ConfigurationConstants constantsItem in constantsBlockItem.Constants.Values)
                 {
                     if (constantsItem.Type == "pointer" && constantsItem.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "Константи",
@@ -461,18 +459,31 @@ namespace AccountingSoftware
                             Table = SpecialTables.Constants,
                             Field = constantsItem.NameInTable
                         });
-                    }
+
+                    //Табличні частини
+                    foreach (ConfigurationTablePart constantsTablePart in constantsItem.TabularParts.Values)
+                        //Поля табличної частини
+                        foreach (ConfigurationField tablePartField in constantsTablePart.Fields.Values)
+                            if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
+                                ListDependencies.Add(new ConfigurationDependencies()
+                                {
+                                    ConfigurationGroupName = "Константи",
+                                    ConfigurationGroupLevel = ConfigurationDependencies.GroupLevel.TablePartWithoutOwner,
+                                    ConfigurationTablePartName = constantsTablePart.Name,
+                                    ConfigurationObjectName = constantsItem.Name,
+                                    ConfigurationObjectDesc = constantsItem.Desc,
+                                    Table = constantsTablePart.Table,
+                                    ConfigurationFieldName = tablePartField.Name,
+                                    Field = tablePartField.NameInTable
+                                });
                 }
-            }
 
             //Перевірити поля довідників та поля табличних частин чи часом вони не ссилаються на цей довідник
             foreach (ConfigurationDirectories directoryItem in Directories.Values)
             {
                 //Поля довідника
                 foreach (ConfigurationField directoryField in directoryItem.Fields.Values)
-                {
                     if (directoryField.Type == "pointer" && directoryField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "Довідники",
@@ -482,17 +493,12 @@ namespace AccountingSoftware
                             ConfigurationFieldName = directoryField.Name,
                             Field = directoryField.NameInTable
                         });
-                    }
-                }
 
                 //Табличні частини
                 foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
-                {
                     //Поля табличної частини
                     foreach (ConfigurationField tablePartField in directoryTablePart.Fields.Values)
-                    {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
-                        {
                             ListDependencies.Add(new ConfigurationDependencies()
                             {
                                 ConfigurationGroupName = "Довідники",
@@ -501,12 +507,9 @@ namespace AccountingSoftware
                                 ConfigurationObjectName = directoryItem.Name,
                                 ConfigurationObjectDesc = directoryItem.Desc,
                                 Table = directoryTablePart.Table,
-                                ConfigurationFieldName = directoryTablePart.Name,
+                                ConfigurationFieldName = tablePartField.Name,
                                 Field = tablePartField.NameInTable
                             });
-                        }
-                    }
-                }
             }
 
             //Перевірка документів
@@ -514,9 +517,7 @@ namespace AccountingSoftware
             {
                 //Поля довідника
                 foreach (ConfigurationField documentField in documentItem.Fields.Values)
-                {
                     if (documentField.Type == "pointer" && documentField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "Документи",
@@ -526,17 +527,12 @@ namespace AccountingSoftware
                             ConfigurationFieldName = documentField.Name,
                             Field = documentField.NameInTable
                         });
-                    }
-                }
 
                 //Табличні частини
                 foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
-                {
                     //Поля табличної частини
                     foreach (ConfigurationField tablePartField in documentTablePart.Fields.Values)
-                    {
                         if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
-                        {
                             ListDependencies.Add(new ConfigurationDependencies()
                             {
                                 ConfigurationGroupName = "Документи",
@@ -545,12 +541,9 @@ namespace AccountingSoftware
                                 ConfigurationObjectName = documentItem.Name,
                                 ConfigurationObjectDesc = documentItem.Desc,
                                 Table = documentTablePart.Table,
-                                ConfigurationFieldName = documentTablePart.Name,
+                                ConfigurationFieldName = tablePartField.Name,
                                 Field = tablePartField.NameInTable
                             });
-                        }
-                    }
-                }
             }
 
             //Перевірка регістра RegistersInformation
@@ -558,9 +551,7 @@ namespace AccountingSoftware
             {
                 //Поля
                 foreach (ConfigurationField registersField in registersInformationItem.DimensionFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриІнформації",
@@ -570,13 +561,9 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
 
                 foreach (ConfigurationField registersField in registersInformationItem.ResourcesFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриІнформації",
@@ -586,13 +573,9 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
 
                 foreach (ConfigurationField registersField in registersInformationItem.PropertyFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриІнформації",
@@ -602,8 +585,6 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
             }
 
             //Перевірка регістра RegistersAccumulation
@@ -611,9 +592,7 @@ namespace AccountingSoftware
             {
                 //Поля
                 foreach (ConfigurationField registersField in registersAccumulationItem.DimensionFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриНакопичення",
@@ -623,13 +602,9 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
 
                 foreach (ConfigurationField registersField in registersAccumulationItem.ResourcesFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриНакопичення",
@@ -639,13 +614,9 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
 
                 foreach (ConfigurationField registersField in registersAccumulationItem.PropertyFields.Values)
-                {
                     if (registersField.Type == "pointer" && registersField.Pointer == searchName)
-                    {
                         ListDependencies.Add(new ConfigurationDependencies()
                         {
                             ConfigurationGroupName = "РегістриНакопичення",
@@ -655,8 +626,23 @@ namespace AccountingSoftware
                             ConfigurationFieldName = registersField.Name,
                             Field = registersField.NameInTable
                         });
-                    }
-                }
+
+                //Табличні частини
+                foreach (ConfigurationTablePart registersAccumulationTablePart in registersAccumulationItem.TabularParts.Values)
+                    //Поля табличної частини
+                    foreach (ConfigurationField tablePartField in registersAccumulationTablePart.Fields.Values)
+                        if (tablePartField.Type == "pointer" && tablePartField.Pointer == searchName)
+                            ListDependencies.Add(new ConfigurationDependencies()
+                            {
+                                ConfigurationGroupName = "РегістриНакопичення",
+                                ConfigurationGroupLevel = ConfigurationDependencies.GroupLevel.TablePartWithoutOwner,
+                                ConfigurationTablePartName = registersAccumulationTablePart.Name,
+                                ConfigurationObjectName = registersAccumulationItem.Name,
+                                ConfigurationObjectDesc = registersAccumulationItem.Desc,
+                                Table = registersAccumulationTablePart.Table,
+                                ConfigurationFieldName = tablePartField.Name,
+                                Field = tablePartField.NameInTable
+                            });
             }
 
             return ListDependencies;
