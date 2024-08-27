@@ -31,7 +31,7 @@ using Gtk;
 
 namespace InterfaceGtk
 {
-    class Message
+    public class Message
     {
         public static void Info(Window? pwin, string message)
         {

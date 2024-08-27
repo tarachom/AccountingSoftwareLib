@@ -34,7 +34,7 @@ namespace InterfaceGtk
     /// <summary>
     /// Для побудови основних меню документів, довідників, журналів, звітів ...
     /// </summary>
-    class Link
+    public class Link
     {
         public static void AddCaption(Box vBox, string name, EventHandler? clickAction = null)
         {

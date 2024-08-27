@@ -29,7 +29,7 @@ limitations under the License.
 
 namespace InterfaceGtk
 {
-    class Validate
+    public class Validate
     {
         /// <summary>
         /// Чи це ціле число

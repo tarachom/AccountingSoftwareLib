@@ -94,6 +94,8 @@ namespace InterfaceGtk
 
         protected abstract void DeleteRecord(TreeIter iter, int rowNumber);
 
+        protected virtual bool IsEditingCell() { return false; }
+
         #endregion
 
         #region TreeView
@@ -229,6 +231,9 @@ namespace InterfaceGtk
 
         void OnDeleteClick(object? sender, EventArgs args)
         {
+            if (IsEditingCell())
+                return;
+                
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
                 TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
