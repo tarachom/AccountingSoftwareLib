@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk
 {
@@ -30,6 +31,23 @@ namespace InterfaceGtk
     /// </summary>
     public abstract class ФормаЕлемент : Box
     {
+        /// <summary>
+        /// ІД елементу
+        /// </summary>
+        public UnigueID? UnigueID { get; set; }
+
+        /// <summary>
+        /// Назва         
+        /// </summary>
+        public string Caption { get; set; } = "";
+
+        #region EventFunc
+
+        public void UnigueIDChanged(object? _, UnigueID unigueID) { UnigueID = unigueID; }
+        public void CaptionChanged(object? _, string caption) { Caption = caption; }
+
+        #endregion
+
         public ФормаЕлемент() : base(Orientation.Vertical, 0) { }
 
         #region Create Field

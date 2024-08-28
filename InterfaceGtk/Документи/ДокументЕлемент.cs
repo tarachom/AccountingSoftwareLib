@@ -45,16 +45,6 @@ namespace InterfaceGtk
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
         /// <summary>
-        /// ІД елементу
-        /// </summary>
-        public UnigueID? UnigueID { get; set; }
-
-        /// <summary>
-        /// Назва         
-        /// /// </summary>
-        public string Caption { get; set; } = "";
-
-        /// <summary>
         /// Горизонтальний бокс для кнопок
         /// </summary>
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
