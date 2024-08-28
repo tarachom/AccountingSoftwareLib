@@ -33,6 +33,8 @@ namespace InterfaceGtk
         /// </summary>
         //public UnigueID? SelectPointerItem { get; set; }
 
+        public Widget? ParentWidget { get; set; }
+
         /// <summary>
         /// Для вибору
         /// </summary>
@@ -85,6 +87,20 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
+        {
+            //Console.WriteLine(this.Parent.Parent); // ???
+            if (ParentWidget != null)
+            {
+                Notebook? notebook = NotebookFunction.GetNotebookFromWidget(ParentWidget);
+                Console.WriteLine(notebook == null);
+                (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
+                if (notebook != null && page.FuncWidget != null)
+                    NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
+                page.SetValue?.Invoke();
+            }
+        }
+
         #region Toolbar & Menu
 
         void CreateToolbar()
@@ -131,7 +147,7 @@ namespace InterfaceGtk
 
         public abstract void LoadTree();
 
-        protected abstract void OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
 
@@ -181,10 +197,8 @@ namespace InterfaceGtk
 
                     if (DirectoryPointerItem == null)
                     {
-                        if (unigueID.IsEmpty())
-                            return;
-
-                        OpenPageElement(false, unigueID);
+                        if (!unigueID.IsEmpty())
+                            BeforeAndAfterOpenElement(false, unigueID);
                     }
                     else
                     {
@@ -240,7 +254,7 @@ namespace InterfaceGtk
 
         void OnAddClick(object? sender, EventArgs args)
         {
-            OpenPageElement(true);
+            BeforeAndAfterOpenElement(true);
         }
 
         void OnEditClick(object? sender, EventArgs args)
@@ -249,11 +263,8 @@ namespace InterfaceGtk
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-
-                    if (unigueID.IsEmpty())
-                        return;
-
-                    OpenPageElement(false, unigueID);
+                    if (!unigueID.IsEmpty())
+                        BeforeAndAfterOpenElement(false, unigueID);
                 }
         }
 

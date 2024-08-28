@@ -68,7 +68,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Пошук
         /// </summary>
-        SearchControl ПошукПовнотекстовий = new SearchControl();
+        SearchControl Пошук = new SearchControl();
 
         /// <summary>
         /// Текст для діалогів
@@ -81,9 +81,9 @@ namespace InterfaceGtk
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            ПошукПовнотекстовий.Select = async (string x) => { await LoadRecords_OnSearch(x); };
-            ПошукПовнотекстовий.Clear = async () => { await LoadRecords(); };
-            HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
+            Пошук.Select = async (string x) => { await LoadRecords_OnSearch(x); };
+            Пошук.Clear = async () => { await LoadRecords(); };
+            HBoxTop.PackStart(Пошук, false, false, 2);
 
             CreateToolbar();
 
@@ -109,7 +109,16 @@ namespace InterfaceGtk
 
         public async ValueTask SetValue()
         {
-           await LoadRecords();
+            await LoadRecords();
+        }
+
+        async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
+        {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
+            if (notebook != null && page.FuncWidget != null)
+                NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
+            page.SetValue?.Invoke();
         }
 
         #region Toolbar & Menu
@@ -164,7 +173,7 @@ namespace InterfaceGtk
 
         protected abstract ValueTask LoadRecords_OnSearch(string searchText);
 
-        protected abstract void OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
 
@@ -209,7 +218,7 @@ namespace InterfaceGtk
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     if (DirectoryPointerItem == null)
-                        OpenPageElement(false, unigueID);
+                        BeforeAndAfterOpenElement(false, unigueID);
                     else
                     {
                         CallBack_OnSelectPointer?.Invoke(unigueID);
@@ -238,7 +247,7 @@ namespace InterfaceGtk
             {
                 case Gdk.Key.Insert:
                     {
-                        OpenPageElement(true);
+                        BeforeAndAfterOpenElement(true);
                         break;
                     }
                 case Gdk.Key.F5:
@@ -290,7 +299,7 @@ namespace InterfaceGtk
 
         void OnAddClick(object? sender, EventArgs args)
         {
-            OpenPageElement(true);
+            BeforeAndAfterOpenElement(true);
         }
 
         void OnEditClick(object? sender, EventArgs args)
@@ -303,7 +312,7 @@ namespace InterfaceGtk
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                        OpenPageElement(false, unigueID);
+                        BeforeAndAfterOpenElement(false, unigueID);
                     }
             }
         }

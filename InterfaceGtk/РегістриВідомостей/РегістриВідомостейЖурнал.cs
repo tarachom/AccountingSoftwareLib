@@ -101,6 +101,15 @@ namespace InterfaceGtk
             await BeforeSetValue();
         }
 
+        async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
+        {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
+            if (notebook != null && page.FuncWidget != null)
+                NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
+            page.SetValue?.Invoke();
+        }
+
         #region Toolbar & Menu
 
         void CreateToolbar()
@@ -151,7 +160,7 @@ namespace InterfaceGtk
 
         protected virtual void LoadRecords_OnSearch(string searchText) { }
 
-        protected virtual void OpenPageElement(bool IsNew, UnigueID? unigueID = null) { }
+        protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected virtual ValueTask Delete(UnigueID unigueID) { return new ValueTask(); }
 
@@ -194,7 +203,7 @@ namespace InterfaceGtk
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                    OpenPageElement(false, unigueID);
+                    BeforeAndAfterOpenElement(false, unigueID);
                 }
         }
 
@@ -204,7 +213,7 @@ namespace InterfaceGtk
             {
                 case Gdk.Key.Insert:
                     {
-                        OpenPageElement(true);
+                        BeforeAndAfterOpenElement(true);
                         break;
                     }
                 case Gdk.Key.F5:
@@ -242,7 +251,7 @@ namespace InterfaceGtk
 
         void OnAddClick(object? sender, EventArgs args)
         {
-            OpenPageElement(true);
+            BeforeAndAfterOpenElement(true);
         }
 
         void OnEditClick(object? sender, EventArgs args)
@@ -254,7 +263,7 @@ namespace InterfaceGtk
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                        OpenPageElement(false, unigueID);
+                        BeforeAndAfterOpenElement(false, unigueID);
                     }
             }
         }
