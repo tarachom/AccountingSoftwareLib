@@ -30,10 +30,7 @@ namespace InterfaceGtk
     /// </summary>
     public abstract class ФормаЕлемент : Box
     {
-        public ФормаЕлемент() : base(Orientation.Vertical, 0)
-        {
-
-        }
+        public ФормаЕлемент() : base(Orientation.Vertical, 0) { }
 
         #region Create Field
 

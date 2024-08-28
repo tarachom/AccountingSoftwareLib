@@ -53,7 +53,13 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        #region Virtual & Abstract Function
+
         protected abstract ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки();
+        protected abstract Widget СтворитиВибір(UuidAndText uuidAndText);
+        protected abstract ValueTask ОчиститиВсіПовідомлення();
+
+        #endregion
 
         public async ValueTask LoadRecords()
         {
@@ -68,8 +74,6 @@ namespace InterfaceGtk
             vBoxMessage.ShowAll();
         }
 
-        protected abstract Widget СтворитиВибір(UuidAndText uuidAndText);
-
         void CreateMessage(Dictionary<string, object> row)
         {
             Box vBoxInfo = new Box(Orientation.Vertical, 0);
@@ -77,7 +81,7 @@ namespace InterfaceGtk
             //Image
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Image(AppContext.BaseDirectory + "images/error.png"), false, false, 25);
+                hBox.PackStart(new Image(Іконки.ДляІнформуванняВеликі.Error), false, false, 25);
                 hBox.PackStart(vBoxInfo, false, false, 10);
                 vBoxMessage.PackStart(hBox, false, false, 10);
             }
@@ -125,8 +129,6 @@ namespace InterfaceGtk
             vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 5);
         }
 
-        protected abstract ValueTask ОчиститиВсіПовідомлення();
-
         async void OnClear(object? sender, EventArgs args)
         {
             await ОчиститиВсіПовідомлення();
@@ -152,13 +154,16 @@ namespace InterfaceGtk
             PackStart(scroll, true, true, 0);
             ShowAll();
         }
+
+        #region Virtual & Abstract Function
+
         protected abstract ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки(UnigueID? ВідбірПоОбєкту = null, int? limit = null);
+
+        #endregion
 
         public async ValueTask LoadRecords(UnigueID? ВідбірПоОбєкту = null, int? limit = null)
         {
             SelectRequest_Record record = await ПрочитатиПовідомленняПроПомилки(ВідбірПоОбєкту, limit);
-
-            Console.WriteLine(record.ListRow.Count);
 
             foreach (Dictionary<string, object> row in record.ListRow)
                 CreateMessage(row);
@@ -173,7 +178,7 @@ namespace InterfaceGtk
             //Image
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Image(AppContext.BaseDirectory + "images/error.png"), false, false, 25);
+                hBox.PackStart(new Image(Іконки.ДляІнформуванняВеликі.Error), false, false, 25);
                 hBox.PackStart(vBoxInfo, false, false, 10);
                 vBoxMessage.PackStart(hBox, false, false, 10);
             }

@@ -101,13 +101,13 @@ namespace InterfaceGtk
             findButton.Clicked += OFindClick;
             toolbar.Add(findButton);
 
-            ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
-            refreshButton.Clicked += OnRefreshClick;
-            toolbar.Add(refreshButton);
-
             ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
             deleteButton.Clicked += OnDeleteClick;
             toolbar.Add(deleteButton);
+
+            ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+            refreshButton.Clicked += OnRefreshClick;
+            toolbar.Add(refreshButton);
 
             //Separator
             ToolItem toolItemSeparator = new ToolItem { new Separator(Orientation.Horizontal) };

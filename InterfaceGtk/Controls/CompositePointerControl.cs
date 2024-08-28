@@ -24,7 +24,6 @@ limitations under the License.
 using Gtk;
 using AccountingSoftware;
 using System.Reflection;
-using System.Data.Common;
 
 namespace InterfaceGtk
 {
@@ -53,8 +52,12 @@ namespace InterfaceGtk
         private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
         private event EventHandler<UuidAndText>? PointerChanged;
 
+        #region Virtual & Abstract Function
+
         protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
         protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
+
+        #endregion
 
         UuidAndText pointer;
         public UuidAndText Pointer
