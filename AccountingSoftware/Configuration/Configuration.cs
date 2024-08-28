@@ -1234,7 +1234,7 @@ namespace AccountingSoftware
                     if (name == null)
                         throw new Exception("Не задана назва поля");
 
-                    bool isPresentation = (parentName == "Directory" || parentName == "Document") && (fieldNodes.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
+                    bool isPresentation = (parentName == "Directory" || parentName == "Document" || parentName == "RegisterInformation") && (fieldNodes.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
                     bool isIndex = (fieldNodes.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
                     bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
@@ -1984,7 +1984,7 @@ namespace AccountingSoftware
                 nodeFieldDesc.InnerText = field.Value.Desc.Trim();
                 nodeField.AppendChild(nodeFieldDesc);
 
-                if (parentName == "Directory" || parentName == "Document")
+                if (parentName == "Directory" || parentName == "Document" || parentName == "RegisterInformation")
                 {
                     XmlElement nodeFieldIsPresentation = xmlConfDocument.CreateElement("IsPresentation");
                     nodeFieldIsPresentation.InnerText = field.Value.IsPresentation ? "1" : "0";

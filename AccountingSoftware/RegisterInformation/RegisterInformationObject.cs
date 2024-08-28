@@ -79,9 +79,9 @@ namespace AccountingSoftware
         public bool IsNew { get; private set; }
 
         /// <summary>
-        /// Новий елемент
-        /// </summary>
-        public void New()
+         /// Новий елемент
+         /// </summary>
+        protected void BaseNew()
         {
             UnigueID = UnigueID.NewUnigueID();
             IsNew = true;

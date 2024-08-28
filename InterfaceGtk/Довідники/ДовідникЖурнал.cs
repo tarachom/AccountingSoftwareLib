@@ -117,7 +117,7 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
             (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
             if (notebook != null && page.FuncWidget != null)
-                NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
+                NotebookFunction.CreateNotebookPage(notebook, page.Name, page.FuncWidget);
             page.SetValue?.Invoke();
         }
 
