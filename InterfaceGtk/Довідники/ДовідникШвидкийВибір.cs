@@ -44,24 +44,37 @@ namespace InterfaceGtk
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
         /// <summary>
+        /// Верхній набір меню
+        /// </summary>
+        protected Toolbar ToolbarTop = new Toolbar();
+
+        /// <summary>
         /// Верхній горизонтальний блок
         /// </summary>
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
+        /// <summary>
+        /// Дерево
+        /// </summary>
         protected TreeView TreeViewGrid = new TreeView();
+
+        /// <summary>
+        /// Пошук
+        /// </summary>
         protected SearchControl Пошук = new SearchControl();
 
         public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 600, int height = 300) : base()
         {
-            PackStart(HBoxTop, false, false, 5);
+            PackStart(HBoxTop, false, false, 0);
 
             if (visibleSearch)
             {
-                //Пошук 2
                 HBoxTop.PackStart(Пошук, false, false, 0);
                 Пошук.Select = async (string x) => { await LoadRecords_OnSearch(x); };
                 Пошук.Clear = async () => { await LoadRecords(); };
             }
+
+            CreateToolbar();
 
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = width, HeightRequest = height };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
@@ -82,6 +95,35 @@ namespace InterfaceGtk
         {
             await LoadRecords();
         }
+
+        #region Toolbar & Menu
+ 
+        void CreateToolbar()
+        {
+            PackStart(ToolbarTop, false, false, 0);
+
+            ToolButton openButton = new ToolButton(new Image(Stock.GoUp, IconSize.Menu), "Відкрити") { TooltipText = "Відкрити" };
+            openButton.Clicked += OnOpenClick;
+            ToolbarTop.Add(openButton);
+
+            ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
+            addButton.Clicked += OnAddClick;
+            ToolbarTop.Add(addButton);
+
+            ToolButton upButton = new ToolButton(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
+            upButton.Clicked += OnEditClick;
+            ToolbarTop.Add(upButton);
+
+            ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
+            deleteButton.Clicked += OnDeleteClick;
+            ToolbarTop.Add(deleteButton);
+
+            ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+            refreshButton.Clicked += OnRefreshClick;
+            ToolbarTop.Add(refreshButton);
+        }
+
+        #endregion
 
         #region Virtual Function
 
@@ -112,6 +154,35 @@ namespace InterfaceGtk
                     CallBack_OnSelectPointer?.Invoke(DirectoryPointerItem);
                     PopoverParent?.Hide();
                 }
+        }
+
+        #endregion
+
+        #region ToolBar
+
+        void OnOpenClick(object? sender, EventArgs args)
+        {
+
+        }
+
+        void OnAddClick(object? sender, EventArgs args)
+        {
+
+        }
+
+        void OnEditClick(object? sender, EventArgs args)
+        {
+
+        }
+
+        void OnDeleteClick(object? sender, EventArgs args)
+        {
+
+        }
+
+        void OnRefreshClick(object? sender, EventArgs args)
+        {
+            LoadRecords();
         }
 
         #endregion

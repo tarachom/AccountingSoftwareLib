@@ -275,15 +275,17 @@ namespace InterfaceGtk
 
                     await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session);
 
-                    CallBack.Invoke();
-
                     Лог.CreateEmptyMsg();
-                    Лог.CreateMessage($"Обробку завершено!", LogMessage.TypeMessage.None, true);
                     Лог.CreateMessage($"Проведено документів: {counterDocs}", LogMessage.TypeMessage.Info, true);
-
-                    await Task.Delay(1000);
-                    Лог.CreateEmptyMsg();
                 }
+                else
+                    Лог.AppendMessage(hBoxFindDoc, $"документів не знайдено", LogMessage.TypeMessage.Error);
+
+                CallBack.Invoke();
+                Лог.CreateMessage($"Обробку завершено!", LogMessage.TypeMessage.None, true);
+
+                await Task.Delay(1000);
+                Лог.CreateEmptyMsg();
             }
         }
 
