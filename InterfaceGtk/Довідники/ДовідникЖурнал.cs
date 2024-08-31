@@ -147,7 +147,11 @@ namespace InterfaceGtk
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
 
-            ToolButton filterButton = new ToolButton(new Image(Stock.Apply, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
+            //Separator
+            ToolItem toolItemSeparator = new ToolItem { new Separator(Orientation.Horizontal) };
+            ToolbarTop.Add(toolItemSeparator);
+
+            ToolButton filterButton = new ToolButton(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
             filterButton.Clicked += OnFilterClick;
             ToolbarTop.Add(filterButton);
         }
