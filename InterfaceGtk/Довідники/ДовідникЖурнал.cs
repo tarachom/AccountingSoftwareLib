@@ -147,7 +147,7 @@ namespace InterfaceGtk
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
 
-            ToolButton filterButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
+            ToolButton filterButton = new ToolButton(new Image(Stock.Apply, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
             filterButton.Clicked += OnFilterClick;
             ToolbarTop.Add(filterButton);
         }
@@ -185,7 +185,7 @@ namespace InterfaceGtk
             await LoadRecords();
         }
 
-        protected virtual void FilterRecords(Box vBox) { }
+        protected abstract void FilterRecords(Box hBox);
 
         #endregion
 
@@ -373,8 +373,10 @@ namespace InterfaceGtk
             };
 
             Box vBox = new Box(Orientation.Vertical, 0);
+            Box hBox = new Box(Orientation.Horizontal, 0);
+            vBox.PackStart(hBox, false, false, 5);
 
-            FilterRecords(vBox);
+            FilterRecords(hBox);
 
             popover.Add(vBox);
             popover.ShowAll();
