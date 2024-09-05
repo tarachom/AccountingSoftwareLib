@@ -29,10 +29,13 @@ namespace InterfaceGtk
     public abstract class ДовідникДерево : ФормаДерево
     {
         /// <summary>
-        /// Поточний елемент
+        /// Елемент на який треба спозиціонувати список при обновленні
         /// </summary>
-        //public UnigueID? SelectPointerItem { get; set; }
+        public UnigueID? SelectPointerItem { get; set; }
 
+        /// <summary>
+        /// ???
+        /// </summary>
         public Widget? ParentWidget { get; set; }
 
         /// <summary>
@@ -87,18 +90,18 @@ namespace InterfaceGtk
             ShowAll();
         }
 
+        public async ValueTask SetValue()
+        {
+            await LoadRecords();
+        }
+
         async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
         {
-            //Console.WriteLine(this.Parent.Parent); // ???
-            if (ParentWidget != null)
-            {
-                Notebook? notebook = NotebookFunction.GetNotebookFromWidget(ParentWidget);
-                Console.WriteLine(notebook == null);
-                (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
-                if (notebook != null && page.FuncWidget != null)
-                    NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
-                page.SetValue?.Invoke();
-            }
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(ParentWidget ?? this);
+            (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
+            if (notebook != null && page.FuncWidget != null)
+                NotebookFunction.CreateNotebookPage(notebook, page.Name + (IsNew ? " *" : ""), page.FuncWidget);
+            page.SetValue?.Invoke();
         }
 
         #region Toolbar & Menu
@@ -145,7 +148,7 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
-        public abstract void LoadTree();
+        protected abstract ValueTask LoadRecords();
 
         protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
@@ -153,10 +156,10 @@ namespace InterfaceGtk
 
         protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
-        protected virtual void CallBack_LoadTree(UnigueID? selectPointer)
+        protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             DirectoryPointerItem = selectPointer;
-            LoadTree();
+            await LoadRecords();
         }
 
         #endregion
@@ -268,9 +271,9 @@ namespace InterfaceGtk
                 }
         }
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadTree();
+            await LoadRecords();
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
@@ -289,7 +292,7 @@ namespace InterfaceGtk
 
                     DirectoryPointerItem = unigueID;
 
-                    LoadTree();
+                    await LoadRecords();
                 }
         }
 
@@ -310,7 +313,7 @@ namespace InterfaceGtk
                     if (newUnigueID != null)
                         DirectoryPointerItem = newUnigueID;
 
-                    LoadTree();
+                    await LoadRecords();
                 }
         }
 

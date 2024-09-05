@@ -24,14 +24,15 @@ limitations under the License.
 namespace AccountingSoftware
 {
 	/// <summary>
-	/// Документ Вибірка вказівників
+	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DocumentSelect
+	public abstract class DirectorySelectHierarchical
 	{
-		public DocumentSelect(Kernel kernel, string table)
+		public DirectorySelectHierarchical(Kernel kernel, string table, string parentField)
 		{
-			QuerySelect = new Query(table);
 			Kernel = kernel;
+			Table = table;
+			QuerySelect = new Query(table) { ParentField = parentField };
 		}
 
 		/// <summary>
@@ -40,7 +41,7 @@ namespace AccountingSoftware
 		public Query QuerySelect { get; set; }
 
 		/// <summary>
-		/// Переміститися в початок вибірки
+		/// Перейти на початок вибірки
 		/// </summary>
 		public void MoveToFirst()
 		{
@@ -49,7 +50,7 @@ namespace AccountingSoftware
 		}
 
 		/// <summary>
-		/// Кількість елементів вибірки
+		/// Кількість елементів у вибірці
 		/// </summary>
 		public int Count()
 		{
@@ -59,7 +60,17 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Ядро
 		/// </summary>
-		protected Kernel Kernel { get; private set; }
+		private Kernel Kernel { get; set; }
+
+		/// <summary>
+		/// Таблиця
+		/// </summary>
+		private string Table { get; set; }
+
+		/// <summary>
+		/// Поле Родич
+		/// </summary>
+		//private string ParentField { get; set; }
 
 		/// <summary>
 		/// Поточна позиція
@@ -69,46 +80,46 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition { get; private set; } = null;
+		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
 
 		/// <summary>
-		/// Список вибраних вказівників (UnigueID and Dictionary<string, object>?)
+		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
+		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
-		/// Переміститися на наступну позицію
+		/// Переміститися на одну позицію у вибірці
 		/// </summary>
 		protected bool MoveToPosition()
 		{
 			if (Position < BaseSelectList.Count)
 			{
-				DocumentPointerPosition = BaseSelectList[Position++];
+				DirectoryPointerPosition = BaseSelectList[Position++];
 				return true;
 			}
 			else
 			{
-				DocumentPointerPosition = null;
+				DirectoryPointerPosition = null;
 				return false;
 			}
 		}
 
 		/// <summary>
-		/// Зчитати
+		/// Вибрати дані
 		/// </summary>
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DocumentPointerPosition = null;
+			DirectoryPointerPosition = null;
 			BaseSelectList.Clear();
 
-			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
+			await Kernel.DataBase.SelectDirectoryPointersHierarchical(QuerySelect, BaseSelectList);
 
 			return Count() > 0;
 		}
 
 		/// <summary>
-		/// Зчитати один вказівник
+		/// Вибрати один запис з бази даних
 		/// </summary>
 		protected async ValueTask<bool> BaseSelectSingle()
 		{

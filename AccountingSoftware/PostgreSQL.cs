@@ -1650,7 +1650,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers)
+        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -1682,6 +1682,46 @@ WHERE
                 await reader.CloseAsync();
             }
         }
+
+        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> listPointers)
+        {
+            if (DataSource != null)
+            {
+                string query = QuerySelect.ConstructHierarchical();
+
+                Console.WriteLine(query);
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+
+                foreach (Where field in QuerySelect.Where)
+                    command.Parameters.AddWithValue(field.Alias, field.Value);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    UnigueID unigueID = new UnigueID(reader["uid"]);
+                    UnigueID parent = new UnigueID(reader["parent"]);
+                    int level = (int)reader["level"];
+
+                    Dictionary<string, object>? fields = null;
+
+                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+                    {
+                        fields = [];
+
+                        foreach (string field in QuerySelect.Field)
+                            fields.Add(field, reader[field]);
+
+                        foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Value!, reader[field.Value!]);
+                    }
+
+                    listPointers.Add((unigueID, parent, level, fields));
+                }
+                await reader.CloseAsync();
+            }
+        }
+
 
         public async ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect)
         {
@@ -1982,7 +2022,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers)
+        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {

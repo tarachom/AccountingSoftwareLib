@@ -76,12 +76,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected (UnigueID, Dictionary<string, object>?)? DirectoryPointerPosition { get; private set; } = null;
+		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
 
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID, Dictionary<string, object>?)> BaseSelectList { get; private set; } = [];
+		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці
@@ -151,9 +151,9 @@ namespace AccountingSoftware
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
 		/// <returns>Повертає список знайдених вказівників</returns>
-		protected async ValueTask<List<(UnigueID, Dictionary<string, object>?)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		protected async ValueTask<List<(UnigueID UnigueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
-			List<(UnigueID, Dictionary<string, object>?)> directoryPointerList = [];
+			List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> directoryPointerList = [];
 
 			Query querySelect = new(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));

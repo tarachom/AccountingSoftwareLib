@@ -126,7 +126,8 @@ namespace AccountingSoftware
         ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
-        ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers);
+        ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers);
+        ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> listPointers);
         ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect);
         ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
         ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);
@@ -146,7 +147,7 @@ namespace AccountingSoftware
         ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
         ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
-        ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID, Dictionary<string, object>?)> listPointers);
+        ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers);
         ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
         ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);

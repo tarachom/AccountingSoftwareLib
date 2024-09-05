@@ -127,9 +127,9 @@ namespace InterfaceGtk
 
         #region Virtual Function
 
-        protected virtual ValueTask LoadRecords() { return new ValueTask(); }
+        protected abstract ValueTask LoadRecords();
 
-        protected virtual ValueTask LoadRecords_OnSearch(string searchText) { return new ValueTask(); }
+        protected abstract ValueTask LoadRecords_OnSearch(string searchText);
 
         #endregion
 

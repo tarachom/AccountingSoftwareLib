@@ -58,6 +58,11 @@ namespace AccountingSoftware
         public bool CreateTempTable { get; set; }
 
         /// <summary>
+        /// Поле Родич для ієрархічного довідника
+        /// </summary>
+        public string ParentField { get; set; }
+
+        /// <summary>
         /// Які поля вибирати
         /// </summary>
         public List<string> Field { get; set; } = [];
@@ -160,7 +165,7 @@ namespace AccountingSoftware
             {
                 int count = 0;
 
-                query += "\nWHERE ";
+                query += "\nWHERE";
 
                 foreach (Where field in Where)
                 {
@@ -276,6 +281,44 @@ namespace AccountingSoftware
 
             if (Offset > 0)
                 query += "\nOFFSET " + Offset.ToString();
+
+            return query;
+        }
+
+        public string ConstructHierarchical()
+        {
+            string query = "WITH RECURSIVE r AS(\n";
+
+            //Родич
+            NameValue<string> parentField = new(Table + "." + ParentField, "parent");
+            FieldAndAlias.Add(parentField);
+
+            //Перший рівень
+            NameValue<string> level = new("1", "level");
+            FieldAndAlias.Add(level);
+
+            //Відбір по пустому родичу, тобто верхній рівень
+            Where whereParent = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
+            Where.Add(whereParent);
+
+            query += "(" + Construct() + ")";
+
+            Where.Remove(whereParent);
+
+            query += "\nUNION ALL\n";
+
+            //Наступний рівень
+            level.Name = "r.level + 1";
+
+            //Приєднання рекурсії
+            Join joinRecursive = new("r", ParentField, Table, "", JoinType.INNER);
+            Joins.Add(joinRecursive);
+
+            query += "(" + Construct() + ")";
+
+            Joins.Remove(joinRecursive);
+
+            query += "\n)\nSELECT * FROM r ORDER BY level";
 
             return query;
         }

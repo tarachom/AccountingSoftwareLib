@@ -1187,7 +1187,8 @@ namespace AccountingSoftware
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 string autoNum = directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
                 string type = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
-                string pointerFolders = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
+                string pointerFoldersForHierarchical = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
+                string parentFieldForHierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
@@ -1202,7 +1203,8 @@ namespace AccountingSoftware
                 else
                     typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory, pointerFolders);
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory, 
+                    pointerFoldersForHierarchical, parentFieldForHierarchical);
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
                 LoadFields(ConfObjectDirectories.Fields, directoryNodes.Current, "Directory");
@@ -1309,12 +1311,12 @@ namespace AccountingSoftware
                 {
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value;
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                    string isTree = tabularListsNodes.Current?.SelectSingleNode("IsTree")?.Value ?? "";
+                    //string isTree = tabularListsNodes.Current?.SelectSingleNode("IsTree")?.Value ?? "";
 
                     if (name == null)
                         throw new Exception("Не задана назва табличного списку");
 
-                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc, isTree == "1");
+                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc/*, isTree == "1"*/);
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     //Поля
@@ -1935,8 +1937,14 @@ namespace AccountingSoftware
                 if (ConfDirectory.Value.TypeDirectory == ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory)
                 {
                     XmlElement nodeDirectoryPointerFolders = xmlConfDocument.CreateElement("PointerFolders");
-                    nodeDirectoryPointerFolders.InnerText = ConfDirectory.Value.PointerFolders;
+                    nodeDirectoryPointerFolders.InnerText = ConfDirectory.Value.PointerFolders_HierarchyInAnotherDirectory;
                     nodeDirectory.AppendChild(nodeDirectoryPointerFolders);
+                }
+                else if (ConfDirectory.Value.TypeDirectory == ConfigurationDirectories.TypeDirectories.Hierarchical)
+                {
+                    XmlElement nodeDirectoryParentField = xmlConfDocument.CreateElement("ParentField");
+                    nodeDirectoryParentField.InnerText = ConfDirectory.Value.ParentField_Hierarchical;
+                    nodeDirectory.AppendChild(nodeDirectoryParentField);
                 }
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
@@ -2098,9 +2106,9 @@ namespace AccountingSoftware
                 nodeTabularListDesc.InnerText = tabularList.Value.Desc;
                 nodeTabularList.AppendChild(nodeTabularListDesc);
 
-                XmlElement nodeTabularListIsTree = xmlConfDocument.CreateElement("IsTree");
-                nodeTabularListIsTree.InnerText = tabularList.Value.IsTree ? "1" : "0";
-                nodeTabularList.AppendChild(nodeTabularListIsTree);
+                // XmlElement nodeTabularListIsTree = xmlConfDocument.CreateElement("IsTree");
+                // nodeTabularListIsTree.InnerText = tabularList.Value.IsTree ? "1" : "0";
+                // nodeTabularList.AppendChild(nodeTabularListIsTree);
 
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
