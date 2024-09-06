@@ -1689,8 +1689,6 @@ WHERE
             {
                 string query = QuerySelect.ConstructHierarchical();
 
-                Console.WriteLine(query);
-
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
                 foreach (Where field in QuerySelect.Where)
@@ -1699,8 +1697,8 @@ WHERE
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    UnigueID unigueID = new UnigueID(reader["uid"]);
-                    UnigueID parent = new UnigueID(reader["parent"]);
+                    UnigueID unigueID = new(reader["uid"]);
+                    UnigueID parent = new(reader["parent"]);
                     int level = (int)reader["level"];
 
                     Dictionary<string, object>? fields = null;

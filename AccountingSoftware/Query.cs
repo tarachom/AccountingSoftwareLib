@@ -285,12 +285,13 @@ namespace AccountingSoftware
             return query;
         }
 
+        /// <summary>
+        /// Функція конструює запит для ієрархічної вибірки
+        /// </summary>
         public string ConstructHierarchical()
         {
-            string query = "WITH RECURSIVE r AS(\n";
-
             //Родич
-            NameValue<string> parentField = new(Table + "." + ParentField, "parent");
+            NameValue<string> parentField = new($"{Table}.{ParentField}", "parent");
             FieldAndAlias.Add(parentField);
 
             //Перший рівень
@@ -301,11 +302,8 @@ namespace AccountingSoftware
             Where whereParent = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
             Where.Add(whereParent);
 
-            query += "(" + Construct() + ")";
-
+            string partFirst = Construct();
             Where.Remove(whereParent);
-
-            query += "\nUNION ALL\n";
 
             //Наступний рівень
             level.Name = "r.level + 1";
@@ -314,13 +312,21 @@ namespace AccountingSoftware
             Join joinRecursive = new("r", ParentField, Table, "", JoinType.INNER);
             Joins.Add(joinRecursive);
 
-            query += "(" + Construct() + ")";
-
+            string partRecursive = Construct();
             Joins.Remove(joinRecursive);
 
-            query += "\n)\nSELECT * FROM r ORDER BY level";
+            return @$"
+WITH RECURSIVE r AS
+(
+    ({partFirst})
 
-            return query;
+    UNION ALL
+
+    ({partRecursive})
+) SELECT * FROM r ORDER BY level";
+
+            // Вибірка і так посортована по level бо partFirst видасть level=1, а partRecursive level+1
+            // але вихідна вибірка додатково сортується по level
         }
 
         /// <summary>
