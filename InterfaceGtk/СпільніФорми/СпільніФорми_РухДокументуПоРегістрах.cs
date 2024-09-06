@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk
 {
@@ -30,6 +31,18 @@ namespace InterfaceGtk
         public СпільніФорми_РухДокументуПоРегістрах() : base(Orientation.Vertical, 0)
         {
             ShowAll();
+        }
+
+        protected abstract Widget Документ_PointerControl(DocumentPointer ДокументВказівник);
+
+        protected void ДодатиДокументНаФорму(DocumentPointer ДокументВказівник)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+            Box hBox = new Box(Orientation.Horizontal, 0);
+            hBox.PackStart(Документ_PointerControl(ДокументВказівник), false, false, 5);
+            vBox.PackStart(hBox, false, false, 5);
+
+            PackStart(vBox, false, false, 10);
         }
 
         protected virtual void ДодатиБлокНаФорму(string blockName, TreeView treeView)

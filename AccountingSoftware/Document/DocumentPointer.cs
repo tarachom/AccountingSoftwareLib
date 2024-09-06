@@ -88,6 +88,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Для композитного типу даних
+        /// </summary>
+        public abstract UuidAndText GetBasis();
+
+        /// <summary>
         /// Представлення обєкта
         /// </summary>
         /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
