@@ -1203,7 +1203,7 @@ namespace AccountingSoftware
                 else
                     typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory, 
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory,
                     pointerFoldersForHierarchical, parentFieldForHierarchical);
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
@@ -1410,7 +1410,9 @@ namespace AccountingSoftware
 
                     ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
 
-                    if (typeForms == ConfigurationForms.TypeForms.List)
+                    if (typeForms == ConfigurationForms.TypeForms.List ||
+                        typeForms == ConfigurationForms.TypeForms.ListSmallSelect ||
+                        typeForms == ConfigurationForms.TypeForms.ListAndTree)
                     {
                         form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
                     }
@@ -2106,10 +2108,6 @@ namespace AccountingSoftware
                 nodeTabularListDesc.InnerText = tabularList.Value.Desc;
                 nodeTabularList.AppendChild(nodeTabularListDesc);
 
-                // XmlElement nodeTabularListIsTree = xmlConfDocument.CreateElement("IsTree");
-                // nodeTabularListIsTree.InnerText = tabularList.Value.IsTree ? "1" : "0";
-                // nodeTabularList.AppendChild(nodeTabularListIsTree);
-
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
 
@@ -2483,7 +2481,9 @@ namespace AccountingSoftware
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
 
-                if (form.Value.Type == ConfigurationForms.TypeForms.List)
+                if (form.Value.Type == ConfigurationForms.TypeForms.List ||
+                    form.Value.Type == ConfigurationForms.TypeForms.ListSmallSelect ||
+                    form.Value.Type == ConfigurationForms.TypeForms.ListAndTree)
                 {
                     XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
                     nodeTabularList.InnerText = form.Value.TabularList.ToString();

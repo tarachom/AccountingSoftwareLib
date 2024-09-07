@@ -140,7 +140,22 @@ namespace AccountingSoftware
             /// <summary>
             /// Елемент
             /// </summary>
-            Element = 3
+            Element = 3,
+
+            /// <summary>
+            /// Швидкий вибір
+            /// </summary>
+            ListSmallSelect = 4,
+
+            /// <summary>
+            /// Контрол вибору
+            /// </summary>
+            PointerControl = 5,
+
+            /// <summary>
+            /// Список з Деревом
+            /// </summary>
+            ListAndTree = 6,
         }
     }
 }

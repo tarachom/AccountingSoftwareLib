@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk
 {
@@ -44,6 +45,13 @@ namespace InterfaceGtk
             PackStart(bOpen, false, false, 1);
             PackEnd(bClear, false, false, 1);
         }
+
+        /// <summary>
+        /// Відкрита папка.
+        /// Використовується при загрузці дерева щоб приховати вітку.
+        /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
+        /// </summary>
+        public UnigueID? OpenFolder { get; set; }
 
         protected virtual void OpenSelect(object? sender, EventArgs args) { }
         protected virtual void OnClear(object? sender, EventArgs args) { }

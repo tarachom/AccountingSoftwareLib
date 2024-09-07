@@ -45,10 +45,21 @@ namespace InterfaceGtk
         public System.Action<string>? Select { get; set; }
         public System.Action? Clear { get; set; }
 
+        public int MinLength { get; set; } = 1;
+        public bool ToLower { get; set; } = true;
+
         void OnKeyReleaseEntrySearch(object? sender, KeyReleaseEventArgs args)
         {
             if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
-                Select?.Invoke(entrySearch.Text);
+            {
+                string txt = entrySearch.Text.Trim();
+
+                if (ToLower)
+                    txt = txt.ToLower();
+
+                if (txt.Length >= MinLength)
+                    Select?.Invoke("%" + txt.Replace(" ", "%") + "%");
+            }
         }
 
         void OnClear(object? sender, EventArgs args)

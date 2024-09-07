@@ -39,6 +39,13 @@ namespace InterfaceGtk
         public UnigueID? DirectoryPointerItem { get; set; }
 
         /// <summary>
+        /// Відкрита папка.
+        /// Використовується при загрузці дерева щоб приховати вітку.
+        /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
+        /// </summary>
+        public UnigueID? OpenFolder { get; set; }
+
+        /// <summary>
         /// Функція вибору
         /// </summary>
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }

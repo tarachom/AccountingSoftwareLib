@@ -39,6 +39,24 @@ namespace InterfaceGtk
         public UnigueID? DirectoryPointerItem { get; set; }
 
         /// <summary>
+        /// Відкрита папка.
+        /// Використовується при загрузці дерева щоб приховати вітку.
+        /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
+        /// </summary>
+        public UnigueID? OpenFolder { get; set; }
+
+        /// <summary>
+        /// Функція яка викликається коли в дереві активується вітка.
+        /// Це зазвичай завантаження списку елементів у таблиці
+        /// </summary>
+        public System.Action? CallBack_RowActivated { get; set; }
+
+        /// <summary>
+        /// ???
+        /// </summary>
+        public Widget? ParentWidget { get; set; }
+
+        /// <summary>
         /// Функція зворотнього виклику при виборі
         /// </summary>
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
@@ -114,7 +132,7 @@ namespace InterfaceGtk
 
         async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
         {
-            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(ParentWidget ?? this);
             (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
             if (notebook != null && page.FuncWidget != null)
                 NotebookFunction.CreateNotebookPage(notebook, page.Name, page.FuncWidget);
@@ -201,6 +219,7 @@ namespace InterfaceGtk
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
                 SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                CallBack_RowActivated?.Invoke();
             }
         }
 
@@ -222,7 +241,10 @@ namespace InterfaceGtk
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     if (DirectoryPointerItem == null)
-                        BeforeAndAfterOpenElement(false, unigueID);
+                    {
+                        if (!unigueID.IsEmpty())
+                            BeforeAndAfterOpenElement(false, unigueID);
+                    }
                     else
                     {
                         CallBack_OnSelectPointer?.Invoke(unigueID);
@@ -309,16 +331,13 @@ namespace InterfaceGtk
         void OnEditClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
-                foreach (TreePath itemPath in selectionRows)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                        BeforeAndAfterOpenElement(false, unigueID);
+                        if (!unigueID.IsEmpty())
+                            BeforeAndAfterOpenElement(false, unigueID);
                     }
-            }
         }
 
         async void OnRefreshClick(object? sender, EventArgs args)
@@ -331,16 +350,16 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, MessageRequestText) == ResponseType.Yes)
                 {
-                    TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
-                    foreach (TreePath itemPath in selectionRows)
+                    foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                        await SetDeletionLabel(unigueID);
-
-                        SelectPointerItem = unigueID;
+                        if (!unigueID.IsEmpty())
+                        {
+                            await SetDeletionLabel(unigueID);
+                            SelectPointerItem = unigueID;
+                        }
                     }
 
                     await LoadRecords();
@@ -352,16 +371,16 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
-                    TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
-                    foreach (TreePath itemPath in selectionRows)
+                    foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                        UnigueID? newUnigueID = await Copy(unigueID);
-
-                        if (newUnigueID != null)
-                            SelectPointerItem = newUnigueID;
+                        if (!unigueID.IsEmpty())
+                        {
+                            UnigueID? newUnigueID = await Copy(unigueID);
+                            if (newUnigueID != null)
+                                SelectPointerItem = newUnigueID;
+                        }
                     }
 
                     await LoadRecords();

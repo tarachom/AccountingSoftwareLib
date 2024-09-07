@@ -51,8 +51,7 @@ namespace InterfaceGtk
 
         public static void ОчиститиВідбір(TreeView treeView)
         {
-            if (treeView.Data.ContainsKey("Where"))
-                treeView.Data["Where"] = null;
+            treeView.Data["Where"] = null;
         }
 
         /// <summary>
