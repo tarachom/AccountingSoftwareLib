@@ -29,16 +29,6 @@ namespace InterfaceGtk
     public abstract class ДовідникЕлемент : ФормаЕлемент
     {
         /// <summary>
-        /// Чи це новий елемент
-        /// </summary>
-        public bool IsNew { get; set; } = true;
-
-        /// <summary>
-        /// Функція зворотнього виклику для перевантаження списку
-        /// </summary>
-        public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
-
-        /// <summary>
         /// Функція зворотнього виклику для вибору елементу
         /// Використовується коли потрібно новий елемент зразу вибрати
         /// </summary>
@@ -54,7 +44,7 @@ namespace InterfaceGtk
         /// </summary>
         protected Paned HPanedTop = new Paned(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
 
-        public ДовідникЕлемент() : base()
+        public ДовідникЕлемент()
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
             bSaveAndClose.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true); };
@@ -95,25 +85,6 @@ namespace InterfaceGtk
 
         #endregion
 
-        #region Abstract Function
-
-        /// <summary>
-        /// Присвоєння значень
-        /// </summary>
-        public abstract void SetValue();
-
-        /// <summary>
-        /// Зчитування значень
-        /// </summary>
-        protected abstract void GetValue();
-
-        /// <summary>
-        /// Збереження
-        /// </summary>
-        protected abstract ValueTask Save();
-
-        #endregion
-
         /// <summary>
         /// Функція обробки перед збереження та після збереження
         /// </summary>
@@ -140,11 +111,3 @@ namespace InterfaceGtk
         }        
     }
 }
-
-/*
-ФункціїДляПовідомлень Повідомлення = new ФункціїДляПовідомлень();
-await Повідомлення.ДодатиПовідомленняПроПомилку("Запис", UnigueID?.UGuid, "Довідники", Caption, ex.Message);
-Повідомлення.ПоказатиПовідомлення(UnigueID);
-
-Message.Info(null, "Не вдалось записати");
-*/

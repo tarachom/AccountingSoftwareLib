@@ -26,11 +26,12 @@ using Gtk;
 namespace InterfaceGtk
 {
     /// <summary>
-    /// Основа для класів ДовідникДерево
+    /// Основа для класів:
+    ///         Звіт
     /// </summary>
-    public abstract class ФормаДерево : Box
+    public abstract class ФормаОбробка : Форма
     {
-        public ФормаДерево() : base(Orientation.Vertical, 0)
+        public ФормаОбробка()
         {
             
         }

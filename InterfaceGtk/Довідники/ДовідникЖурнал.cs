@@ -29,11 +29,6 @@ namespace InterfaceGtk
     public abstract class ДовідникЖурнал : ФормаЖурнал
     {
         /// <summary>
-        /// Елемент на який треба спозиціонувати список при обновленні
-        /// </summary>
-        public UnigueID? SelectPointerItem { get; set; }
-
-        /// <summary>
         /// Елемент на який треба спозиціонувати список при виборі
         /// </summary>
         public UnigueID? DirectoryPointerItem { get; set; }
@@ -50,11 +45,6 @@ namespace InterfaceGtk
         /// Це зазвичай завантаження списку елементів у таблиці
         /// </summary>
         public System.Action? CallBack_RowActivated { get; set; }
-
-        /// <summary>
-        /// ???
-        /// </summary>
-        public Widget? ParentWidget { get; set; }
 
         /// <summary>
         /// Функція зворотнього виклику при виборі
@@ -88,19 +78,14 @@ namespace InterfaceGtk
         /// </summary>
         SearchControl Пошук = new SearchControl();
 
-        /// <summary>
-        /// Текст для діалогів
-        /// </summary>
-        protected string MessageRequestText { get; set; } = "Встановити або зняти помітку на видалення?";
-
-        public ДовідникЖурнал() : base()
+        public ДовідникЖурнал()
         {
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            Пошук.Select = async (string x) => { await LoadRecords_OnSearch(x); };
-            Пошук.Clear = async () => { await LoadRecords(); };
+            Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await LoadRecords();
             HBoxTop.PackStart(Пошук, false, false, 2);
 
             CreateToolbar();
@@ -128,15 +113,6 @@ namespace InterfaceGtk
         public async ValueTask SetValue()
         {
             await LoadRecords();
-        }
-
-        async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
-        {
-            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(ParentWidget ?? this);
-            (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
-            if (notebook != null && page.FuncWidget != null)
-                NotebookFunction.CreateNotebookPage(notebook, page.Name, page.FuncWidget);
-            page.SetValue?.Invoke();
         }
 
         #region Toolbar & Menu
@@ -191,11 +167,7 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
-        protected abstract ValueTask LoadRecords();
-
-        protected abstract ValueTask LoadRecords_OnSearch(string searchText);
-
-        protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
 
@@ -233,7 +205,7 @@ namespace InterfaceGtk
                 }
         }
 
-        void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
+        async void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
         {
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
@@ -243,7 +215,7 @@ namespace InterfaceGtk
                     if (DirectoryPointerItem == null)
                     {
                         if (!unigueID.IsEmpty())
-                            BeforeAndAfterOpenElement(false, unigueID);
+                            await OpenPageElement(false, unigueID);
                     }
                     else
                     {
@@ -273,7 +245,7 @@ namespace InterfaceGtk
             {
                 case Gdk.Key.Insert:
                     {
-                        BeforeAndAfterOpenElement(true);
+                        await OpenPageElement(true);
                         break;
                     }
                 case Gdk.Key.F5:
@@ -323,12 +295,12 @@ namespace InterfaceGtk
 
         #region ToolBar
 
-        void OnAddClick(object? sender, EventArgs args)
+        async void OnAddClick(object? sender, EventArgs args)
         {
-            BeforeAndAfterOpenElement(true);
+            await OpenPageElement(true);
         }
 
-        void OnEditClick(object? sender, EventArgs args)
+        async void OnEditClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
@@ -336,7 +308,7 @@ namespace InterfaceGtk
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
                         if (!unigueID.IsEmpty())
-                            BeforeAndAfterOpenElement(false, unigueID);
+                            await OpenPageElement(false, unigueID);
                     }
         }
 
@@ -348,7 +320,7 @@ namespace InterfaceGtk
         async void OnDeleteClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-                if (Message.Request(null, MessageRequestText) == ResponseType.Yes)
+                if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {

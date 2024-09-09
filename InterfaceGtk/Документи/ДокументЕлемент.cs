@@ -29,16 +29,6 @@ namespace InterfaceGtk
     public abstract class ДокументЕлемент : ФормаЕлемент
     {
         /// <summary>
-        /// Чи це новий елемент
-        /// </summary>
-        public bool IsNew { get; set; } = true;
-
-        /// <summary>
-        /// Функція зворотнього виклику для перевантаження списку
-        /// </summary>
-        public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
-
-        /// <summary>
         /// Функція зворотнього виклику для вибору елементу
         /// Використовується коли потрібно новий елемент зразу вибрати
         /// </summary>
@@ -69,7 +59,7 @@ namespace InterfaceGtk
         /// </summary>
         protected Notebook NotebookTablePart = NotebookFunction.CreateNotebook(false);
 
-        public ДокументЕлемент() : base()
+        public ДокументЕлемент() 
         {
             Button bSaveAndSpend = new Button("Провести та закрити");
             bSaveAndSpend.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true, true); };
@@ -174,8 +164,6 @@ namespace InterfaceGtk
         protected virtual void CreateContainer3(Box vBox) { }
         protected virtual void CreateContainer4(Box vBox) { }
 
-        #region Create Field
-
         /// <summary>
         /// Назва документу
         /// </summary>
@@ -190,18 +178,6 @@ namespace InterfaceGtk
             HBoxName.PackStart(ДатаДок, false, false, 5);
         }
 
-        #endregion
-
-        /// <summary>
-        /// Присвоєння значень
-        /// </summary>
-        public abstract void SetValue();
-
-        /// <summary>
-        /// Зчитування значень
-        /// </summary>
-        protected abstract void GetValue();
-
         /// <summary>
         /// Функція обробки перед збереження та після збереження
         /// </summary>
@@ -213,10 +189,8 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
-
             bool isSave = await Save();
             bool isSpend = await SpendTheDocument(isSave && spendDoc);
-
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
             if (CallBack_OnSelectPointer != null && UnigueID != null)
@@ -230,10 +204,7 @@ namespace InterfaceGtk
                 NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
         }
 
-        /// <summary>
-        /// Збереження
-        /// </summary>
-        protected abstract ValueTask<bool> Save();
+        #region Abstract Function
 
         /// <summary>
         /// Проведення
@@ -247,5 +218,7 @@ namespace InterfaceGtk
         /// <param name="unigueID"></param>
         /// <returns></returns>
         protected abstract void ReportSpendTheDocument(UnigueID unigueID);
+
+        #endregion
     }
 }

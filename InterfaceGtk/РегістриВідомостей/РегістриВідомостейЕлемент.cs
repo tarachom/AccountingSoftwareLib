@@ -22,22 +22,11 @@ limitations under the License.
 */
 
 using Gtk;
-using AccountingSoftware;
 
 namespace InterfaceGtk
 {
     public abstract class РегістриВідомостейЕлемент : ФормаЕлемент
     {
-        /// <summary>
-        /// Чи це новий елемент
-        /// </summary>
-        public bool IsNew { get; set; } = true;
-
-        /// <summary>
-        /// Функція зворотнього виклику для перевантаження списку
-        /// </summary>
-        public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
-
         /// <summary>
         /// Горизонтальний бокс для кнопок
         /// </summary>
@@ -48,7 +37,7 @@ namespace InterfaceGtk
         /// </summary>
         protected Paned HPanedTop = new Paned(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
 
-        public РегістриВідомостейЕлемент() : base()
+        public РегістриВідомостейЕлемент() 
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
             bSaveAndClose.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true); };
@@ -86,16 +75,6 @@ namespace InterfaceGtk
         protected virtual void CreatePack2(Box vBox) { }
 
         /// <summary>
-        /// Присвоєння значень
-        /// </summary>
-        public virtual void SetValue() { }
-
-        /// <summary>
-        /// Зчитування значень
-        /// </summary>
-        protected virtual void GetValue() { }
-
-        /// <summary>
         /// Функція обробки перед збереження та після збереження
         /// </summary>
         /// <param name="closePage"></param>
@@ -103,21 +82,18 @@ namespace InterfaceGtk
         {
             GetValue();
 
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+
+            NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
             await Save();
+            NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
             CallBack_LoadRecords?.Invoke(UnigueID);
-
-            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             if (closePage)
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
             else
                 NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
         }
-
-        /// <summary>
-        /// Збереження
-        /// </summary>
-        protected virtual ValueTask Save() { return new ValueTask(); }
     }
 }

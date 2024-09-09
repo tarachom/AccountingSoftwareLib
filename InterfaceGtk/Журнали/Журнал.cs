@@ -30,11 +30,6 @@ namespace InterfaceGtk
     public abstract class Журнал : ФормаЖурнал
     {
         /// <summary>
-        /// Для позиціювання в списку
-        /// </summary>
-        public UnigueID? SelectPointerItem { get; set; }
-
-        /// <summary>
         /// Період
         /// </summary>
         protected PeriodControl Період = new PeriodControl();
@@ -56,7 +51,7 @@ namespace InterfaceGtk
 
         #endregion
 
-        public Журнал(string nameSpageCodeGeneration) : base()
+        public Журнал(string nameSpageCodeGeneration)
         {
             NameSpageCodeGeneration = nameSpageCodeGeneration;
 
@@ -179,8 +174,6 @@ namespace InterfaceGtk
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
-        protected abstract void LoadRecords();
-
         protected abstract void OpenTypeListDocs(Widget relative_to);
 
         protected abstract void PeriodChanged();
@@ -233,7 +226,7 @@ namespace InterfaceGtk
                 }
         }
 
-        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
@@ -245,7 +238,7 @@ namespace InterfaceGtk
                     }
                 case Gdk.Key.F5:
                     {
-                        LoadRecords();
+                        await LoadRecords();
                         break;
                     }
                 case Gdk.Key.KP_Enter:
@@ -281,9 +274,9 @@ namespace InterfaceGtk
             OpenDocJournal();
         }
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadRecords();
+            await LoadRecords();
         }
 
         void OnTypeDocsClick(object? sender, EventArgs args)
@@ -321,7 +314,7 @@ namespace InterfaceGtk
                         }
                     }
 
-                    LoadRecords();
+                    await LoadRecords();
                 }
             }
         }
@@ -387,7 +380,7 @@ namespace InterfaceGtk
                     await SpendTheDocument(uid, typeDoc, spend);
                 }
 
-                LoadRecords();
+                await LoadRecords();
             }
         }
 

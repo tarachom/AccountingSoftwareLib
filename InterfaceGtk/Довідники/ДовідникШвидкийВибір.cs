@@ -46,6 +46,11 @@ namespace InterfaceGtk
         public UnigueID? OpenFolder { get; set; }
 
         /// <summary>
+        /// ???
+        /// </summary>
+        public Widget? ParentWidget { get; set; }
+
+        /// <summary>
         /// Функція вибору
         /// </summary>
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
@@ -70,18 +75,17 @@ namespace InterfaceGtk
         /// </summary>
         protected SearchControl Пошук = new SearchControl();
 
-        public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 600, int height = 300) : base()
+        public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 600, int height = 300)
         {
             PackStart(HBoxTop, false, false, 0);
 
             if (visibleSearch)
             {
-                HBoxTop.PackStart(Пошук, false, false, 0);
                 Пошук.Select = async (string x) => { await LoadRecords_OnSearch(x); };
                 Пошук.Clear = async () => { await LoadRecords(); };
             }
 
-            CreateToolbar();
+            CreateToolbar(visibleSearch);
 
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = width, HeightRequest = height };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
@@ -103,14 +107,25 @@ namespace InterfaceGtk
             await LoadRecords();
         }
 
+        #region Virtual & Abstract Function
+
+        protected abstract ValueTask OpenPageList(UnigueID? unigueID = null);
+        protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+
+        #endregion
+
         #region Toolbar & Menu
- 
-        void CreateToolbar()
+
+        void CreateToolbar(bool visibleSearch)
         {
             PackStart(ToolbarTop, false, false, 0);
 
+            if (visibleSearch)
+                ToolbarTop.Add(new ToolItem { Пошук });
+
             ToolButton openButton = new ToolButton(new Image(Stock.GoUp, IconSize.Menu), "Відкрити") { TooltipText = "Відкрити" };
-            openButton.Clicked += OnOpenClick;
+            openButton.Clicked += OnListClick;
             ToolbarTop.Add(openButton);
 
             ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
@@ -129,14 +144,6 @@ namespace InterfaceGtk
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
         }
-
-        #endregion
-
-        #region Virtual Function
-
-        protected abstract ValueTask LoadRecords();
-
-        protected abstract ValueTask LoadRecords_OnSearch(string searchText);
 
         #endregion
 
@@ -167,29 +174,57 @@ namespace InterfaceGtk
 
         #region ToolBar
 
-        void OnOpenClick(object? sender, EventArgs args)
+        async void OnListClick(object? sender, EventArgs args)
         {
+            UnigueID? unigueID = null;
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                    unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
+            await OpenPageList(unigueID);
         }
 
-        void OnAddClick(object? sender, EventArgs args)
+        async void OnAddClick(object? sender, EventArgs args)
         {
-
+            await OpenPageElement(true);
         }
 
-        void OnEditClick(object? sender, EventArgs args)
+        async void OnEditClick(object? sender, EventArgs args)
         {
-
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                    if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
+                    {
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                        if (!unigueID.IsEmpty())
+                            await OpenPageElement(false, unigueID);
+                    }
         }
 
-        void OnDeleteClick(object? sender, EventArgs args)
+        async void OnDeleteClick(object? sender, EventArgs args)
         {
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
+                {
+                    foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                    {
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
+                        if (!unigueID.IsEmpty())
+                        {
+                            await SetDeletionLabel(unigueID);
+                            SelectPointerItem = unigueID;
+                        }
+                    }
+
+                    await LoadRecords();
+                }
         }
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadRecords();
+            await LoadRecords();
         }
 
         #endregion

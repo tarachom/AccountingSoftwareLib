@@ -42,7 +42,7 @@ namespace InterfaceGtk
         /// </summary>
         ScrolledWindow ScrollTree;
 
-        public ДокументТабличнаЧастина() : base()
+        public ДокументТабличнаЧастина() 
         {
             CreateToolbar();
 

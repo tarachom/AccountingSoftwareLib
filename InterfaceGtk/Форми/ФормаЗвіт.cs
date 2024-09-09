@@ -22,33 +22,18 @@ limitations under the License.
 */
 
 using Gtk;
-using AccountingSoftware;
 
 namespace InterfaceGtk
 {
     /// <summary>
     /// Основа для класів:
-    ///             ДовідникЖурнал, ДовідникШвидкийВибір, 
-    ///             ДокументЖурнал, 
-    ///             Журнал, 
-    ///             РегістриВідомостейЖурнал, 
-    ///             РегістриНакопиченняЖурнал
+    ///         Звіт
     /// </summary>
-    public abstract class ФормаЖурнал : Форма
+    public abstract class ФормаЗвіт : Форма
     {
-        /// <summary>
-        /// Елемент на який треба спозиціонувати список при обновленні
-        /// </summary>
-        public UnigueID? SelectPointerItem { get; set; }
-
-        public ФормаЖурнал() { }
-
-        #region Virtual & Abstract Function
-
-        protected abstract ValueTask LoadRecords();
-
-        protected abstract ValueTask LoadRecords_OnSearch(string searchText);
-
-        #endregion
+        public ФормаЗвіт()
+        {
+            
+        }
     }
 }

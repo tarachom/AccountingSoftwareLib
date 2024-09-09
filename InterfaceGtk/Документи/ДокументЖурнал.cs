@@ -29,11 +29,6 @@ namespace InterfaceGtk
     public abstract class ДокументЖурнал : ФормаЖурнал
     {
         /// <summary>
-        /// Для позиціювання в списку
-        /// </summary>
-        public UnigueID? SelectPointerItem { get; set; }
-
-        /// <summary>
         /// Для вибору і позиціювання
         /// </summary>
         public UnigueID? DocumentPointerItem { get; set; }
@@ -66,7 +61,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Пошук
         /// </summary>
-        SearchControl ПошукПовнотекстовий = new SearchControl();
+        SearchControl Пошук = new SearchControl();
 
         /// <summary>
         /// Додатковий ключ форми журналу для налаштувань
@@ -74,7 +69,7 @@ namespace InterfaceGtk
         /// </summary>
         public string KeyForSetting { get; set; } = "";
 
-        public ДокументЖурнал() : base()
+        public ДокументЖурнал()
         {
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
@@ -84,9 +79,9 @@ namespace InterfaceGtk
             HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
-            ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
-            ПошукПовнотекстовий.Clear = PeriodChanged;
-            HBoxTop.PackStart(ПошукПовнотекстовий, false, false, 2);
+            Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+            Пошук.Clear = PeriodChanged;
+            HBoxTop.PackStart(Пошук, false, false, 2);
 
             CreateToolbar();
 
@@ -109,15 +104,6 @@ namespace InterfaceGtk
         public async ValueTask SetValue()
         {
             await BeforeSetValue();
-        }
-
-        async void BeforeAndAfterOpenElement(bool IsNew, UnigueID? unigueID = null)
-        {
-            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
-            (string Name, Func<Widget>? FuncWidget, System.Action? SetValue) page = await OpenPageElement(IsNew, unigueID);
-            if (notebook != null && page.FuncWidget != null)
-                NotebookFunction.CreateNotebookPage(notebook, page.Name, page.FuncWidget);
-            page.SetValue?.Invoke();
         }
 
         #region Toolbar & Menu
@@ -252,20 +238,16 @@ namespace InterfaceGtk
 
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
 
-        protected abstract void LoadRecords();
-
-        protected abstract void LoadRecords_OnSearch(string searchText);
-
-        protected abstract ValueTask<(string Name, Func<Widget>? FuncWidget, System.Action? SetValue)> OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+        protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
 
         protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
-        protected virtual void CallBack_LoadRecords(UnigueID? selectPointer)
+        protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
-            LoadRecords();
+            await LoadRecords();
         }
 
         protected abstract void FilterRecords(Box hBox);
@@ -301,7 +283,7 @@ namespace InterfaceGtk
                 }
         }
 
-        void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
+        async void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
         {
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
@@ -309,7 +291,7 @@ namespace InterfaceGtk
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     if (DocumentPointerItem == null)
-                        BeforeAndAfterOpenElement(false, unigueID);
+                        await OpenPageElement(false, unigueID);
                     else
                     {
                         CallBack_OnSelectPointer?.Invoke(unigueID);
@@ -318,18 +300,18 @@ namespace InterfaceGtk
                 }
         }
 
-        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
                 case Gdk.Key.Insert:
                     {
-                        BeforeAndAfterOpenElement(true);
+                        await OpenPageElement(true);
                         break;
                     }
                 case Gdk.Key.F5:
                     {
-                        LoadRecords();
+                        await LoadRecords();
                         break;
                     }
                 case Gdk.Key.KP_Enter:
@@ -360,12 +342,12 @@ namespace InterfaceGtk
 
         #region ToolBar
 
-        void OnAddClick(object? sender, EventArgs args)
+        async void OnAddClick(object? sender, EventArgs args)
         {
-            BeforeAndAfterOpenElement(true);
+            await OpenPageElement(true);
         }
 
-        void OnEditClick(object? sender, EventArgs args)
+        async void OnEditClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -374,14 +356,14 @@ namespace InterfaceGtk
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
                         UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
-                        BeforeAndAfterOpenElement(false, unigueID);
+                        await OpenPageElement(false, unigueID);
                     }
             }
         }
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadRecords();
+            await LoadRecords();
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
@@ -401,7 +383,7 @@ namespace InterfaceGtk
                         SelectPointerItem = unigueID;
                     }
 
-                    LoadRecords();
+                    await LoadRecords();
                 }
         }
 
@@ -423,7 +405,7 @@ namespace InterfaceGtk
                             SelectPointerItem = newUnigueID;
                     }
 
-                    LoadRecords();
+                    await LoadRecords();
                 }
         }
 
@@ -471,11 +453,11 @@ namespace InterfaceGtk
                     SelectPointerItem = unigueID;
                 }
 
-                LoadRecords();
+                await LoadRecords();
             }
         }
 
-        void OnExportXMLClick(object? sender, EventArgs arg)
+        async void OnExportXMLClick(object? sender, EventArgs arg)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
@@ -489,7 +471,7 @@ namespace InterfaceGtk
                     ExportXML(unigueID);
                 }
 
-                LoadRecords();
+                await LoadRecords();
             }
         }
 

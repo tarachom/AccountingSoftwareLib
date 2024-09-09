@@ -21,18 +21,11 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using Gtk;
-
 namespace InterfaceGtk
 {
-    /// <summary>
-    /// Основа для класів:
-    ///         ДовідникТабличнаЧастина, 
-    ///         ДокументТабличнаЧастина
-    /// </summary>
-    public abstract class ФормаТабличнаЧастина : Форма
+    public abstract class Обробка : ФормаЗвіт
     {
-        public ФормаТабличнаЧастина()
+        public Обробка()
         {
 
         }

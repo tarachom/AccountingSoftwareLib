@@ -29,11 +29,6 @@ namespace InterfaceGtk
     public abstract class РегістриНакопиченняЖурнал : ФормаЖурнал
     {
         /// <summary>
-        /// Для позиціювання в списку
-        /// </summary>
-        public UnigueID? SelectPointerItem { get; set; }
-
-        /// <summary>
         /// Період
         /// </summary>
         protected PeriodControl Період = new PeriodControl();
@@ -61,9 +56,9 @@ namespace InterfaceGtk
         /// <summary>
         /// Пошук
         /// </summary>
-        SearchControl ПошукПовнотекстовий = new SearchControl();
+        SearchControl Пошук = new SearchControl();
 
-        public РегістриНакопиченняЖурнал() : base()
+        public РегістриНакопиченняЖурнал()
         {
             //Період
             PackStart(HBoxPeriod, false, false, 10);
@@ -71,9 +66,9 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
-            ПошукПовнотекстовий.Select = LoadRecords_OnSearch;
-            ПошукПовнотекстовий.Clear = LoadRecords;
-            HBoxPeriod.PackStart(ПошукПовнотекстовий, false, false, 2);
+            Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await LoadRecords();
+            HBoxPeriod.PackStart(Пошук, false, false, 2);
 
             //Кнопки
             PackStart(HBoxTop, false, false, 0);
@@ -116,10 +111,6 @@ namespace InterfaceGtk
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
-        protected virtual void LoadRecords() { }
-
-        protected virtual void LoadRecords_OnSearch(string searchText) { }
-
         protected abstract void PeriodChanged();
 
         #endregion
@@ -135,13 +126,13 @@ namespace InterfaceGtk
             }
         }
 
-        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
                 case Gdk.Key.F5:
                     {
-                        LoadRecords();
+                        await LoadRecords();
                         break;
                     }
                 case Gdk.Key.End:
@@ -161,9 +152,9 @@ namespace InterfaceGtk
 
         #region ToolBar
 
-        void OnRefreshClick(object? sender, EventArgs args)
+        async void OnRefreshClick(object? sender, EventArgs args)
         {
-            LoadRecords();
+            await LoadRecords();
         }
 
         #endregion
