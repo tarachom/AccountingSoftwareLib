@@ -37,7 +37,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Чи це новий елемент
         /// </summary>
-        public bool IsNew { get; set; } = true;
+        public bool IsNew { get; set; } = false;
 
         /// <summary>
         /// ІД елементу
