@@ -23,7 +23,7 @@ limitations under the License.
 
 namespace InterfaceGtk
 {
-    public abstract class Обробка : ФормаЗвіт
+    public abstract class Обробка : ФормаОбробка
     {
         public Обробка()
         {

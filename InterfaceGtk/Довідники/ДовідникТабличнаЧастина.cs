@@ -84,7 +84,7 @@ namespace InterfaceGtk
 
         public abstract ValueTask SaveRecords();
 
-        protected virtual void ButtonSelect(TreeIter iter, int rowNumber, int colNumber, Popover popoverSmallSelect) { }
+        protected abstract void OpenSelect(TreeIter iter, int rowNumber, int colNumber, Popover popover);
 
         protected virtual void ButtonPopupClear(TreeIter iter, int rowNumber, int colNumber) { }
 
@@ -119,7 +119,7 @@ namespace InterfaceGtk
 
                     int rowNumber = int.Parse(itemPath.ToString());
 
-                    ButtonSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, popoverSmallSelect);
+                    OpenSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, popoverSmallSelect);
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace InterfaceGtk
                                 BorderWidth = 2
                             };
 
-                            ButtonSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, PopoverSmallSelect);
+                            OpenSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, PopoverSmallSelect);
                         };
 
                         MenuItem copy = new MenuItem("Копіювати");

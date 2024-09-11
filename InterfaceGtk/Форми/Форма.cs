@@ -33,7 +33,7 @@ namespace InterfaceGtk
     {
         public Форма() : base(Orientation.Vertical, 0) { }
 
-        #region Create Link
+        #region Link
 
         public static void CreateLink(Box parentBox, string uri, System.Action? click = null)
         {
@@ -45,7 +45,7 @@ namespace InterfaceGtk
 
         #endregion
 
-        #region Create Field
+        #region Field
 
         /// <summary>
         /// Створення поля із заголовком
@@ -104,11 +104,11 @@ namespace InterfaceGtk
             if (label != null)
                 hBox.PackStart(new Label(label) { Valign = Align.Start }, false, false, 5);
 
-            ScrolledWindow scrollTextView = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = Width, HeightRequest = Height };
-            scrollTextView.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollTextView.Add(field);
+            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = Width, HeightRequest = Height };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Add(field);
 
-            hBox.PackStart(scrollTextView, false, false, 5);
+            hBox.PackStart(scroll, false, false, 5);
         }
 
         /// <summary>

@@ -21,14 +21,14 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using Gtk;
 using AccountingSoftware;
 
 namespace InterfaceGtk
 {
     /// <summary>
     /// Основа для класів:
-    ///             ДовідникЖурнал, ДовідникШвидкийВибір, 
+    ///             ДовідникЖурнал, 
+    ///             ДовідникШвидкийВибір, 
     ///             ДокументЖурнал, 
     ///             Журнал, 
     ///             РегістриВідомостейЖурнал, 
@@ -41,7 +41,10 @@ namespace InterfaceGtk
         /// </summary>
         public UnigueID? SelectPointerItem { get; set; }
 
-        public ФормаЖурнал() { }
+        public ФормаЖурнал()
+        {
+
+        }
 
         #region Virtual & Abstract Function
 

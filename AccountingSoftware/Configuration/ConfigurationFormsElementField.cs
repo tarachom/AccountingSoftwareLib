@@ -38,10 +38,12 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="caption">Заголовок</param>
-        public ConfigurationFormsElementField(string name, string caption = "")
+        public ConfigurationFormsElementField(string name, string caption = "", uint size = 0, int sortNum = 100)
         {
             Name = name;
             Caption = caption;
+            Size = size;
+            SortNum = sortNum;
         }
 
         /// <summary>
@@ -54,5 +56,14 @@ namespace AccountingSoftware
         /// </summary>
         public string Caption { get; set; } = "";
 
+        /// <summary>
+        /// Розмір
+        /// </summary>
+        public uint Size { get; set; }
+
+        /// <summary>
+        /// Порядок поля в списку
+        /// </summary>
+        public int SortNum { get; set; } = 100;
     }
 }

@@ -35,14 +35,14 @@ namespace InterfaceGtk
         /// <summary>
         /// Дерево
         /// </summary>
-        protected TreeView TreeViewGrid = new TreeView() /*{ EnableSearch = true } !!! */;
+        protected TreeView TreeViewGrid = new TreeView();
 
         /// <summary>
         /// Прокрутка дерева
         /// </summary>
         ScrolledWindow ScrollTree;
 
-        public ДокументТабличнаЧастина() 
+        public ДокументТабличнаЧастина()
         {
             CreateToolbar();
 
@@ -78,22 +78,102 @@ namespace InterfaceGtk
             ToolbarTop.Add(deleteButton);
         }
 
+        (TreePath Path, TreeViewColumn Column, TreeIter Iter, int RowNumber, int ColNumber)? GetCellInfo()
+        {
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                TreeViewGrid.GetCursor(out TreePath itemPath, out TreeViewColumn treeColumn);
+                TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                object? objColumn = treeColumn.Data["Column"];
+                if (objColumn != null)
+                {
+                    int colNumber = (int)objColumn;
+                    int rowNumber = int.Parse(itemPath.ToString());
+
+                    return (itemPath, treeColumn, iter, rowNumber, colNumber);
+                }
+            }
+
+            return null;
+        }
+
+        async void Select(TreePath path, TreeViewColumn column, TreeIter iter, int rowNumber, int colNumber)
+        {
+            //Швидкий вибір
+            ДовідникШвидкийВибір? page = await OpenSelect2(iter, rowNumber, colNumber);
+            if (page != null)
+            {
+                //Прив'язка до ячейки
+                Gdk.Rectangle rectangleCell = TreeViewGrid.GetCellArea(path, column);
+                rectangleCell.Offset(-(int)ScrollTree.Hadjustment.Value, rectangleCell.Height);
+
+                page.PopoverParent = new Popover(TreeViewGrid)
+                {
+                    PointingTo = rectangleCell,
+                    Position = PositionType.Bottom,
+                    BorderWidth = 2
+                };
+                page.PopoverParent.Add(page);
+                page.PopoverParent.ShowAll();
+
+                //Заповнення даними
+                await page.SetValue();
+            }
+        }
+
+        void OpenMenu(TreePath path, TreeViewColumn column, TreeIter iter, int rowNumber, int colNumber)
+        {
+            Menu menu = new Menu();
+
+            MenuItem caption = new MenuItem("[ " + column.Title + " ]");
+            menu.Append(caption);
+
+            MenuItem select = new MenuItem("Вибрати");
+            select.Activated += (object? sender, EventArgs args) => Select(path, column, iter, rowNumber, colNumber);
+            menu.Append(select);
+
+            MenuItem copy = new MenuItem("Копіювати");
+            copy.Activated += (object? sender, EventArgs args) => CopyRecord(rowNumber);
+            menu.Append(copy);
+
+            MenuItem clear = new MenuItem("Очистити");
+            clear.Activated += (object? sender, EventArgs args) => ClearCell(iter, rowNumber, colNumber);
+            menu.Append(clear);
+
+            MenuItem delete = new MenuItem("Видалити");
+            delete.Activated += (object? sender, EventArgs args) => DeleteRecord(iter, rowNumber);
+            menu.Append(delete);
+
+            menu.ShowAll();
+            menu.Popup();
+        }
+
+        protected void EditCell(object sender, EditedArgs args)
+        {
+            var cellInfoObj = GetCellInfo();
+            if (cellInfoObj.HasValue)
+            {
+                var cellInfo = cellInfoObj.Value;
+                ChangeCell(cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber, args.NewText);
+            }
+        }
+
         #region Virtual & Abstract 
 
+        protected virtual void OpenSelect(TreeIter iter, int rowNumber, int colNumber, Popover popover) { } //Del
+        protected virtual void ButtonPopupClear(TreeIter iter, int rowNumber, int colNumber) { } //Del
+
         public abstract ValueTask LoadRecords();
-
         public abstract ValueTask SaveRecords();
-
-        protected virtual void ButtonSelect(TreeIter iter, int rowNumber, int colNumber, Popover popoverSmallSelect) { }
-
-        protected virtual void ButtonPopupClear(TreeIter iter, int rowNumber, int colNumber) { }
-
+        protected virtual async ValueTask<ДовідникШвидкийВибір?> OpenSelect2(TreeIter iter, int rowNumber, int colNumber)
+        {
+            return await ValueTask.FromResult<ДовідникШвидкийВибір?>(null);
+        }
+        protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, string newText) { }
         protected abstract void AddRecord();
-
         protected abstract void CopyRecord(int rowNumber);
-
         protected abstract void DeleteRecord(TreeIter iter, int rowNumber);
-
+        protected virtual void ClearCell(TreeIter iter, int rowNumber, int colNumber) { }
         protected virtual bool IsEditingCell() { return false; }
 
         #endregion
@@ -102,91 +182,26 @@ namespace InterfaceGtk
 
         void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {
-            if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
+            if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.DoubleButtonPress)
             {
-                TreeViewGrid.GetCursor(out TreePath itemPath, out TreeViewColumn treeColumn);
-                if (treeColumn.Data.ContainsKey("Column"))
+                var cellInfoObj = GetCellInfo();
+                if (cellInfoObj.HasValue)
                 {
-                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-
-                    //Швидкий вибір
-                    Gdk.Rectangle rectangleCell = TreeViewGrid.GetCellArea(itemPath, treeColumn);
-                    rectangleCell.Offset(-(int)ScrollTree.Hadjustment.Value, rectangleCell.Height);
-                    Popover popoverSmallSelect = new Popover(TreeViewGrid)
-                    {
-                        PointingTo = rectangleCell,
-                        Position = PositionType.Bottom,
-                        BorderWidth = 2
-                    };
-
-                    int rowNumber = int.Parse(itemPath.ToString());
-
-                    ButtonSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, popoverSmallSelect);
+                    var cellInfo = cellInfoObj.Value;
+                    Select(cellInfo.Path, cellInfo.Column, cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber);
                 }
             }
         }
 
         void OnButtonReleaseEvent(object? sender, ButtonReleaseEventArgs args)
         {
-            if (args.Event.Button == 3 && TreeViewGrid.Selection.CountSelectedRows() != 0)
+            if (args.Event.Button == 3)
             {
-                TreeViewGrid.GetCursor(out TreePath itemPath, out TreeViewColumn treeColumn);
-                if (treeColumn.Data.ContainsKey("Column"))
+                var cellInfoObj = GetCellInfo();
+                if (cellInfoObj.HasValue)
                 {
-                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-
-                    int rowNumber = int.Parse(itemPath.ToString());
-
-                    //Меню
-                    {
-                        Menu menuPopup = new Menu();
-
-                        MenuItem caption = new MenuItem("[ " + treeColumn.Title + " ]");
-                        menuPopup.Append(caption);
-
-
-                        MenuItem select = new MenuItem("Вибрати");
-                        menuPopup.Append(select);
-                        select.Activated += (object? sender, EventArgs args) =>
-                        {
-                            Gdk.Rectangle rectangleCell = TreeViewGrid.GetCellArea(itemPath, treeColumn);
-                            rectangleCell.Offset(-(int)ScrollTree.Hadjustment.Value, rectangleCell.Height);
-
-                            Popover PopoverSmallSelect = new Popover(TreeViewGrid)
-                            {
-                                PointingTo = rectangleCell,
-                                Position = PositionType.Bottom,
-                                BorderWidth = 2
-                            };
-
-                            ButtonSelect(iter, rowNumber, (int)treeColumn.Data["Column"]!, PopoverSmallSelect);
-                        };
-
-                        MenuItem copy = new MenuItem("Копіювати");
-                        menuPopup.Append(copy);
-                        copy.Activated += (object? sender, EventArgs args) =>
-                        {
-                            CopyRecord(rowNumber);
-                        };
-
-                        MenuItem clear = new MenuItem("Очистити");
-                        menuPopup.Append(clear);
-                        clear.Activated += (object? sender, EventArgs args) =>
-                        {
-                            ButtonPopupClear(iter, rowNumber, (int)treeColumn.Data["Column"]!);
-                        };
-
-                        MenuItem delete = new MenuItem("Видалити");
-                        menuPopup.Append(delete);
-                        delete.Activated += (object? sender, EventArgs args) =>
-                        {
-                            DeleteRecord(iter, rowNumber);
-                        };
-
-                        menuPopup.ShowAll();
-                        menuPopup.Popup();
-                    }
-
+                    var cellInfo = cellInfoObj.Value;
+                    OpenMenu(cellInfo.Path, cellInfo.Column, cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber);
                 }
             }
         }
@@ -233,7 +248,7 @@ namespace InterfaceGtk
         {
             if (IsEditingCell())
                 return;
-                
+
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
                 TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();

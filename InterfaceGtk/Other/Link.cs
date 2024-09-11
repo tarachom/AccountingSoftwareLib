@@ -27,6 +27,12 @@ limitations under the License.
 
 */
 
+/*
+
+ВИДАЛИТИ !!!
+
+*/
+
 using Gtk;
 
 namespace InterfaceGtk

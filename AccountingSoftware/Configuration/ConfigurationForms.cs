@@ -156,6 +156,11 @@ namespace AccountingSoftware
             /// Список з Деревом
             /// </summary>
             ListAndTree = 6,
+
+            /// <summary>
+            /// Таблична частина
+            /// </summary>
+            TablePart
         }
     }
 }
