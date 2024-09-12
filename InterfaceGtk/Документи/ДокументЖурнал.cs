@@ -101,7 +101,7 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public async ValueTask SetValue()
+        public override async ValueTask SetValue()
         {
             await BeforeSetValue();
         }
@@ -295,7 +295,9 @@ namespace InterfaceGtk
                     else
                     {
                         CallBack_OnSelectPointer?.Invoke(unigueID);
-                        NotebookFunction.CloseNotebookPageToCode(NotebookFunction.GetNotebookFromWidget(this), this.Name);
+                        Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+                        if (notebook != null) NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
+                        PopoverParent?.Hide();
                     }
                 }
         }

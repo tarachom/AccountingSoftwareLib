@@ -100,7 +100,7 @@ namespace InterfaceGtk
         async void Select(TreePath path, TreeViewColumn column, TreeIter iter, int rowNumber, int colNumber)
         {
             //Швидкий вибір
-            ДовідникШвидкийВибір? page = await OpenSelect2(iter, rowNumber, colNumber);
+            ФормаЖурнал? page = await OpenSelect2(iter, rowNumber, colNumber);
             if (page != null)
             {
                 //Прив'язка до ячейки
@@ -113,6 +113,11 @@ namespace InterfaceGtk
                     Position = PositionType.Bottom,
                     BorderWidth = 2
                 };
+
+                /*if (page is ДовідникШвидкийВибір){} else */
+                if (page is ДокументЖурнал)
+                    page.PopoverParent.HeightRequest = 400;
+
                 page.PopoverParent.Add(page);
                 page.PopoverParent.ShowAll();
 
@@ -158,6 +163,18 @@ namespace InterfaceGtk
             }
         }
 
+        protected void EditCell(object sender, ToggledArgs args)
+        {
+            var cellInfoObj = GetCellInfo();
+            if (cellInfoObj.HasValue)
+            {
+                var cellInfo = cellInfoObj.Value;
+                bool newValue = !(bool)TreeViewGrid.Model.GetValue(cellInfo.Iter, cellInfo.ColNumber);
+                Console.WriteLine(newValue);
+                ChangeCell(cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber, newValue);
+            }
+        }
+
         #region Virtual & Abstract 
 
         protected virtual void OpenSelect(TreeIter iter, int rowNumber, int colNumber, Popover popover) { } //Del
@@ -165,11 +182,12 @@ namespace InterfaceGtk
 
         public abstract ValueTask LoadRecords();
         public abstract ValueTask SaveRecords();
-        protected virtual async ValueTask<ДовідникШвидкийВибір?> OpenSelect2(TreeIter iter, int rowNumber, int colNumber)
+        protected virtual async ValueTask<ФормаЖурнал?> OpenSelect2(TreeIter iter, int rowNumber, int colNumber)
         {
-            return await ValueTask.FromResult<ДовідникШвидкийВибір?>(null);
+            return await ValueTask.FromResult<ФормаЖурнал?>(null);
         }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, string newText) { }
+        protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, bool newValue) { }
         protected abstract void AddRecord();
         protected abstract void CopyRecord(int rowNumber);
         protected abstract void DeleteRecord(TreeIter iter, int rowNumber);

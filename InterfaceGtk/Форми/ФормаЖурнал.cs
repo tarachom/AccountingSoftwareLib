@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using Gtk;
 using AccountingSoftware;
 
 namespace InterfaceGtk
@@ -37,6 +38,11 @@ namespace InterfaceGtk
     public abstract class ФормаЖурнал : Форма
     {
         /// <summary>
+        /// Вспливаюче вікно
+        /// </summary>
+        public Popover? PopoverParent { get; set; }
+
+        /// <summary>
         /// Елемент на який треба спозиціонувати список при обновленні
         /// </summary>
         public UnigueID? SelectPointerItem { get; set; }
@@ -47,6 +53,8 @@ namespace InterfaceGtk
         }
 
         #region Virtual & Abstract Function
+
+        public abstract ValueTask SetValue();
 
         protected abstract ValueTask LoadRecords();
 

@@ -29,11 +29,6 @@ namespace InterfaceGtk
     public abstract class ДовідникШвидкийВибір : ФормаЖурнал
     {
         /// <summary>
-        /// Вспливаюче вікно
-        /// </summary>
-        public Popover? PopoverParent { get; set; }
-
-        /// <summary>
         /// Елемент для вибору
         /// </summary>
         public UnigueID? DirectoryPointerItem { get; set; }
@@ -48,7 +43,7 @@ namespace InterfaceGtk
         /// <summary>
         /// ???
         /// </summary>
-        public Widget? ParentWidget { get; set; }
+        //public Widget? ParentWidget { get; set; }
 
         /// <summary>
         /// Функція вибору
@@ -102,7 +97,7 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public async ValueTask SetValue()
+        public override async ValueTask SetValue()
         {
             await LoadRecords();
         }

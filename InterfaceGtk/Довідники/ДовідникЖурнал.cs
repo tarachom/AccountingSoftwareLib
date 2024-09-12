@@ -110,7 +110,7 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public async ValueTask SetValue()
+        public override async ValueTask SetValue()
         {
             await LoadRecords();
         }

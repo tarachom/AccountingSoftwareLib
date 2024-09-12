@@ -2097,7 +2097,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveTabularList(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTabularList(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             /*
             fields - список полів довідника чи документу
