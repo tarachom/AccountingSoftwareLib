@@ -1423,10 +1423,12 @@ namespace AccountingSoftware
                     {
                         form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
                     }
-                    else if (typeForms == ConfigurationForms.TypeForms.Element)
+                    else if (typeForms == ConfigurationForms.TypeForms.Element || typeForms == ConfigurationForms.TypeForms.TablePart)
                     {
                         LoadFormElementField(form.ElementFields, tableForm.Current);
-                        LoadFormElementTablePart(form.ElementTableParts, tableForm.Current);
+
+                        if (typeForms != ConfigurationForms.TypeForms.TablePart)
+                            LoadFormElementTablePart(form.ElementTableParts, tableForm.Current);
                     }
 
                     forms.Add(form.Name, form);
@@ -1435,7 +1437,7 @@ namespace AccountingSoftware
 
         private static void LoadFormElementField(Dictionary<string, ConfigurationFormsElementField> elementFields, XPathNavigator? xPathDocNavigator)
         {
-            XPathNodeIterator? elementFieldNodes = xPathDocNavigator?.Select("ElementFields/ElementField");
+            XPathNodeIterator? elementFieldNodes = xPathDocNavigator?.Select("ElementFields/Field");
             if (elementFieldNodes != null)
                 while (elementFieldNodes.MoveNext())
                 {
@@ -1453,7 +1455,7 @@ namespace AccountingSoftware
 
         private static void LoadFormElementTablePart(Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XPathNavigator? xPathDocNavigator)
         {
-            XPathNodeIterator? elementTablePartNodes = xPathDocNavigator?.Select("ElementTableParts/ElementTablePart");
+            XPathNodeIterator? elementTablePartNodes = xPathDocNavigator?.Select("ElementTableParts/TablePart");
             if (elementTablePartNodes != null)
                 while (elementTablePartNodes.MoveNext())
                 {
@@ -1966,7 +1968,7 @@ namespace AccountingSoftware
 
                 SaveTriggerFunctions(ConfDirectory.Value.TriggerFunctions, xmlConfDocument, nodeDirectory);
 
-                SaveForms(ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
+                SaveForms(ConfDirectory.Value.Fields, ConfDirectory.Value.TabularParts, ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
             }
         }
 
@@ -2093,7 +2095,7 @@ namespace AccountingSoftware
 
                 SaveTabularList(tablePart.Value.Fields, tablePart.Value.TabularList, xmlConfDocument, nodeTablePart);
 
-                SaveForms(tablePart.Value.Forms, xmlConfDocument, nodeTablePart);
+                SaveForms(tablePart.Value.Fields, null, tablePart.Value.Forms, xmlConfDocument, nodeTablePart);
             }
         }
 
@@ -2160,17 +2162,16 @@ namespace AccountingSoftware
 
                         #region Додаткова інформація для полегшення генерування коду
 
-                        //
-                        // ObjField Info
-                        //
-
                         XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                         nodeType.InnerText = fieldsItem.Type;
                         nodeTabularListField.AppendChild(nodeType);
 
-                        XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
-                        nodePointer.InnerText = fieldsItem.Pointer;
-                        nodeTabularListField.AppendChild(nodePointer);
+                        if (fieldsItem.Type == "pointer" || fieldsItem.Type == "enum")
+                        {
+                            XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
+                            nodePointer.InnerText = fieldsItem.Pointer;
+                            nodeTabularListField.AppendChild(nodePointer);
+                        }
 
                         #endregion
                     }
@@ -2264,10 +2265,6 @@ namespace AccountingSoftware
 
                             #region Додаткова інформація для полегшення генерування коду
 
-                            //
-                            // ObjField Info
-                            //
-
                             //Поле документу
                             if (!string.IsNullOrEmpty(docField) && Doc.Fields.TryGetValue(docField, out ConfigurationField? DocFieldItem))
                             {
@@ -2275,9 +2272,12 @@ namespace AccountingSoftware
                                 nodeType.InnerText = DocFieldItem.Type;
                                 nodeTabularListField.AppendChild(nodeType);
 
-                                XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
-                                nodePointer.InnerText = DocFieldItem.Pointer;
-                                nodeTabularListField.AppendChild(nodePointer);
+                                if (DocFieldItem.Type == "pointer" || DocFieldItem.Type == "enum")
+                                {
+                                    XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
+                                    nodePointer.InnerText = DocFieldItem.Pointer;
+                                    nodeTabularListField.AppendChild(nodePointer);
+                                }
                             }
 
                             #endregion
@@ -2285,7 +2285,7 @@ namespace AccountingSoftware
                 }
         }
 
-        private static void SaveForms(Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveForms(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTablePart>? tabularParts, Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeForms = xmlConfDocument.CreateElement("Forms");
             rootNode.AppendChild(nodeForms);
@@ -2315,60 +2315,79 @@ namespace AccountingSoftware
                     nodeTabularList.InnerText = form.Value.TabularList.ToString();
                     nodeForm.AppendChild(nodeTabularList);
                 }
-                else if (form.Value.Type == ConfigurationForms.TypeForms.Element)
+                else if (form.Value.Type == ConfigurationForms.TypeForms.Element || form.Value.Type == ConfigurationForms.TypeForms.TablePart)
                 {
-                    SaveFormElementField(form.Value.ElementFields, xmlConfDocument, nodeForm);
-                    SaveFormElementTablePart(form.Value.ElementTableParts, xmlConfDocument, nodeForm);
+                    SaveFormElementField(fields, form.Value.ElementFields, xmlConfDocument, nodeForm);
+
+                    if (tabularParts != null)
+                        SaveFormElementTablePart(tabularParts, form.Value.ElementTableParts, xmlConfDocument, nodeForm);
                 }
             }
         }
 
-        public static void SaveFormElementField(Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveFormElementField(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeElementFields = xmlConfDocument.CreateElement("ElementFields");
             rootNode.AppendChild(nodeElementFields);
 
             foreach (KeyValuePair<string, ConfigurationFormsElementField> elementField in elementFields)
-            {
-                XmlElement nodeElementField = xmlConfDocument.CreateElement("ElementField");
-                nodeElementFields.AppendChild(nodeElementField);
+                if (fields.TryGetValue(elementField.Key, out ConfigurationField? fieldsItem))
+                {
+                    XmlElement nodeElementField = xmlConfDocument.CreateElement("Field");
+                    nodeElementFields.AppendChild(nodeElementField);
 
-                XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
-                nodeFieldName.InnerText = elementField.Key;
-                nodeElementField.AppendChild(nodeFieldName);
+                    XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
+                    nodeFieldName.InnerText = elementField.Key;
+                    nodeElementField.AppendChild(nodeFieldName);
 
-                XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
-                nodeFieldCaption.InnerText = elementField.Value.Caption;
-                nodeElementField.AppendChild(nodeFieldCaption);
+                    XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
+                    nodeFieldCaption.InnerText = elementField.Value.Caption;
+                    nodeElementField.AppendChild(nodeFieldCaption);
 
-                XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
-                nodeSize.InnerText = elementField.Value.Size.ToString();
-                nodeElementField.AppendChild(nodeSize);
+                    XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
+                    nodeSize.InnerText = elementField.Value.Size.ToString();
+                    nodeElementField.AppendChild(nodeSize);
 
-                XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
-                nodeSortNum.InnerText = elementField.Value.SortNum.ToString();
-                nodeElementField.AppendChild(nodeSortNum);
-            }
+                    XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
+                    nodeSortNum.InnerText = elementField.Value.SortNum.ToString();
+                    nodeElementField.AppendChild(nodeSortNum);
+
+                    #region Додаткова інформація для полегшення генерування коду
+
+                    XmlElement nodeType = xmlConfDocument.CreateElement("Type");
+                    nodeType.InnerText = fieldsItem.Type;
+                    nodeElementField.AppendChild(nodeType);
+
+                    if (fieldsItem.Type == "pointer" || fieldsItem.Type == "enum")
+                    {
+                        XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
+                        nodePointer.InnerText = fieldsItem.Pointer;
+                        nodeElementField.AppendChild(nodePointer);
+                    }
+
+                    #endregion
+                }
         }
 
-        public static void SaveFormElementTablePart(Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveFormElementTablePart(Dictionary<string, ConfigurationTablePart> tabularParts, Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeElementTableParts = xmlConfDocument.CreateElement("ElementTableParts");
             rootNode.AppendChild(nodeElementTableParts);
 
             foreach (KeyValuePair<string, ConfigurationFormsElementTablePart> elementTablePart in elementTableParts)
-            {
-                XmlElement nodeElementTablePart = xmlConfDocument.CreateElement("ElementTablePart");
-                nodeElementTableParts.AppendChild(nodeElementTablePart);
+                if (tabularParts.TryGetValue(elementTablePart.Key, out ConfigurationTablePart? tabularPartsItem))
+                {
+                    XmlElement nodeElementTablePart = xmlConfDocument.CreateElement("TablePart");
+                    nodeElementTableParts.AppendChild(nodeElementTablePart);
 
-                XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
-                nodeFieldName.InnerText = elementTablePart.Key;
-                nodeElementTablePart.AppendChild(nodeFieldName);
+                    XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
+                    nodeFieldName.InnerText = elementTablePart.Key;
+                    nodeElementTablePart.AppendChild(nodeFieldName);
 
-                XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
-                nodeFieldCaption.InnerText = elementTablePart.Value.Caption;
-                nodeElementTablePart.AppendChild(nodeFieldCaption);
-            }
+                    XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
+                    nodeFieldCaption.InnerText = elementTablePart.Value.Caption;
+                    nodeElementTablePart.AppendChild(nodeFieldCaption);
+                }
         }
 
         private static void SaveAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
@@ -2604,7 +2623,7 @@ namespace AccountingSoftware
 
                 SaveSpendFunctions(ConfDocument.Value.SpendFunctions, xmlConfDocument, nodeDocument);
 
-                SaveForms(ConfDocument.Value.Forms, xmlConfDocument, nodeDocument);
+                SaveForms(ConfDocument.Value.Fields, ConfDocument.Value.TabularParts, ConfDocument.Value.Forms, xmlConfDocument, nodeDocument);
             }
         }
 
@@ -2655,7 +2674,7 @@ namespace AccountingSoftware
                     ConfRegisterInfo.Value.PropertyFields.Values);
                 SaveTabularList(AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
 
-                SaveForms(ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
+                SaveForms(AllFields, null, ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
@@ -2733,7 +2752,7 @@ namespace AccountingSoftware
                     ConfRegisterAccml.Value.PropertyFields.Values);
                 SaveTabularList(AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
 
-                SaveForms(ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
+                SaveForms(AllFields, null, ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
