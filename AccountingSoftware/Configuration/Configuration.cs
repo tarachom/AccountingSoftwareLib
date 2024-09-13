@@ -2172,6 +2172,12 @@ namespace AccountingSoftware
                             nodePointer.InnerText = fieldsItem.Pointer;
                             nodeTabularListField.AppendChild(nodePointer);
                         }
+                        else if (fieldsItem.Type == "string")
+                        {
+                            XmlElement nodeFieldMultiline = xmlConfDocument.CreateElement("Multiline");
+                            nodeFieldMultiline.InnerText = fieldsItem.Multiline ? "1" : "0";
+                            nodeTabularListField.AppendChild(nodeFieldMultiline);
+                        }
 
                         #endregion
                     }
@@ -2363,6 +2369,12 @@ namespace AccountingSoftware
                         XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
                         nodePointer.InnerText = fieldsItem.Pointer;
                         nodeElementField.AppendChild(nodePointer);
+                    }
+                    else if (fieldsItem.Type == "string")
+                    {
+                        XmlElement nodeFieldMultiline = xmlConfDocument.CreateElement("Multiline");
+                        nodeFieldMultiline.InnerText = fieldsItem.Multiline ? "1" : "0";
+                        nodeElementField.AppendChild(nodeFieldMultiline);
                     }
 
                     #endregion
