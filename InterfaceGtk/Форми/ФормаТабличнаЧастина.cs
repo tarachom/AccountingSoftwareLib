@@ -59,6 +59,7 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
+            TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
 
             ScrollTree.Add(TreeViewGrid);
             PackStart(ScrollTree, true, true, 0);
