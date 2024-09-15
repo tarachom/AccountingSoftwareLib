@@ -290,43 +290,82 @@ namespace AccountingSoftware
         /// </summary>
         public string ConstructHierarchical()
         {
-            //Родич
-            NameValue<string> parentField = new($"{Table}.{ParentField}", "parent");
-            FieldAndAlias.Add(parentField);
+            string queryFirst = "";
+            string queryRecursive = "";
 
-            //Перший рівень
-            NameValue<string> level = new("1", "level");
-            FieldAndAlias.Add(level);
+            ///////////////////
+            // Перша частина //
+            ///////////////////
+
+            //Додаткове поле Родич
+            {
+                FieldAndAlias.RemoveAll((x) => x.Value == "parent");
+                FieldAndAlias.Add(new(ParentField, "parent"));
+            }
+
+            //Додаткове поле Рівень
+            {
+                FieldAndAlias.RemoveAll((x) => x.Value == "level");
+                FieldAndAlias.Add(new("1", "level"));
+            }
 
             //Відбір по пустому родичу, тобто верхній рівень
-            Where whereParent = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
-            Where.Add(whereParent);
+            {
+                Where whereEmpty = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
+                Where.Add(whereEmpty);
 
-            string partFirst = Construct();
-            Where.Remove(whereParent);
+                Where whereIsNull = new(Comparison.OR, ParentField, Comparison.ISNULL, new(), true);
+                Where.Add(whereIsNull);
+
+                queryFirst = Construct();
+
+                Where.Remove(whereEmpty);
+                Where.Remove(whereIsNull);
+            }
+
+            ///////////////////
+            // Друга частина //
+            ///////////////////
+
+            //Додаткове поле Родич
+            {
+                FieldAndAlias.RemoveAll((x) => x.Value == "parent");
+                FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
+            }
 
             //Наступний рівень
-            level.Name = "r.level + 1";
+            {
+                FieldAndAlias.RemoveAll((x) => x.Value == "level");
+                FieldAndAlias.Add(new("r.level + 1", "level"));
+            }
 
             //Приєднання рекурсії
-            Join joinRecursive = new("r", ParentField, Table, "", JoinType.INNER);
-            Joins.Add(joinRecursive);
+            {
+                Join join = new("r", ParentField, Table, "", JoinType.INNER);
+                Joins.Add(join);
+                queryRecursive = Construct();
+                Joins.Remove(join);
+            }
 
-            string partRecursive = Construct();
-            Joins.Remove(joinRecursive);
+            //Очистка
+            FieldAndAlias.RemoveAll((x) => x.Value == "level");
+            FieldAndAlias.RemoveAll((x) => x.Value == "parent");
 
-            return @$"
+            string query = @$"
 WITH RECURSIVE r AS
 (
-    ({partFirst})
 
-    UNION ALL
+({queryFirst})
 
-    ({partRecursive})
+UNION ALL
+
+({queryRecursive})
+
 ) SELECT * FROM r ORDER BY level";
-
             // Вибірка і так посортована по level бо partFirst видасть level=1, а partRecursive level+1
             // але вихідна вибірка додатково сортується по level
+
+            return query;
         }
 
         /// <summary>
