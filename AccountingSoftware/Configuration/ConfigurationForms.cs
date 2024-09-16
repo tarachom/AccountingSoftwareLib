@@ -160,7 +160,12 @@ namespace AccountingSoftware
             /// <summary>
             /// Таблична частина
             /// </summary>
-            TablePart
+            TablePart = 7,
+
+            /// <summary>
+            /// Спільні функції
+            /// </summary>
+            Function = 8
         }
     }
 }

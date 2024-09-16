@@ -41,11 +41,6 @@ namespace InterfaceGtk
         public UnigueID? OpenFolder { get; set; }
 
         /// <summary>
-        /// ???
-        /// </summary>
-        //public Widget? ParentWidget { get; set; }
-
-        /// <summary>
         /// Функція вибору
         /// </summary>
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }

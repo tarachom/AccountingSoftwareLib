@@ -1239,9 +1239,10 @@ namespace AccountingSoftware
                     bool isPresentation = (parentName == "Directory" || parentName == "Document" || parentName == "RegisterInformation") && (fieldNodes.Current?.SelectSingleNode("IsPresentation")?.Value ?? "") == "1";
                     bool isIndex = (fieldNodes.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
                     bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
+                    bool isSearch = (fieldNodes.Current?.SelectSingleNode("IsSearch")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch);
+                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch, isSearch);
 
                     //
                     // Додаткові поля які залежать від типу
@@ -2019,6 +2020,10 @@ namespace AccountingSoftware
                 XmlElement nodeFieldIsFullTextSearch = xmlConfDocument.CreateElement("IsFullTextSearch");
                 nodeFieldIsFullTextSearch.InnerText = field.Value.IsFullTextSearch ? "1" : "0";
                 nodeField.AppendChild(nodeFieldIsFullTextSearch);
+
+                XmlElement nodeFieldIsSearch = xmlConfDocument.CreateElement("IsSearch");
+                nodeFieldIsSearch.InnerText = field.Value.IsSearch ? "1" : "0";
+                nodeField.AppendChild(nodeFieldIsSearch);
 
                 //
                 // Додаткові поля які залежать від типу
