@@ -45,9 +45,10 @@ namespace AccountingSoftware
         /// <param name="pointerFolders">Вказівник на ієрархію у іншому довіднику</param>
         public ConfigurationDirectories(string name, string fullname, string table,
             string desc = "", bool automaticNumeration = false,
-            TypeDirectories typeDirectory = TypeDirectories.Normal, 
+            TypeDirectories typeDirectory = TypeDirectories.Normal,
             string pointerFolders_HierarchyInAnotherDirectory = "",
-            string parentField_Hierarchical = "")
+            string parentField_Hierarchical = "", string iconTree_Hierarchical = "",
+            string directoryOwner_Subordination = "", string pointerFieldOwner_Subordination = "")
         {
             Name = name;
             FullName = fullname;
@@ -57,6 +58,9 @@ namespace AccountingSoftware
             TypeDirectory = typeDirectory;
             PointerFolders_HierarchyInAnotherDirectory = pointerFolders_HierarchyInAnotherDirectory;
             ParentField_Hierarchical = parentField_Hierarchical;
+            IconTree_Hierarchical = iconTree_Hierarchical;
+            DirectoryOwner_Subordination = directoryOwner_Subordination;
+            PointerFieldOwner_Subordination = pointerFieldOwner_Subordination;
         }
 
         /// <summary>
@@ -105,6 +109,25 @@ namespace AccountingSoftware
         /// Поле Родич для ієрархічного довідника
         /// </summary>
         public string ParentField_Hierarchical { get; set; } = "";
+
+        /// <summary>
+        /// Іконка для дерева (елемент чи папка)
+        /// </summary>
+        public string IconTree_Hierarchical { get; set; } = "";
+
+        #endregion
+
+        #region Subordination
+
+        /// <summary>
+        /// Довідник власник
+        /// </summary>
+        public string DirectoryOwner_Subordination { get; set; } = "";
+
+        /// <summary>
+        /// Поле вказівник на довідник власник
+        /// </summary>
+        public string PointerFieldOwner_Subordination { get; set; } = "";
 
         #endregion
 

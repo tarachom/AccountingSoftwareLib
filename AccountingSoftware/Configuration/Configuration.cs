@@ -1187,24 +1187,37 @@ namespace AccountingSoftware
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 string autoNum = directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
                 string type = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
-                string pointerFoldersForHierarchical = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
-                string parentFieldForHierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
+                string directoryOwner = directoryNodes.Current?.SelectSingleNode("DirectoryOwner")?.Value ?? "";
+                string pointerFieldOwner = directoryNodes.Current?.SelectSingleNode("PointerFieldOwner")?.Value ?? "";
 
                 if (name == null)
                     throw new Exception("Не задана назва довідника");
+
+                string pointerFoldersForHierarchical = "";
+                string parentFieldForHierarchical = "";
+                string iconTreeForHierarchical = "";
 
                 ConfigurationDirectories.TypeDirectories typeDirectory;
                 if (type == "Normal")
                     typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
                 else if (type == "Hierarchical")
+                {
                     typeDirectory = ConfigurationDirectories.TypeDirectories.Hierarchical;
+                    parentFieldForHierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
+                    iconTreeForHierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? "";
+                }
                 else if (type == "HierarchyInAnotherDirectory")
+                {
                     typeDirectory = ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory;
+                    pointerFoldersForHierarchical = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
+                }
                 else
                     typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
 
                 ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory,
-                    pointerFoldersForHierarchical, parentFieldForHierarchical);
+                    pointerFoldersForHierarchical, parentFieldForHierarchical, iconTreeForHierarchical,
+                    directoryOwner, pointerFieldOwner);
+
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 
                 LoadFields(ConfObjectDirectories.Fields, directoryNodes.Current, "Directory");
@@ -1842,9 +1855,12 @@ namespace AccountingSoftware
             nodeAuthor.InnerText = Conf.Author;
             rootNode.AppendChild(nodeAuthor);
 
-            XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
-            nodeDesc.InnerText = Conf.Desc;
-            rootNode.AppendChild(nodeDesc);
+            if (!string.IsNullOrEmpty(Conf.Desc))
+            {
+                XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
+                nodeDesc.InnerText = Conf.Desc;
+                rootNode.AppendChild(nodeDesc);
+            }
 
             XmlElement nodeDateTimeSave = xmlConfDocument.CreateElement("DateTimeSave");
             nodeDateTimeSave.InnerText = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
@@ -1869,9 +1885,12 @@ namespace AccountingSoftware
                 nodeName.InnerText = ConfConstantsBlock.Key;
                 rootConstantsBlock.AppendChild(nodeName);
 
-                XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
-                nodeDesc.InnerText = ConfConstantsBlock.Value.Desc;
-                rootConstantsBlock.AppendChild(nodeDesc);
+                if (!string.IsNullOrEmpty(ConfConstantsBlock.Value.Desc))
+                {
+                    XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeDesc.InnerText = ConfConstantsBlock.Value.Desc;
+                    rootConstantsBlock.AppendChild(nodeDesc);
+                }
 
                 SaveConstants(ConfConstantsBlock.Value.Constants, xmlConfDocument, rootConstantsBlock);
             }
@@ -1895,9 +1914,12 @@ namespace AccountingSoftware
                 nodeNameInTable.InnerText = ConfConstant.Value.NameInTable;
                 rootConstant.AppendChild(nodeNameInTable);
 
-                XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
-                nodeDesc.InnerText = ConfConstant.Value.Desc;
-                rootConstant.AppendChild(nodeDesc);
+                if (!string.IsNullOrEmpty(ConfConstant.Value.Desc))
+                {
+                    XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeDesc.InnerText = ConfConstant.Value.Desc;
+                    rootConstant.AppendChild(nodeDesc);
+                }
 
                 XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                 nodeType.InnerText = ConfConstant.Value.Type;
@@ -1936,9 +1958,12 @@ namespace AccountingSoftware
                 nodeDirectoryTable.InnerText = ConfDirectory.Value.Table;
                 nodeDirectory.AppendChild(nodeDirectoryTable);
 
-                XmlElement nodeDirectoryDesc = xmlConfDocument.CreateElement("Desc");
-                nodeDirectoryDesc.InnerText = ConfDirectory.Value.Desc;
-                nodeDirectory.AppendChild(nodeDirectoryDesc);
+                if (!string.IsNullOrEmpty(ConfDirectory.Value.Desc))
+                {
+                    XmlElement nodeDirectoryDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeDirectoryDesc.InnerText = ConfDirectory.Value.Desc.Trim();
+                    nodeDirectory.AppendChild(nodeDirectoryDesc);
+                }
 
                 XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
                 nodeDirectoryAutoNum.InnerText = ConfDirectory.Value.AutomaticNumeration ? "1" : "0";
@@ -1959,6 +1984,21 @@ namespace AccountingSoftware
                     XmlElement nodeDirectoryParentField = xmlConfDocument.CreateElement("ParentField");
                     nodeDirectoryParentField.InnerText = ConfDirectory.Value.ParentField_Hierarchical;
                     nodeDirectory.AppendChild(nodeDirectoryParentField);
+
+                    XmlElement nodeDirectoryIconTree = xmlConfDocument.CreateElement("IconTree");
+                    nodeDirectoryIconTree.InnerText = ConfDirectory.Value.IconTree_Hierarchical;
+                    nodeDirectory.AppendChild(nodeDirectoryIconTree);
+                }
+
+                if (!string.IsNullOrEmpty(ConfDirectory.Value.DirectoryOwner_Subordination))
+                {
+                    XmlElement nodeDirectoryOwner = xmlConfDocument.CreateElement("DirectoryOwner");
+                    nodeDirectoryOwner.InnerText = ConfDirectory.Value.DirectoryOwner_Subordination;
+                    nodeDirectory.AppendChild(nodeDirectoryOwner);
+
+                    XmlElement nodePointerFieldOwner = xmlConfDocument.CreateElement("PointerFieldOwner");
+                    nodePointerFieldOwner.InnerText = ConfDirectory.Value.PointerFieldOwner_Subordination;
+                    nodeDirectory.AppendChild(nodePointerFieldOwner);
                 }
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
@@ -2002,9 +2042,12 @@ namespace AccountingSoftware
                     nodeField.AppendChild(nodeFieldPointer);
                 }
 
-                XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
-                nodeFieldDesc.InnerText = field.Value.Desc.Trim();
-                nodeField.AppendChild(nodeFieldDesc);
+                if (!string.IsNullOrEmpty(field.Value.Desc))
+                {
+                    XmlElement nodeFieldDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeFieldDesc.InnerText = field.Value.Desc.Trim();
+                    nodeField.AppendChild(nodeFieldDesc);
+                }
 
                 if (parentName == "Directory" || parentName == "Document" || parentName == "RegisterInformation")
                 {
@@ -2092,9 +2135,12 @@ namespace AccountingSoftware
                 nodeTablePartTable.InnerText = tablePart.Value.Table;
                 nodeTablePart.AppendChild(nodeTablePartTable);
 
-                XmlElement nodeTablePartDesc = xmlConfDocument.CreateElement("Desc");
-                nodeTablePartDesc.InnerText = tablePart.Value.Desc;
-                nodeTablePart.AppendChild(nodeTablePartDesc);
+                if (!string.IsNullOrEmpty(tablePart.Value.Desc))
+                {
+                    XmlElement nodeTablePartDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeTablePartDesc.InnerText = tablePart.Value.Desc;
+                    nodeTablePart.AppendChild(nodeTablePartDesc);
+                }
 
                 SaveFields(tablePart.Value.Fields, xmlConfDocument, nodeTablePart, "TablePart");
 
@@ -2123,9 +2169,12 @@ namespace AccountingSoftware
                 nodeTabularListName.InnerText = tabularList.Key;
                 nodeTabularList.AppendChild(nodeTabularListName);
 
-                XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
-                nodeTabularListDesc.InnerText = tabularList.Value.Desc;
-                nodeTabularList.AppendChild(nodeTabularListDesc);
+                if (!string.IsNullOrEmpty(tabularList.Value.Desc))
+                {
+                    XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeTabularListDesc.InnerText = tabularList.Value.Desc;
+                    nodeTabularList.AppendChild(nodeTabularListDesc);
+                }
 
                 XmlElement nodeTabularListFields = xmlConfDocument.CreateElement("Fields");
                 nodeTabularList.AppendChild(nodeTabularListFields);
@@ -2239,9 +2288,12 @@ namespace AccountingSoftware
                     nodeTabularListName.InnerText = tabularList.Key;
                     nodeTabularList.AppendChild(nodeTabularListName);
 
-                    XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
-                    nodeTabularListDesc.InnerText = tabularList.Value.Desc;
-                    nodeTabularList.AppendChild(nodeTabularListDesc);
+                    if (!string.IsNullOrEmpty(tabularList.Value.Desc))
+                    {
+                        XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
+                        nodeTabularListDesc.InnerText = tabularList.Value.Desc;
+                        nodeTabularList.AppendChild(nodeTabularListDesc);
+                    }
 
                     XmlElement nodeTabularListTable = xmlConfDocument.CreateElement("Table");
                     nodeTabularListTable.InnerText = Doc.Table;
@@ -2310,9 +2362,12 @@ namespace AccountingSoftware
                 nodeName.InnerText = form.Key;
                 nodeForm.AppendChild(nodeName);
 
-                XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
-                nodeDesc.InnerText = form.Value.Desc;
-                nodeForm.AppendChild(nodeDesc);
+                if (!string.IsNullOrEmpty(form.Value.Desc))
+                {
+                    XmlElement nodeDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeDesc.InnerText = form.Value.Desc;
+                    nodeForm.AppendChild(nodeDesc);
+                }
 
                 XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                 nodeType.InnerText = form.Value.Type.ToString();
@@ -2491,9 +2546,12 @@ namespace AccountingSoftware
                 nodeEnumName.InnerText = enum_item.Key;
                 nodeEnum.AppendChild(nodeEnumName);
 
-                XmlElement nodeEnumDesc = xmlConfDocument.CreateElement("Desc");
-                nodeEnumDesc.InnerText = enum_item.Value.Desc;
-                nodeEnum.AppendChild(nodeEnumDesc);
+                if (!string.IsNullOrEmpty(enum_item.Value.Desc))
+                {
+                    XmlElement nodeEnumDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeEnumDesc.InnerText = enum_item.Value.Desc;
+                    nodeEnum.AppendChild(nodeEnumDesc);
+                }
 
                 XmlElement nodeEnumSerialNumber = xmlConfDocument.CreateElement("SerialNumber");
                 nodeEnumSerialNumber.InnerText = enum_item.Value.SerialNumber.ToString();
@@ -2536,9 +2594,12 @@ namespace AccountingSoftware
                 nodeJournalName.InnerText = journal.Key;
                 nodeJournal.AppendChild(nodeJournalName);
 
-                XmlElement nodeJournalDesc = xmlConfDocument.CreateElement("Desc");
-                nodeJournalDesc.InnerText = journal.Value.Desc;
-                nodeJournal.AppendChild(nodeJournalDesc);
+                if (!string.IsNullOrEmpty(journal.Value.Desc))
+                {
+                    XmlElement nodeJournalDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeJournalDesc.InnerText = journal.Value.Desc;
+                    nodeJournal.AppendChild(nodeJournalDesc);
+                }
 
                 XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
                 nodeJournal.AppendChild(nodeFields);
@@ -2620,9 +2681,12 @@ namespace AccountingSoftware
                 nodeDocumentTable.InnerText = ConfDocument.Value.Table;
                 nodeDocument.AppendChild(nodeDocumentTable);
 
-                XmlElement nodeDocumentDesc = xmlConfDocument.CreateElement("Desc");
-                nodeDocumentDesc.InnerText = ConfDocument.Value.Desc;
-                nodeDocument.AppendChild(nodeDocumentDesc);
+                if (!string.IsNullOrEmpty(ConfDocument.Value.Desc))
+                {
+                    XmlElement nodeDocumentDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeDocumentDesc.InnerText = ConfDocument.Value.Desc;
+                    nodeDocument.AppendChild(nodeDocumentDesc);
+                }
 
                 XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
                 nodeDirectoryAutoNum.InnerText = ConfDocument.Value.AutomaticNumeration ? "1" : "0";
@@ -2666,9 +2730,12 @@ namespace AccountingSoftware
                 nodeRegisterTable.InnerText = ConfRegisterInfo.Value.Table;
                 nodeRegister.AppendChild(nodeRegisterTable);
 
-                XmlElement nodeRegisterDesc = xmlConfDocument.CreateElement("Desc");
-                nodeRegisterDesc.InnerText = ConfRegisterInfo.Value.Desc;
-                nodeRegister.AppendChild(nodeRegisterDesc);
+                if (!string.IsNullOrEmpty(ConfRegisterInfo.Value.Desc))
+                {
+                    XmlElement nodeRegisterDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeRegisterDesc.InnerText = ConfRegisterInfo.Value.Desc;
+                    nodeRegister.AppendChild(nodeRegisterDesc);
+                }
 
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);
@@ -2734,9 +2801,12 @@ namespace AccountingSoftware
                 nodeRegisterType.InnerText = ConfRegisterAccml.Value.TypeRegistersAccumulation.ToString();
                 nodeRegister.AppendChild(nodeRegisterType);
 
-                XmlElement nodeRegisterDesc = xmlConfDocument.CreateElement("Desc");
-                nodeRegisterDesc.InnerText = ConfRegisterAccml.Value.Desc;
-                nodeRegister.AppendChild(nodeRegisterDesc);
+                if (!string.IsNullOrEmpty(ConfRegisterAccml.Value.Desc))
+                {
+                    XmlElement nodeRegisterDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeRegisterDesc.InnerText = ConfRegisterAccml.Value.Desc;
+                    nodeRegister.AppendChild(nodeRegisterDesc);
+                }
 
                 XmlElement nodeRegisterNoSummary = xmlConfDocument.CreateElement("NoSummary");
                 nodeRegisterNoSummary.InnerText = ConfRegisterAccml.Value.NoSummary ? "1" : "0";
