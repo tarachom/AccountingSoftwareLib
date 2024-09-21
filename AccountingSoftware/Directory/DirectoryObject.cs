@@ -84,9 +84,14 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Чи вже записаний документ
+        /// Чи вже записаний
         /// </summary>
         public bool IsSave { get; private set; }
+
+        /// <summary>
+        /// Чи прочитані тільки базові поля?
+        /// </summary>
+        public bool IsReadOnlyBaseFields { get; private set; }
 
         /// <summary>
         /// Очистка вн. масивів
@@ -101,14 +106,14 @@ namespace AccountingSoftware
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
-        protected async ValueTask<bool> BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UnigueID uid, bool readOnlyBaseFields = false)
         {
             if (uid == null || uid.IsEmpty())
                 return false;
 
             BaseClear();
 
-            var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue);
+            var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, readOnlyBaseFields ? [] : FieldArray, FieldValue);
 
             if (record.Result)
             {
@@ -116,6 +121,8 @@ namespace AccountingSoftware
                 DeletionLabel = record.DeletionLabel;
 
                 IsSave = true;
+                IsReadOnlyBaseFields = readOnlyBaseFields;
+
                 return true;
             }
             else
@@ -139,7 +146,7 @@ namespace AccountingSoftware
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
                     result = await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
                 else
-                    throw new Exception("Спроба записати неіснуючий елемент довідника");
+                    throw new Exception("Спроба оновити неіснуючий елемент довідника");
             }
 
             IsSave = result;

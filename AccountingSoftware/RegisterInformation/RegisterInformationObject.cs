@@ -79,13 +79,18 @@ namespace AccountingSoftware
         public bool IsNew { get; private set; }
 
         /// <summary>
-         /// Новий елемент
-         /// </summary>
+        /// Новий елемент
+        /// </summary>
         protected void BaseNew()
         {
             UnigueID = UnigueID.NewUnigueID();
             IsNew = true;
         }
+
+        /// <summary>
+        /// Чи прочитані тільки базові поля?
+        /// </summary>
+        public bool IsReadOnlyBaseFields { get; private set; }
 
         /// <summary>
         /// Очистка вн. масивів
@@ -101,7 +106,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         /// <returns></returns>
-        protected async ValueTask<bool> BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UnigueID uid, bool readOnlyBaseFields = false)
         {
             if (uid == null || uid.UGuid == Guid.Empty)
                 return false;
@@ -110,11 +115,14 @@ namespace AccountingSoftware
 
             UnigueID = uid;
 
-            if (await Kernel.DataBase.SelectRegisterInformationObject(this, Table, FieldArray, FieldValue))
+            if (await Kernel.DataBase.SelectRegisterInformationObject(this, Table, readOnlyBaseFields ? [] : FieldArray, FieldValue))
                 return true;
             else
             {
                 UnigueID = new UnigueID();
+
+                IsReadOnlyBaseFields = readOnlyBaseFields;
+
                 return false;
             }
         }
