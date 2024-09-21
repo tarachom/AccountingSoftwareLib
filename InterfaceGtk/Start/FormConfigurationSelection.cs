@@ -179,7 +179,7 @@ namespace InterfaceGtk
             foreach (ConfigurationParam itemConfigurationParam in ConfigurationParamCollection.ListConfigurationParam!)
             {
                 ListBoxRow row = new ListBoxRow() { Name = itemConfigurationParam.ConfigurationKey };
-                row.Add(new Label(itemConfigurationParam.ToString()) { Halign = Align.Start });
+                row.Add(new Label(itemConfigurationParam.ToString()) { Halign = Align.Start, UseUnderline = false });
 
                 listBox.Add(row);
 

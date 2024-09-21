@@ -59,7 +59,7 @@ namespace InterfaceGtk
         /// </summary>
         protected Notebook NotebookTablePart = NotebookFunction.CreateNotebook(false);
 
-        public ДокументЕлемент() 
+        public ДокументЕлемент()
         {
             Button bSaveAndSpend = new Button("Провести та закрити");
             bSaveAndSpend.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true, true); };
@@ -76,11 +76,7 @@ namespace InterfaceGtk
             //Проводки
             {
                 LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-                linkNew.Clicked += (object? sender, EventArgs args) =>
-                {
-                    if (UnigueID != null)
-                        ReportSpendTheDocument(UnigueID);
-                };
+                linkNew.Clicked += (object? sender, EventArgs args) => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); };
 
                 HBoxTop.PackStart(linkNew, false, false, 0);
             }

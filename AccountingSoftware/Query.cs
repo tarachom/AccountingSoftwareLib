@@ -60,7 +60,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поле Родич для ієрархічного довідника
         /// </summary>
-        public string ParentField { get; set; }
+        public string ParentField { get; set; } = "";
 
         /// <summary>
         /// Які поля вибирати
