@@ -300,7 +300,7 @@ namespace AccountingSoftware
             //Додаткове поле Родич
             {
                 FieldAndAlias.RemoveAll((x) => x.Value == "parent");
-                FieldAndAlias.Add(new(ParentField, "parent"));
+                FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
             }
 
             //Додаткове поле Рівень
