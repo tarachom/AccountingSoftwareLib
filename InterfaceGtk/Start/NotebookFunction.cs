@@ -247,7 +247,7 @@ namespace InterfaceGtk
         /// <returns></returns>
         public static string SubstringPageName(string pageName)
         {
-            return pageName.Length >= 33 ? pageName[..30] + "..." : pageName;
+            return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
         }
     }
 }

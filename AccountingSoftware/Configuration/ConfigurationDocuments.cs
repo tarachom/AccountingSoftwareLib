@@ -41,13 +41,14 @@ namespace AccountingSoftware
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
         /// <param name="automaticNumeration">Автоматична нумерація</param>
-        public ConfigurationDocuments(string name, string fullname, string table, string desc = "", bool automaticNumeration = false)
+        public ConfigurationDocuments(string name, string fullname, string table, string desc = "", bool automaticNumeration = false, bool exportXml = false)
         {
             Name = name;
             FullName = fullname;
             Table = table;
             Desc = desc;
             AutomaticNumeration = automaticNumeration;
+            ExportXml = exportXml;
         }
 
         /// <summary>
@@ -89,6 +90,11 @@ namespace AccountingSoftware
         /// Автоматична нумерація
         /// </summary>
         public bool AutomaticNumeration { get; set; }
+
+        /// <summary>
+        /// Експорт у форматі Xml
+        /// </summary>
+        public bool ExportXml { get; set; }
 
         /// <summary>
         /// Створити копію

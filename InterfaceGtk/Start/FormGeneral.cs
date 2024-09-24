@@ -22,22 +22,25 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk
 {
     public abstract class FormGeneral : Window
     {
         public ConfigurationParam? OpenConfigurationParam { get; set; }
+        private Kernel Kernel { get; set; }
 
         public Notebook Notebook = NotebookFunction.CreateNotebook();
         protected Statusbar StatusBar = new Statusbar();
 
         public Button ButtonMessage;
-        protected abstract void ButtonMessageClicked();
-        protected abstract void ButtonFindClicked(string text);
 
-        public FormGeneral() : base("")
+
+        public FormGeneral(Kernel kernel) : base("")
         {
+            Kernel = kernel;
+
             SetDefaultSize(1200, 900);
             SetPosition(WindowPosition.Center);
             Maximize();
@@ -47,24 +50,27 @@ namespace InterfaceGtk
             if (File.Exists(Іконки.ДляФорми.General))
                 SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
-            //Блок кнопок у шапці головного вікна
+            //HeaderBar
             {
                 HeaderBar headerBar = new HeaderBar()
                 {
-                    Title = "\"Зберігання та Торгівля\" для України",
-                    Subtitle = "Облік складу, торгівлі та фінансів",
+                    Title = Kernel.Conf.Name,
+                    Subtitle = Kernel.Conf.Subtitle,
                     ShowCloseButton = true
                 };
 
-                //Повідомлення
-                ButtonMessage = new Button() { Image = new Image(Stock.Index, IconSize.Button), TooltipText = "Повідомлення" };
-                ButtonMessage.Clicked += (object? sender, EventArgs args) => ButtonMessageClicked();
-                headerBar.PackEnd(ButtonMessage);
+                //Блок кнопок у шапці головного вікна
+                {
+                    //Повідомлення
+                    ButtonMessage = new Button() { Image = new Image(Stock.Index, IconSize.Button), TooltipText = "Повідомлення" };
+                    ButtonMessage.Clicked += (object? sender, EventArgs args) => ButtonMessageClicked();
+                    headerBar.PackEnd(ButtonMessage);
 
-                //Повнотекстовий пошук
-                Button buttonFind = new Button() { Image = new Image(Stock.Find, IconSize.Button), TooltipText = "Пошук" };
-                buttonFind.Clicked += OnButtonFindClicked;
-                headerBar.PackEnd(buttonFind);
+                    //Повнотекстовий пошук
+                    Button buttonFind = new Button() { Image = new Image(Stock.Find, IconSize.Button), TooltipText = "Пошук" };
+                    buttonFind.Clicked += OnButtonFindClicked;
+                    headerBar.PackEnd(buttonFind);
+                }
 
                 Titlebar = headerBar;
             }
@@ -112,6 +118,24 @@ namespace InterfaceGtk
 
         #endregion
 
+        #region Virtual & Abstract Function
+
+        protected abstract void ButtonMessageClicked();
+        protected abstract void ButtonFindClicked(string text);
+        protected abstract void ВідкритиДокументВідповідноДоВиду(string name);
+        protected abstract void ВідкритиДовідникВідповідноДоВиду(string name);
+        protected abstract void ВідкритиЖурналВідповідноДоВиду(string name);
+        protected abstract void ВідкритиРегістрВідомостейВідповідноДоВиду(string name);
+        protected abstract void ВідкритиРегістрНакопиченняВідповідноДоВиду(string name);
+
+        protected virtual void МенюДокументи(Box vBox) { }
+        protected virtual void МенюДовідники(Box vBox) { }
+        protected virtual void МенюЖурнали(Box vBox) { }
+        protected virtual void МенюЗвіти(Box vBox) { }
+        protected virtual void МенюРегістри(Box vBox) { }
+
+        #endregion
+
         #region LeftMenu
 
         void CreateLeftMenu(Box hbox)
@@ -125,7 +149,7 @@ namespace InterfaceGtk
             CreateItemLeftMenu(vbox, "Документи", Документи, "images/documents.png");
             CreateItemLeftMenu(vbox, "Журнали", Журнали, "images/journal.png");
             CreateItemLeftMenu(vbox, "Звіти", Звіти, "images/report.png");
-            CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");           
+            CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");
             CreateItemLeftMenu(vbox, "Регістри", Регістри, "images/register.png");
             CreateItemLeftMenu(vbox, "Сервіс", Сервіс, "images/service.png");
             CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
@@ -148,11 +172,246 @@ namespace InterfaceGtk
             vBox.PackStart(lb, false, false, 10);
         }
 
-        protected abstract void Документи(LinkButton lb);
-        protected abstract void Журнали(LinkButton lb);
-        protected abstract void Звіти(LinkButton lb);
-        protected abstract void Довідники(LinkButton lb);
-        protected abstract void Регістри(LinkButton lb);
+        void Документи(LinkButton lb)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Всі Документи
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                vBox.PackStart(hBox, false, false, 10);
+
+                Expander expander = new Expander("Всі документи");
+                hBox.PackStart(expander, false, false, 5);
+
+                Box vBoxList = new Box(Orientation.Vertical, 0);
+                expander.Add(vBoxList);
+
+                vBoxList.PackStart(new Label("Документи"), false, false, 2);
+
+                ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
+                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                {
+                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                        ВідкритиДокументВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                };
+
+                ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
+                scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scrollList.Add(listBox);
+
+                vBoxList.PackStart(scrollList, false, false, 2);
+
+                foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents)
+                {
+                    string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
+
+                    ListBoxRow row = new ListBoxRow() { Name = documents.Key };
+                    row.Add(new Label(title) { Halign = Align.Start });
+
+                    listBox.Add(row);
+                }
+            }
+
+            МенюДокументи(vBox);
+
+            Popover popover = new Popover(lb) { Position = PositionType.Right };
+            popover.Add(vBox);
+            popover.ShowAll();
+        }
+
+        void Довідники(LinkButton lb)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Всі Довідники
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                vBox.PackStart(hBox, false, false, 10);
+
+                Expander expander = new Expander("Всі довідники");
+                hBox.PackStart(expander, false, false, 5);
+
+                Box vBoxList = new Box(Orientation.Vertical, 0);
+                expander.Add(vBoxList);
+
+                vBoxList.PackStart(new Label("Довідники"), false, false, 2);
+
+                ListBox listBox = new ListBox();
+                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                {
+                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                        ВідкритиДовідникВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                };
+
+                ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
+                scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scrollList.Add(listBox);
+
+                vBoxList.PackStart(scrollList, false, false, 2);
+
+                foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories)
+                {
+                    string title = string.IsNullOrEmpty(directories.Value.FullName) ? directories.Value.Name : directories.Value.FullName;
+
+                    ListBoxRow row = new ListBoxRow() { Name = directories.Key };
+                    row.Add(new Label(title) { Halign = Align.Start });
+
+                    listBox.Add(row);
+                }
+            }
+
+            МенюДовідники(vBox);
+
+            Popover popover = new Popover(lb) { Position = PositionType.Right };
+            popover.Add(vBox);
+            popover.ShowAll();
+        }
+
+        void Журнали(LinkButton lb)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Всі Журнали
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                vBox.PackStart(hBox, false, false, 10);
+
+                Expander expanderAll = new Expander("Всі журнали");
+                hBox.PackStart(expanderAll, false, false, 5);
+
+                Box vBoxList = new Box(Orientation.Vertical, 0);
+                expanderAll.Add(vBoxList);
+
+                vBoxList.PackStart(new Label("Журнали"), false, false, 2);
+
+                ListBox listBox = new ListBox();
+                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                {
+                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                        ВідкритиЖурналВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                };
+
+                ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
+                scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scrollList.Add(listBox);
+
+                vBoxList.PackStart(scrollList, false, false, 2);
+
+                foreach (KeyValuePair<string, ConfigurationJournals> journal in Kernel.Conf.Journals)
+                {
+                    string title = journal.Value.Name;
+
+                    ListBoxRow row = new ListBoxRow() { Name = journal.Key };
+                    row.Add(new Label(title) { Halign = Align.Start });
+
+                    listBox.Add(row);
+                }
+            }
+
+            МенюЖурнали(vBox);
+
+            Popover popover = new Popover(lb) { Position = PositionType.Right };
+            popover.Add(vBox);
+            popover.ShowAll();
+        }
+
+        void Звіти(LinkButton lb)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            МенюЗвіти(vBox);
+
+            Popover popover = new Popover(lb) { Position = PositionType.Right };
+            popover.Add(vBox);
+            popover.ShowAll();
+        }
+
+        void Регістри(LinkButton lb)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Всі Регістри
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                vBox.PackStart(hBox, false, false, 10);
+
+                Expander expanderAll = new Expander("Всі регістри");
+                hBox.PackStart(expanderAll, false, false, 5);
+
+                Box hBoxList = new Box(Orientation.Horizontal, 0);
+                expanderAll.Add(hBoxList);
+
+                //Регістри відомостей
+                {
+                    Box vBoxBlock = new Box(Orientation.Vertical, 0);
+                    hBoxList.PackStart(vBoxBlock, false, false, 2);
+
+                    vBoxBlock.PackStart(new Label("Регістри відомостей"), false, false, 2);
+
+                    ListBox listBox = new ListBox();
+                    listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                    {
+                        if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                            ВідкритиРегістрВідомостейВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                    };
+
+                    ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
+                    scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                    scrollList.Add(listBox);
+
+                    vBoxBlock.PackStart(scrollList, false, false, 2);
+
+                    foreach (KeyValuePair<string, ConfigurationRegistersInformation> register in Kernel.Conf.RegistersInformation)
+                    {
+                        string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
+
+                        ListBoxRow row = new ListBoxRow() { Name = register.Key };
+                        row.Add(new Label(title) { Halign = Align.Start });
+
+                        listBox.Add(row);
+                    }
+                }
+
+                //Регістри накопичення
+                {
+                    Box vBoxBlock = new Box(Orientation.Vertical, 0);
+                    hBoxList.PackStart(vBoxBlock, false, false, 2);
+
+                    vBoxBlock.PackStart(new Label("Регістри накопичення"), false, false, 2);
+
+                    ListBox listBox = new ListBox();
+                    listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                    {
+                        if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
+                            ВідкритиРегістрНакопиченняВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                    };
+
+                    ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
+                    scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                    scrollList.Add(listBox);
+
+                    vBoxBlock.PackStart(scrollList, false, false, 2);
+
+                    foreach (KeyValuePair<string, ConfigurationRegistersAccumulation> register in Kernel.Conf.RegistersAccumulation)
+                    {
+                        string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
+
+                        ListBoxRow row = new ListBoxRow() { Name = register.Key };
+                        row.Add(new Label(title) { Halign = Align.Start });
+
+                        listBox.Add(row);
+                    }
+                }
+            }
+
+            МенюРегістри(vBox);
+
+            Popover popover = new Popover(lb) { Position = PositionType.Right };
+            popover.Add(vBox);
+            popover.ShowAll();
+        }
+
         protected abstract void Налаштування(LinkButton lb);
         protected abstract void Сервіс(LinkButton lb);
 

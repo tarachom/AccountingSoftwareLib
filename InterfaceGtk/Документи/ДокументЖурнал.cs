@@ -258,7 +258,7 @@ namespace InterfaceGtk
 
         protected abstract void ReportSpendTheDocument(UnigueID unigueID);
 
-        protected virtual async ValueTask ExportXML(UnigueID unigueID) { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ExportXML(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
 
         protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
@@ -464,13 +464,29 @@ namespace InterfaceGtk
         async void OnExportXMLClick(object? sender, EventArgs arg)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
-                {
-                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            {
+                string pathToFolder = "";
 
-                    await ExportXML(unigueID);
+                FileChooserDialog fc = new FileChooserDialog("Виберіть каталог", null,
+                     FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
+
+                if (fc.Run() == (int)ResponseType.Accept)
+                    pathToFolder = fc.CurrentFolder;
+
+                fc.Dispose();
+                fc.Destroy();
+
+                if (!string.IsNullOrEmpty(pathToFolder) && System.IO.Directory.Exists(pathToFolder))
+                {
+                    foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                    {
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+
+                        await ExportXML(unigueID, pathToFolder);
+                    }
                 }
+            }
         }
 
         async void OnPrintingInvoiceClick(object? sender, EventArgs arg)

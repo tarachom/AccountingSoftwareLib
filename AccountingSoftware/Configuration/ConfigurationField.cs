@@ -43,7 +43,8 @@ namespace AccountingSoftware
         /// <param name="isIndex">Індексування</param>
         /// <param name="isFullTextSearch">Повнотекстовий пошук по полю</param>
         public ConfigurationField(string name, string nameInTable, string type, string pointer,
-            string desc = "", bool isPresentation = false, bool isIndex = false, bool isFullTextSearch = false, bool isSearch = false)
+            string desc = "", bool isPresentation = false, bool isIndex = false, 
+            bool isFullTextSearch = false, bool isSearch = false, bool isExport = false)
         {
             Name = name;
             NameInTable = nameInTable;
@@ -54,6 +55,7 @@ namespace AccountingSoftware
             IsIndex = isIndex;
             IsFullTextSearch = isFullTextSearch;
             IsSearch = isSearch;
+            IsExport = isExport;
         }
 
         /// <summary>
@@ -100,6 +102,11 @@ namespace AccountingSoftware
         /// Використовувати поле для пошуку у списку
         /// </summary>
         public bool IsSearch { get; set; }
+
+        /// <summary>
+        /// Дозволити експорт поля при вигрузці наприклад в XML документ
+        /// </summary>
+        public bool IsExport { get; set; }
 
         #region Додаткові поля які залежать від типу (string)
 

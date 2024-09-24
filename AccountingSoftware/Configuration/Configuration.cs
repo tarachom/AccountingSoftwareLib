@@ -42,6 +42,11 @@ namespace AccountingSoftware
         public string Name { get; set; } = "";
 
         /// <summary>
+        /// Підзаголовок
+        /// </summary>
+        public string Subtitle { get; set; } = "";
+
+        /// <summary>
         /// Простір імен для конфігурації
         /// </summary>
         public string NameSpaceGenerationCode { get; set; } = "";
@@ -1129,6 +1134,7 @@ namespace AccountingSoftware
             if (rootNodeConfiguration != null)
             {
                 Conf.Name = rootNodeConfiguration.SelectSingleNode("Name")?.Value ?? "";
+                Conf.Subtitle = rootNodeConfiguration.SelectSingleNode("Subtitle")?.Value ?? "";
                 Conf.NameSpaceGenerationCode = rootNodeConfiguration.SelectSingleNode("NameSpaceGenerationCode")?.Value ?? "";
                 Conf.NameSpace = rootNodeConfiguration.SelectSingleNode("NameSpace")?.Value ?? "";
                 Conf.Author = rootNodeConfiguration.SelectSingleNode("Author")?.Value ?? "";
@@ -1253,9 +1259,11 @@ namespace AccountingSoftware
                     bool isIndex = (fieldNodes.Current?.SelectSingleNode("IsIndex")?.Value ?? "") == "1";
                     bool isFullTextSearch = (fieldNodes.Current?.SelectSingleNode("IsFullTextSearch")?.Value ?? "") == "1";
                     bool isSearch = (fieldNodes.Current?.SelectSingleNode("IsSearch")?.Value ?? "") == "1";
+                    bool isExport = (fieldNodes.Current?.SelectSingleNode("IsExport")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch, isSearch);
+                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex,
+                        isFullTextSearch, isSearch, isExport);
 
                     //
                     // Додаткові поля які залежать від типу
@@ -1640,11 +1648,14 @@ namespace AccountingSoftware
                     string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string autoNum = documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
+                    string exportXml = documentsNode.Current?.SelectSingleNode("ExportXml")?.Value ?? "";
 
                     if (name == null)
                         throw new Exception("Не задана назва документу");
 
-                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum == "1");
+                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc,
+                        autoNum == "1", exportXml == "1");
+
                     Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
                     LoadFields(configurationDocuments.Fields, documentsNode?.Current, "Document");
@@ -1842,6 +1853,10 @@ namespace AccountingSoftware
             XmlElement nodeName = xmlConfDocument.CreateElement("Name");
             nodeName.InnerText = Conf.Name;
             rootNode.AppendChild(nodeName);
+
+            XmlElement nodeSubtitle = xmlConfDocument.CreateElement("Subtitle");
+            nodeSubtitle.InnerText = Conf.Subtitle;
+            rootNode.AppendChild(nodeSubtitle);
 
             XmlElement nodeNameSpaceGenerationCode = xmlConfDocument.CreateElement("NameSpaceGenerationCode");
             nodeNameSpaceGenerationCode.InnerText = Conf.NameSpaceGenerationCode;
@@ -2067,6 +2082,10 @@ namespace AccountingSoftware
                 XmlElement nodeFieldIsSearch = xmlConfDocument.CreateElement("IsSearch");
                 nodeFieldIsSearch.InnerText = field.Value.IsSearch ? "1" : "0";
                 nodeField.AppendChild(nodeFieldIsSearch);
+
+                XmlElement nodeFieldIsExport = xmlConfDocument.CreateElement("IsExport");
+                nodeFieldIsExport.InnerText = field.Value.IsExport ? "1" : "0";
+                nodeField.AppendChild(nodeFieldIsExport);
 
                 //
                 // Додаткові поля які залежать від типу
@@ -2688,9 +2707,13 @@ namespace AccountingSoftware
                     nodeDocument.AppendChild(nodeDocumentDesc);
                 }
 
-                XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
-                nodeDirectoryAutoNum.InnerText = ConfDocument.Value.AutomaticNumeration ? "1" : "0";
-                nodeDocument.AppendChild(nodeDirectoryAutoNum);
+                XmlElement nodeDocumentAutoNum = xmlConfDocument.CreateElement("AutoNum");
+                nodeDocumentAutoNum.InnerText = ConfDocument.Value.AutomaticNumeration ? "1" : "0";
+                nodeDocument.AppendChild(nodeDocumentAutoNum);
+
+                XmlElement nodeDocumentExportXml = xmlConfDocument.CreateElement("ExportXml");
+                nodeDocumentExportXml.InnerText = ConfDocument.Value.ExportXml ? "1" : "0";
+                nodeDocument.AppendChild(nodeDocumentExportXml);
 
                 SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 

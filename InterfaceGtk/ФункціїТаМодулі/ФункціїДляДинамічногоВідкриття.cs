@@ -162,6 +162,72 @@ namespace InterfaceGtk
             }
         }
 
+        public void ВідкритиРегістрВідомостейВідповідноДоВиду(string typeReg, UnigueID? unigueID)
+        {
+            object? registerInstance;
+
+            try
+            {
+                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeReg}");
+            }
+            catch (Exception ex)
+            {
+                Message.Error(null, ex.Message);
+                return;
+            }
+
+            if (registerInstance != null)
+            {
+                dynamic register = registerInstance;
+
+                //Елемент який потрібно виділити в списку
+                register.SelectPointerItem = unigueID;
+
+                //Заголовок
+                string listName = "Список";
+
+                Type? documentConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.РегістриВідомостей.{typeReg}_Const");
+                if (documentConst != null)
+                    listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
+
+                CreateNotebookPage(listName, () => register);
+                register.SetValue();
+            }
+        }
+
+        public void ВідкритиРегістрНакопиченняВідповідноДоВиду(string typeReg, UnigueID? unigueID)
+        {
+            object? registerInstance;
+
+            try
+            {
+                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeReg}");
+            }
+            catch (Exception ex)
+            {
+                Message.Error(null, ex.Message);
+                return;
+            }
+
+            if (registerInstance != null)
+            {
+                dynamic register = registerInstance;
+
+                //Елемент який потрібно виділити в списку
+                register.SelectPointerItem = unigueID;
+
+                //Заголовок
+                string listName = "Список";
+
+                Type? documentConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.РегістриНакопичення.{typeReg}_Const");
+                if (documentConst != null)
+                    listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
+
+                CreateNotebookPage(listName, () => register);
+                register.SetValue();
+            }
+        }
+
         /// <summary>
         /// Список документів для журналу у спливаючому вікні
         /// </summary>

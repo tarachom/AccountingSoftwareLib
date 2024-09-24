@@ -43,6 +43,28 @@ namespace InterfaceGtk
             linkButton.Clicked += (object? sender, EventArgs args) => click?.Invoke();
         }
 
+        public static void CreateCaptionLink(Box parentBox, string uri, System.Action? click = null)
+        {
+            if (click != null)
+            {
+                LinkButton linkButton = new LinkButton(uri, " " + uri);
+                parentBox.PackStart(linkButton, false, false, 5);
+
+                linkButton.Clicked += (object? sender, EventArgs args) => click?.Invoke();
+            }
+            else
+            {
+                Label caption = new Label(uri);
+                parentBox.PackStart(caption, false, false, 5);
+            }
+        }
+
+        public static void CreateSeparator(Box parentBox, Orientation orientation = Orientation.Horizontal)
+        {
+            Separator separator = new Separator(orientation);
+            parentBox.PackStart(separator, false, false, 5);
+        }
+
         #endregion
 
         #region Field
