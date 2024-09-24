@@ -258,7 +258,9 @@ namespace InterfaceGtk
 
         protected abstract void ReportSpendTheDocument(UnigueID unigueID);
 
-        protected virtual void ExportXML(UnigueID unigueID) { }
+        protected virtual async ValueTask ExportXML(UnigueID unigueID) { await ValueTask.FromResult(true); }
+
+        protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
         #endregion
 
@@ -462,24 +464,25 @@ namespace InterfaceGtk
         async void OnExportXMLClick(object? sender, EventArgs arg)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-            {
-                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
-                foreach (TreePath itemPath in selectionRows)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                     UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                    ExportXML(unigueID);
+                    await ExportXML(unigueID);
                 }
-
-                await LoadRecords();
-            }
         }
 
-        void OnPrintingInvoiceClick(object? sender, EventArgs arg)
+        async void OnPrintingInvoiceClick(object? sender, EventArgs arg)
         {
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                {
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
+                    await PrintingDoc(unigueID);
+                }
         }
 
         #endregion
