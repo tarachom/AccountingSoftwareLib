@@ -179,7 +179,7 @@ namespace InterfaceGtk
             await LoadRecords();
         }
 
-        protected abstract void FilterRecords(Box hBox);
+        protected abstract Widget? FilterRecords(Box hBox);
 
         #endregion
 
@@ -371,7 +371,9 @@ namespace InterfaceGtk
             Box hBox = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBox, false, false, 5);
 
-            FilterRecords(hBox);
+            Widget? widget = FilterRecords(hBox);
+            if (widget != null)
+                hBox.PackStart(widget, false, false, 5);
 
             popover.Add(vBox);
             popover.ShowAll();

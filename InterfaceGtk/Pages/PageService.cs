@@ -34,7 +34,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class PageService : Box
+    public abstract class PageService : Форма
     {
         private Kernel Kernel { get; set; }
         private string NameSpageProgram { get; set; }
@@ -44,7 +44,7 @@ namespace InterfaceGtk
         protected PeriodControl Період = new PeriodControl();
         LogMessage Лог = new LogMessage();
 
-        public PageService(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration) : base(Orientation.Vertical, 0)
+        public PageService(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration) : base()
         {
             Kernel = kernel;
             NameSpageProgram = nameSpageProgram;
