@@ -259,7 +259,7 @@ namespace InterfaceGtk
                                     Лог.AppendMessage(hBox, "Помилка", LogMessage.TypeMessage.Error);
 
                                     //Додатково вивід помилок у це вікно
-                                    SelectRequest_Record record = await Kernel.DataBase.SpetialTableMessageErrorSelect(doc.UnigueID, 1);
+                                    SelectRequest_Record record = await Kernel.DataBase.SpetialTableMessageErrorSelect(Kernel.User, doc.UnigueID, 1);
 
                                     string msg = "";
                                     foreach (Dictionary<string, object> row in record.ListRow)

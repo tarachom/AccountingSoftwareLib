@@ -64,8 +64,13 @@ namespace AccountingSoftware
         public static readonly string FullTextSearch = "tab_special_full_text_search";
 
         /// <summary>
-        /// Помилки
+        /// Помилки устарівша (!!! Не використовувати)
         /// </summary>
-        public static readonly string MessageError = "tab_special_message_error";
+        public static readonly string MessageErrorOld = "tab_special_message_error";
+        
+        /// <summary>
+        /// Помилки та інформація
+        /// </summary>
+        public static readonly string MessageError = "tab_special_message_error_or_info";
     }
 }

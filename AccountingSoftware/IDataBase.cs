@@ -45,10 +45,10 @@ namespace AccountingSoftware
 
         #region SpetialTable MessageError
 
-        ValueTask SpetialTableMessageErrorAdd(string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, byte transactionID = 0);
-        ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(UnigueID? unigueIDObjectWhere = null, int? limit = null);
-        ValueTask SpetialTableMessageErrorClear();
-        ValueTask SpetialTableMessageErrorClearOld();
+        ValueTask SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0);
+        ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UnigueID? unigueIDObjectWhere = null, int? limit = null);
+        ValueTask SpetialTableMessageErrorClear(Guid user_uid);
+        ValueTask SpetialTableMessageErrorClearOld(Guid user_uid);
 
         #endregion
 

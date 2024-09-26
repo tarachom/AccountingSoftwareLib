@@ -33,15 +33,17 @@ namespace InterfaceGtk
 {
     public abstract class ФункціїДляПовідомлень(Kernel Kernel)
     {
-        public async ValueTask ДодатиПовідомленняПроПомилку(string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення)
+        public async ValueTask ДодатиПовідомленняПроПомилку(string НазваПроцесу, Guid? Обєкт, string ТипОбєкту, string НазваОбєкту, string Повідомлення, char ТипПовідомлення = 'E' /*E Error, I Info*/)
         {
             await Kernel.DataBase.SpetialTableMessageErrorAdd
             (
-                 НазваПроцесу,
-                 Обєкт != null ? (Guid)Обєкт : Guid.Empty,
-                 ТипОбєкту,
-                 НазваОбєкту,
-                 Повідомлення
+                Kernel.User,
+                НазваПроцесу,
+                Обєкт != null ? (Guid)Обєкт : Guid.Empty,
+                ТипОбєкту,
+                НазваОбєкту,
+                Повідомлення,
+                ТипПовідомлення
             );
 
             await ОчиститиУстарівшіПовідомлення();
@@ -49,17 +51,17 @@ namespace InterfaceGtk
 
         public async ValueTask ОчиститиВсіПовідомлення()
         {
-            await Kernel.DataBase.SpetialTableMessageErrorClear();
+            await Kernel.DataBase.SpetialTableMessageErrorClear(Kernel.User);
         }
 
         public async ValueTask ОчиститиУстарівшіПовідомлення()
         {
-            await Kernel.DataBase.SpetialTableMessageErrorClearOld();
+            await Kernel.DataBase.SpetialTableMessageErrorClearOld(Kernel.User);
         }
 
         public async ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки(UnigueID? ВідбірПоОбєкту = null, int? limit = null)
         {
-            return await Kernel.DataBase.SpetialTableMessageErrorSelect(ВідбірПоОбєкту, limit);
+            return await Kernel.DataBase.SpetialTableMessageErrorSelect(Kernel.User, ВідбірПоОбєкту, limit);
         }
     }
 }

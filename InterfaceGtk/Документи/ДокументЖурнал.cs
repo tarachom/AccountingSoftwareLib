@@ -258,6 +258,8 @@ namespace InterfaceGtk
 
         protected abstract void ReportSpendTheDocument(UnigueID unigueID);
 
+        protected virtual bool IsExportXML() { return false; } //Дозволити експорт
+
         protected virtual async ValueTask ExportXML(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
 
         protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
@@ -465,7 +467,7 @@ namespace InterfaceGtk
 
         async void OnExportXMLClick(object? sender, EventArgs arg)
         {
-            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+            if (IsExportXML() && TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
                 string pathToFolder = "";
 

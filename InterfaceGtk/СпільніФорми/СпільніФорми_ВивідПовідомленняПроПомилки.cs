@@ -80,8 +80,15 @@ namespace InterfaceGtk
 
             //Image
             {
+                var Іконка = row["message_type"] switch
+                {
+                    'E' => Іконки.ДляІнформуванняВеликі.Error,
+                    'I' => Іконки.ДляІнформуванняВеликі.Ok,
+                    _ => Іконки.ДляІнформуванняВеликі.Error
+                };
+
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Image(Іконки.ДляІнформуванняВеликі.Error), false, false, 25);
+                hBox.PackStart(new Image(Іконка), false, false, 25);
                 hBox.PackStart(vBoxInfo, false, false, 10);
                 vBoxMessage.PackStart(hBox, false, false, 10);
             }
@@ -177,8 +184,15 @@ namespace InterfaceGtk
 
             //Image
             {
+                var Іконка = row["message_type"] switch
+                {
+                    'E' => Іконки.ДляІнформуванняВеликі.Error,
+                    'I' => Іконки.ДляІнформуванняВеликі.Ok,
+                    _ => Іконки.ДляІнформуванняВеликі.Error
+                };
+
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Image(Іконки.ДляІнформуванняВеликі.Error), false, false, 25);
+                hBox.PackStart(new Image(Іконка), false, false, 25);
                 hBox.PackStart(vBoxInfo, false, false, 10);
                 vBoxMessage.PackStart(hBox, false, false, 10);
             }
