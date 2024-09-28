@@ -38,10 +38,13 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="caption">Заголовок</param>
-        public ConfigurationFormsElementTablePart(string name, string caption = "")
+        public ConfigurationFormsElementTablePart(string name, string caption = "", uint size = 0, uint height = 0, int sortNum = 100)
         {
             Name = name;
             Caption = caption;
+            Size = size;
+            SortNum = sortNum;
+            Height = height;
         }
 
         /// <summary>
@@ -54,5 +57,19 @@ namespace AccountingSoftware
         /// </summary>
         public string Caption { get; set; } = "";
 
+        /// <summary>
+        /// Ширина
+        /// </summary>
+        public uint Size { get; set; }
+
+        /// <summary>
+        /// Висота
+        /// </summary>
+        public uint Height { get; set; }
+
+        /// <summary>
+        /// Порядок поля в списку
+        /// </summary>
+        public int SortNum { get; set; } = 100;
     }
 }

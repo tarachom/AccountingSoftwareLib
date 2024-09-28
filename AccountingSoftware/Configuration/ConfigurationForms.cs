@@ -97,6 +97,12 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region Для форми списку (Type == TypeForms.TablePart)
+
+        public bool IncludeIconColumn { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Створення копії
         /// </summary>

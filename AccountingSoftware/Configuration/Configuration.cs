@@ -1449,7 +1449,9 @@ namespace AccountingSoftware
                     {
                         LoadFormElementField(form.ElementFields, tableForm.Current);
 
-                        if (typeForms != ConfigurationForms.TypeForms.TablePart)
+                        if (typeForms == ConfigurationForms.TypeForms.TablePart)
+                            form.IncludeIconColumn = (tableForm.Current?.SelectSingleNode("IncludeIconColumn")?.Value ?? "") == "1";
+                        else
                             LoadFormElementTablePart(form.ElementTableParts, tableForm.Current);
                     }
 
@@ -1466,12 +1468,13 @@ namespace AccountingSoftware
                     string? name = elementFieldNodes.Current?.SelectSingleNode("Name")?.Value;
                     string caption = elementFieldNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
                     uint sizeField = uint.Parse(elementFieldNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                    uint heightField = uint.Parse(elementFieldNodes.Current?.SelectSingleNode("Height")?.Value ?? "0");
                     int sortNumField = int.Parse(elementFieldNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
 
                     if (name == null)
                         throw new Exception("Не задана назва поля");
 
-                    elementFields.Add(name, new ConfigurationFormsElementField(name, caption, sizeField, sortNumField));
+                    elementFields.Add(name, new ConfigurationFormsElementField(name, caption, sizeField, heightField, sortNumField));
                 }
         }
 
@@ -1483,11 +1486,14 @@ namespace AccountingSoftware
                 {
                     string? name = elementTablePartNodes.Current?.SelectSingleNode("Name")?.Value;
                     string caption = elementTablePartNodes.Current?.SelectSingleNode("Caption")?.Value ?? "";
+                    uint sizeField = uint.Parse(elementTablePartNodes.Current?.SelectSingleNode("Size")?.Value ?? "0");
+                    uint heightField = uint.Parse(elementTablePartNodes.Current?.SelectSingleNode("Height")?.Value ?? "0");
+                    int sortNumField = int.Parse(elementTablePartNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
 
                     if (name == null)
                         throw new Exception("Не задана назва поля");
 
-                    elementTableParts.Add(name, new ConfigurationFormsElementTablePart(name, caption));
+                    elementTableParts.Add(name, new ConfigurationFormsElementTablePart(name, caption, sizeField, heightField, sortNumField));
                 }
         }
 
@@ -2406,6 +2412,13 @@ namespace AccountingSoftware
 
                     if (tabularParts != null)
                         SaveFormElementTablePart(tabularParts, form.Value.ElementTableParts, xmlConfDocument, nodeForm);
+
+                    if (form.Value.Type == ConfigurationForms.TypeForms.TablePart)
+                    {
+                        XmlElement nodeIncludeIconColumn = xmlConfDocument.CreateElement("IncludeIconColumn");
+                        nodeIncludeIconColumn.InnerText = form.Value.IncludeIconColumn ? "1" : "0";
+                        nodeForm.AppendChild(nodeIncludeIconColumn);
+                    }
                 }
             }
         }
@@ -2432,6 +2445,10 @@ namespace AccountingSoftware
                     XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
                     nodeSize.InnerText = elementField.Value.Size.ToString();
                     nodeElementField.AppendChild(nodeSize);
+
+                    XmlElement nodeHeight = xmlConfDocument.CreateElement("Height");
+                    nodeHeight.InnerText = elementField.Value.Height.ToString();
+                    nodeElementField.AppendChild(nodeHeight);
 
                     XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
                     nodeSortNum.InnerText = elementField.Value.SortNum.ToString();
@@ -2478,6 +2495,18 @@ namespace AccountingSoftware
                     XmlElement nodeFieldCaption = xmlConfDocument.CreateElement("Caption");
                     nodeFieldCaption.InnerText = elementTablePart.Value.Caption;
                     nodeElementTablePart.AppendChild(nodeFieldCaption);
+
+                    XmlElement nodeSize = xmlConfDocument.CreateElement("Size");
+                    nodeSize.InnerText = elementTablePart.Value.Size.ToString();
+                    nodeElementTablePart.AppendChild(nodeSize);
+
+                    XmlElement nodeHeight = xmlConfDocument.CreateElement("Height");
+                    nodeHeight.InnerText = elementTablePart.Value.Height.ToString();
+                    nodeElementTablePart.AppendChild(nodeHeight);
+
+                    XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
+                    nodeSortNum.InnerText = elementTablePart.Value.SortNum.ToString();
+                    nodeElementTablePart.AppendChild(nodeSortNum);
                 }
         }
 
