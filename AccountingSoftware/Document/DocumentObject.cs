@@ -105,11 +105,6 @@ namespace AccountingSoftware
         public bool IsSave { get; private set; }
 
         /// <summary>
-        /// Чи прочитані тільки базові поля?
-        /// </summary>
-        public bool IsReadOnlyBaseFields { get; private set; }
-
-        /// <summary>
         /// Очистка вн. списку
         /// </summary>
         protected void BaseClear()
@@ -122,14 +117,14 @@ namespace AccountingSoftware
         /// Зчитати дані
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
-        protected async ValueTask<bool> BaseRead(UnigueID uid, bool readOnlyBaseFields = false)
+        protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
             BaseClear();
 
             if (uid.IsEmpty() || IsNew == true)
                 return false;
 
-            var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, readOnlyBaseFields ? [] : FieldArray, FieldValue);
+            var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, FieldArray, FieldValue);
 
             if (record.Result)
             {
@@ -137,9 +132,7 @@ namespace AccountingSoftware
                 DeletionLabel = record.DeletionLabel;
                 Spend = record.Spend;
                 SpendDate = record.SpendDate;
-
                 IsSave = true;
-                IsReadOnlyBaseFields = readOnlyBaseFields;
 
                 return true;
             }
