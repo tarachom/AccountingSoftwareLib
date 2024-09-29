@@ -54,5 +54,25 @@ namespace InterfaceGtk
 
             return (decimal.TryParse(text, out decimal value), value);
         }
+
+        /// <summary>
+        /// Чи це дата
+        /// </summary>
+        /// <param name="text">Значення</param>
+        /// <returns></returns>
+        public static (bool, DateTime) IsDateTime(string text)
+        {
+            return (DateTime.TryParse(text, out DateTime value), value);
+        }
+
+        /// <summary>
+        /// Чи це час
+        /// </summary>
+        /// <param name="text">Значення</param>
+        /// <returns></returns>
+        public static (bool, TimeSpan) IsTime(string text)
+        {
+            return (TimeSpan.TryParse(text, out TimeSpan value), value);
+        }
     }
 }
