@@ -25,7 +25,7 @@ namespace InterfaceGtk
 {
     /// <summary>
     /// Основа для класів:
-    ///         Звіт
+    ///         Обробка
     /// </summary>
     public abstract class ФормаЗвіт : Форма
     {
