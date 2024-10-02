@@ -141,12 +141,16 @@ namespace InterfaceGtk
                     View(notebook);
                     NotebookFunction.CloseNotebookPageToCode(notebook, vBox.Name);
                 };
+                
+                /*
+                Заготовка на майбутнє
 
                 ToolButton print = new ToolButton(new Image(Stock.Print, IconSize.Menu), "Друк") { TooltipText = "Друк" };
                 toolbar.Add(print);
 
                 ToolButton convert = new ToolButton(new Image(Stock.Convert, IconSize.Menu), "Вигрузити у файл") { TooltipText = "Вигрузити у файл" };
                 toolbar.Add(convert);
+                */
 
                 vBox.PackStart(toolbar, false, false, 0);
             }
