@@ -36,14 +36,40 @@ namespace InterfaceGtk
     {
         Kernel Kernel { get; set; }
         TreeView? TreeViewGrid = null;
+
+        /// <summary>
+        /// Назва звіту
+        /// </summary>
         public string ReportName { get; set; } = "";
+
+        /// <summary>
+        /// Заголовок
+        /// </summary>
         public string Caption { get; set; } = "";
 
-        public object? ParamReport { get; set; } = null;
+        /// <summary>
+        /// Запит
+        /// </summary>
         public string Query { get; set; } = "";
+
+        /// <summary>
+        /// Параметри запиту
+        /// </summary>
         public Dictionary<string, object>? ParamQuery { get; set; } = null;
+
+        /// <summary>
+        /// Результат виконання запиту
+        /// </summary>
         public SelectRequest_Record RecordResult { get; set; } = new SelectRequest_Record();
-        public Dictionary<string, ColumnsSettings> ColumnSettings { get; init; } = [];
+
+        /// <summary>
+        /// Налаштування для колонок
+        /// </summary>
+        public Dictionary<string, ColumnsSettings> ColumnSettings { get; set; } = [];
+
+        /// <summary>
+        /// Додаткова інформація для звіту
+        /// </summary>
         public Func<ValueTask<string>>? GetInfo { get; set; } = null;
 
         public ЗвітСторінка(Kernel kernel)
@@ -60,11 +86,18 @@ namespace InterfaceGtk
             public TreeCellDataFunc? Func { get; set; } = Func;
         }
 
+        /// <summary>
+        /// Вибірка даних
+        /// </summary>
         public async ValueTask Select()
         {
             RecordResult = await Kernel.DataBase.SelectRequest(Query, ParamQuery);
         }
 
+        /// <summary>
+        /// Вигрузка даних у список
+        /// </summary>
+        /// <returns></returns>
         public List<string[]> FillList()
         {
             List<string> columnsList = RecordResult.ColumnsName.ToList();
@@ -103,6 +136,9 @@ namespace InterfaceGtk
             return rows;
         }
 
+        /// <summary>
+        /// Вигрузка даних у таблицю
+        /// </summary>
         public void FillTreeView()
         {
             List<string> columnsList = RecordResult.ColumnsName.ToList();
@@ -161,6 +197,11 @@ namespace InterfaceGtk
             }
         }
 
+        /// <summary>
+        /// Відобразити звіт як сторінку блокноту
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="insertPage"></param>
         public async void View(Notebook? notebook, bool insertPage = false)
         {
             Box vBox = new Box(Orientation.Vertical, 0);
@@ -204,15 +245,17 @@ namespace InterfaceGtk
                     button.Clicked += async (object? sender, EventArgs args) => await ВідкритиЗбереженіЗвіти();
                 }
 
-                /*
-                Заготовка на майбутнє
+                {
+                    ToolButton button = new ToolButton(new Image(Stock.Print, IconSize.Menu), "Вигрузити в PDF файл") { TooltipText = "Вигрузити в PDF файл" };
+                    toolbar.Add(button);
+                    button.Clicked += async (object? sender, EventArgs args) =>
+                    {
+                        button.Sensitive = false;
 
-                ToolButton print = new ToolButton(new Image(Stock.Print, IconSize.Menu), "Друк") { TooltipText = "Друк" };
-                toolbar.Add(print);
-
-                ToolButton convert = new ToolButton(new Image(Stock.Convert, IconSize.Menu), "Вигрузити у файл") { TooltipText = "Вигрузити у файл" };
-                toolbar.Add(convert);
-                */
+                        await Select();
+                        await ВигрузитиВФайл_PDF(this, FillList());
+                    };
+                }
 
                 vBox.PackStart(toolbar, false, false, 0);
             }
@@ -313,6 +356,7 @@ namespace InterfaceGtk
         protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID);
         protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
 
         #endregion
     }
