@@ -171,7 +171,12 @@ namespace AccountingSoftware
             /// <summary>
             /// Спільні функції
             /// </summary>
-            Function = 8
+            Function = 8,
+
+            /// <summary>
+            /// Звіт
+            /// </summary>
+            Report = 9
         }
     }
 }
