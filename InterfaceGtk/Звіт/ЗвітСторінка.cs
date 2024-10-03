@@ -36,6 +36,7 @@ namespace InterfaceGtk
     {
         Kernel Kernel { get; set; }
         TreeView? TreeViewGrid = null;
+        public string ReportName { get; set; } = "";
         public string Caption { get; set; } = "";
 
         public object? ParamReport { get; set; } = null;
@@ -43,7 +44,7 @@ namespace InterfaceGtk
         public Dictionary<string, object>? ParamQuery { get; set; } = null;
         public SelectRequest_Record RecordResult { get; set; } = new SelectRequest_Record();
         public Dictionary<string, ColumnsSettings> ColumnSettings { get; init; } = [];
-        public Func<ValueTask<Box>>? GetBoxInfo { get; set; } = null;
+        public Func<ValueTask<string>>? GetInfo { get; set; } = null;
 
         public ЗвітСторінка(Kernel kernel)
         {
@@ -62,6 +63,44 @@ namespace InterfaceGtk
         public async ValueTask Select()
         {
             RecordResult = await Kernel.DataBase.SelectRequest(Query, ParamQuery);
+        }
+
+        public List<string[]> FillList()
+        {
+            List<string> columnsList = RecordResult.ColumnsName.ToList();
+            List<string[]> rows = [];
+
+            Dictionary<string, ColumnsSettings> newColumnSettings = [];
+
+            //Перевірка наявності колонки
+            foreach (var columnSettings in ColumnSettings)
+                if (columnsList.Exists((x) => x == columnSettings.Key))
+                    newColumnSettings.Add(columnSettings.Key, columnSettings.Value);
+
+            int colsLen = newColumnSettings.Count;
+
+            //Заголовки колонок
+            {
+                string[] cols = new string[colsLen];
+                rows.Add(cols);
+
+                int counter = 0;
+                foreach (var columnSettings in newColumnSettings)
+                    cols[counter++] = columnSettings.Value.Caption;
+            }
+
+            //Дані
+            foreach (Dictionary<string, object> row in RecordResult.ListRow)
+            {
+                string[] cols = new string[colsLen];
+                rows.Add(cols);
+
+                int counter = 0;
+                foreach (var columnSettings in newColumnSettings)
+                    cols[counter++] = row[columnSettings.Key]?.ToString() ?? "";
+            }
+
+            return rows;
         }
 
         public void FillTreeView()
@@ -122,7 +161,7 @@ namespace InterfaceGtk
             }
         }
 
-        public async void View(Notebook? notebook)
+        public async void View(Notebook? notebook, bool insertPage = false)
         {
             Box vBox = new Box(Orientation.Vertical, 0);
 
@@ -130,18 +169,41 @@ namespace InterfaceGtk
             {
                 Toolbar toolbar = new Toolbar();
 
-                ToolButton refresh = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
-                toolbar.Add(refresh);
-                refresh.Clicked += async (object? sender, EventArgs args) =>
                 {
-                    await Select();
-                    FillTreeView();
+                    ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+                    toolbar.Add(button);
+                    button.Clicked += async (object? sender, EventArgs args) =>
+                    {
+                        await Select();
+                        FillTreeView();
 
-                    Notebook? notebook = NotebookFunction.GetNotebookFromWidget(vBox);
-                    View(notebook);
-                    NotebookFunction.CloseNotebookPageToCode(notebook, vBox.Name);
-                };
-                
+                        Notebook? notebook = NotebookFunction.GetNotebookFromWidget(vBox);
+                        View(notebook, true);
+                        NotebookFunction.CloseNotebookPageToCode(notebook, vBox.Name);
+                    };
+                }
+
+                ToolItem separator = [new Separator(Orientation.Horizontal)];
+                toolbar.Add(separator);
+
+                {
+                    ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), "Зберегти в довіднику \"Збережені звіти\"") { TooltipText = "Зберегти в довіднику \"Збережені звіти\"" };
+                    toolbar.Add(button);
+                    button.Clicked += async (object? sender, EventArgs args) =>
+                    {
+                        button.Sensitive = false;
+
+                        await Select();
+                        await ЗберегтиЗвіт(this, FillList());
+                    };
+                }
+
+                {
+                    ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), "Відкрити довідник \"Збережені звіти\"") { TooltipText = "Відкрити довідник \"Збережені звіти\"" };
+                    toolbar.Add(button);
+                    button.Clicked += async (object? sender, EventArgs args) => await ВідкритиЗбереженіЗвіти();
+                }
+
                 /*
                 Заготовка на майбутнє
 
@@ -156,8 +218,12 @@ namespace InterfaceGtk
             }
 
             //Інформаційний бокс
-            if (GetBoxInfo != null)
-                CreateField(vBox, null, await GetBoxInfo.Invoke(), Align.Start);
+            if (GetInfo != null)
+            {
+                Box hBoxCaption = new Box(Orientation.Horizontal, 0);
+                hBoxCaption.PackStart(new Label(await GetInfo.Invoke()) { Wrap = true, UseMarkup = true }, false, false, 2);
+                CreateField(vBox, null, hBoxCaption, Align.Start);
+            }
 
             //TreeView
             ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In };
@@ -166,7 +232,7 @@ namespace InterfaceGtk
 
             vBox.PackStart(scroll, true, true, 5);
 
-            NotebookFunction.CreateNotebookPage(notebook, Caption, () => vBox);
+            NotebookFunction.CreateNotebookPage(notebook, Caption, () => vBox, insertPage);
         }
 
         void ВідкритиДовідникАбоДокумент(object sender, ButtonPressEventArgs args)
@@ -245,6 +311,8 @@ namespace InterfaceGtk
 
         protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "");
         protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID);
+        protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
 
         #endregion
     }
