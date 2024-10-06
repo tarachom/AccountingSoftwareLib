@@ -171,11 +171,11 @@ namespace InterfaceGtk
             Menu Menu = new Menu();
 
             MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => { SpendTheDocumentOrClear(true); };
+            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(true);
             Menu.Append(spendTheDocumentButton);
 
             MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += (object? sender, EventArgs args) => { SpendTheDocumentOrClear(false); };
+            clearSpendButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(false);
             Menu.Append(clearSpendButton);
 
             Menu.ShowAll();
@@ -188,11 +188,11 @@ namespace InterfaceGtk
             Menu Menu = new Menu();
 
             MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => { SpendTheDocumentOrClear(true); };
+            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(true);
             Menu.Append(spendTheDocumentButton);
 
             MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += (object? sender, EventArgs args) => { SpendTheDocumentOrClear(false); };
+            clearSpendButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(false);
             Menu.Append(clearSpendButton);
 
             MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");

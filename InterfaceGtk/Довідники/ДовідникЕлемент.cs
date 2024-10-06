@@ -47,11 +47,11 @@ namespace InterfaceGtk
         public ДовідникЕлемент()
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
-            bSaveAndClose.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true); };
+            bSaveAndClose.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSaveAndClose, false, false, 10);
 
             Button bSave = new Button("Зберегти");
-            bSave.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(); };
+            bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
             PackStart(HBoxTop, false, false, 10);
@@ -108,6 +108,6 @@ namespace InterfaceGtk
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
             else
                 NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
-        }        
+        }
     }
 }

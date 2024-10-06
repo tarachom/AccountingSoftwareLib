@@ -62,15 +62,15 @@ namespace InterfaceGtk
         public ДокументЕлемент()
         {
             Button bSaveAndSpend = new Button("Провести та закрити");
-            bSaveAndSpend.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true, true); };
+            bSaveAndSpend.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true, true);
             HBoxTop.PackStart(bSaveAndSpend, false, false, 10);
 
             Button bSpend = new Button("Провести");
-            bSpend.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(true); };
+            bSpend.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSpend, false, false, 10);
 
             Button bSave = new Button("Зберегти");
-            bSave.Clicked += (object? sender, EventArgs args) => { BeforeAndAfterSave(false); };
+            bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(false);
             HBoxTop.PackStart(bSave, false, false, 10);
 
             //Проводки
