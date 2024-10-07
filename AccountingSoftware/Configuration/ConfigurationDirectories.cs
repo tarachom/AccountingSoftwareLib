@@ -159,6 +159,20 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Повертає список презентаційних полів
+        /// </summary>
+        public List<ConfigurationField> GetPresentationFields()
+        {
+            List<ConfigurationField> presentationFields = [];
+            
+            foreach (ConfigurationField field in Fields.Values)
+                if (field.IsPresentation)
+                    presentationFields.Add(field);
+
+            return presentationFields;
+        }
+
+        /// <summary>
         /// Додати нове поле
         /// </summary>
         /// <param name="field">Нове поле</param>

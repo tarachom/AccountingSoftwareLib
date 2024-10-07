@@ -1368,55 +1368,6 @@ WHERE
 
         #region Constants
 
-        //[Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        /*public async ValueTask<bool> SelectAllConstants(string table, string[] fieldArray, Dictionary<string, object> fieldValue)
-        {
-            if (DataSource != null)
-            {
-                string query = $"SELECT {string.Join(", ", fieldArray)} FROM {table} WHERE uid = @uid";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("uid", Guid.Empty);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                bool hasRows = reader.HasRows;
-
-                if (await reader.ReadAsync())
-                    foreach (string field in fieldArray)
-                        fieldValue.Add(field, reader[field]);
-
-                await reader.CloseAsync();
-
-                return hasRows;
-            }
-            else
-                return false;
-        }*/
-
-        //[Obsolete("Функція непотрібна і буде видалена. Потрібно використовувати SelectConstants(string table, string field) яка повератає SelectConstants_Record")]
-        /*public async ValueTask<bool> SelectConstants(string table, string field, Dictionary<string, object> fieldValue)
-        {
-            if (DataSource != null)
-            {
-                string query = $"SELECT {field} FROM {table} WHERE uid = @uid";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("uid", Guid.Empty);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                bool hasRows = reader.HasRows;
-
-                if (await reader.ReadAsync())
-                    fieldValue.Add(field, reader[field]);
-
-                await reader.CloseAsync();
-
-                return hasRows;
-            }
-            else
-                return false;
-        }*/
-
         public async ValueTask<SelectConstants_Record> SelectConstants(string table, string field)
         {
             SelectConstants_Record recordResult = new();
@@ -2725,7 +2676,7 @@ WHERE
                 string query = "SELECT table_name, column_name, data_type, udt_name " +
                                "FROM information_schema.columns " +
                                "WHERE table_schema = 'public' " +
-                               "ORDER BY table_name ASC, column_name ASC";
+                               "ORDER BY table_name, column_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
@@ -2758,6 +2709,29 @@ WHERE
             }
 
             return informationSchema;
+        }
+
+        public async ValueTask<List<string>> GetTableList()
+        {
+            List<string> tables = [];
+
+            if (DataSource != null)
+            {
+                string query = "SELECT table_name " +
+                               "FROM information_schema.tables " +
+                               "WHERE table_schema = 'public' AND table_type = 'BASE TABLE'" +
+                               "ORDER BY table_name";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                    tables.Add(reader["table_name"].ToString()?.ToLower() ?? "");
+
+                await reader.CloseAsync();
+            }
+
+            return tables;
         }
 
         #endregion

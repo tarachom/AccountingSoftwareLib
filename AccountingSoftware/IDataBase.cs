@@ -197,6 +197,7 @@ namespace AccountingSoftware
         ValueTask<ConfigurationInformationSchema> SelectInformationSchema();
         ValueTask<bool> IfExistsTable(string tableName);
         ValueTask<bool> IfExistsColumn(string tableName, string columnName);
+        ValueTask<List<string>> GetTableList();
 
         #endregion
 

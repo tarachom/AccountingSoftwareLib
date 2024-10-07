@@ -156,10 +156,10 @@ namespace AccountingSoftware
         {
             return
             [
-                "a", "b", "c", "d", "e", "f", 
-                "g", "h", "i", "j", "k", "l", 
-                "n", "m", "o", "p", "q", "r", 
-                "s", "t", "u", "v", "w", "x", 
+                "a", "b", "c", "d", "e", "f",
+                "g", "h", "i", "j", "k", "l",
+                "n", "m", "o", "p", "q", "r",
+                "s", "t", "u", "v", "w", "x",
                 "y", "z"
             ];
         }
@@ -459,7 +459,7 @@ namespace AccountingSoftware
         /// <exception cref="Exception"></exception>
         public List<ConfigurationDependencies> SearchDependencies(string searchName)
         {
-            if (searchName.IndexOf(".") > 0)
+            if (searchName.IndexOf('.') > 0)
             {
                 string[] searchNameSplit = searchName.Split(".");
 
@@ -810,13 +810,11 @@ namespace AccountingSoftware
             bool noExistInConf = false;
             string columnNewName = "";
 
-            if (string.IsNullOrWhiteSpace(table))
-            {
+            if (string.IsNullOrEmpty(table))
                 table = "0";
-            }
 
             if (!Kernel.Conf.ReservedUnigueColumnName.ContainsKey(table))
-                Kernel.Conf.ReservedUnigueColumnName.Add(table, new List<string>());
+                Kernel.Conf.ReservedUnigueColumnName.Add(table, []);
 
             for (int j = 0; j < englishAlphabet.Length; j++)
             {
@@ -825,34 +823,25 @@ namespace AccountingSoftware
                     columnNewName = "col_" + englishAlphabet[j] + i.ToString();
 
                     if (!Kernel.Conf.ReservedUnigueColumnName[table].Contains(columnNewName))
-                    {
                         noExistInReserved = true;
-                    }
                     else
                         continue;
 
                     noExistInConf = true;
 
                     foreach (ConfigurationField ConfigurationField in Fields.Values)
-                    {
-                        //Console.WriteLine($"{ConfigurationField.NameInTable} = {columnNewName}");
                         if (ConfigurationField.NameInTable == columnNewName)
                         {
                             noExistInConf = false;
                             break;
                         }
-                    }
 
                     if (noExistInReserved && noExistInConf)
-                    {
                         break;
-                    }
                 }
 
                 if (noExistInReserved && noExistInConf)
-                {
                     break;
-                }
             }
 
             Kernel.Conf.ReservedUnigueColumnName[table].Add(columnNewName);
@@ -868,6 +857,7 @@ namespace AccountingSoftware
         public static async ValueTask<string> GetNewUnigueTableName(Kernel Kernel)
         {
             string[] englishAlphabet = GetEnglishAlphabet();
+            List<string> tableList = await Kernel.DataBase.GetTableList();
 
             bool noExistInReserved = false;
             bool noExistInBase = false;
@@ -878,25 +868,15 @@ namespace AccountingSoftware
             {
                 for (int i = 1; i < 100; i++)
                 {
-                    tabNewName = "tab_" + englishAlphabet[j] + (i < 10 ? "0" : "") + i.ToString();
+                    tabNewName = "tab_" + englishAlphabet[j] + i.ToString("D2");
 
                     if (!Kernel.Conf.ReservedUnigueTableName.Contains(tabNewName))
-                    {
                         noExistInReserved = true;
-                    }
                     else
                         continue;
 
-                    //
-                    // !!! Не ефективний код
-                    // потрібно один раз вибрати список таблиць і тоді перевіряти
-                    // а не кожен раз звертатись до сервера
-                    //
-
-                    if (!await Kernel.DataBase.IfExistsTable(tabNewName))
-                    {
+                    if (!tableList.Contains(tabNewName))
                         noExistInBase = true;
-                    }
                     else
                         continue;
 
@@ -907,24 +887,18 @@ namespace AccountingSoftware
                         foreach (ConfigurationConstants constantsItem in block.Constants.Values)
                         {
                             foreach (ConfigurationTablePart constantsTablePart in constantsItem.TabularParts.Values)
-                            {
                                 if (constantsTablePart.Table == tabNewName)
                                 {
                                     noExistInConf = false;
                                     break;
                                 }
-                            }
 
                             if (!noExistInConf)
-                            {
                                 break;
-                            }
                         }
 
                         if (!noExistInConf)
-                        {
                             break;
-                        }
                     }
 
                     if (noExistInConf)
@@ -937,18 +911,14 @@ namespace AccountingSoftware
                             }
 
                             foreach (ConfigurationTablePart directoryTablePart in directoryItem.TabularParts.Values)
-                            {
                                 if (directoryTablePart.Table == tabNewName)
                                 {
                                     noExistInConf = false;
                                     break;
                                 }
-                            }
 
                             if (!noExistInConf)
-                            {
                                 break;
-                            }
                         }
 
                     if (noExistInConf)
@@ -961,50 +931,38 @@ namespace AccountingSoftware
                             }
 
                             foreach (ConfigurationTablePart documentTablePart in documentItem.TabularParts.Values)
-                            {
                                 if (documentTablePart.Table == tabNewName)
                                 {
                                     noExistInConf = false;
                                     break;
                                 }
-                            }
 
                             if (!noExistInConf)
-                            {
                                 break;
-                            }
                         }
 
                     if (noExistInConf)
                         foreach (ConfigurationRegistersInformation registersInformation in Kernel.Conf.RegistersInformation.Values)
-                        {
                             if (registersInformation.Table == tabNewName)
                             {
                                 noExistInConf = false;
                                 break;
                             }
-                        }
 
                     if (noExistInConf)
                         foreach (ConfigurationRegistersAccumulation registersAccumulation in Kernel.Conf.RegistersAccumulation.Values)
-                        {
                             if (registersAccumulation.Table == tabNewName)
                             {
                                 noExistInConf = false;
                                 break;
                             }
-                        }
 
                     if (noExistInReserved && noExistInBase && noExistInConf)
-                    {
                         break;
-                    }
                 }
 
                 if (noExistInReserved && noExistInBase && noExistInConf)
-                {
                     break;
-                }
             }
 
             Kernel.Conf.ReservedUnigueTableName.Add(tabNewName);
@@ -1018,7 +976,7 @@ namespace AccountingSoftware
         /// <param name="Kernel">Ядро</param>
         /// <param name="configurationObjectName">Назва обєкту конфігурації</param>
         /// <returns>Повертає інформацію про помилки у вигляді стрічки</returns>
-        public static string ValidateConfigurationObjectName(Kernel Kernel, ref string configurationObjectName)
+        public static string ValidateConfigurationObjectName(ref string configurationObjectName)
         {
             string errorList = "";
 
@@ -1045,14 +1003,10 @@ namespace AccountingSoftware
                 if (allovAll.IndexOf(checkCharLover) >= 0)
                 {
                     if (i == 0 && allovNum.IndexOf(checkCharLover) >= 0)
-                    {
                         errorList += "Назва має починатися з букви\n";
-                    }
                 }
                 else
-                {
                     errorList += "Недопустимий символ (" + i.ToString() + "): " + "[" + checkChar + "]\n";
-                }
 
                 configurationObjectModificeName += checkChar;
             }
@@ -1072,14 +1026,9 @@ namespace AccountingSoftware
 
             //Документи
             foreach (ConfigurationDocuments docItem in Documents.Values)
-                //Регістри накопичення по яких може робити рухи документ
-                foreach (string reg in docItem.AllowRegisterAccumulation)
-                    if (RegistersAccumulation.ContainsKey(reg))
-                    {
-                        ConfigurationRegistersAccumulation regAccum = RegistersAccumulation[reg];
-                        if (!regAccum.AllowDocumentSpend.Contains(docItem.Name))
-                            regAccum.AllowDocumentSpend.Add(docItem.Name);
-                    }
+                foreach (string reg in docItem.AllowRegisterAccumulation) //Регістри накопичення по яких може робити рухи документ
+                    if (RegistersAccumulation.TryGetValue(reg, out ConfigurationRegistersAccumulation? regAccum) && !regAccum.AllowDocumentSpend.Contains(docItem.Name))
+                        regAccum.AllowDocumentSpend.Add(docItem.Name);
         }
 
         /// <summary>
@@ -1103,6 +1052,37 @@ namespace AccountingSoftware
                 AllFields.Add(item.Name, item);
 
             return AllFields;
+        }
+
+        /// <summary>
+        /// Функція парсить вказівник
+        /// </summary>
+        /// <param name="Pointer">Назва вказівника типу 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'</param>
+        /// <param name="ex">Помилка</param>
+        /// <returns>Кортеж</returns>
+        public static (bool Result, string PointerGroup, string PointerType) PointerParse(string Pointer, out Exception? ex)
+        {
+            ex = null;
+
+            if (Pointer.IndexOf('.') > 0)
+            {
+                string[] PointerSplit = Pointer.Split(".");
+                string PointerGroup = PointerSplit[0];
+                string PointerType = PointerSplit[1];
+
+                if (!(PointerGroup == "Довідники" || PointerGroup == "Документи"))
+                {
+                    ex = new Exception("Перша частина Pointer має бути 'Довідники' або 'Документи'");
+                    return (false, "", "");
+                }
+
+                return (true, PointerGroup, PointerType);
+            }
+            else
+            {
+                ex = new Exception("Pointer має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
+                return (false, "", "");
+            }
         }
 
         #endregion
@@ -1857,11 +1837,11 @@ namespace AccountingSoftware
 
             SaveConfigurationInfo(Conf, xmlConfDocument, rootNode);
 
-            SaveConstantsBlock(Conf.ConstantsBlock, xmlConfDocument, rootNode);
+            SaveConstantsBlock(Conf, Conf.ConstantsBlock, xmlConfDocument, rootNode);
 
-            SaveDirectories(Conf.Directories, xmlConfDocument, rootNode);
+            SaveDirectories(Conf, Conf.Directories, xmlConfDocument, rootNode);
 
-            SaveDocuments(Conf.Documents, xmlConfDocument, rootNode);
+            SaveDocuments(Conf, Conf.Documents, xmlConfDocument, rootNode);
 
             SaveEnums(Conf.Enums, xmlConfDocument, rootNode);
 
@@ -1912,7 +1892,7 @@ namespace AccountingSoftware
             rootNode.AppendChild(nodeDictTSearch);
         }
 
-        private static void SaveConstantsBlock(Dictionary<string, ConfigurationConstantsBlock> ConfConstantsBlocks, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveConstantsBlock(Configuration Conf, Dictionary<string, ConfigurationConstantsBlock> ConfConstantsBlocks, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootConstantsBlocks = xmlConfDocument.CreateElement("ConstantsBlocks");
             rootNode.AppendChild(rootConstantsBlocks);
@@ -1933,11 +1913,11 @@ namespace AccountingSoftware
                     rootConstantsBlock.AppendChild(nodeDesc);
                 }
 
-                SaveConstants(ConfConstantsBlock.Value.Constants, xmlConfDocument, rootConstantsBlock);
+                SaveConstants(Conf, ConfConstantsBlock.Value.Constants, xmlConfDocument, rootConstantsBlock);
             }
         }
 
-        private static void SaveConstants(Dictionary<string, ConfigurationConstants> ConfConstants, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveConstants(Configuration Conf, Dictionary<string, ConfigurationConstants> ConfConstants, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootConstants = xmlConfDocument.CreateElement("Constants");
             rootNode.AppendChild(rootConstants);
@@ -1973,11 +1953,11 @@ namespace AccountingSoftware
                     rootConstant.AppendChild(nodePointer);
                 }
 
-                SaveTabularParts(ConfConstant.Value.TabularParts, xmlConfDocument, rootConstant);
+                SaveTabularParts(Conf, ConfConstant.Value.TabularParts, xmlConfDocument, rootConstant);
             }
         }
 
-        private static void SaveDirectories(Dictionary<string, ConfigurationDirectories> ConfDirectories, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveDirectories(Configuration Conf, Dictionary<string, ConfigurationDirectories> ConfDirectories, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootDirectories = xmlConfDocument.CreateElement("Directories");
             rootNode.AppendChild(rootDirectories);
@@ -2044,13 +2024,13 @@ namespace AccountingSoftware
 
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 
-                SaveTabularParts(ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory);
+                SaveTabularParts(Conf, ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory);
 
                 SaveTabularList(ConfDirectory.Value.Fields, ConfDirectory.Value.TabularList, xmlConfDocument, nodeDirectory);
 
                 SaveTriggerFunctions(ConfDirectory.Value.TriggerFunctions, xmlConfDocument, nodeDirectory);
 
-                SaveForms(ConfDirectory.Value.Fields, ConfDirectory.Value.TabularParts, ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
+                SaveForms(Conf, ConfDirectory.Value.Fields, ConfDirectory.Value.TabularParts, ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
             }
         }
 
@@ -2162,7 +2142,7 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SaveTabularParts(Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTabularParts(Configuration Conf, Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularParts = xmlConfDocument.CreateElement("TabularParts");
             rootNode.AppendChild(nodeTabularParts);
@@ -2191,7 +2171,7 @@ namespace AccountingSoftware
 
                 SaveTabularList(tablePart.Value.Fields, tablePart.Value.TabularList, xmlConfDocument, nodeTablePart);
 
-                SaveForms(tablePart.Value.Fields, null, tablePart.Value.Forms, xmlConfDocument, nodeTablePart);
+                SaveForms(Conf, tablePart.Value.Fields, null, tablePart.Value.Forms, xmlConfDocument, nodeTablePart);
             }
         }
 
@@ -2393,7 +2373,7 @@ namespace AccountingSoftware
                 }
         }
 
-        private static void SaveForms(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTablePart>? tabularParts, Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveForms(Configuration Conf, Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTablePart>? tabularParts, Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeForms = xmlConfDocument.CreateElement("Forms");
             rootNode.AppendChild(nodeForms);
@@ -2428,7 +2408,7 @@ namespace AccountingSoftware
                 }
                 else if (form.Value.Type == ConfigurationForms.TypeForms.Element || form.Value.Type == ConfigurationForms.TypeForms.TablePart)
                 {
-                    SaveFormElementField(fields, form.Value.ElementFields, xmlConfDocument, nodeForm);
+                    SaveFormElementField(Conf, fields, form.Value.ElementFields, xmlConfDocument, nodeForm);
 
                     if (tabularParts != null)
                         SaveFormElementTablePart(tabularParts, form.Value.ElementTableParts, xmlConfDocument, nodeForm);
@@ -2443,7 +2423,7 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SaveFormElementField(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveFormElementField(Configuration Conf, Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeElementFields = xmlConfDocument.CreateElement("ElementFields");
             rootNode.AppendChild(nodeElementFields);
@@ -2485,6 +2465,32 @@ namespace AccountingSoftware
                         XmlElement nodePointer = xmlConfDocument.CreateElement("Pointer");
                         nodePointer.InnerText = fieldsItem.Pointer;
                         nodeElementField.AppendChild(nodePointer);
+
+                        (bool Result, string PointerGroup, string PointerType) = Configuration.PointerParse(fieldsItem.Pointer, out Exception? _);
+                        if (Result)
+                        {
+                            List<ConfigurationField> presetntationFields = [];
+
+                            if (PointerGroup == "Довідники")
+                            {
+                                if (Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? configurationDirectories))
+                                    presetntationFields = configurationDirectories.GetPresentationFields();
+                            }
+                            else if (PointerGroup == "Документи")
+                                if (Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? configurationDocuments))
+                                    presetntationFields = configurationDocuments.GetPresentationFields();
+
+                            XmlElement nodePresetntationFields = xmlConfDocument.CreateElement("PresetntationFields");
+                            nodePresetntationFields.SetAttribute("Count", presetntationFields.Count.ToString());
+                            nodeElementField.AppendChild(nodePresetntationFields);
+
+                            foreach (ConfigurationField field in presetntationFields)
+                            {
+                                XmlElement nodePresetntationField = xmlConfDocument.CreateElement("Field");
+                                nodePresetntationField.InnerText = field.Name;
+                                nodePresetntationFields.AppendChild(nodePresetntationField);
+                            }
+                        }
                     }
                     else if (fieldsItem.Type == "string")
                     {
@@ -2727,7 +2733,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveDocuments(Dictionary<string, ConfigurationDocuments> ConfDocuments, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SaveDocuments(Configuration Conf, Dictionary<string, ConfigurationDocuments> ConfDocuments, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootDocuments = xmlConfDocument.CreateElement("Documents");
             rootNode.AppendChild(rootDocuments);
@@ -2766,7 +2772,7 @@ namespace AccountingSoftware
 
                 SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 
-                SaveTabularParts(ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument);
+                SaveTabularParts(Conf, ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument);
 
                 SaveTabularList(ConfDocument.Value.Fields, ConfDocument.Value.TabularList, xmlConfDocument, nodeDocument);
 
@@ -2776,7 +2782,7 @@ namespace AccountingSoftware
 
                 SaveSpendFunctions(ConfDocument.Value.SpendFunctions, xmlConfDocument, nodeDocument);
 
-                SaveForms(ConfDocument.Value.Fields, ConfDocument.Value.TabularParts, ConfDocument.Value.Forms, xmlConfDocument, nodeDocument);
+                SaveForms(Conf, ConfDocument.Value.Fields, ConfDocument.Value.TabularParts, ConfDocument.Value.Forms, xmlConfDocument, nodeDocument);
             }
         }
 
@@ -2830,7 +2836,7 @@ namespace AccountingSoftware
                     ConfRegisterInfo.Value.PropertyFields.Values);
                 SaveTabularList(AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
 
-                SaveForms(AllFields, null, ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
+                SaveForms(Conf, AllFields, null, ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
@@ -2901,7 +2907,7 @@ namespace AccountingSoftware
 
                 SaveAllowDocumentSpendRegisterAccumulation(ConfRegisterAccml.Value.AllowDocumentSpend, xmlConfDocument, nodeRegister);
 
-                SaveTabularParts(ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
+                SaveTabularParts(Conf, ConfRegisterAccml.Value.TabularParts, xmlConfDocument, nodeRegister);
 
                 SaveQueryBlockList(ConfRegisterAccml.Value.QueryBlockList, xmlConfDocument, nodeRegister);
 
@@ -2911,7 +2917,7 @@ namespace AccountingSoftware
                     ConfRegisterAccml.Value.PropertyFields.Values);
                 SaveTabularList(AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
 
-                SaveForms(AllFields, null, ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
+                SaveForms(Conf, AllFields, null, ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
