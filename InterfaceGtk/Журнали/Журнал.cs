@@ -35,11 +35,6 @@ namespace InterfaceGtk
         protected PeriodControl Період = new PeriodControl();
 
         /// <summary>
-        /// Дерево
-        /// </summary>
-        protected TreeView TreeViewGrid = new TreeView();
-
-        /// <summary>
         /// Список документів
         /// </summary>
         protected ToolButton? TypeDocToolButton;
@@ -67,8 +62,6 @@ namespace InterfaceGtk
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;

@@ -49,11 +49,6 @@ namespace InterfaceGtk
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
         /// <summary>
-        /// Дерево
-        /// </summary>
-        protected TreeView TreeViewGrid = new TreeView();
-
-        /// <summary>
         /// Пошук
         /// </summary>
         SearchControl Пошук = new SearchControl();
@@ -78,8 +73,6 @@ namespace InterfaceGtk
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
             scrollTree.Add(TreeViewGrid);

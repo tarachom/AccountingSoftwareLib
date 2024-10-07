@@ -56,11 +56,6 @@ namespace InterfaceGtk
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
         /// <summary>
-        /// Дерево
-        /// </summary>
-        protected TreeView TreeViewGrid = new TreeView();
-
-        /// <summary>
         /// Пошук
         /// </summary>
         protected SearchControl Пошук = new SearchControl();

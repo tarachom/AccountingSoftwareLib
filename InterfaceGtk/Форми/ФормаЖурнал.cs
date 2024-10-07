@@ -47,9 +47,29 @@ namespace InterfaceGtk
         /// </summary>
         public UnigueID? SelectPointerItem { get; set; }
 
+        /// <summary>
+        /// Дерево
+        /// </summary>
+        protected TreeView TreeViewGrid = new TreeView();
+
         public ФормаЖурнал()
         {
+            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
+            TreeViewGrid.ActivateOnSingleClick = true;
+        }
 
+        public List<UnigueID> GetSelectedRows()
+        {
+            List<UnigueID> unigueIDList = [];
+
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                {
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                    unigueIDList.Add(new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
+                }
+                
+            return unigueIDList;
         }
 
         #region Virtual & Abstract Function

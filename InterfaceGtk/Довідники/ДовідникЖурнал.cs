@@ -69,11 +69,6 @@ namespace InterfaceGtk
         protected Paned HPanedTable = new Paned(Orientation.Horizontal);
 
         /// <summary>
-        /// Дерево
-        /// </summary>
-        protected TreeView TreeViewGrid = new TreeView();
-
-        /// <summary>
         /// Пошук
         /// </summary>
         SearchControl Пошук = new SearchControl();
@@ -93,8 +88,6 @@ namespace InterfaceGtk
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;

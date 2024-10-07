@@ -49,11 +49,6 @@ namespace InterfaceGtk
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
         /// <summary>
-        /// Дерево
-        /// </summary>
-        protected TreeView TreeViewGrid = new TreeView();
-
-        /// <summary>
         /// Період
         /// </summary>
         protected PeriodControl Період = new PeriodControl();
@@ -88,8 +83,6 @@ namespace InterfaceGtk
             ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
@@ -212,6 +205,8 @@ namespace InterfaceGtk
             printButton.Activated += OnPrintingInvoiceClick;
             Menu.Append(printButton);
 
+            PrintingSubMenu(Menu);
+
             Menu.ShowAll();
 
             return Menu;
@@ -237,6 +232,8 @@ namespace InterfaceGtk
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
+
+        protected virtual void PrintingSubMenu(Menu Menu) { }
 
         protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
@@ -378,7 +375,6 @@ namespace InterfaceGtk
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
                     foreach (TreePath itemPath in selectionRows)
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -399,7 +395,6 @@ namespace InterfaceGtk
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
                     foreach (TreePath itemPath in selectionRows)
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -450,7 +445,6 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
                 TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-
                 foreach (TreePath itemPath in selectionRows)
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
