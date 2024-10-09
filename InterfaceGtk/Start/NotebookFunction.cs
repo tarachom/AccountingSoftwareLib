@@ -95,7 +95,7 @@ namespace InterfaceGtk
                 int numPage;
                 string codePage = Guid.NewGuid().ToString();
 
-                ScrolledWindow scroll = new ScrolledWindow() { /*ShadowType = ShadowType.In, */Name = codePage };
+                ScrolledWindow scroll = new ScrolledWindow() { Name = codePage };
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
                 Box hBoxLabel = CreateLabelPageWidget(notebook, tabName, codePage);
@@ -152,7 +152,7 @@ namespace InterfaceGtk
                 Name = codePage
             };
 
-            lbClose.Clicked += (object? sender, EventArgs args) => { CloseNotebookPageToCode(notebook, codePage); };
+            lbClose.Clicked += (object? sender, EventArgs args) => CloseNotebookPageToCode(notebook, codePage);
 
             hBoxLabel.PackEnd(lbClose, false, false, 0);
             hBoxLabel.ShowAll();
@@ -181,7 +181,7 @@ namespace InterfaceGtk
                             if (historySwitchList.Count > 0)
                                 CurrentNotebookPageToCode(notebook, historySwitchList[historySwitchList.Count - 1]);
                         }
-                        
+
                         notebook.DetachTab(wg);
                     }
                 });

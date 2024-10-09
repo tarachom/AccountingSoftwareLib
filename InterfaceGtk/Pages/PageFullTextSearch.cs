@@ -160,10 +160,7 @@ namespace InterfaceGtk
             if (count == maxRowsToPage)
             {
                 LinkButton linkButtonNext = new LinkButton("", " Наступна сторінка") { Halign = Align.Start, Image = new Image(Stock.GoForward, IconSize.Button), AlwaysShowImage = true, ImagePosition = PositionType.Right };
-                linkButtonNext.Clicked += (object? sender, EventArgs args) =>
-                {
-                    Find(entryTextSearch.Text, offset += maxRowsToPage);
-                };
+                linkButtonNext.Clicked += (object? sender, EventArgs args) => Find(entryTextSearch.Text, offset += maxRowsToPage);
 
                 hBoxPagination.PackStart(linkButtonNext, false, false, 0);
             }
