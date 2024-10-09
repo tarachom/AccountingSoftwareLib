@@ -202,7 +202,7 @@ namespace InterfaceGtk
         /// </summary>
         /// <param name="notebook">Блокнот</param>
         /// <param name="insertPage"></param>
-        public async void View(Notebook? notebook, bool insertPage = false)
+        public async ValueTask View(Notebook? notebook, bool insertPage = false)
         {
             Box vBox = new Box(Orientation.Vertical, 0);
 
@@ -219,7 +219,7 @@ namespace InterfaceGtk
                         FillTreeView();
 
                         Notebook? notebook = NotebookFunction.GetNotebookFromWidget(vBox);
-                        View(notebook, true);
+                        await View(notebook, true);
                         NotebookFunction.CloseNotebookPageToCode(notebook, vBox.Name);
                     };
                 }
