@@ -106,14 +106,10 @@ namespace InterfaceGtk
                 DateTime datelogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString());
 
                 TimeSpan loginTime = DateTime.Now - datelogin;
+                int days = loginTime.Days, hours = loginTime.Hours, minutes = loginTime.Minutes, seconds = loginTime.Seconds;
 
-                int days = loginTime.Days;
-                int hours = loginTime.Hours;
-                int minutes = loginTime.Minutes;
-                int seconds = loginTime.Seconds;
-
-                string login = (days > 0 ? days + " дн. " : "") + (hours > 0 ? hours + " год. " : "") +
-                    (hours == 0 && minutes == 0 ? seconds + " сек." : minutes > 0 ? minutes + " хв." : "");
+                string login = (days > 0 ? days + " дн. " : "") + (hours > 0 ? hours + " год. " : "") + (minutes > 0 ? minutes + " хв." : "") +
+                    (days == 0 && hours == 0 && minutes == 0 && seconds > 0 ? seconds + " сек." : "");
 
                 string update = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString()).ToString("HH:mm:ss");
 
@@ -138,7 +134,7 @@ namespace InterfaceGtk
             TreeViewGrid.AppendColumn(new TreeViewColumn("Користувач", new CellRendererText(), "text", (int)Columns.UserName));
             TreeViewGrid.AppendColumn(new TreeViewColumn("Авторизація", new CellRendererText() { Xalign = 0.5f }, "text", (int)Columns.DateLogin) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Підтвердження", new CellRendererText() { Xalign = 0.5f }, "text", (int)Columns.DateUp) { Alignment = 0.5f });
-            TreeViewGrid.AppendColumn(new TreeViewColumn("Головний", new CellRendererToggle() { Xalign = 0.5f }, "active", (int)Columns.Master) { Alignment = 0.5f });
+            TreeViewGrid.AppendColumn(new TreeViewColumn("Розрахунок", new CellRendererToggle() { Xalign = 0.5f }, "active", (int)Columns.Master) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Тип", new CellRendererText(), "text", (int)Columns.TypeForm));
 
             //Пустишка
