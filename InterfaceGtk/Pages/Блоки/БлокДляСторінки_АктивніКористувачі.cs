@@ -112,10 +112,8 @@ namespace InterfaceGtk
                 int minutes = loginTime.Minutes;
                 int seconds = loginTime.Seconds;
 
-                string login = 
-                    (days > 0 ? days + " дн. " : "") + 
-                    (hours > 0 ? hours + " год. " : "") + 
-                    (hours == 0 && minutes == 0 ? seconds + " сек." : minutes + " хв.");
+                string login = (days > 0 ? days + " дн. " : "") + (hours > 0 ? hours + " год. " : "") +
+                    (hours == 0 && minutes == 0 ? seconds + " сек." : minutes > 0 ? minutes + " хв." : "");
 
                 string update = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString()).ToString("HH:mm:ss");
 
