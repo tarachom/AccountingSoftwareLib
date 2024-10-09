@@ -28,9 +28,9 @@ namespace InterfaceGtk
 {
     public class FormConfigurationSelection : Window
     {
-        private TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
-        private Kernel? ProgramKernel { get; set; }
-        private Kernel? ConfiguratorKernel { get; set; }
+        TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
+        Kernel? ProgramKernel { get; set; }
+        Kernel? ConfiguratorKernel { get; set; }
 
         public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
         public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
@@ -252,7 +252,7 @@ namespace InterfaceGtk
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
-                using (FormLogIn windowFormLogIn = new() { ProgramKernel = ProgramKernel, TransientFor = this, Modal = true, Resizable = false })
+                using (FormLogIn windowFormLogIn = new() { TypeOpenForm = TypeForm.WorkingProgram, ProgramKernel = ProgramKernel, TransientFor = this, Modal = true, Resizable = false })
                 {
                     await windowFormLogIn.SetValue();
                     windowFormLogIn.Show();
@@ -318,7 +318,7 @@ namespace InterfaceGtk
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
-                using (FormLogIn windowFormLogIn = new() { ProgramKernel = ConfiguratorKernel, TransientFor = this, Modal = true, Resizable = false })
+                using (FormLogIn windowFormLogIn = new() { TypeOpenForm = TypeForm.Configurator, ProgramKernel = ConfiguratorKernel, TransientFor = this, Modal = true, Resizable = false })
                 {
                     await windowFormLogIn.SetValue();
                     windowFormLogIn.Show();
@@ -426,22 +426,6 @@ namespace InterfaceGtk
 
                 configurationSelectionParam.Show();
             }
-        }
-
-        /// <summary>
-        /// Варіант запуску форми
-        /// </summary>
-        public enum TypeForm
-        {
-            /// <summary>
-            /// Конфігуратор
-            /// </summary>
-            Configurator,
-
-            /// <summary>
-            /// Програма
-            /// </summary>
-            WorkingProgram
         }
     }
 }

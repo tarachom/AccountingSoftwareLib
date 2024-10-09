@@ -71,7 +71,7 @@ namespace AccountingSoftware
         ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
         ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name);
         ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid);
-        ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password);
+        ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm);
 
         #endregion
 

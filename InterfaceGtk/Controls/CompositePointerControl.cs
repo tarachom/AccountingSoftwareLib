@@ -46,11 +46,11 @@ namespace InterfaceGtk
             bTypeInfo.Clicked += OnTypeInfo;
         }
 
-        private Kernel Kernel { get; set; }
-        private string NameSpageProgram { get; set; }
-        private string NameSpageCodeGeneration { get; set; }
-        private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-        private event EventHandler<UuidAndText>? PointerChanged;
+        Kernel Kernel { get; set; }
+        string NameSpageProgram { get; set; }
+        string NameSpageCodeGeneration { get; set; }
+        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+        event EventHandler<UuidAndText>? PointerChanged;
 
         #region Virtual & Abstract Function
 

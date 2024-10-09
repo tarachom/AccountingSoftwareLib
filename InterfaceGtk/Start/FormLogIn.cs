@@ -28,6 +28,7 @@ namespace InterfaceGtk
 {
     class FormLogIn : Window
     {
+        public TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
         public ResponseType ModalResult { get; set; } = ResponseType.None;
         public Kernel? ProgramKernel { get; set; }
 
@@ -87,7 +88,7 @@ namespace InterfaceGtk
         async void OnLogIn(object? sender, EventArgs args)
         {
             if (ProgramKernel != null)
-                if (await ProgramKernel.UserLogIn(comboBoxAllUsers.ActiveId, passwordUser.Text))
+                if (await ProgramKernel.UserLogIn(comboBoxAllUsers.ActiveId, passwordUser.Text, TypeOpenForm))
                 {
                     ModalResult = ResponseType.Ok;
                     ThisClose();

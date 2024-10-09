@@ -23,15 +23,22 @@ limitations under the License.
 
 using Gtk;
 using AccountingSoftware;
+using System.Reflection;
 
 namespace InterfaceGtk
 {
-    public abstract class СпільніФорми_ВивідПовідомленняПроПомилки : Box
+    public abstract class СпільніФорми_ВивідПовідомленняПроПомилки : Форма
     {
+        Kernel Kernel { get; set; }
+        string NameSpageProgram { get; set; }
+        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
         Box vBoxMessage = new Box(Orientation.Vertical, 0);
 
-        public СпільніФорми_ВивідПовідомленняПроПомилки() : base(Orientation.Vertical, 0)
+        public СпільніФорми_ВивідПовідомленняПроПомилки(Kernel kernel, string nameSpageProgram) : base()
         {
+            Kernel = kernel;
+            NameSpageProgram = nameSpageProgram;
+
             //Кнопки
             Box hBoxTop = new Box(Orientation.Horizontal, 0);
             PackStart(hBoxTop, false, false, 10);
@@ -44,7 +51,7 @@ namespace InterfaceGtk
             bReload.Clicked += OnReload;
             hBoxTop.PackStart(bReload, false, false, 10);
 
-            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In };
+            ScrolledWindow scroll = new ScrolledWindow();
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Add(vBoxMessage);
 
@@ -53,20 +60,34 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        #region Virtual & Abstract Function
+        #region Функції
 
-        protected abstract ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки();
-        protected abstract Widget СтворитиВибір(UuidAndText uuidAndText);
-        protected abstract ValueTask ОчиститиВсіПовідомлення();
+        Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
+        {
+            object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
+            if (compositControlInstance != null)
+            {
+                dynamic compositControl = compositControlInstance;
+
+                compositControl.Caption = caption;
+                compositControl.ClearSensetive = false;
+                compositControl.TypeSelectSensetive = false;
+                compositControl.Pointer = uuidAndText;
+
+                return compositControl;
+            }
+            else
+                return null;
+        }
 
         #endregion
 
-        public async ValueTask LoadRecords()
+        public async ValueTask LoadRecords(UnigueID? objectUnigueID = null, int? limit = null)
         {
             foreach (Widget Child in vBoxMessage.Children)
                 vBoxMessage.Remove(Child);
 
-            SelectRequest_Record record = await ПрочитатиПовідомленняПроПомилки();
+            SelectRequest_Record record = await Kernel.SelectMessages(objectUnigueID, limit);
 
             foreach (Dictionary<string, object> row in record.ListRow)
                 CreateMessage(row);
@@ -77,6 +98,8 @@ namespace InterfaceGtk
         void CreateMessage(Dictionary<string, object> row)
         {
             Box vBoxInfo = new Box(Orientation.Vertical, 0);
+
+            vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 5);
 
             //Image
             {
@@ -96,10 +119,7 @@ namespace InterfaceGtk
             //Перший рядок
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<i>" + row["date"].ToString() + " " + row["process"].ToString() + "</i>")
-                {
-                    UseMarkup = true
-                };
+                Label line = new Label("<i>" + row["date"].ToString() + " " + row["process"].ToString() + "</i>") { UseMarkup = true };
 
                 hBox.PackStart(line, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
@@ -108,10 +128,7 @@ namespace InterfaceGtk
             //Другий рядок
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<b>" + row["name"].ToString() + "</b>")
-                {
-                    UseMarkup = true
-                };
+                Label line = new Label("<b>" + row["name"].ToString() + "</b>") { UseMarkup = true };
 
                 hBox.PackStart(line, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
@@ -126,109 +143,23 @@ namespace InterfaceGtk
 
             //Для відкриття
             {
-                Widget Обєкт = СтворитиВибір(new UuidAndText(new UnigueID(row["uid"]).UGuid, row["type"].ToString() ?? ""));
+                Widget? Обєкт = CreateCompositControl("", new UuidAndText(new UnigueID(row["uid"]).UGuid, row["type"].ToString() ?? ""));
 
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 hBox.PackStart(Обєкт, false, false, 0);
                 vBoxInfo.PackStart(hBox, false, false, 0);
             }
-
-            vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 5);
         }
 
         async void OnClear(object? sender, EventArgs args)
         {
-            await ОчиститиВсіПовідомлення();
+            await Kernel.ClearAllMessages();
             await LoadRecords();
         }
 
         async void OnReload(object? sender, EventArgs args)
         {
             await LoadRecords();
-        }
-    }
-
-    public abstract class СпільніФорми_ВивідПовідомленняПроПомилки_ШвидкийВивід : Box
-    {
-        Box vBoxMessage = new Box(Orientation.Vertical, 0);
-
-        public СпільніФорми_ВивідПовідомленняПроПомилки_ШвидкийВивід(int width = 800, int height = 400) : base(Orientation.Vertical, 0)
-        {
-            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = width, HeightRequest = height };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Add(vBoxMessage);
-
-            PackStart(scroll, true, true, 0);
-            ShowAll();
-        }
-
-        #region Virtual & Abstract Function
-
-        protected abstract ValueTask<SelectRequest_Record> ПрочитатиПовідомленняПроПомилки(UnigueID? ВідбірПоОбєкту = null, int? limit = null);
-
-        #endregion
-
-        public async ValueTask LoadRecords(UnigueID? ВідбірПоОбєкту = null, int? limit = null)
-        {
-            SelectRequest_Record record = await ПрочитатиПовідомленняПроПомилки(ВідбірПоОбєкту, limit);
-
-            foreach (Dictionary<string, object> row in record.ListRow)
-                CreateMessage(row);
-
-            vBoxMessage.ShowAll();
-        }
-
-        void CreateMessage(Dictionary<string, object> row)
-        {
-            Box vBoxInfo = new Box(Orientation.Vertical, 0);
-
-            //Image
-            {
-                var Іконка = row["message_type"] switch
-                {
-                    'E' => Іконки.ДляІнформуванняВеликі.Error,
-                    'I' => Іконки.ДляІнформуванняВеликі.Ok,
-                    _ => Іконки.ДляІнформуванняВеликі.Error
-                };
-
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Image(Іконка), false, false, 25);
-                hBox.PackStart(vBoxInfo, false, false, 10);
-                vBoxMessage.PackStart(hBox, false, false, 10);
-            }
-
-            //Перший рядок
-            {
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<i>" + row["time"].ToString() + " " + row["process"].ToString() + "</i>")
-                {
-                    UseMarkup = true
-                };
-
-                hBox.PackStart(line, false, false, 5);
-                vBoxInfo.PackStart(hBox, false, false, 5);
-            }
-
-            //Другий рядок
-            {
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<b>" + row["name"].ToString() + "</b>")
-                {
-                    UseMarkup = true
-                };
-
-                hBox.PackStart(line, false, false, 5);
-                vBoxInfo.PackStart(hBox, false, false, 5);
-            }
-
-            //Повідомлення
-            {
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Label("-> " + row["message"].ToString()) { Wrap = true }, false, false, 5);
-                vBoxInfo.PackStart(hBox, false, false, 5);
-            }
-
-            vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 5);
         }
     }
 }

@@ -177,15 +177,15 @@ namespace AccountingSoftware
         /// <param name="user">Користувач</param>
         /// <param name="password">Пароль</param>
         /// <returns></returns>
-        public async Task<bool> UserLogIn(string user, string password)
+        public async Task<bool> UserLogIn(string user, string password, TypeForm typeForm)
         {
-            var userSession = await DataBase.SpetialTableUsersLogIn(user, password);
+            var userSession = await DataBase.SpetialTableUsersLogIn(user, password, typeForm);
             if (userSession != null)
             {
                 User = userSession.Value.User;
                 Session = userSession.Value.Session;
 
-                //Фонове обновлення сесії
+                //Фонове оновлення сесії
                 StartUpdateSession();
 
                 return true;
@@ -212,6 +212,18 @@ namespace AccountingSoftware
             }
         }
 
+        public static string TypeForm_Alias(TypeForm typeForm)
+        {
+            return typeForm switch
+            {
+                TypeForm.Configurator => "Конфігуратор",
+                TypeForm.WorkingProgram => "Робоча програма",
+                TypeForm.WorkingWeb => "Сайт",
+                TypeForm.WorkingBot => "Бот",
+                _ => ""
+            };
+        }
+
         #region DataBase Info
 
         public string DataBase_Server { get; private set; } = "";
@@ -229,5 +241,84 @@ namespace AccountingSoftware
         public Exception? Exception { get; private set; }
 
         #endregion
+
+        #region Messages
+
+        /* Запис і зчитування повідомлень про помилки та інформаційних повідомлень */
+
+        public async ValueTask MessageInfoAdd(string nameProcess, Guid? objectUid, string typeObject, string nameObject, string message)
+        {
+            await DataBase.SpetialTableMessageErrorAdd
+            (
+                User,
+                nameProcess,
+                objectUid != null ? (Guid)objectUid : Guid.Empty,
+                typeObject,
+                nameObject,
+                message,
+                'I'
+            );
+
+            await ClearOutdatedMessages();
+        }
+
+        public async ValueTask MessageErrorAdd(string nameProcess, Guid? objectUid, string typeObject, string nameObject, string message)
+        {
+            await DataBase.SpetialTableMessageErrorAdd
+            (
+                User,
+                nameProcess,
+                objectUid != null ? (Guid)objectUid : Guid.Empty,
+                typeObject,
+                nameObject,
+                message,
+                'E'
+            );
+
+            await ClearOutdatedMessages();
+        }
+
+        public async ValueTask ClearAllMessages()
+        {
+            await DataBase.SpetialTableMessageErrorClear(User);
+        }
+
+        public async ValueTask ClearOutdatedMessages()
+        {
+            await DataBase.SpetialTableMessageErrorClearOld(User);
+        }
+
+        public async ValueTask<SelectRequest_Record> SelectMessages(UnigueID? objectUnigueID = null, int? limit = null)
+        {
+            return await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Варіант запуску програми
+    /// </summary>
+    public enum TypeForm
+    {
+        /// <summary>
+        /// Конфігуратор
+        /// </summary>
+        Configurator,
+
+        /// <summary>
+        /// Програма
+        /// </summary>
+        WorkingProgram,
+
+        /// <summary>
+        /// Web
+        /// </summary>
+        WorkingWeb,
+
+        /// <summary>
+        /// Bot
+        /// </summary>
+        WorkingBot,
     }
 }

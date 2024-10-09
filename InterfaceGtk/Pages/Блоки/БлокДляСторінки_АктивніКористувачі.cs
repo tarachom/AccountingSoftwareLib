@@ -41,7 +41,8 @@ namespace InterfaceGtk
             UserName,
             DateLogin,
             DateUp,
-            Master
+            Master,
+            TypeForm
         }
 
         ListStore Store = new ListStore(
@@ -50,7 +51,8 @@ namespace InterfaceGtk
             typeof(string), //UserName
             typeof(string), //DateLogin
             typeof(string), //DateUp
-            typeof(bool)    //Master
+            typeof(bool),   //Master
+            typeof(string)  //TypeForm
         );
 
         TreeView TreeViewGrid;
@@ -68,13 +70,13 @@ namespace InterfaceGtk
             TreeViewGrid = new TreeView(Store) { ActivateOnSingleClick = true };
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
 
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 150 };
+            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
             scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scrollTree.Add(TreeViewGrid);
 
             AddColumn();
 
-            PackStart(scrollTree, false, false, 5);
+            PackStart(scrollTree, true, true, 5);
             ShowAll();
         }
 
@@ -101,15 +103,30 @@ namespace InterfaceGtk
             Store.Clear();
             foreach (Dictionary<string, object> record in recordResult.ListRow)
             {
+                DateTime datelogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString());
+
+                TimeSpan loginTime = DateTime.Now - datelogin;
+
+                int days = loginTime.Days;
+                int hours = loginTime.Hours;
+                int minutes = loginTime.Minutes;
+                int seconds = loginTime.Seconds;
+
+                string login = 
+                    (days > 0 ? days + " дн. " : "") + 
+                    (hours > 0 ? hours + " год. " : "") + 
+                    (hours == 0 && minutes == 0 ? seconds + " сек." : minutes + " хв.");
+
                 string update = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString()).ToString("HH:mm:ss");
 
                 Store.AppendValues(
                     record["uid"].ToString(),
                     record["usersuid"].ToString(),
                     record["username"].ToString(),
-                    record["datelogin"].ToString(),
+                    login,
                     update,
-                    record["master"]
+                    record["master"],
+                    Kernel.TypeForm_Alias((TypeForm)record["type_form"])
                 );
             }
         }
@@ -124,6 +141,7 @@ namespace InterfaceGtk
             TreeViewGrid.AppendColumn(new TreeViewColumn("Авторизація", new CellRendererText() { Xalign = 0.5f }, "text", (int)Columns.DateLogin) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Підтвердження", new CellRendererText() { Xalign = 0.5f }, "text", (int)Columns.DateUp) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Головний", new CellRendererToggle() { Xalign = 0.5f }, "active", (int)Columns.Master) { Alignment = 0.5f });
+            TreeViewGrid.AppendColumn(new TreeViewColumn("Тип", new CellRendererText(), "text", (int)Columns.TypeForm));
 
             //Пустишка
             TreeViewGrid.AppendColumn(new TreeViewColumn());

@@ -243,7 +243,6 @@ CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
                 @message - Повідомлення
                 @message_type - Тип повідомлення, задається одним символом (Помилка E, Інформація I і т.д)
                 */
-                await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.MessageErrorOld}"); // !!! Тимчасово, пізніше прибрати
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError} 
 (
@@ -383,6 +382,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
 
                 ExecuteSQL($"DROP TABLE {SpecialTables.ActiveUsers}");
                 */
+                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ActiveUsers}"); // !!! Тимчасово, пізніше прибрати
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
 (
@@ -391,6 +391,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
     datelogin timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
     master boolean NOT NULL DEFAULT FALSE,
+    type_form integer NOT NULL DEFAULT 0,
     PRIMARY KEY(uid)
 )");
 
@@ -918,7 +919,7 @@ ORDER BY
                 return false;
         }
 
-        public async ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password)
+        public async ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm)
         {
             if (DataSource != null)
             {
@@ -933,7 +934,7 @@ ORDER BY
                 if (uid != null)
                 {
                     Guid user_uid = (Guid)uid;
-                    Guid session_uid = await SpetialTableActiveUsersAddSession(user_uid);
+                    Guid session_uid = await SpetialTableActiveUsersAddSession(user_uid, typeForm);
 
                     //Додаткова перевірка всіх наявних сесій на актуальність
                     await SpetialTableActiveUsersUpdateSession(session_uid);
@@ -951,24 +952,26 @@ ORDER BY
 
         #region SpetialTable ActiveUsers
 
-        async ValueTask<Guid> SpetialTableActiveUsersAddSession(Guid user_uid)
+        async ValueTask<Guid> SpetialTableActiveUsersAddSession(Guid user_uid, TypeForm typeForm)
         {
             Guid session_uid = Guid.NewGuid();
 
             Dictionary<string, object> paramQuery = new()
             {
                 { "user", user_uid },
-                { "session", session_uid }
+                { "session", session_uid },
+                { "type_form", (int)typeForm }
             };
 
             await ExecuteSQL($@"
-INSERT INTO {SpecialTables.ActiveUsers} (uid, usersuid, datelogin, dateupdate) 
+INSERT INTO {SpecialTables.ActiveUsers} (uid, usersuid, datelogin, dateupdate, type_form) 
 VALUES 
 (
     @session,
     @user,
     CURRENT_TIMESTAMP::timestamp,
-    CURRENT_TIMESTAMP::timestamp
+    CURRENT_TIMESTAMP::timestamp,
+    @type_form
 )
 ", paramQuery);
 
@@ -1068,27 +1071,19 @@ master AS
         {SpecialTables.ActiveUsers}
     WHERE
         dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
-        master = true
-),
-master_count AS
-(
-    SELECT 
-        count(uid) AS uidcount
-    FROM 
-        {SpecialTables.ActiveUsers}
-    WHERE
-        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
-        master = true
+        master = true AND
+        type_form = {(int)TypeForm.WorkingProgram}
 ),
 record AS
 (
     SELECT 
-        CASE WHEN (SELECT uidcount FROM master_count) != 0 THEN
+        CASE WHEN (SELECT count(uid) FROM master) != 0 THEN
             (SELECT uid FROM master LIMIT 1)
         ELSE
             (
                 SELECT uid FROM {SpecialTables.ActiveUsers} 
-                WHERE dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds')
+                WHERE dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
+                      type_form = {(int)TypeForm.WorkingProgram}
                 LIMIT 1
             )
         END
@@ -1134,7 +1129,8 @@ SELECT
     Users.fullname AS username,
     ActiveUsers.datelogin,
     ActiveUsers.dateupdate, 
-    ActiveUsers.master
+    ActiveUsers.master,
+    ActiveUsers.type_form
 FROM 
     {SpecialTables.ActiveUsers} AS ActiveUsers
     JOIN {SpecialTables.Users} AS Users ON Users.uid =
