@@ -188,10 +188,7 @@ namespace InterfaceGtk
             {
                 string[] values = new string[columnsList.Count];
                 for (int i = 0; i < columnsList.Count; i++)
-                {
-                    string column = RecordResult.ColumnsName[i];
-                    values[i] = row[column]?.ToString() ?? "";
-                }
+                    values[i] = row[RecordResult.ColumnsName[i]]?.ToString() ?? "";
 
                 listStore.AppendValues(values);
             }
@@ -263,9 +260,13 @@ namespace InterfaceGtk
             //Інформаційний бокс
             if (GetInfo != null)
             {
-                Box hBoxCaption = new Box(Orientation.Horizontal, 0);
-                hBoxCaption.PackStart(new Label(await GetInfo.Invoke()) { Wrap = true, UseMarkup = true }, false, false, 2);
-                CreateField(vBox, null, hBoxCaption, Align.Start);
+                string infoText = await GetInfo.Invoke();
+                if (!string.IsNullOrEmpty(infoText))
+                {
+                    Box hBoxCaption = new Box(Orientation.Horizontal, 0);
+                    hBoxCaption.PackStart(new Label(infoText) { Wrap = true, UseMarkup = true, UseUnderline = false }, false, false, 2);
+                    CreateField(vBox, null, hBoxCaption, Align.Start);
+                }
             }
 
             //TreeView
@@ -357,6 +358,36 @@ namespace InterfaceGtk
         protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+
+        #endregion
+
+        #region ФункціяДляКолонки
+
+        public static void ФункціяДляКолонкиБазоваДляЧисла(TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
+        {
+            CellRendererText cellText = (CellRendererText)cell;
+            if (column.Data.Contains("CellDataFunc"))
+                if (float.TryParse(cellText.Text, out float result))
+                {
+                    if (result == 0)
+                        cellText.Text = "";
+                    else
+                        cellText.Foreground = "green";
+                }
+        }
+
+        public static void ФункціяДляКолонкиВідємнеЧислоЧервоним(TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
+        {
+            CellRendererText cellText = (CellRendererText)cell;
+            if (column.Data.Contains("CellDataFunc"))
+                if (float.TryParse(cellText.Text, out float result))
+                {
+                    if (result == 0)
+                        cellText.Text = "";
+                    else
+                        cellText.Foreground = (result >= 0) ? "green" : "red";
+                }
+        }
 
         #endregion
     }
