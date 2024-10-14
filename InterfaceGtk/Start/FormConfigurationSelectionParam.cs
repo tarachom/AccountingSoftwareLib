@@ -44,10 +44,12 @@ namespace InterfaceGtk
             SetDefaultSize(420, 0);
             SetPosition(WindowPosition.Center);
 
-            if (File.Exists(Іконки.ДляФорми.Configurator))
-                SetDefaultIconFromFile(Іконки.ДляФорми.Configurator);
-
+            DeleteEvent += delegate { ThisClose(); };
+            KeyReleaseEvent += OnKeyReleaseEventWindow;
             BorderWidth = 5;
+
+            if (File.Exists(Іконки.ДляФорми.Configurator))
+                SetDefaultIconFromFile(Іконки.ДляФорми.Configurator);            
 
             Box vbox = new Box(Orientation.Vertical, 0);
 
@@ -73,7 +75,7 @@ namespace InterfaceGtk
 
             Button buttonClose = new Button("Закрити");
             buttonClose.SetSizeRequest(0, 35);
-            buttonClose.Clicked += OnButtonCloseClicked;
+            buttonClose.Clicked += OnCancel;
 
             hBoxButton.PackStart(buttonSave, false, false, 5);
             hBoxButton.PackStart(buttonCreateBase, false, false, 5);
@@ -192,7 +194,20 @@ namespace InterfaceGtk
             }
         }
 
-        void OnButtonCloseClicked(object? sender, EventArgs args)
+        void OnKeyReleaseEventWindow(object? sender, KeyReleaseEventArgs args)
+        {
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Escape:
+                    {
+                        OnCancel(this, new EventArgs());
+                        break;
+                    }
+            }
+        }
+
+
+        void OnCancel(object? sender, EventArgs args)
         {
             ThisClose();
         }

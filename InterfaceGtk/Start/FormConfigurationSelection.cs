@@ -252,7 +252,15 @@ namespace InterfaceGtk
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
-                using (FormLogIn windowFormLogIn = new() { TypeOpenForm = TypeForm.WorkingProgram, ProgramKernel = ProgramKernel, TransientFor = this, Modal = true, Resizable = false })
+                using (FormLogIn windowFormLogIn = new()
+                {
+                    TypeOpenForm = TypeForm.WorkingProgram,
+                    ProgramKernel = ProgramKernel,
+                    TransientFor = this,
+                    Modal = true,
+                    Resizable = false,
+                    TypeHint = Gdk.WindowTypeHint.Dialog
+                })
                 {
                     await windowFormLogIn.SetValue();
                     windowFormLogIn.Show();
@@ -318,7 +326,15 @@ namespace InterfaceGtk
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
-                using (FormLogIn windowFormLogIn = new() { TypeOpenForm = TypeForm.Configurator, ProgramKernel = ConfiguratorKernel, TransientFor = this, Modal = true, Resizable = false })
+                using (FormLogIn windowFormLogIn = new()
+                {
+                    TypeOpenForm = TypeForm.Configurator,
+                    ProgramKernel = ConfiguratorKernel,
+                    TransientFor = this,
+                    Modal = true,
+                    Resizable = false,
+                    TypeHint = Gdk.WindowTypeHint.Dialog
+                })
                 {
                     await windowFormLogIn.SetValue();
                     windowFormLogIn.Show();
@@ -420,6 +436,7 @@ namespace InterfaceGtk
                     Modal = true,
                     TransientFor = this,
                     Resizable = false,
+                    TypeHint = Gdk.WindowTypeHint.Dialog,
                     OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRows[0].Name),
                     CallBackUpdate = CallBackUpdate
                 };

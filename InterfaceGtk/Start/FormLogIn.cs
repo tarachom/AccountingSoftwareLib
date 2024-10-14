@@ -40,9 +40,11 @@ namespace InterfaceGtk
         public FormLogIn() : base("Авторизація")
         {
             SetPosition(WindowPosition.Center);
-            BorderWidth = 5;
-            DeleteEvent += delegate { OnCancel(null, new EventArgs()); };
 
+            DeleteEvent += delegate { OnCancel(null, new EventArgs()); };
+            KeyReleaseEvent += OnKeyReleaseEventWindow;
+            BorderWidth = 5;
+            
             if (File.Exists(Іконки.ДляФорми.General))
                 SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
@@ -56,7 +58,7 @@ namespace InterfaceGtk
             Box hBoxPassword = new Box(Orientation.Horizontal, 0);
             hBoxPassword.PackStart(new Label("Пароль:"), false, false, 5);
             hBoxPassword.PackEnd(passwordUser, false, false, 5);
-            passwordUser.KeyReleaseEvent += OnKeyReleaseEvent;
+            passwordUser.KeyReleaseEvent += OnKeyReleaseEventEntry;
             vBox.PackStart(hBoxPassword, false, false, 5);
 
             bLogIn.Clicked += OnLogIn;
@@ -103,7 +105,7 @@ namespace InterfaceGtk
             ThisClose();
         }
 
-        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        void OnKeyReleaseEventEntry(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
@@ -111,6 +113,18 @@ namespace InterfaceGtk
                 case Gdk.Key.Return:
                     {
                         OnLogIn(this, new EventArgs());
+                        break;
+                    }
+            }
+        }
+
+        void OnKeyReleaseEventWindow(object? sender, KeyReleaseEventArgs args)
+        {
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Escape:
+                    {
+                        OnCancel(this, new EventArgs());
                         break;
                     }
             }
