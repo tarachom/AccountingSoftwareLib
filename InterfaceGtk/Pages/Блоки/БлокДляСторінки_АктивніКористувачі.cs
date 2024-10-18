@@ -103,6 +103,7 @@ namespace InterfaceGtk
             Store.Clear();
             foreach (Dictionary<string, object> record in recordResult.ListRow)
             {
+                /*
                 DateTime datelogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString());
 
                 TimeSpan loginTime = DateTime.Now - datelogin;
@@ -110,7 +111,9 @@ namespace InterfaceGtk
 
                 string login = (days > 0 ? days + " дн. " : "") + (hours > 0 ? hours + " год. " : "") + (minutes > 0 ? minutes + " хв." : "") +
                     (days == 0 && hours == 0 && minutes == 0 && seconds > 0 ? seconds + " сек." : "");
+                */
 
+                string login = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString()).ToString("dd.MM.yy HH:mm");
                 string update = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString()).ToString("HH:mm:ss");
 
                 Store.AppendValues(
