@@ -153,6 +153,7 @@ namespace InterfaceGtk
             TreeViewGrid = new TreeView(listStore);
             TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
             TreeViewGrid.ButtonPressEvent += ВідкритиДовідникАбоДокумент;
+            TreeViewGrid.StyleContext.AddClass("report");
 
             for (int i = 0; i < columnsList.Count; i++)
             {
