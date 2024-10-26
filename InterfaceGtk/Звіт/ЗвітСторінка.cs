@@ -208,6 +208,7 @@ namespace InterfaceGtk
             {
                 Toolbar toolbar = new Toolbar();
 
+                //Обновити
                 {
                     ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
                     toolbar.Add(button);
@@ -225,6 +226,7 @@ namespace InterfaceGtk
                 ToolItem separator = [new Separator(Orientation.Horizontal)];
                 toolbar.Add(separator);
 
+                //Зберегти в довіднику "Збережені звіти"
                 {
                     ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), "Зберегти в довіднику \"Збережені звіти\"") { TooltipText = "Зберегти в довіднику \"Збережені звіти\"" };
                     toolbar.Add(button);
@@ -237,12 +239,14 @@ namespace InterfaceGtk
                     };
                 }
 
+                //Довідник "Збережені звіти"
                 {
                     ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), "Відкрити довідник \"Збережені звіти\"") { TooltipText = "Відкрити довідник \"Збережені звіти\"" };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) => await ВідкритиЗбереженіЗвіти();
                 }
 
+                //PDF
                 {
                     ToolButton button = new ToolButton(new Image(Stock.Print, IconSize.Menu), "Вигрузити в PDF файл") { TooltipText = "Вигрузити в PDF файл" };
                     toolbar.Add(button);
@@ -252,6 +256,19 @@ namespace InterfaceGtk
 
                         await Select();
                         await ВигрузитиВФайл_PDF(this, FillList());
+                    };
+                }
+
+                //Excel
+                {
+                    ToolButton button = new ToolButton(new Image(Stock.Convert, IconSize.Menu), "Вигрузити в Excel файл") { TooltipText = "Вигрузити в Excel файл" };
+                    toolbar.Add(button);
+                    button.Clicked += async (object? sender, EventArgs args) =>
+                    {
+                        button.Sensitive = false;
+
+                        await Select();
+                        await ВигрузитиВФайл_Excel(this, FillList());
                     };
                 }
 
@@ -359,6 +376,7 @@ namespace InterfaceGtk
         protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
 
         #endregion
 
