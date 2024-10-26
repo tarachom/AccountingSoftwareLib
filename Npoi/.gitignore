@@ -5,7 +5,6 @@
 *.suo
 *.user
 *.sln.docstates
-*.snk
 
 # Build results
 .idea/
