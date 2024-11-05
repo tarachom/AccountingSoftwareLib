@@ -92,7 +92,6 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
-            //TreeViewGrid.KeyPressEvent += OnKeyPressEvent;
 
             scrollTree.Add(TreeViewGrid);
 
@@ -145,15 +144,15 @@ namespace InterfaceGtk
 
         Menu PopUpContextMenu()
         {
-            Menu Menu = new Menu();
+            Menu menu = new Menu();
 
             MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");
             setDeletionLabel.Activated += OnDeleteClick;
-            Menu.Append(setDeletionLabel);
+            menu.Append(setDeletionLabel);
 
-            Menu.ShowAll();
+            menu.ShowAll();
 
-            return Menu;
+            return menu;
         }
 
         #endregion
@@ -220,20 +219,6 @@ namespace InterfaceGtk
 
         async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
-            /*
-            if (args.Event.State == (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask))
-            {
-                switch (args.Event.Key)
-                {
-                    case Gdk.Key.Return:
-                        {
-                            Console.WriteLine(1);
-                            break;
-                        }
-                }
-            }
-            else
-            */
             switch (args.Event.Key)
             {
                 case Gdk.Key.Insert:
@@ -269,20 +254,6 @@ namespace InterfaceGtk
                     }
             }
         }
-
-        // void OnKeyPressEvent(object? sender, KeyPressEventArgs args)
-        // {
-        // Console.WriteLine(args.Event.State);
-        // Console.WriteLine(Gdk.ModifierType.ControlMask);
-        // Console.WriteLine(Gdk.ModifierType.Mod2Mask);
-        // Console.WriteLine(Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask);
-        // Console.WriteLine(args.Event.Key);
-
-        // if (args.Event.State == (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod2Mask) && args.Event.Key == Gdk.Key.Return)
-        // {
-        //     Console.WriteLine(1);
-        // }
-        //}
 
         #endregion
 

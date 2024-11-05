@@ -137,7 +137,7 @@ namespace InterfaceGtk
             //Повідомлення
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Label("-> " + row["message"].ToString()) { Wrap = true }, false, false, 5);
+                hBox.PackStart(new Label(row["message"].ToString()) { Wrap = true, UseMarkup = true }, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
             }
 

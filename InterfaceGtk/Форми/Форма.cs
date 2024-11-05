@@ -35,6 +35,12 @@ namespace InterfaceGtk
 
         #region Link
 
+        /// <summary>
+        /// Створює лінк з іконкою
+        /// </summary>
+        /// <param name="parentBox">Бокс куди буде доданий лінк</param>
+        /// <param name="uri">Назва</param>
+        /// <param name="click">Процедура</param>
         public static void CreateLink(Box parentBox, string uri, System.Action? click = null)
         {
             LinkButton linkButton = new LinkButton(uri, " " + uri) { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
@@ -43,6 +49,12 @@ namespace InterfaceGtk
             linkButton.Clicked += (object? sender, EventArgs args) => click?.Invoke();
         }
 
+        /// <summary>
+        /// Створює простий заголовок або лінк
+        /// </summary>
+        /// <param name="parentBox">Бокс куди буде доданий лінк</param>
+        /// <param name="uri"><Назва/param>
+        /// <param name="click">Процедура</param>
         public static void CreateCaptionLink(Box parentBox, string uri, System.Action? click = null)
         {
             if (click != null)
@@ -59,6 +71,11 @@ namespace InterfaceGtk
             }
         }
 
+        /// <summary>
+        /// Створює розділювач
+        /// </summary>
+        /// <param name="parentBox">Бокс куди буде доданий розділювач</param>
+        /// <param name="orientation">Орієнтація розділювача</param>
         public static void CreateSeparator(Box parentBox, Orientation orientation = Orientation.Horizontal)
         {
             Separator separator = new Separator(orientation);
@@ -77,7 +94,7 @@ namespace InterfaceGtk
         /// <param name="field">Поле</param>
         /// <param name="halign">Положення</param>
         /// <param name="put_vbox">Вкласти в додатковий вертикальний блок</param>
-        protected Box CreateField(Box parentBox, string? label, Widget field, Align halign = Align.End, bool put_vbox = false)
+        protected Box CreateField(Box parentBox, string? label, Widget? field, Align halign = Align.End, bool put_vbox = false)
         {
             Box usingBox = parentBox;
 
@@ -105,7 +122,8 @@ namespace InterfaceGtk
             if (label != null)
                 usingBox.PackStart(new Label(label), false, false, 5);
 
-            usingBox.PackStart(field, false, false, 5);
+            if (field != null)
+                usingBox.PackStart(field, false, false, 5);
 
             return usingBox;
         }

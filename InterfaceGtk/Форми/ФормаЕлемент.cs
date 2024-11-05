@@ -57,11 +57,17 @@ namespace InterfaceGtk
 
         #region Event Function
 
+        /// <summary>
+        /// Обробка зміни UnigueID
+        /// </summary>
         public void UnigueIDChanged(object? _, UnigueID unigueID)
         {
             UnigueID = unigueID;
         }
-        
+
+        /// <summary>
+        /// Обробка зміни Caption
+        /// </summary>
         public void CaptionChanged(object? _, string caption)
         {
             Caption = caption;

@@ -38,7 +38,7 @@ namespace InterfaceGtk
     public abstract class ФормаЖурнал : Форма
     {
         /// <summary>
-        /// Вспливаюче вікно
+        /// Вспливаюче вікно власник в який поміщена ФормаЖурнал
         /// </summary>
         public Popover? PopoverParent { get; set; }
 
@@ -58,6 +58,9 @@ namespace InterfaceGtk
             TreeViewGrid.ActivateOnSingleClick = true;
         }
 
+        /// <summary>
+        /// Функція повертає список UnigueID виділених рядків дерева
+        /// </summary>
         public List<UnigueID> GetSelectedRows()
         {
             List<UnigueID> unigueIDList = [];
@@ -74,10 +77,19 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
+        /// <summary>
+        /// Присвоєння значень
+        /// </summary>
         public abstract ValueTask SetValue();
 
+        /// <summary>
+        /// Завантаження списку
+        /// </summary>
         protected abstract ValueTask LoadRecords();
 
+        /// <summary>
+        /// Завантаження списку про пошуку
+        /// </summary>
         protected abstract ValueTask LoadRecords_OnSearch(string searchText);
 
         #endregion
