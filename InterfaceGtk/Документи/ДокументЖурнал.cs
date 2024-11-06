@@ -220,6 +220,10 @@ namespace InterfaceGtk
             exportXMLButton.Activated += OnExportXMLClick;
             Menu.Append(exportXMLButton);
 
+            MenuItem exportExcelButton = new MenuItem("Формат Excel");
+            exportExcelButton.Activated += OnExportExcelClick;
+            Menu.Append(exportExcelButton);
+
             Menu.ShowAll();
 
             return Menu;
@@ -258,6 +262,10 @@ namespace InterfaceGtk
         protected virtual bool IsExportXML() { return false; } //Дозволити експорт
 
         protected virtual async ValueTask ExportXML(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
+
+        protected virtual bool IsExportExcel() { return false; } //Дозволити експорт
+
+        protected virtual async ValueTask ExportExcel(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
 
         protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
@@ -466,7 +474,7 @@ namespace InterfaceGtk
                 string pathToFolder = "";
 
                 FileChooserDialog fc = new FileChooserDialog("Виберіть каталог", null,
-                     FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
+                    FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
 
                 if (fc.Run() == (int)ResponseType.Accept)
                     pathToFolder = fc.CurrentFolder;
@@ -475,7 +483,6 @@ namespace InterfaceGtk
                 fc.Destroy();
 
                 if (!string.IsNullOrEmpty(pathToFolder) && System.IO.Directory.Exists(pathToFolder))
-                {
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -483,7 +490,32 @@ namespace InterfaceGtk
 
                         await ExportXML(unigueID, pathToFolder);
                     }
-                }
+            }
+        }
+
+        async void OnExportExcelClick(object? sender, EventArgs arg)
+        {
+            if (IsExportExcel() && TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                string pathToFolder = "";
+
+                FileChooserDialog fc = new FileChooserDialog("Виберіть каталог", null,
+                    FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
+
+                if (fc.Run() == (int)ResponseType.Accept)
+                    pathToFolder = fc.CurrentFolder;
+
+                fc.Dispose();
+                fc.Destroy();
+
+                if (!string.IsNullOrEmpty(pathToFolder) && System.IO.Directory.Exists(pathToFolder))
+                    foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                    {
+                        TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                        UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+
+                        await ExportExcel(unigueID, pathToFolder);
+                    }
             }
         }
 
