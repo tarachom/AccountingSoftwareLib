@@ -432,6 +432,29 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {Special
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
+
+                /*
+                Таблиця для тригерів оновлення об’єктів (Довідники, Документи)
+
+                @uid - PRIMARY KEY
+                @datewrite - час запису
+                @obj - обєкт конфігурації
+
+                */
+
+                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectUpdateTriger}");
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger} 
+(
+    uid serial NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    obj uuidtext NOT NULL,
+    PRIMARY KEY(uid)
+)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {SpecialTables.ObjectUpdateTriger}(datewrite)");
+
             }
         }
 
@@ -1033,6 +1056,7 @@ SELECT count FROM count_session
             //Обновлення сесії
             bool session_update = await SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
 
+            //Обробка всіх сесій
             try
             {
                 /*
@@ -1042,9 +1066,10 @@ SELECT count FROM count_session
                 1. Очищення устарівших сесій
                 2. Пошук головної сесії з признаком master = true
                 3. Якщо є головна сесія вона дальше залишається головною, 
-                інаше головною сесією стає перша в списку
+                інакше головною сесією стає перша в списку
 
                 Тільки головна сесія виконує фонові обчислення віртуальних залишків
+                Головною може бути тільки Робоча програма (type_form = TypeForm.WorkingProgram)
 
                 */
 
@@ -1268,6 +1293,56 @@ WHERE
     cfgname = '{dictTSearch}'", null);
 
             return count != null && (long)count != 0;
+        }
+
+        #endregion
+
+        #region SpetialTable ObjectUpdateTriger
+
+        public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj)
+        {
+            await ExecuteSQL($@"
+INSERT INTO {SpecialTables.ObjectUpdateTriger} 
+(
+    datewrite,
+    obj
+)
+VALUES
+(
+    CURRENT_TIMESTAMP,
+    @obj
+)",
+new Dictionary<string, object>
+{
+    { "obj", obj }
+});
+        }
+
+        public async ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime afterUpdate)
+        {
+            Dictionary<string, object> queryParam = new() { { "afterUpdate", afterUpdate } };
+
+            string query = $@"
+SELECT DISTINCT obj
+FROM {SpecialTables.ObjectUpdateTriger}
+WHERE datewrite >= @afterUpdate
+";
+
+            return await SelectRequest(query, queryParam);
+        }
+
+        public async ValueTask SpetialTableObjectUpdateTrigerClear()
+        {
+            await ExecuteSQL($@"DELETE FROM {SpecialTables.ObjectUpdateTriger}");
+        }
+
+        public async ValueTask SpetialTableObjectUpdateTrigerClearOld()
+        {
+            int life_old = 5; //Устарівші дані
+
+            await ExecuteSQL($@"
+DELETE FROM {SpecialTables.ObjectUpdateTriger}
+WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')");
         }
 
         #endregion

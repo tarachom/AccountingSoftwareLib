@@ -72,5 +72,11 @@ namespace AccountingSoftware
         /// Помилки та інформація
         /// </summary>
         public static readonly string MessageError = "tab_special_message_error_or_info";
+
+        /// <summary>
+        /// Тригери оновлення об’єктів (Довідники, Документи)
+        /// </summary>
+        public static readonly string ObjectUpdateTriger = "tab_special_object_update_triger";
+        
     }
 }

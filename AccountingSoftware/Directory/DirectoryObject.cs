@@ -28,10 +28,11 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class DirectoryObject
     {
-        public DirectoryObject(Kernel kernel, string table, string[] fieldsArray)
+        public DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray)
         {
             Kernel = kernel;
             Table = table;
+            TypeDirectory = typeDirectory;
             FieldArray = fieldsArray;
 
             foreach (string field in FieldArray)
@@ -47,6 +48,11 @@ namespace AccountingSoftware
         /// Назва таблиці
         /// </summary>
         private string Table { get; set; }
+
+        /// <summary>
+        /// Назва як задано в конфігураторі
+        /// </summary>
+        public string TypeDirectory { get; private set; }
 
         /// <summary>
         /// Масив назв полів
@@ -115,7 +121,7 @@ namespace AccountingSoftware
                 UnigueID = uid;
                 DeletionLabel = record.DeletionLabel;
                 IsSave = true;
-                
+
                 return true;
             }
             else
@@ -131,18 +137,23 @@ namespace AccountingSoftware
 
             if (IsNew)
             {
-                result = await Kernel.DataBase.InsertDirectoryObject(this.UnigueID, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertDirectoryObject(UnigueID, Table, FieldArray, FieldValue);
                 if (result) IsNew = false;
             }
             else
             {
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
-                    result = await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
+                    result = await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба оновити неіснуючий елемент довідника");
             }
 
             IsSave = result;
+
+            //Тригер оновлення обєкту
+            if (result)
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
+
             BaseClear();
 
             return result;
@@ -171,7 +182,10 @@ namespace AccountingSoftware
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, DeletionLabel, Table, null, null);
+                await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
 
                 //Видалення з повнотекстового пошуку
                 /* if (DeletionLabel)
@@ -199,6 +213,9 @@ namespace AccountingSoftware
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
+
+            //Тригер оновлення обєкту
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
 
             BaseClear();
         }

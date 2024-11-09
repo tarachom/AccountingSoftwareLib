@@ -93,6 +93,15 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region SpetialTable ObjectUpdateTriger
+
+        ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj);
+        ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime afterPosition);
+        ValueTask SpetialTableObjectUpdateTrigerClear();
+        ValueTask SpetialTableObjectUpdateTrigerClearOld();
+        
+        #endregion
+
         #region Transaction
 
         ValueTask<byte> BeginTransaction();

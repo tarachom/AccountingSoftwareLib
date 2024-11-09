@@ -161,6 +161,11 @@ namespace AccountingSoftware
             }
 
             IsSave = result;
+
+            //Тригер оновлення обєкту
+            if (result)
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+
             BaseClear();
 
             return result;
@@ -193,7 +198,12 @@ namespace AccountingSoftware
             SpendDate = spend_date;
 
             if (IsSave)
+            {
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+            }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже провести");
         }
@@ -211,6 +221,9 @@ namespace AccountingSoftware
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
 
                 //Видалення з повнотекстового пошуку
                 /* if (DeletionLabel)
@@ -239,6 +252,9 @@ namespace AccountingSoftware
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
+
+            //Тригер оновлення обєкту
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
 
             BaseClear();
         }

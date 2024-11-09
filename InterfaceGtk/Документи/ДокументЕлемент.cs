@@ -186,7 +186,7 @@ namespace InterfaceGtk
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
             bool isSave = await Save();
-            bool isSpend = await SpendTheDocument(isSave && spendDoc);
+            bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
             if (CallBack_OnSelectPointer != null && UnigueID != null)

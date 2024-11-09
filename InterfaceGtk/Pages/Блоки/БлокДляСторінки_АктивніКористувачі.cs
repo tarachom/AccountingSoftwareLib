@@ -62,6 +62,7 @@ namespace InterfaceGtk
         public БлокДляСторінки_АктивніКористувачі(Kernel kernel) : base()
         {
             Kernel = kernel;
+            Kernel.UpdateSession += async (object? sender, EventArgs args) => await LoadRecords();
 
             Box hBoxCaption = new Box(Orientation.Horizontal, 0);
             hBoxCaption.PackStart(new Label("<b>Сесії користувачів</b>") { UseMarkup = true }, false, false, 5);
@@ -80,21 +81,21 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public void AutoRefreshRun()
-        {
-            LoadRecordsAsync();
-        }
+        // public void AutoRefreshRun()
+        // {
+        //     LoadRecordsAsync();
+        // }
 
-        public async void LoadRecordsAsync()
-        {
-            while (true)
-            {
-                await LoadRecords();
+        // public async void LoadRecordsAsync()
+        // {
+        //     while (true)
+        //     {
+        //         await LoadRecords();
 
-                //Затримка на 5 сек
-                await Task.Delay(5000);
-            }
-        }
+        //         //Затримка на 5 сек
+        //         await Task.Delay(5000);
+        //     }
+        // }
 
         async ValueTask LoadRecords()
         {

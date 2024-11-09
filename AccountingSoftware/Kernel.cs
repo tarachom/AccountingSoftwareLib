@@ -172,6 +172,11 @@ namespace AccountingSoftware
         public Guid Session { get; private set; } = Guid.Empty;
 
         /// <summary>
+        /// Дата останньої вибірки тригерів оновлення обєктів
+        /// </summary>
+        DateTime AfterUpdateSession { get; set; } = DateTime.Now;
+
+        /// <summary>
         /// Авторизація 
         /// </summary>
         /// <param name="user">Користувач</param>
@@ -186,7 +191,10 @@ namespace AccountingSoftware
                 Session = userSession.Value.Session;
 
                 //Фонове оновлення сесії
-                StartUpdateSession();
+                LoopUpdateSession();
+
+                //Очищення устарівших тригерів оновлення об’єктів
+                await DataBase.SpetialTableObjectUpdateTrigerClearOld();
 
                 return true;
             }
@@ -201,11 +209,52 @@ namespace AccountingSoftware
         /// <summary>
         /// Фонове обновлення сесії
         /// </summary>
-        async void StartUpdateSession()
+        async void LoopUpdateSession()
         {
             while (true)
             {
                 await DataBase.SpetialTableActiveUsersUpdateSession(Session);
+                UpdateSession?.Invoke(this, new());
+
+                //Тригери оновлення обєктів
+                if (DirectoryObjectChanged != null || DocumentObjectChanged != null)
+                {
+                    SelectRequest_Record resultRecords = await DataBase.SpetialTableObjectUpdateTrigerSelect(AfterUpdateSession);
+                    AfterUpdateSession = DateTime.Now;
+
+                    if (resultRecords.Result)
+                    {
+                        Dictionary<string, List<Guid>> directory = [];
+                        Dictionary<string, List<Guid>> document = [];
+
+                        foreach (var record in resultRecords.ListRow)
+                        {
+                            UuidAndText obj = (UuidAndText)record["obj"];
+                            var (_, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
+
+                            if (pointerGroup == "Довідники")
+                            {
+                                if (directory.TryGetValue(pointerType, out List<Guid>? list))
+                                    list.Add(obj.Uuid);
+                                else
+                                    directory.Add(pointerType, [obj.Uuid]);
+                            }
+                            else if (pointerGroup == "Документи")
+                            {
+                                if (document.TryGetValue(pointerType, out List<Guid>? list))
+                                    list.Add(obj.Uuid);
+                                else
+                                    document.Add(pointerType, [obj.Uuid]);
+                            }
+                        }
+
+                        if (DirectoryObjectChanged != null && directory.Count > 0)
+                            DirectoryObjectChanged.Invoke(this, directory);
+
+                        if (DocumentObjectChanged != null && document.Count > 0)
+                            DocumentObjectChanged.Invoke(this, document);
+                    }
+                }
 
                 //Затримка на 5 сек
                 await Task.Delay(5000);
@@ -292,6 +341,25 @@ namespace AccountingSoftware
         {
             return await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
         }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Після оновлення сесії
+        /// </summary>
+        public event EventHandler? UpdateSession;
+
+        /// <summary>
+        /// Зміни в довідниках
+        /// </summary>
+        public event EventHandler<Dictionary<string, List<Guid>>>? DirectoryObjectChanged;
+
+        /// <summary>
+        /// Зміни в документах
+        /// </summary>
+        public event EventHandler<Dictionary<string, List<Guid>>>? DocumentObjectChanged;
 
         #endregion
     }

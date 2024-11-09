@@ -47,7 +47,13 @@ namespace AccountingSoftware
         {
             Uuid = uuid;
             Text = text;
-        }        
+        }
+
+        public UuidAndText(UnigueID unigueID, string text)
+        {
+            Uuid = unigueID.UGuid;
+            Text = text;
+        }
 
         /// <summary>
         /// Вказівник
