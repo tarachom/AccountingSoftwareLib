@@ -27,12 +27,56 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-    #region CompositePointerControl
+    #region LockedObject
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public record LockedObject_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Ключ блоування
+        /// </summary>
+        public UnigueID? LockKey;
+
+        /// <summary>
+        /// Дата блокування
+        /// </summary>
+        public DateTime DateLock;
+
+        /// <summary>
+        /// Назва користувача
+        /// </summary>
+        public string UserName = "";
+    }
+
+    #endregion
+
+    #region CompositePointer
+
+    /// <summary>
+    /// Структура для повернення результату з функції CompositePointerPresentation яка знаходиться в згенерованому коді CodeGeneration.cs
+    /// </summary>
     public record CompositePointerPresentation_Record
     {
+        /// <summary>
+        /// Презентація
+        /// </summary>
         public string result = "";
+
+        /// <summary>
+        /// Вказівник (Довідники, Документи)
+        /// </summary>
         public string pointer = "";
+
+        /// <summary>
+        /// Тип довідника чи документу
+        /// </summary>
         public string type = "";
     }
 

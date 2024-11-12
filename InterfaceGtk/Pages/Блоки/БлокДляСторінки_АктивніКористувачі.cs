@@ -81,22 +81,6 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        // public void AutoRefreshRun()
-        // {
-        //     LoadRecordsAsync();
-        // }
-
-        // public async void LoadRecordsAsync()
-        // {
-        //     while (true)
-        //     {
-        //         await LoadRecords();
-
-        //         //Затримка на 5 сек
-        //         await Task.Delay(5000);
-        //     }
-        // }
-
         async ValueTask LoadRecords()
         {
             var recordResult = await Kernel.DataBase.SpetialTableActiveUsersSelect();

@@ -362,6 +362,7 @@ namespace AccountingSoftware
         public event EventHandler<Dictionary<string, List<Guid>>>? DocumentObjectChanged;
 
         #endregion
+
     }
 
     /// <summary>

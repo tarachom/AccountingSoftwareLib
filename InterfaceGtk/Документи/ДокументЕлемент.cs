@@ -76,10 +76,26 @@ namespace InterfaceGtk
             //Проводки
             {
                 LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-                linkNew.Clicked += (object? sender, EventArgs args) => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); };
+                linkNew.Clicked += (object? sender, EventArgs args) =>
+                {
+                    if (UnigueID != null)
+                        ReportSpendTheDocument(UnigueID);
+                };
 
                 HBoxTop.PackStart(linkNew, false, false, 0);
             }
+
+            Button bLock = new Button
+            {
+                Label = "Заблокувати",
+                ImagePosition = PositionType.Left,
+                AlwaysShowImage = true,
+                Image = Image.NewFromIconName(Stock.Add, IconSize.Button),
+            };
+
+            bLock.Image.MarginEnd = 5;
+            bLock.Clicked += (object? sender, EventArgs args) => { };
+            HBoxTop.PackEnd(bLock, false, false, 10);
 
             PackStart(HBoxTop, false, false, 10);
 
@@ -189,15 +205,18 @@ namespace InterfaceGtk
             bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
-            if (CallBack_OnSelectPointer != null && UnigueID != null)
-                CallBack_OnSelectPointer.Invoke(UnigueID);
+            if (isSave)
+            {
+                if (CallBack_OnSelectPointer != null && UnigueID != null)
+                    CallBack_OnSelectPointer.Invoke(UnigueID);
 
-            CallBack_LoadRecords?.Invoke(UnigueID);
+                CallBack_LoadRecords?.Invoke(UnigueID);
 
-            if (closePage && isSpend)
-                NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
-            else
-                NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
+                if (closePage && isSpend)
+                    NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
+                else
+                    NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
+            }
         }
 
         #region Abstract Function

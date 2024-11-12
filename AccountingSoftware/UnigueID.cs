@@ -79,6 +79,14 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Опустошити, обнулити
+        /// </summary>
+        public void Clear()
+        {
+            UGuid = Guid.Empty;
+        }
+
+        /// <summary>
         /// Згенерувати новий ідентифікатор
         /// </summary>
         public void New()
@@ -89,11 +97,6 @@ namespace AccountingSoftware
         public static UnigueID NewUnigueID()
         {
             return new UnigueID(Guid.NewGuid());
-        }
-
-        public void Clear()
-        {
-            UGuid = Guid.Empty;
         }
 
         /// <summary>

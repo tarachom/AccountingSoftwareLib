@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using AccountingSoftware;
 using Gtk;
 
 namespace InterfaceGtk
@@ -29,6 +30,7 @@ namespace InterfaceGtk
     {
         public const string DataKey_HistorySwitchList = "history_switch_list";
         public const string DataKey_ParentNotebook = "parent_notebook";
+        public const string DataKey_AfterClosePageFunc = "after_close_page_func";
 
         /// <summary>
         /// Функція створює блокнок з верхнім положенням вкладок
@@ -88,7 +90,9 @@ namespace InterfaceGtk
         /// <param name="tabName">Назва сторінки</param>
         /// <param name="pageWidget">Віджет для сторінки</param>
         /// <param name="insertPage">Вставити сторінку перед поточною</param>
-        public static void CreateNotebookPage(Notebook? notebook, string tabName, Func<Widget>? pageWidget, bool insertPage = false)
+        /// <param name="afterClosePageFunc">Функція яка викликається після закриття сторінки блокноту</param>
+        public static void CreateNotebookPage(Notebook? notebook, string tabName, Func<Widget>? pageWidget, bool insertPage = false,
+            System.Action? beforeOpenPageFunc = null, System.Action? afterClosePageFunc = null)
         {
             if (notebook != null)
             {
@@ -119,6 +123,13 @@ namespace InterfaceGtk
                     //Функція GetNotebookFromWidget() отримує вказівник на блокнот з віджету
                     widget.Data.Add(DataKey_ParentNotebook, notebook);
                 }
+
+                //Додаткова функція яка викликається до відкриття сторінки блокноту
+                beforeOpenPageFunc?.Invoke();
+
+                //Додаткова функція яка викликається після закриття сторінки блокноту
+                if (afterClosePageFunc != null)
+                    scroll.Data.Add(DataKey_AfterClosePageFunc, afterClosePageFunc);
 
                 notebook.ShowAll();
                 notebook.CurrentPage = numPage;
@@ -172,6 +183,7 @@ namespace InterfaceGtk
                 {
                     if (wg.Name == codePage)
                     {
+                        //Історія переключення сторінок
                         var history_switch_list = notebook.Data[DataKey_HistorySwitchList];
                         if (history_switch_list != null)
                         {
@@ -180,6 +192,14 @@ namespace InterfaceGtk
 
                             if (historySwitchList.Count > 0)
                                 CurrentNotebookPageToCode(notebook, historySwitchList[historySwitchList.Count - 1]);
+                        }
+
+                        //Додаткова функція яка викликається після закриття сторінки блокноту
+                        var after_close_page_func = wg.Data[DataKey_AfterClosePageFunc];
+                        if (after_close_page_func != null)
+                        {
+                            System.Action afterClosePageFunc = (System.Action)after_close_page_func;
+                            afterClosePageFunc.Invoke();
                         }
 
                         notebook.DetachTab(wg);

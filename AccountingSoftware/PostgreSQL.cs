@@ -304,7 +304,6 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @info - додаткова інформація
 
                 */
-                /*await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.RegAccumTrigerDocIgnore}");*/
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore} 
 (
@@ -320,24 +319,24 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore}
                 /*
                 Таблиця заблокованих обєктів
 
-                @uidobj - обєкт
+                @uid - PRIMARY KEY
                 @session - сесія
                 @users - користувач
                 @datelock - дата блокування
                 @dateupdate - дата підтвердження блокування
-                @nameobj - назва обєкту
+                @obj - обєкт конфігурації (Довідники, Документи)
 
                 */
+                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.LockedObject}");
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.LockedObject} 
 (
-    uidobj uuid NOT NULL,
+    uid uuid NOT NULL,
     session uuid NOT NULL,
     users uuid NOT NULL,
     datelock timestamp without time zone NOT NULL,
-    dateupdate timestamp without time zone NOT NULL,
-    nameobj text NOT NULL DEFAULT '',
-    PRIMARY KEY(uidobj)
+    obj uuidtext NOT NULL,
+    PRIMARY KEY(uid)
 )");
 
                 await ExecuteSQL($@"
@@ -380,9 +379,8 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
                 @dateupdate - дата підтвердження активного стану
                 @master - головний. Він виконує обчислення
 
-                ExecuteSQL($"DROP TABLE {SpecialTables.ActiveUsers}");
+                ExecuteSQL($"DROP IF EXISTS TABLE {SpecialTables.ActiveUsers}");
                 */
-                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ActiveUsers}"); // !!! Тимчасово, пізніше прибрати
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
 (
@@ -441,8 +439,6 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
                 @obj - обєкт конфігурації
 
                 */
-
-                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectUpdateTriger}");
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger} 
 (
@@ -1022,23 +1018,20 @@ VALUES
             if (DataSource != null)
             {
                 string query = $@"
-WITH
-count_session AS (
-    SELECT count(uid) AS count FROM {SpecialTables.ActiveUsers} WHERE uid = @session
-),
-update_session AS (
+WITH update_session AS (
     UPDATE {SpecialTables.ActiveUsers} 
         SET dateupdate = CURRENT_TIMESTAMP::timestamp 
-    WHERE uid = @session
+    WHERE 
+        uid = @session
+    RETURNING 1
 )
-SELECT count FROM count_session
+SELECT count(*) FROM update_session
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("session", session_uid);
 
                 object? count_session = await command.ExecuteScalarAsync();
-
                 if (count_session != null && (long)count_session == 1)
                     return true;
                 else
@@ -1051,7 +1044,7 @@ SELECT count FROM count_session
         public async ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid)
         {
             int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
-            int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
+            int life_active = 8; //Активна сесія якщо останнє обновлення більше заданого часу
 
             //Обновлення сесії
             bool session_update = await SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
@@ -1071,17 +1064,32 @@ SELECT count FROM count_session
                 Тільки головна сесія виконує фонові обчислення віртуальних залишків
                 Головною може бути тільки Робоча програма (type_form = TypeForm.WorkingProgram)
 
+                #1 - Очистка сесій та заблокованих обєктів які повязані із сесією
+                #2 - Пошук головної сесії
+
                 */
 
                 await ExecuteSQL($@"
 BEGIN;
 LOCK TABLE {SpecialTables.ActiveUsers};
 
-DELETE FROM 
-    {SpecialTables.ActiveUsers}
-WHERE 
-    dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} seconds');
+-- #1
+WITH
+old_session AS
+(
+    SELECT uid FROM {SpecialTables.ActiveUsers}
+    WHERE dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} seconds')
+),
+del_session AS
+(
+    DELETE FROM {SpecialTables.ActiveUsers}
+    WHERE uid IN (SELECT uid FROM old_session)
+    RETURNING uid
+)
+DELETE FROM {SpecialTables.LockedObject}
+WHERE session IN (SELECT uid FROM del_session);
 
+-- #2
 WITH
 clear AS
 (
@@ -1090,14 +1098,9 @@ clear AS
 ),
 master AS
 (
-    SELECT 
-        uid
-    FROM 
-        {SpecialTables.ActiveUsers}
-    WHERE
-        dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
-        master = true AND
-        type_form = {(int)TypeForm.WorkingProgram}
+    SELECT uid FROM {SpecialTables.ActiveUsers}
+    WHERE dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
+        master = true AND type_form = {(int)TypeForm.WorkingProgram}
 ),
 record AS
 (
@@ -1301,6 +1304,11 @@ WHERE
 
         public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj)
         {
+            Dictionary<string, object> paramQuery = new()
+            {
+                { "obj", obj }
+            };
+
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.ObjectUpdateTriger} 
 (
@@ -1309,13 +1317,9 @@ INSERT INTO {SpecialTables.ObjectUpdateTriger}
 )
 VALUES
 (
-    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP::timestamp,
     @obj
-)",
-new Dictionary<string, object>
-{
-    { "obj", obj }
-});
+)", paramQuery);
         }
 
         public async ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime afterUpdate)
@@ -1338,11 +1342,134 @@ WHERE datewrite >= @afterUpdate
 
         public async ValueTask SpetialTableObjectUpdateTrigerClearOld()
         {
-            int life_old = 5; //Устарівші дані
+            int life_old = 1; //Устарівші дані
 
             await ExecuteSQL($@"
 DELETE FROM {SpecialTables.ObjectUpdateTriger}
 WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')");
+        }
+
+        #endregion
+
+        #region SpetialTable LockedObject
+
+        public async ValueTask<UnigueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
+        {
+            if (!await SpetialTableLockedObjectIsLock(obj))
+            {
+                UnigueID unigueID = new();
+                unigueID.New();
+
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uid", unigueID.UGuid},
+                    { "session", session_uid },
+                    { "user", user_uid },
+                    { "obj", obj }
+                };
+
+                await ExecuteSQL($@"
+INSERT INTO {SpecialTables.LockedObject} 
+(
+    uid,
+    session,
+    users,
+    datelock,
+    obj
+)
+VALUES
+(
+    @uid,
+    @session,
+    @user,
+    CURRENT_TIMESTAMP::timestamp,
+    @obj
+)", paramQuery);
+
+                return unigueID;
+            }
+            else
+                return new UnigueID();
+        }
+
+        public async ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect()
+        {
+            string query = $@"
+SELECT 
+    LockedObject.session,
+    LockedObject.users,
+    Users.fullname AS username,
+    LockedObject.datelock,
+    LockedObject.obj
+FROM {SpecialTables.LockedObject} AS LockedObject
+    JOIN {SpecialTables.Users} AS Users ON Users.uid = LockedObject.users
+ORDER BY
+    LockedObject.datelock
+";
+
+            return await SelectRequest(query);
+        }
+
+        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UuidAndText obj)
+        {
+            Dictionary<string, object> paramQuery = new() { { "uid", obj.Uuid } };
+
+            string query = $@"
+SELECT 
+    count(uid) AS count
+FROM {SpecialTables.LockedObject}
+WHERE (obj).uuid = @uid
+";
+            object? count_session = await ExecuteSQLScalar(query, paramQuery);
+            if (count_session != null && (long)count_session == 1)
+                return true;
+            else
+                return false;
+        }
+
+        public async ValueTask<LockedObject_Record> SpetialTableLockedObjectIsLockInfo(UuidAndText obj)
+        {
+            LockedObject_Record record = new();
+
+            if (DataSource != null)
+            {
+                string query = $@"
+SELECT 
+    LockedObject.uid,
+    LockedObject.datelock,
+    Users.fullname AS username
+FROM {SpecialTables.LockedObject} AS LockedObject
+    JOIN {SpecialTables.Users} AS Users ON Users.uid = LockedObject.users
+WHERE (LockedObject.obj).uuid = @obj
+";
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("obj", obj.Uuid);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
+
+                while (await reader.ReadAsync())
+                {
+                    record.LockKey = new UnigueID(reader["uid"]);
+                    record.UserName = reader["username"].ToString() ?? "";
+                    record.DateLock = (DateTime)reader["datelock"];
+                }
+                await reader.CloseAsync();
+            }
+
+            return record;
+        }
+
+        public async ValueTask SpetialTableLockedObjectClear(UnigueID lockKey)
+        {
+            if (!lockKey.IsEmpty())
+            {
+                Dictionary<string, object> paramQuery = new() { { "uid", lockKey.UGuid } };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.LockedObject} 
+WHERE uid = @uid", paramQuery);
+            }
         }
 
         #endregion

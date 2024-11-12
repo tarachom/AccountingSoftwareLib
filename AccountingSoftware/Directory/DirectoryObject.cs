@@ -152,7 +152,7 @@ namespace AccountingSoftware
 
             //Тригер оновлення обєкту
             if (result)
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
             BaseClear();
 
@@ -185,7 +185,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
                 //Видалення з повнотекстового пошуку
                 /* if (DeletionLabel)
@@ -215,18 +215,18 @@ namespace AccountingSoftware
             await Kernel.DataBase.CommitTransaction(TransactionID);
 
             //Тригер оновлення обєкту
-            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}"));
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
             BaseClear();
         }
 
-        // <summary>
+        /// <summary>
         /// Отримати представлення вказівника
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (Kernel != null && !UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
+            if (!UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
                 Query query = new Query(Table);
                 query.Field.AddRange(fieldPresentation);
@@ -238,5 +238,71 @@ namespace AccountingSoftware
             }
             else return "";
         }
+
+        /// <summary>
+        /// Для композитного типу даних
+        /// </summary>
+        public virtual UuidAndText GetBasis()
+        {
+            return new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}");
+        }
+
+        #region LockedObject
+
+        /// <summary>
+        /// Ключ блокування
+        /// </summary>
+        UnigueID? LockKey { get; set; }
+
+        /// <summary>
+        /// Заблокувати
+        /// </summary>
+        /// <returns>true якщо вдалось заблокувати</returns>
+        public async ValueTask<bool> Lock()
+        {
+            UnigueID unigueID = await Kernel.DataBase.SpetialTableLockedObjectAdd(Kernel.User, Kernel.Session, GetBasis());
+            if (!unigueID.IsEmpty())
+            {
+                LockKey = unigueID;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Чи заблокований?
+        /// </summary>
+        /// <returns>true якщо заблокований</returns>
+        public async ValueTask<bool> IsLock()
+        {
+            return await Kernel.DataBase.SpetialTableLockedObjectIsLock(GetBasis());
+        }
+
+        /// <summary>
+        /// Розширена версія Чи заблокований?
+        /// </summary>
+        /// <returns>Набір даних</returns>
+        public async ValueTask<LockedObject_Record> IsLockInfo()
+        {
+            if (LockKey != null && !LockKey.IsEmpty())
+                return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
+            else
+                return new LockedObject_Record();
+        }
+
+        /// <summary>
+        /// Розблокувати
+        /// </summary>
+        public async ValueTask UnLock()
+        {
+            if (LockKey != null)
+            {
+                await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
+                LockKey.Clear();
+            }
+        }
+
+        #endregion
     }
 }

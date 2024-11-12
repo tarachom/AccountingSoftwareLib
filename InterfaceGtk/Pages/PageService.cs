@@ -92,23 +92,18 @@ namespace InterfaceGtk
         {
             Box vBox = new Box(Orientation.Vertical, 0);
 
-            //Період
-            {
-                Період.Changed = PeriodChanged;
-
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(Період, false, false, 5);
-
-                vBox.PackStart(hBox, false, false, 5);
-            }
-
             Button bSpendTheDocument = new Button("Перепровести документи");
             Button bStop = new Button("Зупинити") { Sensitive = false };
             Button bClear = new Button("Очистити");
 
-            //Кнопки
+            //Період & Кнопки
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
+
+                Період.Changed = PeriodChanged;
+                hBox.PackStart(Період, false, false, 5);
+
+                //Кнопки
                 hBox.PackStart(bSpendTheDocument, false, false, 5);
                 hBox.PackStart(bStop, false, false, 5);
                 hBox.PackEnd(bClear, false, false, 5);
@@ -120,7 +115,7 @@ namespace InterfaceGtk
             {
                 bSpendTheDocument.Sensitive = sensitive;
                 bStop.Sensitive = !sensitive;
-                bClear.Sensitive = sensitive;
+                //bClear.Sensitive = sensitive;
             }
 
             CancellationTokenSource? CancellationToken = null;
@@ -128,11 +123,11 @@ namespace InterfaceGtk
             bSpendTheDocument.Clicked += async (object? sender, EventArgs args) =>
             {
                 ButtonSensitive(false);
-                await SpendTheDocument(CancellationToken = new CancellationTokenSource(), () => { ButtonSensitive(true); });
+                await SpendTheDocument(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));
             };
 
-            bStop.Clicked += (object? sender, EventArgs args) => { CancellationToken?.Cancel(); };
-            bClear.Clicked += (object? sender, EventArgs args) => { Лог.ClearMessage(); };
+            bStop.Clicked += (object? sender, EventArgs args) => CancellationToken?.Cancel();
+            bClear.Clicked += (object? sender, EventArgs args) => Лог.ClearMessage();
 
             return vBox;
         }
@@ -159,7 +154,7 @@ namespace InterfaceGtk
             {
                 bClearDeletionLabel.Sensitive = sensitive;
                 bStop.Sensitive = !sensitive;
-                bClear.Sensitive = sensitive;
+                //bClear.Sensitive = sensitive;
             }
 
             CancellationTokenSource? CancellationToken = null;
@@ -167,11 +162,11 @@ namespace InterfaceGtk
             bClearDeletionLabel.Clicked += async (object? sender, EventArgs args) =>
             {
                 ButtonSensitive(false);
-                await ClearDeletionLabel(CancellationToken = new CancellationTokenSource(), () => { ButtonSensitive(true); });
+                await ClearDeletionLabel(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));
             };
 
-            bStop.Clicked += (object? sender, EventArgs args) => { CancellationToken?.Cancel(); };
-            bClear.Clicked += (object? sender, EventArgs args) => { Лог.ClearMessage(); };
+            bStop.Clicked += (object? sender, EventArgs args) => CancellationToken?.Cancel();
+            bClear.Clicked += (object? sender, EventArgs args) => Лог.ClearMessage();
 
             return vBox;
         }

@@ -44,6 +44,11 @@ namespace InterfaceGtk
         /// </summary>
         protected Paned HPanedTop = new Paned(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
 
+        /// <summary>
+        /// Індикатор стану блокування
+        /// </summary>
+        protected Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+
         public ДовідникЕлемент()
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
@@ -53,6 +58,23 @@ namespace InterfaceGtk
             Button bSave = new Button("Зберегти");
             bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
+
+            /*
+            Button bLock = new Button
+            {
+                Label = "Заблокувати",
+                ImagePosition = PositionType.Left,
+                AlwaysShowImage = true,
+                Image = Image.NewFromIconName(Stock.Add, IconSize.Button),
+            };
+
+            bLock.Image.MarginEnd = 5;
+            bLock.Clicked += (object? sender, EventArgs args) => Lock();
+            HBoxTop.PackEnd(bLock, false, false, 10);
+            */
+
+            //Індикатор стану блокування
+            HBoxTop.PackEnd(LabelLock, false, false, 10);
 
             PackStart(HBoxTop, false, false, 10);
 
@@ -85,6 +107,13 @@ namespace InterfaceGtk
 
         #endregion
 
+        protected void LockInfo(LockedObject_Record record)
+        {
+            LabelLock.Markup = record.Result ?
+                $"<span color='green'>Заблоковано</span>" : //{record.UserName}, {record.DateLock}
+                "<span color='red'>Тільки для читання</span>";
+        }
+
         /// <summary>
         /// Функція обробки перед збереження та після збереження
         /// </summary>
@@ -96,18 +125,21 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
-            await Save();
+            bool isSave = await Save();
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
-            if (CallBack_OnSelectPointer != null && UnigueID != null)
-                CallBack_OnSelectPointer.Invoke(UnigueID);
+            if (isSave)
+            {
+                if (CallBack_OnSelectPointer != null && UnigueID != null)
+                    CallBack_OnSelectPointer.Invoke(UnigueID);
 
-            CallBack_LoadRecords?.Invoke(UnigueID);
+                CallBack_LoadRecords?.Invoke(UnigueID);
 
-            if (closePage)
-                NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
-            else
-                NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
+                if (closePage)
+                    NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
+                else
+                    NotebookFunction.RenameNotebookPageToCode(notebook, Caption, this.Name);
+            }
         }
     }
 }

@@ -164,7 +164,7 @@ namespace AccountingSoftware
 
             //Тригер оновлення обєкту
             if (result)
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
             BaseClear();
 
@@ -202,7 +202,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
             }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже провести");
@@ -223,7 +223,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
                 //Видалення з повнотекстового пошуку
                 /* if (DeletionLabel)
@@ -254,7 +254,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.CommitTransaction(TransactionID);
 
             //Тригер оновлення обєкту
-            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(new UuidAndText(UnigueID, $"Документи.{TypeDocument}"));
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
 
             BaseClear();
         }
@@ -266,7 +266,7 @@ namespace AccountingSoftware
         /// <returns>Представлення обєкта</returns>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (Kernel != null && !UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
+            if (!UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
@@ -277,6 +277,14 @@ namespace AccountingSoftware
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
             else return "";
+        }
+
+        /// <summary>
+        /// Для композитного типу даних
+        /// </summary>
+        public virtual UuidAndText GetBasis()
+        {
+            return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
         }
     }
 }

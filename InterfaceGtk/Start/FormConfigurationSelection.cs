@@ -73,7 +73,7 @@ namespace InterfaceGtk
             //Список
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                vBoxContainerLeft.PackStart(hBox, false, false, 2);
+                vBoxContainerLeft.PackStart(hBox, false, false, 4);
 
                 ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In };
                 scroll.SetSizeRequest(500, 280);
