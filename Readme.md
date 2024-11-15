@@ -1,6 +1,6 @@
 # Бібліотека
 
-<b>Ядро</b>  | .net 8, Linux, Windows 
+<b>Ядро</b>  | .net 9, Linux, Windows 
 
 <b>Класи:</b>
     
