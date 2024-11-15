@@ -59,7 +59,6 @@ namespace InterfaceGtk
             bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
-            /*
             Button bLock = new Button
             {
                 Label = "Заблокувати",
@@ -71,7 +70,6 @@ namespace InterfaceGtk
             bLock.Image.MarginEnd = 5;
             bLock.Clicked += (object? sender, EventArgs args) => Lock();
             HBoxTop.PackEnd(bLock, false, false, 10);
-            */
 
             //Індикатор стану блокування
             HBoxTop.PackEnd(LabelLock, false, false, 10);
@@ -104,6 +102,11 @@ namespace InterfaceGtk
         /// Правий Блок
         /// </summary>
         protected virtual void CreatePack2(Box vBox) { }
+
+        /// <summary>
+        /// Заблокувати
+        /// </summary>
+        protected virtual void Lock() { }
 
         #endregion
 

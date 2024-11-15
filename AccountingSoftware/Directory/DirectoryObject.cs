@@ -252,7 +252,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Ключ блокування
         /// </summary>
-        UnigueID? LockKey { get; set; }
+        UnigueID LockKey { get; set; } = new UnigueID();
 
         /// <summary>
         /// Заблокувати
@@ -285,7 +285,7 @@ namespace AccountingSoftware
         /// <returns>Набір даних</returns>
         public async ValueTask<LockedObject_Record> IsLockInfo()
         {
-            if (LockKey != null && !LockKey.IsEmpty())
+            if (!LockKey.IsEmpty())
                 return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
             else
                 return new LockedObject_Record();
@@ -296,11 +296,8 @@ namespace AccountingSoftware
         /// </summary>
         public async ValueTask UnLock()
         {
-            if (LockKey != null)
-            {
-                await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
-                LockKey.Clear();
-            }
+            await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
+            LockKey.Clear();
         }
 
         #endregion

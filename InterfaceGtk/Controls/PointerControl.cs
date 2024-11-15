@@ -66,6 +66,11 @@ namespace InterfaceGtk
         /// </summary>
         public System.Action? AfterSelectFunc { get; set; }
 
+        /// <summary>
+        /// Функція яка викликається після очищення.
+        /// </summary>
+        public System.Action? AfterClearFunc { get; set; }
+
         public string Caption
         {
             get

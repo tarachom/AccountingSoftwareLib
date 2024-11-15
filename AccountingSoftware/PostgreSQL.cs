@@ -1355,9 +1355,10 @@ WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')
 
         public async ValueTask<UnigueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
         {
+            UnigueID unigueID = new UnigueID();
+
             if (!await SpetialTableLockedObjectIsLock(obj))
             {
-                UnigueID unigueID = new();
                 unigueID.New();
 
                 Dictionary<string, object> paramQuery = new()
@@ -1385,11 +1386,9 @@ VALUES
     CURRENT_TIMESTAMP::timestamp,
     @obj
 )", paramQuery);
-
-                return unigueID;
             }
-            else
-                return new UnigueID();
+
+            return unigueID;
         }
 
         public async ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect()
@@ -1406,7 +1405,6 @@ FROM {SpecialTables.LockedObject} AS LockedObject
 ORDER BY
     LockedObject.datelock
 ";
-
             return await SelectRequest(query);
         }
 
@@ -1415,13 +1413,13 @@ ORDER BY
             Dictionary<string, object> paramQuery = new() { { "uid", obj.Uuid } };
 
             string query = $@"
-SELECT 
+SELECT
     count(uid) AS count
 FROM {SpecialTables.LockedObject}
 WHERE (obj).uuid = @uid
 ";
-            object? count_session = await ExecuteSQLScalar(query, paramQuery);
-            if (count_session != null && (long)count_session == 1)
+            object? count = await ExecuteSQLScalar(query, paramQuery);
+            if (count != null && (long)count == 1)
                 return true;
             else
                 return false;
@@ -1465,10 +1463,7 @@ WHERE (LockedObject.obj).uuid = @obj
             if (!lockKey.IsEmpty())
             {
                 Dictionary<string, object> paramQuery = new() { { "uid", lockKey.UGuid } };
-
-                await ExecuteSQL($@"
-DELETE FROM {SpecialTables.LockedObject} 
-WHERE uid = @uid", paramQuery);
+                await ExecuteSQL($@"DELETE FROM {SpecialTables.LockedObject} WHERE uid = @uid", paramQuery);
             }
         }
 

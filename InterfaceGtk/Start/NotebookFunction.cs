@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Net.Http.Headers;
 using AccountingSoftware;
 using Gtk;
 
