@@ -29,6 +29,12 @@ namespace InterfaceGtk
 {
     public abstract class CompositePointerControl : PointerControl
     {
+        Kernel Kernel { get; set; }
+        string NameSpageProgram { get; set; }
+        string NameSpageCodeGeneration { get; set; }
+        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+        event EventHandler<UuidAndText>? PointerChanged;
+
         public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration)
         {
             Kernel = kernel;
@@ -44,13 +50,7 @@ namespace InterfaceGtk
             Button bTypeInfo = new Button(new Image(Stock.GoDown, IconSize.Menu));
             PackStart(bTypeInfo, false, false, 1);
             bTypeInfo.Clicked += OnTypeInfo;
-        }
-
-        Kernel Kernel { get; set; }
-        string NameSpageProgram { get; set; }
-        string NameSpageCodeGeneration { get; set; }
-        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-        event EventHandler<UuidAndText>? PointerChanged;
+        }        
 
         #region Virtual & Abstract Function
 

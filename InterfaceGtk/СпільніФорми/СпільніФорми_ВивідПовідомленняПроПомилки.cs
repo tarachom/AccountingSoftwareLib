@@ -119,7 +119,7 @@ namespace InterfaceGtk
             //Перший рядок
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<i>" + row["date"].ToString() + " " + row["process"].ToString() + "</i>") { UseMarkup = true };
+                Label line = new Label("<i>" + row["date"].ToString() + " " + row["process"].ToString() + "</i>") { UseMarkup = true, UseUnderline = false, Selectable = true };
 
                 hBox.PackStart(line, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
@@ -128,7 +128,7 @@ namespace InterfaceGtk
             //Другий рядок
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                Label line = new Label("<b>" + row["name"].ToString() + "</b>") { UseMarkup = true };
+                Label line = new Label("<b>" + row["name"].ToString() + "</b>") { UseMarkup = true, UseUnderline = false, Selectable = true };
 
                 hBox.PackStart(line, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
@@ -137,17 +137,23 @@ namespace InterfaceGtk
             //Повідомлення
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Label(row["message"].ToString()) { Wrap = true, UseMarkup = true }, false, false, 5);
+                hBox.PackStart(new Label(row["message"].ToString()) { Wrap = true, UseMarkup = true, UseUnderline = false, Selectable = true }, false, false, 5);
                 vBoxInfo.PackStart(hBox, false, false, 5);
             }
 
             //Для відкриття
             {
-                Widget? Обєкт = CreateCompositControl("", new UuidAndText(new UnigueID(row["uid"]).UGuid, row["type"].ToString() ?? ""));
+                UnigueID unigueID = new UnigueID(row["uid"]);
+                string type = row["type"].ToString() ?? "";
 
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(Обєкт, false, false, 0);
-                vBoxInfo.PackStart(hBox, false, false, 0);
+                if (!unigueID.IsEmpty() && !string.IsNullOrEmpty(type))
+                {
+                    Widget? Обєкт = CreateCompositControl("", new UuidAndText(unigueID, type));
+
+                    Box hBox = new Box(Orientation.Horizontal, 0);
+                    hBox.PackStart(Обєкт, false, false, 0);
+                    vBoxInfo.PackStart(hBox, false, false, 0);
+                }
             }
         }
 

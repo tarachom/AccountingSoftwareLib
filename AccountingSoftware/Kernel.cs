@@ -295,14 +295,14 @@ namespace AccountingSoftware
 
         /* Запис і зчитування повідомлень про помилки та інформаційних повідомлень */
 
-        public async ValueTask MessageInfoAdd(string nameProcess, Guid? objectUid, string typeObject, string nameObject, string message)
+        public async ValueTask MessageInfoAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
         {
             await DataBase.SpetialTableMessageErrorAdd
             (
                 User,
                 nameProcess,
                 objectUid != null ? (Guid)objectUid : Guid.Empty,
-                typeObject,
+                typeObject ?? "",
                 nameObject,
                 message,
                 'I'
@@ -311,14 +311,14 @@ namespace AccountingSoftware
             await ClearOutdatedMessages();
         }
 
-        public async ValueTask MessageErrorAdd(string nameProcess, Guid? objectUid, string typeObject, string nameObject, string message)
+        public async ValueTask MessageErrorAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
         {
             await DataBase.SpetialTableMessageErrorAdd
             (
                 User,
                 nameProcess,
                 objectUid != null ? (Guid)objectUid : Guid.Empty,
-                typeObject,
+                typeObject ?? "",
                 nameObject,
                 message,
                 'E'

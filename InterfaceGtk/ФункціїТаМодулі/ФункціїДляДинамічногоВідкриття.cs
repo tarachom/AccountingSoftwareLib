@@ -35,9 +35,9 @@ namespace InterfaceGtk
 {
     public abstract class ФункціїДляДинамічногоВідкриття
     {
-        private string NameSpageProgram { get; set; }
-        private string NameSpageCodeGeneration { get; set; }
-        private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+        string NameSpageProgram { get; set; }
+        string NameSpageCodeGeneration { get; set; }
+        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
         public ФункціїДляДинамічногоВідкриття(string nameSpageProgram, string nameSpageCodeGeneration)
         {
@@ -240,7 +240,7 @@ namespace InterfaceGtk
             foreach (KeyValuePair<string, string> typeDoc in allowDocument)
             {
                 LinkButton lb = new LinkButton(typeDoc.Value, typeDoc.Value) { Halign = Align.Start };
-                lb.Clicked += (object? sender, EventArgs args) => { ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID()); };
+                lb.Clicked += (object? sender, EventArgs args) => ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID());
                 vBox.PackStart(lb, false, false, 0);
             }
 

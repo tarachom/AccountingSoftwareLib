@@ -66,7 +66,7 @@ namespace InterfaceGtk
                 _ => null
             };
 
-            return dateTime != null ? dateTime.Value.Date : null;
+            return dateTime?.Date;
         }
 
         public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду, DateTime? start = null, DateTime? stop = null)

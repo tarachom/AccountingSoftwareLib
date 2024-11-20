@@ -252,8 +252,6 @@ namespace InterfaceGtk
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
-                        button.Sensitive = false;
-
                         await Select();
                         await ВигрузитиВФайл_PDF(this, FillList());
                     };
@@ -265,8 +263,6 @@ namespace InterfaceGtk
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
-                        button.Sensitive = false;
-
                         await Select();
                         await ВигрузитиВФайл_Excel(this, FillList());
                     };
