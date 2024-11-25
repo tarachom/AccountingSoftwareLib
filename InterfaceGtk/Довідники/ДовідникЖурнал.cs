@@ -52,6 +52,11 @@ namespace InterfaceGtk
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
         /// <summary>
+        /// Функція для множинного вибору
+        /// </summary>
+        public Action<UnigueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
+
+        /// <summary>
         /// Верхній набір меню
         /// </summary>
         protected Toolbar ToolbarTop = new Toolbar();
@@ -140,15 +145,21 @@ namespace InterfaceGtk
             ToolButton filterButton = new ToolButton(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
             filterButton.Clicked += OnFilterClick;
             ToolbarTop.Add(filterButton);
+
+            ToolButton multipleSelectButton = new ToolButton(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
+            multipleSelectButton.Clicked += OnMultipleSelectClick;
+            ToolbarTop.Add(multipleSelectButton);
         }
 
         Menu PopUpContextMenu()
         {
             Menu menu = new Menu();
 
-            MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");
-            setDeletionLabel.Activated += OnDeleteClick;
-            menu.Append(setDeletionLabel);
+            {
+                MenuItem item = new MenuItem("Вибрати");
+                item.Activated += OnMultipleSelectClick;
+                menu.Append(item);
+            }
 
             menu.ShowAll();
 
@@ -341,6 +352,22 @@ namespace InterfaceGtk
 
             popover.Add(vBox);
             popover.ShowAll();
+        }
+
+        void OnMultipleSelectClick(object? sender, EventArgs args)
+        {
+            if (CallBack_OnMultipleSelectPointer != null && TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                UnigueID[] unigueIDs = new UnigueID[selectionRows.Length];
+                for (int i = 0; i < selectionRows.Length; i++)
+                {
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRows[i]);
+                    unigueIDs[i] = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                }
+
+                CallBack_OnMultipleSelectPointer.Invoke(unigueIDs);
+            }
         }
 
         #endregion

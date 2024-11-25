@@ -46,6 +46,11 @@ namespace InterfaceGtk
         public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
         /// <summary>
+        /// Функція для множинного вибору
+        /// </summary>
+        public Action<UnigueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
+
+        /// <summary>
         /// Верхній набір меню
         /// </summary>
         protected Toolbar ToolbarTop = new Toolbar();
@@ -79,6 +84,7 @@ namespace InterfaceGtk
             TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
+            TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
 
             scrollTree.Add(TreeViewGrid);
 
@@ -128,6 +134,25 @@ namespace InterfaceGtk
             ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
+
+            ToolButton multipleSelectButton = new ToolButton(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
+            multipleSelectButton.Clicked += OnMultipleSelectClick;
+            ToolbarTop.Add(multipleSelectButton);
+        }
+
+        Menu PopUpContextMenu()
+        {
+            Menu menu = new Menu();
+
+            {
+                MenuItem item = new MenuItem("Вибрати");
+                item.Activated += OnMultipleSelectClick;
+                menu.Append(item);
+            }
+
+            menu.ShowAll();
+
+            return menu;
         }
 
         #endregion
@@ -152,6 +177,16 @@ namespace InterfaceGtk
 
                     CallBack_OnSelectPointer?.Invoke(DirectoryPointerItem);
                     PopoverParent?.Hide();
+                }
+        }
+
+        void OnButtonReleaseEvent(object? sender, ButtonReleaseEventArgs args)
+        {
+            if (args.Event.Button == 3 && TreeViewGrid.Selection.CountSelectedRows() != 0)
+                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
+                {
+                    SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    PopUpContextMenu().Popup();
                 }
         }
 
@@ -210,6 +245,22 @@ namespace InterfaceGtk
         async void OnRefreshClick(object? sender, EventArgs args)
         {
             await LoadRecords();
+        }
+
+        void OnMultipleSelectClick(object? sender, EventArgs args)
+        {
+            if (CallBack_OnMultipleSelectPointer != null && TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                UnigueID[] unigueIDs = new UnigueID[selectionRows.Length];
+                for (int i = 0; i < selectionRows.Length; i++)
+                {
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRows[i]);
+                    unigueIDs[i] = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                }
+
+                CallBack_OnMultipleSelectPointer.Invoke(unigueIDs);
+            }
         }
 
         #endregion
