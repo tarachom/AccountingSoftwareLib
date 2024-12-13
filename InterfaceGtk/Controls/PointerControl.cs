@@ -39,10 +39,9 @@ namespace InterfaceGtk
 
             Button bOpen = new Button(new Image(Іконки.ДляКнопок.Find));
             bOpen.Clicked += OpenSelect;
+            PackStart(bOpen, false, false, 1);
 
             bClear.Clicked += OnClear;
-
-            PackStart(bOpen, false, false, 1);
             PackEnd(bClear, false, false, 1);
         }
 
