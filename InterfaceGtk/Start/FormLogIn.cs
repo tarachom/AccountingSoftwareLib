@@ -44,7 +44,7 @@ namespace InterfaceGtk
             DeleteEvent += delegate { OnCancel(null, new EventArgs()); };
             KeyReleaseEvent += OnKeyReleaseEventWindow;
             BorderWidth = 5;
-            
+
             if (File.Exists(Іконки.ДляФорми.General))
                 SetDefaultIconFromFile(Іконки.ДляФорми.General);
 
@@ -90,13 +90,24 @@ namespace InterfaceGtk
         async void OnLogIn(object? sender, EventArgs args)
         {
             if (ProgramKernel != null)
+            {
+                bLogIn.Sensitive = false;
+
                 if (await ProgramKernel.UserLogIn(comboBoxAllUsers.ActiveId, passwordUser.Text, TypeOpenForm))
                 {
-                    ModalResult = ResponseType.Ok;
-                    ThisClose();
+                    if (ModalResult != ResponseType.Cancel)
+                    {
+                        ModalResult = ResponseType.Ok;
+                        
+                        ProgramKernel.LoopUpdateSession();
+                        ThisClose();
+                    }
                 }
                 else
                     Message.Error(this, "Невірний пароль");
+
+                bLogIn.Sensitive = true;
+            }
         }
 
         void OnCancel(object? sender, EventArgs args)

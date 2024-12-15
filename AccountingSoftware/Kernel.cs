@@ -172,11 +172,6 @@ namespace AccountingSoftware
         public Guid Session { get; private set; } = Guid.Empty;
 
         /// <summary>
-        /// Дата останньої вибірки тригерів оновлення обєктів
-        /// </summary>
-        DateTime AfterUpdateSession { get; set; } = DateTime.Now;
-
-        /// <summary>
         /// Авторизація 
         /// </summary>
         /// <param name="user">Користувач</param>
@@ -184,33 +179,43 @@ namespace AccountingSoftware
         /// <returns></returns>
         public async Task<bool> UserLogIn(string user, string password, TypeForm typeForm)
         {
-            var userSession = await DataBase.SpetialTableUsersLogIn(user, password, typeForm);
+            (Guid User, Guid Session)? userSession = await DataBase.SpetialTableUsersLogIn(user, password, typeForm);
             if (userSession != null)
             {
                 User = userSession.Value.User;
                 Session = userSession.Value.Session;
-
-                //Фонове оновлення сесії
-                LoopUpdateSession();
-
-                //Очищення устарівших тригерів оновлення об’єктів
-                await DataBase.SpetialTableObjectUpdateTrigerClearOld();
-
                 return true;
             }
             else
             {
                 User = Session = Guid.Empty;
-
                 return false;
             }
         }
 
         /// <summary>
+        /// Дата останньої вибірки тригерів оновлення обєктів
+        /// </summary>
+        DateTime AfterUpdateSession { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Чи вже запущене автоматичне оновлення сесії?
+        /// </summary>
+        bool IsRunLoopUpdateSession = false;
+
+        /// <summary>
         /// Фонове обновлення сесії
         /// </summary>
-        async void LoopUpdateSession()
+        public async void LoopUpdateSession()
         {
+            if (IsRunLoopUpdateSession)
+                return;
+
+            IsRunLoopUpdateSession = true;
+
+            //Очищення устарівших тригерів оновлення об’єктів
+            await DataBase.SpetialTableObjectUpdateTrigerClearOld();
+
             while (true)
             {
                 await DataBase.SpetialTableActiveUsersUpdateSession(Session);

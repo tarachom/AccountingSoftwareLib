@@ -1007,7 +1007,7 @@ VALUES
                 command.Parameters.AddWithValue("session", session_uid);
 
                 object? master = await command.ExecuteScalarAsync();
-                return master != null ? (bool)master : false;
+                return master != null && (bool)master;
             }
             else
                 return false;
@@ -1015,9 +1015,7 @@ VALUES
 
         async ValueTask<bool> SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
         {
-            if (DataSource != null)
-            {
-                string query = $@"
+            string query = $@"
 WITH update_session AS (
     UPDATE {SpecialTables.ActiveUsers} 
         SET dateupdate = CURRENT_TIMESTAMP::timestamp 
@@ -1028,15 +1026,9 @@ WITH update_session AS (
 SELECT count(*) FROM update_session
 ";
 
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("session", session_uid);
-
-                object? count_session = await command.ExecuteScalarAsync();
-                if (count_session != null && (long)count_session == 1)
-                    return true;
-                else
-                    return false;
-            }
+            object? count_session = await ExecuteSQLScalar(query, new() { { "session", session_uid } });
+            if (count_session != null && (long)count_session == 1)
+                return true;
             else
                 return false;
         }
