@@ -94,6 +94,9 @@ namespace AccountingSoftware
             UGuid = Guid.NewGuid();
         }
 
+        /// <summary>
+        /// Новий UnigueID
+        /// </summary>
         public static UnigueID NewUnigueID()
         {
             return new UnigueID(Guid.NewGuid());
@@ -104,6 +107,9 @@ namespace AccountingSoftware
         /// </summary>
         public Guid UGuid { get; private set; }
 
+        /// <summary>
+        /// ToString
+        /// </summary>
         public override string ToString()
         {
             return UGuid.ToString();
