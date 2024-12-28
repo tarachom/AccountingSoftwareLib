@@ -68,11 +68,6 @@ namespace AccountingSoftware
 		private string Table { get; set; }
 
 		/// <summary>
-		/// Поле Родич
-		/// </summary>
-		//private string ParentField { get; set; }
-
-		/// <summary>
 		/// Поточна позиція
 		/// </summary>
 		protected int Position { get; private set; }

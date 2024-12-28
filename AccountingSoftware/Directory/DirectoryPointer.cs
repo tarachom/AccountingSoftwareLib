@@ -102,10 +102,6 @@ namespace AccountingSoftware
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
                 await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
-
-                //Видалення з повнотекстового пошуку
-                /* if (label)
-                   await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
         }
 

@@ -39,11 +39,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="desc">Опис</param>
         /// <param name="isTree">Це для дерева</param>
-        public ConfigurationTabularList(string name, string desc = ""/*, bool isTree = false*/)
+        public ConfigurationTabularList(string name, string desc = "")
         {
             Name = name;
             Desc = desc;
-            //IsTree = isTree;
         }
 
         /// <summary>
@@ -55,11 +54,6 @@ namespace AccountingSoftware
         /// Опис
         /// </summary>
         public string Desc { get; set; } = "";
-
-        /// <summary>
-        /// Список для виводу дерева (для довідників)
-        /// </summary>
-        //public bool IsTree { get; set; }
 
         /// <summary>
         /// Поля

@@ -74,17 +74,17 @@ namespace AccountingSoftware
 				new ("datetime", "[ datetime ] - Дата та час"),
 				new ("time", "[ time ] - Час"),
 				new ("enum", "[ enum ] - Перелічення"),
-				new ("pointer", "[ pointer ] - Вказівник статичний"),
-				new ("composite_pointer", "[ composite_pointer ] - Вказівник динамічний"),
-				new ("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор"),
-				new ("bytea", "[ byte ] - Бінарні дані"),
+				new ("pointer", "[ pointer ] - Вказівник"),
+				new ("composite_pointer", "[ composite_pointer ] - Вказівник з вибором типу"),
+				new ("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор Guid"),
+				new ("bytea", "[ bytea ] - Бінарні дані"),
 				new ("string[]", "[ a, b, ... ] - Масив текст"),
 				new ("integer[]", "[ 1, 2, ... ] - Масив ціле число"),
-				new ("numeric[]", "[ 1.0, 2.0, ... ] - Масив число з комою")
+				new ("numeric[]", "[ 1.5, 2.8, ... ] - Масив число з комою"),
+				new ("uuid[]", "[ uuid, ... ] - Масив унікальних ідентифікаторів")
 			];
 
 			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
-			//fieldTypes.Add(new FieldType("uuid[]", "[ uuid1, uuid2, uuid3 ... ] - Масив вказівників на елемент конфігурації"));
 
 			//character [ (n) ] - char [ (n) ] - fixed-length character string
 			//character varying [ (n) ] - varchar [ (n) ] - variable-length character string

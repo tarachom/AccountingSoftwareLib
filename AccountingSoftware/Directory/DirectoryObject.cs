@@ -186,10 +186,6 @@ namespace AccountingSoftware
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
-
-                //Видалення з повнотекстового пошуку
-                /* if (DeletionLabel)
-                    await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, 0); */
             }
             else
                 throw new Exception("Елемент спочатку треба записати, а потім вже встановлювати мітку видалення");

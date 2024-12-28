@@ -1296,10 +1296,7 @@ WHERE
 
         public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj)
         {
-            Dictionary<string, object> paramQuery = new()
-            {
-                { "obj", obj }
-            };
+            Dictionary<string, object> paramQuery = new() { { "obj", obj } };
 
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.ObjectUpdateTriger} 

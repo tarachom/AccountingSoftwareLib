@@ -266,6 +266,11 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Псевдонім типу відкритої форми
+        /// </summary>
+        /// <param name="typeForm">Тип форми</param>
+        /// <returns>Псевдонім</returns>
         public static string TypeForm_Alias(TypeForm typeForm)
         {
             return typeForm switch

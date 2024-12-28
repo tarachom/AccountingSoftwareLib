@@ -38,13 +38,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="caption">Заголовок</param>
-        public ConfigurationFormsElementField(string name, string caption = "", uint size = 0,  uint height = 0, int sortNum = 100)
+        public ConfigurationFormsElementField(string name, string caption = "", uint size = 0, uint height = 0, int sortNum = 100, bool multipleSelect = false)
         {
             Name = name;
             Caption = caption;
             Size = size;
             Height = height;
             SortNum = sortNum;
+            MultipleSelect = multipleSelect;
         }
 
         /// <summary>
@@ -70,6 +71,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Порядок поля в списку
         /// </summary>
-        public int SortNum { get; set; } = 100;        
+        public int SortNum { get; set; } = 100;
+
+        /// <summary>
+        /// Підбір по полю
+        /// </summary>
+        public bool MultipleSelect { get; set; }
     }
 }
