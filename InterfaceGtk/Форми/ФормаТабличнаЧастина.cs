@@ -47,6 +47,12 @@ namespace InterfaceGtk
         /// </summary>
         ScrolledWindow ScrollTree;
 
+        /// <summary>
+        /// Виділений рядок
+        /// Використовується коли треба спозиціонувати список при обновленні
+        /// </summary>
+        TreePath? SelectTreePath = null;
+
         public ФормаТабличнаЧастина()
         {
             CreateToolbar();
@@ -56,6 +62,7 @@ namespace InterfaceGtk
 
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
             TreeViewGrid.ActivateOnSingleClick = true;
+            TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
@@ -263,9 +270,33 @@ namespace InterfaceGtk
         #region TreeView
 
         /// <summary>
+        /// Функція позиціонує список на рядок який раніше був активований OnRowActivated
+        /// </summary>
+        protected void SelectRowActivated()
+        {
+            if (SelectTreePath != null)
+                TreeViewGrid.SetCursor(SelectTreePath, TreeViewGrid.Columns[0], false);
+        }
+
+        /// <summary>
+        /// Звичайний клік
+        /// </summary>
+        void OnRowActivated(object? sender, RowActivatedArgs args)
+        {
+            var cellInfoObj = GetCellInfo();
+            if (cellInfoObj.HasValue)
+            {
+                var cellInfo = cellInfoObj.Value;
+                SelectTreePath = cellInfo.Path;
+            }
+            else
+                SelectTreePath = null;
+        }
+
+        /// <summary>
         /// Подвійний клік лівою кнопкою миші
         /// </summary>
-        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
+        void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
         {
             if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.DoubleButtonPress)
             {
