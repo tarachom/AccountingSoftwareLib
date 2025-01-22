@@ -179,6 +179,16 @@ namespace AccountingSoftware
             Function,
 
             /// <summary>
+            /// Тригери
+            /// </summary>
+            Triggers,
+
+            /// <summary>
+            /// Проведення документу
+            /// </summary>
+            SpendTheDocument,
+
+            /// <summary>
             /// Звіт
             /// </summary>
             Report

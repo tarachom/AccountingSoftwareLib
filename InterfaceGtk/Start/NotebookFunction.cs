@@ -144,7 +144,7 @@ namespace InterfaceGtk
         /// <param name="codePage">Код сторінки</param>
         /// <param name="notebook">Блокнот</param>
         /// <returns>НBox</returns>
-        static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage)
+        public static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage)
         {
             Box hBoxLabel = new Box(Orientation.Horizontal, 0);
 

@@ -31,7 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// При створенні нового
         /// </summary>
-        public string New { get; set; } = "";
+        public string New { get; set; } = "New";
 
         /// <summary>
         /// Доступність тригеру
@@ -41,7 +41,7 @@ namespace AccountingSoftware
         /// <summary>
         /// При копіюванні
         /// </summary>
-        public string Copying { get; set; } = "";
+        public string Copying { get; set; } = "Copying";
 
         /// <summary>
         /// Доступність тригеру
@@ -51,7 +51,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Перед записом
         /// </summary>
-        public string BeforeSave { get; set; } = "";
+        public string BeforeSave { get; set; } = "BeforeSave";
 
         /// <summary>
         /// Доступність тригеру
@@ -61,7 +61,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Після запису
         /// </summary>
-        public string AfterSave { get; set; } = "";
+        public string AfterSave { get; set; } = "AfterSave";
 
         /// <summary>
         /// Доступність тригеру
@@ -71,7 +71,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Встановлення мітки на видалення
         /// </summary>
-        public string SetDeletionLabel { get; set; } = "";
+        public string SetDeletionLabel { get; set; } = "SetDeletionLabel";
 
         /// <summary>
         /// Доступність тригеру
@@ -81,7 +81,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Перед видаленням
         /// </summary>
-        public string BeforeDelete { get; set; } = "";
+        public string BeforeDelete { get; set; } = "BeforeDelete";
 
         /// <summary>
         /// Доступність тригеру

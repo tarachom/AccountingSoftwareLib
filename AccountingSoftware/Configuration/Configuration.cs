@@ -1484,42 +1484,56 @@ namespace AccountingSoftware
 
         private static void LoadTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
         {
+            //Тимчасова функція, пізніше видалити
+            static string RemoveOld(string value)
+            {
+                int position = value.IndexOf('.');
+                return position > 0 ? value[(position + 1)..] : value;
+            }
+
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
             if (nodeTriggerFunctions != null)
             {
                 var nodeNew = nodeTriggerFunctions.SelectSingleNode("New");
-                triggerFunctions.New = nodeNew?.Value ?? "";
+                triggerFunctions.New = RemoveOld(nodeNew?.Value ?? "");
                 triggerFunctions.NewAction = nodeNew?.GetAttribute("Action", "") == "1";
 
                 var nodeCopying = nodeTriggerFunctions.SelectSingleNode("Copying");
-                triggerFunctions.Copying = nodeCopying?.Value ?? "";
+                triggerFunctions.Copying = RemoveOld(nodeCopying?.Value ?? "");
                 triggerFunctions.CopyingAction = nodeCopying?.GetAttribute("Action", "") == "1";
 
                 var nodeBeforeSave = nodeTriggerFunctions.SelectSingleNode("BeforeSave");
-                triggerFunctions.BeforeSave = nodeBeforeSave?.Value ?? "";
+                triggerFunctions.BeforeSave = RemoveOld(nodeBeforeSave?.Value ?? "");
                 triggerFunctions.BeforeSaveAction = nodeBeforeSave?.GetAttribute("Action", "") == "1";
 
                 var nodeAfterSave = nodeTriggerFunctions.SelectSingleNode("AfterSave");
-                triggerFunctions.AfterSave = nodeAfterSave?.Value ?? "";
+                triggerFunctions.AfterSave = RemoveOld(nodeAfterSave?.Value ?? "");
                 triggerFunctions.AfterSaveAction = nodeAfterSave?.GetAttribute("Action", "") == "1";
 
                 var nodeSetDeletionLabel = nodeTriggerFunctions.SelectSingleNode("SetDeletionLabel");
-                triggerFunctions.SetDeletionLabel = nodeSetDeletionLabel?.Value ?? "";
+                triggerFunctions.SetDeletionLabel = RemoveOld(nodeSetDeletionLabel?.Value ?? "");
                 triggerFunctions.SetDeletionLabelAction = nodeSetDeletionLabel?.GetAttribute("Action", "") == "1";
 
                 var nodeBeforeDelete = nodeTriggerFunctions.SelectSingleNode("BeforeDelete");
-                triggerFunctions.BeforeDelete = nodeBeforeDelete?.Value ?? "";
+                triggerFunctions.BeforeDelete = RemoveOld(nodeBeforeDelete?.Value ?? "");
                 triggerFunctions.BeforeDeleteAction = nodeBeforeDelete?.GetAttribute("Action", "") == "1";
             }
         }
 
         private static void LoadSpendFunctions(ConfigurationSpendFunctions spendFunctions, XPathNavigator? xPathDocNavigator)
         {
+            //Тимчасова функція, пізніше видалити
+            static string RemoveOld(string value)
+            {
+                int position = value.IndexOf('.');
+                return position > 0 ? value[(position + 1)..] : value;
+            }
+
             XPathNavigator? nodeSpendFunctions = xPathDocNavigator?.SelectSingleNode("SpendFunctions");
             if (nodeSpendFunctions != null)
             {
-                spendFunctions.Spend = nodeSpendFunctions.SelectSingleNode("Spend")?.Value ?? "";
-                spendFunctions.ClearSpend = nodeSpendFunctions.SelectSingleNode("ClearSpend")?.Value ?? "";
+                spendFunctions.Spend = RemoveOld(nodeSpendFunctions.SelectSingleNode("Spend")?.Value ?? "");
+                spendFunctions.ClearSpend = RemoveOld(nodeSpendFunctions.SelectSingleNode("ClearSpend")?.Value ?? "");
             }
         }
 
@@ -1978,7 +1992,7 @@ namespace AccountingSoftware
             }
         }
 
-        public static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        private static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             /*
             Попередньо визначені поля
@@ -2542,7 +2556,7 @@ namespace AccountingSoftware
             }
         }
 
-        private static void SaveTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTriggerFunctions = xmlConfDocument.CreateElement("TriggerFunctions");
             rootNode.AppendChild(nodeTriggerFunctions);
@@ -2585,7 +2599,7 @@ namespace AccountingSoftware
             nodeTriggerFunctions.AppendChild(nodeBeforeDelete);
         }
 
-        private static void SaveSpendFunctions(ConfigurationSpendFunctions spendFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveSpendFunctions(ConfigurationSpendFunctions spendFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeSpendFunctions = xmlConfDocument.CreateElement("SpendFunctions");
             rootNode.AppendChild(nodeSpendFunctions);
