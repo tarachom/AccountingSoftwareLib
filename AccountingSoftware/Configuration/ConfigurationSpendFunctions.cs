@@ -36,7 +36,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Обробка очищення проводок документу
         /// </summary>
-        public string ClearSpend { get; set; } = "ClearSpend";
+        public string ClearSpend { get; set; } = "Clear";
 
         /// <summary>
         /// Створення копії
