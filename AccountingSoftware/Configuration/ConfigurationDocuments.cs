@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,6 +135,20 @@ namespace AccountingSoftware
                     presentationFields.Add(field);
 
             return presentationFields;
+        }
+
+        /// <summary>
+        /// Функція повертає масив попередньо визначених полів
+        /// </summary>
+        public static ConfigurationPredefinedField[] GetPredefinedFields()
+        {
+            return
+            [
+                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+                new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення"),
+                new ConfigurationPredefinedField("spend", "boolean", false, true, true, "Документ проведений"),
+                new ConfigurationPredefinedField("spend_date", "timestamp without time zone", false, false, true, "Дата проведення")
+            ];
         }
 
         /// <summary>

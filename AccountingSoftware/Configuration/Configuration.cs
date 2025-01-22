@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -1217,7 +1217,8 @@ namespace AccountingSoftware
                 {
                     typeDirectory = ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory;
                     pointerFoldersForHierarchical = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
-                };
+                }
+                ;
 
                 ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory,
                     pointerFoldersForHierarchical, parentFieldForHierarchical, iconTreeForHierarchical,
@@ -1963,6 +1964,8 @@ namespace AccountingSoftware
                     nodeDirectory.AppendChild(nodePointerFieldOwner);
                 }
 
+                SavePredefinedFields(ConfigurationDirectories.GetPredefinedFields(), xmlConfDocument, nodeDirectory);
+
                 SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 
                 SaveTabularParts(Conf, ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory);
@@ -1972,6 +1975,46 @@ namespace AccountingSoftware
                 SaveTriggerFunctions(ConfDirectory.Value.TriggerFunctions, xmlConfDocument, nodeDirectory);
 
                 SaveForms(Conf, ConfDirectory.Value.Fields, ConfDirectory.Value.TabularParts, ConfDirectory.Value.Forms, xmlConfDocument, nodeDirectory);
+            }
+        }
+
+        public static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            /*
+            Попередньо визначені поля
+            */
+
+            XmlElement nodePredefinedFields = xmlConfDocument.CreateElement("PredefinedFields");
+            rootNode.AppendChild(nodePredefinedFields);
+
+            foreach (ConfigurationPredefinedField predefinedField in predefinedFields)
+            {
+                XmlElement nodePredefinedField = xmlConfDocument.CreateElement("PredefinedField");
+                nodePredefinedFields.AppendChild(nodePredefinedField);
+
+                XmlElement nodePredefinedFieldName = xmlConfDocument.CreateElement("Name");
+                nodePredefinedFieldName.InnerText = predefinedField.NameInTable;
+                nodePredefinedField.AppendChild(nodePredefinedFieldName);
+
+                XmlElement nodePredefinedFieldNameInTable = xmlConfDocument.CreateElement("NameInTable");
+                nodePredefinedFieldNameInTable.InnerText = predefinedField.NameInTable;
+                nodePredefinedField.AppendChild(nodePredefinedFieldNameInTable);
+
+                XmlElement nodePredefinedFieldType = xmlConfDocument.CreateElement("Type");
+                nodePredefinedFieldType.InnerText = predefinedField.Type;
+                nodePredefinedField.AppendChild(nodePredefinedFieldType);
+
+                XmlElement nodePredefinedFieldIsPrimaryKey = xmlConfDocument.CreateElement("IsPrimaryKey");
+                nodePredefinedFieldIsPrimaryKey.InnerText = predefinedField.IsPrimaryKey ? "1" : "0";
+                nodePredefinedField.AppendChild(nodePredefinedFieldIsPrimaryKey);
+
+                XmlElement nodePredefinedFieldIsIndex = xmlConfDocument.CreateElement("IsIndex");
+                nodePredefinedFieldIsIndex.InnerText = predefinedField.IsIndex ? "1" : "0";
+                nodePredefinedField.AppendChild(nodePredefinedFieldIsIndex);
+
+                XmlElement nodePredefinedFieldIsNotNull = xmlConfDocument.CreateElement("IsNotNull");
+                nodePredefinedFieldIsNotNull.InnerText = predefinedField.IsNotNull ? "1" : "0";
+                nodePredefinedField.AppendChild(nodePredefinedFieldIsNotNull);
             }
         }
 
@@ -2107,6 +2150,8 @@ namespace AccountingSoftware
                     nodeTablePartDesc.InnerText = tablePart.Value.Desc;
                     nodeTablePart.AppendChild(nodeTablePartDesc);
                 }
+
+                SavePredefinedFields(ConfigurationTablePart.GetPredefinedFields(), xmlConfDocument, nodeTablePart);
 
                 SaveFields(tablePart.Value.Fields, xmlConfDocument, nodeTablePart, "TablePart");
 
@@ -2718,6 +2763,8 @@ namespace AccountingSoftware
                 nodeDocumentExportXml.InnerText = ConfDocument.Value.ExportXml ? "1" : "0";
                 nodeDocument.AppendChild(nodeDocumentExportXml);
 
+                SavePredefinedFields(ConfigurationDocuments.GetPredefinedFields(), xmlConfDocument, nodeDocument);
+
                 SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 
                 SaveTabularParts(Conf, ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument);
@@ -2762,6 +2809,8 @@ namespace AccountingSoftware
                     nodeRegisterDesc.InnerText = ConfRegisterInfo.Value.Desc;
                     nodeRegister.AppendChild(nodeRegisterDesc);
                 }
+
+                SavePredefinedFields(ConfigurationRegistersInformation.GetPredefinedFields(), xmlConfDocument, nodeRegister);
 
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);
@@ -2837,6 +2886,8 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterNoSummary = xmlConfDocument.CreateElement("NoSummary");
                 nodeRegisterNoSummary.InnerText = ConfRegisterAccml.Value.NoSummary ? "1" : "0";
                 nodeRegister.AppendChild(nodeRegisterNoSummary);
+
+                SavePredefinedFields(ConfigurationRegistersAccumulation.GetPredefinedFields(), xmlConfDocument, nodeRegister);
 
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,42 +141,47 @@ namespace AccountingSoftware
             /// <summary>
             /// Список
             /// </summary>
-            List = 2,
+            List,
 
             /// <summary>
             /// Елемент
             /// </summary>
-            Element = 3,
+            Element,
 
             /// <summary>
             /// Швидкий вибір
             /// </summary>
-            ListSmallSelect = 4,
+            ListSmallSelect,
 
             /// <summary>
             /// Контрол вибору
             /// </summary>
-            PointerControl = 5,
+            PointerControl,
+
+            /// <summary>
+            /// Контрол вибору масиву
+            /// </summary>
+            MultiplePointerControl,
 
             /// <summary>
             /// Список з Деревом
             /// </summary>
-            ListAndTree = 6,
+            ListAndTree,
 
             /// <summary>
             /// Таблична частина
             /// </summary>
-            TablePart = 7,
+            TablePart,
 
             /// <summary>
             /// Спільні функції
             /// </summary>
-            Function = 8,
+            Function,
 
             /// <summary>
             /// Звіт
             /// </summary>
-            Report = 9
+            Report
         }
     }
 }

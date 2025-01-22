@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +96,7 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationForms> Forms { get; } = [];
 
         /// <summary>
-        /// Без віртуальної таблиці Підсумки
+        /// Без таблиці Підсумки
         /// </summary>
         public bool NoSummary { get; set; }
 
@@ -127,6 +127,20 @@ namespace AccountingSoftware
                 confRegCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
             return confRegCopy;
+        }
+
+        /// <summary>
+        /// Функція повертає масив попередньо визначених полів
+        /// </summary>
+        public static ConfigurationPredefinedField[] GetPredefinedFields()
+        {
+            return
+            [
+                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+                new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
+                new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
+                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник")
+            ];
         }
 
         #region Append

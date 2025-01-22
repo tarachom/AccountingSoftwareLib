@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,6 +79,25 @@ namespace AccountingSoftware
                 confObjectTablePart.Forms.Add(forms.Key, forms.Value.Copy());
 
             return confObjectTablePart;
+        }
+
+        /// <summary>
+        /// Функція повертає масив попередньо визначених полів
+        /// </summary>
+        public static ConfigurationPredefinedField[] GetPredefinedFields()
+        {
+            return
+            [
+                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+
+                /*
+                Поле Власник є не у всіх табличних частинах
+
+                Наприклад в Табличних частинах для Констант немає поля Власник,
+                немає поля Власник і у Регістрів Накопичення
+                */
+                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник")
+            ];
         }
 
         /// <summary>

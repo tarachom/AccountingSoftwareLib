@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System.Net.Http.Headers;
-using AccountingSoftware;
 using Gtk;
 
 namespace InterfaceGtk
@@ -46,7 +44,7 @@ namespace InterfaceGtk
                 EnablePopup = true,
                 BorderWidth = 0,
                 ShowBorder = false,
-                TabPos = PositionType.Top
+                TabPos = PositionType.Top,
             };
 
             if (history_switch_list)
@@ -63,7 +61,7 @@ namespace InterfaceGtk
                     if (history_switch_list != null)
                     {
                         List<string> historySwitchList = (List<string>)history_switch_list;
-                        historySwitchList.Remove(currPageUID); // Поточна сторінка видяляється із списку, якщо вона там є
+                        historySwitchList.Remove(currPageUID); // Поточна сторінка видаляється із списку, якщо вона там є
                         historySwitchList.Add(currPageUID); // Поточна сторінка ставиться у кінець списку
                     }
                 };
@@ -91,6 +89,7 @@ namespace InterfaceGtk
         /// <param name="tabName">Назва сторінки</param>
         /// <param name="pageWidget">Віджет для сторінки</param>
         /// <param name="insertPage">Вставити сторінку перед поточною</param>
+        /// <param name="beforeOpenPageFunc">Функція яка викликається перед відкриттям сторінки блокноту</param>
         /// <param name="afterClosePageFunc">Функція яка викликається після закриття сторінки блокноту</param>
         public static void CreateNotebookPage(Notebook? notebook, string tabName, Func<Widget>? pageWidget, bool insertPage = false,
             System.Action? beforeOpenPageFunc = null, System.Action? afterClosePageFunc = null)
@@ -144,24 +143,25 @@ namespace InterfaceGtk
         /// <param name="caption">Заголовок</param>
         /// <param name="codePage">Код сторінки</param>
         /// <param name="notebook">Блокнот</param>
-        /// <returns></returns>
-        public static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage)
+        /// <returns>НBox</returns>
+        static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage)
         {
             Box hBoxLabel = new Box(Orientation.Horizontal, 0);
 
             //Ico
-            hBoxLabel.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 2);
+            hBoxLabel.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 0);
 
             //Текст
-            Label label = new Label { Text = SubstringPageName(caption), TooltipText = caption, Expand = false, Halign = Align.Start };
-            hBoxLabel.PackStart(label, false, false, 2);
+            Label label = new Label { Text = SubstringPageName(caption), TooltipText = caption };
+            hBoxLabel.PackStart(label, false, false, 3);
 
             //Лінк закриття сторінки
-            LinkButton lbClose = new LinkButton("Закрити", "")
+            LinkButton lbClose = new LinkButton("", "")
             {
                 Image = new Image(Іконки.ДляКнопок.Clean),
                 AlwaysShowImage = true,
-                Name = codePage
+                Name = codePage,
+                TooltipText = "Закрити"
             };
 
             lbClose.Clicked += (object? sender, EventArgs args) => CloseNotebookPageToCode(notebook, codePage);
@@ -192,7 +192,7 @@ namespace InterfaceGtk
                             historySwitchList.Remove(codePage);
 
                             if (historySwitchList.Count > 0)
-                                CurrentNotebookPageToCode(notebook, historySwitchList[historySwitchList.Count - 1]);
+                                CurrentNotebookPageToCode(notebook, historySwitchList[^1]);
                         }
 
                         //Додаткова функція яка викликається після закриття сторінки блокноту
@@ -266,7 +266,7 @@ namespace InterfaceGtk
         /// </summary>
         /// <param name="pageName"></param>
         /// <returns></returns>
-        public static string SubstringPageName(string pageName)
+        static string SubstringPageName(string pageName)
         {
             return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
         }

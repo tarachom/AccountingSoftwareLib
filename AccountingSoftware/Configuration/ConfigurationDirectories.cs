@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -164,12 +164,24 @@ namespace AccountingSoftware
         public List<ConfigurationField> GetPresentationFields()
         {
             List<ConfigurationField> presentationFields = [];
-            
+
             foreach (ConfigurationField field in Fields.Values)
                 if (field.IsPresentation)
                     presentationFields.Add(field);
 
             return presentationFields;
+        }
+
+        /// <summary>
+        /// Функція повертає масив попередньо визначених полів
+        /// </summary>
+        public static ConfigurationPredefinedField[] GetPredefinedFields()
+        {
+            return
+            [
+                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+                new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення")
+            ];
         }
 
         /// <summary>

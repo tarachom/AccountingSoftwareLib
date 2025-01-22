@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2024 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -210,7 +210,9 @@ namespace InterfaceGtk
 
                 //Обновити
                 {
-                    ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+                    string label = "Обновити";
+
+                    ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
@@ -228,7 +230,9 @@ namespace InterfaceGtk
 
                 //Зберегти в довіднику "Збережені звіти"
                 {
-                    ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), "Зберегти в довіднику \"Збережені звіти\"") { TooltipText = "Зберегти в довіднику \"Збережені звіти\"" };
+                    string label = "Зберегти в довіднику \"Збережені звіти\"";
+
+                    ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
@@ -241,14 +245,18 @@ namespace InterfaceGtk
 
                 //Довідник "Збережені звіти"
                 {
-                    ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), "Відкрити довідник \"Збережені звіти\"") { TooltipText = "Відкрити довідник \"Збережені звіти\"" };
+                    string label = "Відкрити довідник \"Збережені звіти\"";
+
+                    ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) => await ВідкритиЗбереженіЗвіти();
                 }
 
                 //PDF
                 {
-                    ToolButton button = new ToolButton(new Image(Stock.Print, IconSize.Menu), "Вигрузити в PDF файл") { TooltipText = "Вигрузити в PDF файл" };
+                    string label = "Вигрузити в PDF файл";
+
+                    ToolButton button = new ToolButton(new Image(Stock.Print, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
@@ -259,7 +267,9 @@ namespace InterfaceGtk
 
                 //Excel
                 {
-                    ToolButton button = new ToolButton(new Image(Stock.Convert, IconSize.Menu), "Вигрузити в Excel файл") { TooltipText = "Вигрузити в Excel файл" };
+                    string label = "Вигрузити в Excel файл";
+
+                    ToolButton button = new ToolButton(new Image(Stock.Convert, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
