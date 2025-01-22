@@ -31,12 +31,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Обробка проведення документу
         /// </summary>
-        public string Spend { get; set; } = "";
+        public string Spend { get; set; } = "Spend";
 
         /// <summary>
         /// Обробка очищення проводок документу
         /// </summary>
-        public string ClearSpend { get; set; } = "";
+        public string ClearSpend { get; set; } = "ClearSpend";
 
         /// <summary>
         /// Створення копії
