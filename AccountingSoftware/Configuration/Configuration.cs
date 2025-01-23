@@ -49,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Простір імен для конфігурації
         /// </summary>
-        public string NameSpaceGenerationCode { get; set; } = "";
+        public string NameSpaceGeneratedCode { get; set; } = "";
 
         /// <summary>
         /// Простір імен для програми
@@ -1114,7 +1114,7 @@ namespace AccountingSoftware
                 Save(pathToConf, new Configuration()
                 {
                     Name = "Нова конфігурація",
-                    NameSpaceGenerationCode = "НоваКонфігурація",
+                    NameSpaceGeneratedCode = "НоваКонфігурація",
                     NameSpace = "НоваКонфігурація_1_0"
                 });
 
@@ -1145,7 +1145,7 @@ namespace AccountingSoftware
             {
                 Conf.Name = rootNodeConfiguration.SelectSingleNode("Name")?.Value ?? "";
                 Conf.Subtitle = rootNodeConfiguration.SelectSingleNode("Subtitle")?.Value ?? "";
-                Conf.NameSpaceGenerationCode = rootNodeConfiguration.SelectSingleNode("NameSpaceGenerationCode")?.Value ?? "";
+                Conf.NameSpaceGeneratedCode = rootNodeConfiguration.SelectSingleNode("NameSpaceGeneratedCode")?.Value ?? "";
                 Conf.NameSpace = rootNodeConfiguration.SelectSingleNode("NameSpace")?.Value ?? "";
                 Conf.Author = rootNodeConfiguration.SelectSingleNode("Author")?.Value ?? "";
                 Conf.Desc = rootNodeConfiguration.SelectSingleNode("Desc")?.Value ?? "";
@@ -1820,9 +1820,9 @@ namespace AccountingSoftware
             nodeSubtitle.InnerText = Conf.Subtitle;
             rootNode.AppendChild(nodeSubtitle);
 
-            XmlElement nodeNameSpaceGenerationCode = xmlConfDocument.CreateElement("NameSpaceGenerationCode");
-            nodeNameSpaceGenerationCode.InnerText = Conf.NameSpaceGenerationCode;
-            rootNode.AppendChild(nodeNameSpaceGenerationCode);
+            XmlElement nodeNameSpaceGeneratedCode = xmlConfDocument.CreateElement("NameSpaceGeneratedCode");
+            nodeNameSpaceGeneratedCode.InnerText = Conf.NameSpaceGeneratedCode;
+            rootNode.AppendChild(nodeNameSpaceGeneratedCode);
 
             XmlElement nodeNameSpace = xmlConfDocument.CreateElement("NameSpace");
             nodeNameSpace.InnerText = Conf.NameSpace;
@@ -3127,7 +3127,7 @@ namespace AccountingSoftware
         /// <param name="pathToConf">Шлях до файлу конфігурації</param>
         /// <param name="pathToTemplate">Шлях до шаблону</param>
         /// <param name="pathToSaveCode">Шлях до файлу куди буде згенерований код</param>
-        public static void GenerationCode(string pathToConf, string pathToTemplate, string pathToSaveCode)
+        public static void GeneratedCode(string pathToConf, string pathToTemplate, string pathToSaveCode)
         {
             XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
             xsltCodeGnerator.Load(pathToTemplate);
