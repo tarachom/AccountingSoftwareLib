@@ -167,7 +167,7 @@ namespace InterfaceGtk
             };
 
             lb.Image.Valign = Align.End;
-            lb.Clicked += (object? sender, EventArgs args) => { ClikAction.Invoke(lb); };
+            lb.Clicked += (object? sender, EventArgs args) => ClikAction.Invoke(lb);
 
             vBox.PackStart(lb, false, false, 10);
         }

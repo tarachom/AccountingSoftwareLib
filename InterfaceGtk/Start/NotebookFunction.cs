@@ -32,7 +32,7 @@ namespace InterfaceGtk
         public const string DataKey_AfterClosePageFunc = "after_close_page_func";
 
         /// <summary>
-        /// Функція створює блокнок з верхнім положенням вкладок
+        /// Функція створює блокнот з верхнім положенням вкладок
         /// </summary>
         /// <param name="history_switch_list">Збереження історії переключення вкладок</param>
         /// <returns></returns>
@@ -91,8 +91,9 @@ namespace InterfaceGtk
         /// <param name="insertPage">Вставити сторінку перед поточною</param>
         /// <param name="beforeOpenPageFunc">Функція яка викликається перед відкриттям сторінки блокноту</param>
         /// <param name="afterClosePageFunc">Функція яка викликається після закриття сторінки блокноту</param>
+        /// <param name="notClosePage">Забрати можливість закривати сторінку</param>
         public static void CreateNotebookPage(Notebook? notebook, string tabName, Func<Widget>? pageWidget, bool insertPage = false,
-            System.Action? beforeOpenPageFunc = null, System.Action? afterClosePageFunc = null)
+            System.Action? beforeOpenPageFunc = null, System.Action? afterClosePageFunc = null, bool notClosePage = false)
         {
             if (notebook != null)
             {
@@ -102,7 +103,7 @@ namespace InterfaceGtk
                 ScrolledWindow scroll = new ScrolledWindow() { Name = codePage };
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-                Box hBoxLabel = CreateLabelPageWidget(notebook, tabName, codePage);
+                Box hBoxLabel = CreateLabelPageWidget(notebook, tabName, codePage, notClosePage);
 
                 if (insertPage)
                     numPage = notebook.InsertPage(scroll, hBoxLabel, notebook.CurrentPage);
@@ -143,8 +144,9 @@ namespace InterfaceGtk
         /// <param name="caption">Заголовок</param>
         /// <param name="codePage">Код сторінки</param>
         /// <param name="notebook">Блокнот</param>
+        /// <param name="notClosePage">Забрати можливість закривати сторінку</param>
         /// <returns>НBox</returns>
-        public static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage)
+        public static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage, bool notClosePage = false) //Зробити private пізніше !!!
         {
             Box hBoxLabel = new Box(Orientation.Horizontal, 0);
 
@@ -152,21 +154,25 @@ namespace InterfaceGtk
             hBoxLabel.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 0);
 
             //Текст
-            Label label = new Label { Text = SubstringPageName(caption), TooltipText = caption };
+            Label label = new Label { Name = "Caption", Text = SubstringPageName(caption), TooltipText = caption };
             hBoxLabel.PackStart(label, false, false, 3);
 
-            //Лінк закриття сторінки
-            LinkButton lbClose = new LinkButton("", "")
+            if (!notClosePage)
             {
-                Image = new Image(Іконки.ДляКнопок.Clean),
-                AlwaysShowImage = true,
-                Name = codePage,
-                TooltipText = "Закрити"
-            };
+                //Лінк закриття сторінки
+                LinkButton lbClose = new LinkButton("", "")
+                {
+                    Image = new Image(Іконки.ДляКнопок.Clean),
+                    AlwaysShowImage = true,
+                    Name = codePage,
+                    TooltipText = "Закрити"
+                };
 
-            lbClose.Clicked += (object? sender, EventArgs args) => CloseNotebookPageToCode(notebook, codePage);
+                lbClose.Clicked += (object? sender, EventArgs args) => CloseNotebookPageToCode(notebook, codePage);
 
-            hBoxLabel.PackEnd(lbClose, false, false, 0);
+                hBoxLabel.PackEnd(lbClose, false, false, 0);
+            }
+
             hBoxLabel.ShowAll();
 
             return hBoxLabel;
@@ -212,17 +218,23 @@ namespace InterfaceGtk
         /// Перейменувати сторінку по коду
         /// </summary>
         /// <param name="notebook">Блокнот</param>
-        /// <param name="name">Нова назва</param>
+        /// <param name="caption">Нова назва</param>
         /// <param name="codePage">Код</param>
-        public static void RenameNotebookPageToCode(Notebook? notebook, string name, string codePage)
+        public static void RenameNotebookPageToCode(Notebook? notebook, string caption, string codePage)
         {
-            Box hBoxLabel = CreateLabelPageWidget(notebook, name, codePage);
-
             notebook?.Foreach(
                 (Widget wg) =>
                 {
                     if (wg.Name == codePage)
-                        notebook.SetTabLabel(wg, hBoxLabel);
+                    {
+                        foreach (Widget children in ((Box)notebook.GetTabLabel(wg)).Children)
+                            if (children is Label label && label.Name == "Caption")
+                            {
+                                label.Text = SubstringPageName(caption);
+                                label.TooltipText = caption;
+                                break;
+                            }
+                    }
                 });
         }
 
