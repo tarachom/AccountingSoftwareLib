@@ -173,9 +173,12 @@ namespace InterfaceGtk
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
                 {
-                    DirectoryPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    if (unigueID.IsEmpty()) return;
 
-                    CallBack_OnSelectPointer?.Invoke(DirectoryPointerItem);
+                    DirectoryPointerItem = unigueID;
+
+                    CallBack_OnSelectPointer?.Invoke(unigueID);
                     PopoverParent?.Hide();
                 }
         }
@@ -251,15 +254,18 @@ namespace InterfaceGtk
         {
             if (CallBack_OnMultipleSelectPointer != null && TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
-                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
-                UnigueID[] unigueIDs = new UnigueID[selectionRows.Length];
-                for (int i = 0; i < selectionRows.Length; i++)
+                List<UnigueID> listUnigueID = [];
+                foreach (var selectionRow in TreeViewGrid.Selection.GetSelectedRows())
                 {
-                    TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRows[i]);
-                    unigueIDs[i] = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRow);
+
+                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    if (unigueID.IsEmpty()) continue;
+
+                    listUnigueID.Add(unigueID);
                 }
 
-                CallBack_OnMultipleSelectPointer.Invoke(unigueIDs);
+                CallBack_OnMultipleSelectPointer.Invoke([.. listUnigueID]);
             }
         }
 
