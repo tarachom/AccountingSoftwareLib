@@ -190,9 +190,10 @@ namespace AccountingSoftware
         ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
-        ValueTask InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<bool> SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<bool> UpdateRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        ValueTask RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0);
         ValueTask DeleteRegisterInformationObject(string table, UnigueID uid);
 
         #endregion

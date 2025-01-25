@@ -115,6 +115,17 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Видалити запис
+        /// </summary>
+        /// <param name="UID">Ключ запису</param>
+        protected async ValueTask BaseRemove(Guid UID)
+        {
+            UnigueID unigueID = new(UID);
+            if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
+                await Kernel.DataBase.RemoveRegisterInformationRecords(UID,  Table, TransactionID);
+        }
+
+        /// <summary>
         /// Видалення записів для власника
         /// </summary>
         /// <param name="owner">Унікальний ідентифікатор власника</param>

@@ -26,34 +26,27 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Журнал Вибірка Документів
 	/// </summary>
-	public abstract class JournalSelect
-	{
-		public JournalSelect(Kernel kernel, string[] table, string[] typeDocument)
-		{
-			Kernel = kernel;
-			Tables = table;
-			TypeDocuments = typeDocument;
-		}
+	public abstract class JournalSelect(Kernel kernel, string[] table, string[] typeDocument)
+    {
+        /// <summary>
+        /// Ядро
+        /// </summary>
+        protected Kernel Kernel { get; private set; } = kernel;
 
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		protected Kernel Kernel { get; private set; }
+        /// <summary>
+        /// Масив таблиць
+        /// </summary>
+        public string[] Tables { get; private set; } = table;
 
-		/// <summary>
-		/// Масив таблиць
-		/// </summary>
-		public string[] Tables { get; private set; }
+        /// <summary>
+        /// Масив типів документів
+        /// </summary>
+        public string[] TypeDocuments { get; private set; } = typeDocument;
 
-		/// <summary>
-		/// Масив типів документів
-		/// </summary>
-		public string[] TypeDocuments { get; private set; }
-
-		/// <summary>
-		/// Переміститися в початок вибірки
-		/// </summary>
-		public void MoveToFirst()
+        /// <summary>
+        /// Переміститися в початок вибірки
+        /// </summary>
+        public void MoveToFirst()
 		{
 			Position = 0;
 			MoveNext();

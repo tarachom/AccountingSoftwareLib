@@ -2491,7 +2491,7 @@ WHERE (LockedObject.obj).uuid = @obj
             }
         }
 
-        public async ValueTask InsertRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2507,18 +2507,22 @@ WHERE (LockedObject.obj).uuid = @obj
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("uid", registerInformationObject.UnigueID.UGuid);
-                command.Parameters.AddWithValue("period", registerInformationObject.Period);
-                command.Parameters.AddWithValue("owner", registerInformationObject.Owner);
+                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("period", period);
+                command.Parameters.AddWithValue("owner", owner);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
                 await command.ExecuteNonQueryAsync();
+
+                return true;
             }
+            else
+                return false;
         }
 
-        public async ValueTask UpdateRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> UpdateRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2530,19 +2534,25 @@ WHERE (LockedObject.obj).uuid = @obj
                 query += " WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("uid", registerInformationObject.UnigueID.UGuid);
-                command.Parameters.AddWithValue("period", registerInformationObject.Period);
-                command.Parameters.AddWithValue("owner", registerInformationObject.Owner);
+                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("period", period);
+                command.Parameters.AddWithValue("owner", owner);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
 
                 await command.ExecuteNonQueryAsync();
+
+                return true;
             }
+            else
+                return false;
         }
 
-        public async ValueTask<bool> SelectRegisterInformationObject(RegisterInformationObject registerInformationObject, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
+            SelectRegisterInformationObject_Record record = new();
+
             if (DataSource != null)
             {
                 string query = "SELECT uid, period, owner";
@@ -2553,26 +2563,38 @@ WHERE (LockedObject.obj).uuid = @obj
                 query += $" FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.Parameters.AddWithValue("uid", registerInformationObject.UnigueID.UGuid);
+                command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                bool hasRows = reader.HasRows;
+                record.Result = reader.HasRows;
 
                 while (await reader.ReadAsync())
                 {
-                    registerInformationObject.Period = (DateTime)reader["period"];
-                    registerInformationObject.Owner = (Guid)reader["owner"];
+                    record.Period = (DateTime)reader["period"];
+                    record.Owner = (Guid)reader["owner"];
 
                     foreach (string field in fieldArray)
                         fieldValue[field] = reader[field];
                 }
-
                 await reader.CloseAsync();
-
-                return hasRows;
             }
-            else
-                return false;
+
+            return record;
+        }
+
+        public async ValueTask RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0)
+        {
+            if (DataSource != null)
+            {
+                string query = $"DELETE FROM {table} WHERE uid = @uid";
+
+                NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+
+                command.Parameters.AddWithValue("uid", UID);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async ValueTask DeleteRegisterInformationObject(string table, UnigueID uid)

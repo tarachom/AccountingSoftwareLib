@@ -125,7 +125,6 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID">Ключ</param>
         /// <param name="ownerUnigueID">Вкласник</param>
-        /// <exception cref="Exception"></exception>
         protected async ValueTask BaseRemove(Guid UID, UnigueID ownerUnigueID)
         {
             UnigueID unigueID = new(UID);

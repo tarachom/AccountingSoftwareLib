@@ -26,52 +26,12 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Вказівник
     /// </summary>
-    public abstract class DirectoryPointer
+    public abstract class DirectoryPointer(Kernel kernel, string table, string typeDirectory) : Pointer(kernel, table)
     {
-        public DirectoryPointer(Kernel kernel, string table)
-        {
-            Table = table;
-            Kernel = kernel;
-        }
-
         /// <summary>
-        /// Ініціалізація вказівника
+        /// Назва типу як задано в конфігураторі
         /// </summary>
-        /// <param name="uid">Унікальний ідентифікатор</param>
-        /// <param name="fields">Поля які потрібно додатково зчитати з бази даних</param>
-        protected void Init(UnigueID uid, Dictionary<string, object>? fields = null)
-        {
-            UnigueID = uid;
-            Fields = fields;
-        }
-
-        /// <summary>
-        /// Ядро
-        /// </summary>
-        private Kernel Kernel { get; set; }
-
-        /// <summary>
-        /// Таблиця
-        /// </summary>
-        private string Table { get; set; } = "";
-
-        /// <summary>
-        /// Унікальний ідентифікатор
-        /// </summary>
-        public UnigueID UnigueID { get; private set; } = new UnigueID();
-
-        /// <summary>
-        /// Поля які потрібно додатково зчитати з бази даних 
-        /// </summary>
-        public Dictionary<string, object>? Fields { get; private set; }
-
-        /// <summary>
-        /// Чи це пустий ідентифікатор
-        /// </summary>
-        public bool IsEmpty()
-        {
-            return UnigueID.IsEmpty();
-        }
+        public string TypeDirectory { get; private set; } = typeDirectory;
 
         /// <summary>
         /// Отримати представлення вказівника
@@ -79,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
+            if (!IsEmpty() && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
@@ -89,7 +49,8 @@ namespace AccountingSoftware
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }
-            else return "";
+            else
+                return "";
         }
 
         /// <summary>
@@ -98,24 +59,22 @@ namespace AccountingSoftware
         /// <param name="label">Мітка</param>
         protected async ValueTask BaseDeletionLabel(bool label)
         {
-            if (Kernel != null && !IsEmpty())
+            if (!IsEmpty())
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
                 await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
             }
         }
 
         /// <summary>
-        /// Отримати ункальний ідентифікатор у форматі Guid
+        /// Для композитного типу даних
         /// </summary>
-        public Guid GetPointer()
+        public virtual UuidAndText GetBasis()
         {
-            return UnigueID.UGuid;
-        }
-
-        public override string ToString()
-        {
-            return UnigueID.UGuid.ToString();
+            return new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}");
         }
     }
 }

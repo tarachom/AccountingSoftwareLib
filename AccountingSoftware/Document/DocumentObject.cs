@@ -26,48 +26,17 @@ namespace AccountingSoftware
     /// <summary>
     /// Документ Об'єкт
     /// </summary>
-    public abstract class DocumentObject
+    public abstract class DocumentObject(Kernel kernel, string table, string typeDocument, string[] fieldsArray) : Object(kernel, table, fieldsArray)
     {
-        public DocumentObject(Kernel kernel, string table, string typeDocument, string[] fieldsArray)
-        {
-            Kernel = kernel;
-            Table = table;
-            TypeDocument = typeDocument;
-            FieldArray = fieldsArray;
-
-            foreach (string field in FieldArray)
-                FieldValue.Add(field, new object());
-        }
+        /// <summary>
+        /// Назва типу як задано в конфігураторі
+        /// </summary>
+        public string TypeDocument { get; private set; } = typeDocument;
 
         /// <summary>
-        /// Ядро
+        /// Мітка видалення
         /// </summary>
-        private Kernel Kernel { get; set; }
-
-        /// <summary>
-        /// Таблиця
-        /// </summary>
-        public string Table { get; private set; }
-
-        /// <summary>
-        /// Назва як задано в конфігураторі
-        /// </summary>
-        public string TypeDocument { get; private set; }
-
-        /// <summary>
-        /// Масив назв полів
-        /// </summary>
-        private string[] FieldArray { get; set; }
-
-        /// <summary>
-        /// Значення полів
-        /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; } = [];
-
-        /// <summary>
-        /// Унікальний ідентифікатор запису
-        /// </summary>
-        public UnigueID UnigueID { get; private set; } = new UnigueID();
+        public bool DeletionLabel { get; private set; }
 
         /// <summary>
         /// Документ проведений
@@ -80,40 +49,6 @@ namespace AccountingSoftware
         public DateTime SpendDate { get; private set; } = DateTime.MinValue;
 
         /// <summary>
-        /// Мітка видалення
-        /// </summary>
-        public bool DeletionLabel { get; private set; }
-
-        /// <summary>
-        /// Чи це новий?
-        /// </summary>
-        public bool IsNew { get; private set; }
-
-        /// <summary>
-        /// Новий обєкт
-        /// </summary>
-        protected void BaseNew()
-        {
-            UnigueID = UnigueID.NewUnigueID();
-            IsNew = true;
-            IsSave = false;
-        }
-
-        /// <summary>
-        /// Чи вже записаний документ
-        /// </summary>
-        public bool IsSave { get; private set; }
-
-        /// <summary>
-        /// Очистка вн. списку
-        /// </summary>
-        protected void BaseClear()
-        {
-            foreach (string field in FieldArray)
-                FieldValue[field] = new object();
-        }
-
-        /// <summary>
         /// Зчитати дані
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
@@ -121,11 +56,9 @@ namespace AccountingSoftware
         {
             BaseClear();
 
-            if (uid.IsEmpty() || IsNew == true)
-                return false;
+            if (uid.IsEmpty() || IsNew == true) return false;
 
             var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, FieldArray, FieldValue);
-
             if (record.Result)
             {
                 UnigueID = uid;
@@ -205,7 +138,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
             }
             else
-                throw new Exception("Документ спочатку треба записати, а потім вже провести");
+                throw new Exception("Документ спочатку треба записати, а потім вже проводити!");
         }
 
         /// <summary>
@@ -266,19 +199,18 @@ namespace AccountingSoftware
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-
-                //Відбір по uid
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
+                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
-            else return "";
+            else
+                return "";
         }
 
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public virtual UuidAndText GetBasis()
+        public override UuidAndText GetBasis()
         {
             return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
         }

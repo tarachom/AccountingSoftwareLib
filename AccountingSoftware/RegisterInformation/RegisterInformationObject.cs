@@ -26,43 +26,8 @@ namespace AccountingSoftware
     /// <summary>
     /// Обєкт запис регістру інформації
     /// </summary>
-    public abstract class RegisterInformationObject
+    public abstract class RegisterInformationObject(Kernel kernel, string table, string[] fieldsArray) : Object(kernel, table, fieldsArray)
     {
-        public RegisterInformationObject(Kernel kernel, string table, string[] fieldsArray)
-        {
-            Kernel = kernel;
-            Table = table;
-            FieldArray = fieldsArray;
-
-            foreach (string field in FieldArray)
-                FieldValue.Add(field, new object());
-        }
-
-        /// <summary>
-        /// Ядро
-        /// </summary>
-        private Kernel Kernel { get; set; }
-
-        /// <summary>
-        /// Назва таблиці
-        /// </summary>
-        private string Table { get; set; }
-
-        /// <summary>
-        /// Масив назв полів
-        /// </summary>
-        private string[] FieldArray { get; set; }
-
-        /// <summary>
-        /// Значення полів
-        /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; } = [];
-
-        /// <summary>
-        /// Унікальний ідентифікатор запису
-        /// </summary>
-        public UnigueID UnigueID { get; private set; } = new UnigueID();
-
         /// <summary>
         /// Період
         /// </summary>
@@ -74,67 +39,55 @@ namespace AccountingSoftware
         public Guid Owner { get; set; } = Guid.Empty;
 
         /// <summary>
-        /// Чи це новий запис?
-        /// </summary>
-        public bool IsNew { get; private set; }
-
-        /// <summary>
-        /// Новий елемент
-        /// </summary>
-        protected void BaseNew()
-        {
-            UnigueID = UnigueID.NewUnigueID();
-            IsNew = true;
-        }
-
-        /// <summary>
-        /// Очистка вн. масивів
-        /// </summary>
-        protected void BaseClear()
-        {
-            foreach (string field in FieldArray)
-                FieldValue[field] = new object();
-        }
-
-        /// <summary>
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         /// <returns></returns>
         protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
-            if (uid == null || uid.UGuid == Guid.Empty)
-                return false;
-
             BaseClear();
 
-            UnigueID = uid;
+            if (uid.IsEmpty() || IsNew == true) return false;
 
-            if (await Kernel.DataBase.SelectRegisterInformationObject(this, Table, FieldArray, FieldValue))
-                return true;
-            else
+            var record = await Kernel.DataBase.SelectRegisterInformationObject(uid, Table, FieldArray, FieldValue);
+            if (record.Result)
             {
-                UnigueID = new UnigueID();
-                return false;
+                UnigueID = uid;
+                Period = record.Period;
+                Owner = record.Owner;
+                IsSave = true;
+
+                return true;
             }
+            else
+                return false;
         }
 
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected async ValueTask BaseSave()
+        protected async ValueTask<bool> BaseSave()
         {
+            bool result;
+
             if (IsNew)
             {
-                await Kernel.DataBase.InsertRegisterInformationObject(this, Table, FieldArray, FieldValue);
-                IsNew = false;
+                result = await Kernel.DataBase.InsertRegisterInformationObject(UnigueID, Period, Owner, Table, FieldArray, FieldValue);
+                if (result) IsNew = false;
             }
             else
             {
-                await Kernel.DataBase.UpdateRegisterInformationObject(this, Table, FieldArray, FieldValue);
+                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                    result = await Kernel.DataBase.UpdateRegisterInformationObject(UnigueID, Period, Owner, Table, FieldArray, FieldValue);
+                else
+                    throw new Exception("Спроба записати неіснуючий об'єкт");
             }
 
+            IsSave = result;
+
             BaseClear();
+
+            return result;
         }
 
         /// <summary>

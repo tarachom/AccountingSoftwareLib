@@ -152,6 +152,31 @@ namespace AccountingSoftware
 
     #endregion
 
+    #region РегістриІнформації
+
+    /// <summary>
+    /// Структура для повернення результату з функції зчитування об'єкту документу
+    /// </summary>
+    public record SelectRegisterInformationObject_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Період
+        /// </summary>
+        public DateTime Period { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Власник
+        /// </summary>
+        public Guid Owner { get; set; } = Guid.Empty;
+    }
+
+    #endregion
+
     #region Вибірка даних
 
     /// <summary>

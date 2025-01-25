@@ -26,71 +26,12 @@ namespace AccountingSoftware
     /// <summary>
     /// Документ Вказівник
     /// </summary>
-    public abstract class DocumentPointer
+    public abstract class DocumentPointer(Kernel kernel, string table, string typeDocument) : Pointer(kernel, table)
     {
-        public DocumentPointer(Kernel kernel, string table, string typeDocument)
-        {
-            Table = table;
-            Kernel = kernel;
-            TypeDocument = typeDocument;
-        }
-
         /// <summary>
-        /// Ініціалізація вказівника
+        /// Назва типу як задано в конфігураторі
         /// </summary>
-        /// <param name="uid">Унікальний ідентифікатор</param>
-        /// <param name="fields">Поля які потрібно додатково зчитати</param>
-        protected void Init(UnigueID uid, Dictionary<string, object>? fields = null)
-        {
-            UnigueID = uid;
-            Fields = fields;
-        }
-
-        /// <summary>
-        /// Ядро
-        /// </summary>
-        private Kernel Kernel { get; set; }
-
-        /// <summary>
-        /// Таблиця
-        /// </summary>
-        private string Table { get; set; } = "";
-
-        /// <summary>
-        /// Назва як задано в конфігураторі
-        /// </summary>
-        public string TypeDocument { get; private set; } = "";
-
-        /// <summary>
-        /// Унікальний ідентифікатор запису
-        /// </summary>
-        public UnigueID UnigueID { get; private set; } = new UnigueID();
-
-        /// <summary>
-        /// Поля які потрібно додатково зчитати
-        /// </summary>
-        public Dictionary<string, object>? Fields { get; private set; }
-
-        /// <summary>
-        /// Чи пустий ідентифікатор?
-        /// </summary>
-        public bool IsEmpty()
-        {
-            return UnigueID.IsEmpty();
-        }
-
-        /// <summary>
-        /// Отримати ідентифікатор
-        /// </summary>
-        public Guid GetPointer()
-        {
-            return UnigueID.UGuid;
-        }
-
-        /// <summary>
-        /// Для композитного типу даних
-        /// </summary>
-        public abstract UuidAndText GetBasis();
+        public string TypeDocument { get; private set; } = typeDocument;
 
         /// <summary>
         /// Представлення обєкта
@@ -99,7 +40,7 @@ namespace AccountingSoftware
         /// <returns>Представлення обєкта</returns>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (Kernel != null && !IsEmpty() && fieldPresentation.Length != 0)
+            if (!IsEmpty() && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
@@ -109,7 +50,8 @@ namespace AccountingSoftware
 
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
-            else return "";
+            else
+                return "";
         }
 
         /// <summary>
@@ -119,8 +61,13 @@ namespace AccountingSoftware
         /// <param name="spend_date">Дата проведення</param>
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
         {
-            if (Kernel != null && !IsEmpty())
+            if (!IsEmpty())
+            {
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, spend ? false : null, spend, spend_date, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+            }
         }
 
         /// <summary>
@@ -134,7 +81,18 @@ namespace AccountingSoftware
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
+
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
             }
+        }
+
+        /// <summary>
+        /// Для композитного типу даних
+        /// </summary>
+        public virtual UuidAndText GetBasis()
+        {
+            return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
         }
     }
 }

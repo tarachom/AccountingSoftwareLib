@@ -26,48 +26,12 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Об'єкт
     /// </summary>
-    public abstract class DirectoryObject
+    public abstract class DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray) : Object(kernel, table, fieldsArray)
     {
-        public DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray)
-        {
-            Kernel = kernel;
-            Table = table;
-            TypeDirectory = typeDirectory;
-            FieldArray = fieldsArray;
-
-            foreach (string field in FieldArray)
-                FieldValue.Add(field, new object());
-        }
-
         /// <summary>
-        /// Ядро
+        /// Назва типу як задано в конфігураторі
         /// </summary>
-        private Kernel Kernel { get; set; }
-
-        /// <summary>
-        /// Назва таблиці
-        /// </summary>
-        private string Table { get; set; }
-
-        /// <summary>
-        /// Назва як задано в конфігураторі
-        /// </summary>
-        public string TypeDirectory { get; private set; }
-
-        /// <summary>
-        /// Масив назв полів
-        /// </summary>
-        private string[] FieldArray { get; set; }
-
-        /// <summary>
-        /// Значення полів
-        /// </summary>
-        protected Dictionary<string, object> FieldValue { get; set; } = [];
-
-        /// <summary>
-        /// Унікальний ідентифікатор запису
-        /// </summary>
-        public UnigueID UnigueID { get; private set; } = new UnigueID();
+        public string TypeDirectory { get; private set; } = typeDirectory;
 
         /// <summary>
         /// Мітка видалення
@@ -75,47 +39,16 @@ namespace AccountingSoftware
         public bool DeletionLabel { get; private set; }
 
         /// <summary>
-        /// Чи це новий запис?
-        /// </summary>
-        public bool IsNew { get; private set; }
-
-        /// <summary>
-        /// Новий елемент
-        /// </summary>
-        protected void BaseNew()
-        {
-            UnigueID = UnigueID.NewUnigueID();
-            IsNew = true;
-            IsSave = false;
-        }
-
-        /// <summary>
-        /// Чи вже записаний
-        /// </summary>
-        public bool IsSave { get; private set; }
-
-        /// <summary>
-        /// Очистка вн. масивів
-        /// </summary>
-        protected void BaseClear()
-        {
-            foreach (string field in FieldArray)
-                FieldValue[field] = new object();
-        }
-
-        /// <summary>
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         protected async ValueTask<bool> BaseRead(UnigueID uid)
         {
-            if (uid == null || uid.IsEmpty())
-                return false;
-
             BaseClear();
 
-            var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue);
+            if (uid.IsEmpty() || IsNew == true) return false;
 
+            var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue);
             if (record.Result)
             {
                 UnigueID = uid;
@@ -224,78 +157,22 @@ namespace AccountingSoftware
         {
             if (!UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
-                Query query = new Query(Table);
+                Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-
-                //Відбір по uid
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
+                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }
-            else return "";
+            else
+                return "";
         }
 
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public virtual UuidAndText GetBasis()
+        public override UuidAndText GetBasis()
         {
             return new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}");
         }
-
-        #region LockedObject
-
-        /// <summary>
-        /// Ключ блокування
-        /// </summary>
-        UnigueID LockKey { get; set; } = new UnigueID();
-
-        /// <summary>
-        /// Заблокувати
-        /// </summary>
-        /// <returns>true якщо вдалось заблокувати</returns>
-        public async ValueTask<bool> Lock()
-        {
-            UnigueID unigueID = await Kernel.DataBase.SpetialTableLockedObjectAdd(Kernel.User, Kernel.Session, GetBasis());
-            if (!unigueID.IsEmpty())
-            {
-                LockKey = unigueID;
-                return true;
-            }
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Чи заблокований?
-        /// </summary>
-        /// <returns>true якщо заблокований</returns>
-        public async ValueTask<bool> IsLock()
-        {
-            return await Kernel.DataBase.SpetialTableLockedObjectIsLock(GetBasis());
-        }
-
-        /// <summary>
-        /// Розширена версія Чи заблокований?
-        /// </summary>
-        /// <returns>Набір даних</returns>
-        public async ValueTask<LockedObject_Record> IsLockInfo()
-        {
-            if (!LockKey.IsEmpty())
-                return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
-            else
-                return new LockedObject_Record();
-        }
-
-        /// <summary>
-        /// Розблокувати
-        /// </summary>
-        public async ValueTask UnLock()
-        {
-            await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
-            LockKey.Clear();
-        }
-
-        #endregion
     }
 }
