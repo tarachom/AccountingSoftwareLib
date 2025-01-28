@@ -1320,7 +1320,6 @@ SELECT DISTINCT obj
 FROM {SpecialTables.ObjectUpdateTriger}
 WHERE datewrite >= @afterUpdate
 ";
-
             return await SelectRequest(query, queryParam);
         }
 
@@ -3138,6 +3137,19 @@ WHERE (LockedObject.obj).uuid = @obj
             }
 
             return record;
+        }
+
+        public async ValueTask<DateTime> SelectCurrentTimestamp()
+        {
+            if (DataSource != null)
+            {
+                NpgsqlCommand command = DataSource.CreateCommand("SELECT CURRENT_TIMESTAMP::timestamp");
+                object? result = await command.ExecuteScalarAsync();
+
+                return result != null ? (DateTime)result : DateTime.Now;
+            }
+            else
+                return DateTime.Now;
         }
 
         #endregion

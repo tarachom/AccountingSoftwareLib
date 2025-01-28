@@ -1411,12 +1411,14 @@ namespace AccountingSoftware
                     string? name = tableForm.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва форми");
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
+                    string generatedCode = tableForm.Current?.SelectSingleNode("GeneratedCode")?.Value ?? "";
 
                     ConfigurationForms.TypeForms typeForms = ConfigurationForms.TypeForms.None;
                     if (!string.IsNullOrEmpty(type))
                         Enum.TryParse(type, out typeForms);
 
                     ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
+                    form.GeneratedCode = generatedCode;
 
                     if (typeForms == ConfigurationForms.TypeForms.List ||
                         typeForms == ConfigurationForms.TypeForms.ListSmallSelect ||
@@ -2397,6 +2399,10 @@ namespace AccountingSoftware
                 XmlElement nodeType = xmlConfDocument.CreateElement("Type");
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
+
+                XmlElement nodeGeneratedCode = xmlConfDocument.CreateElement("GeneratedCode");
+                nodeGeneratedCode.AppendChild(xmlConfDocument.CreateCDataSection(form.Value.GeneratedCode));
+                nodeForm.AppendChild(nodeGeneratedCode);
 
                 if (form.Value.Type == ConfigurationForms.TypeForms.List ||
                     form.Value.Type == ConfigurationForms.TypeForms.ListSmallSelect ||

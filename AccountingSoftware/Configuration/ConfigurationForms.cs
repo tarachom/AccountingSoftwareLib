@@ -61,6 +61,12 @@ namespace AccountingSoftware
         /// </summary>
         public TypeForms Type { get; set; } = TypeForms.None;
 
+        /// <summary>
+        /// Згенерований код для форми
+        /// </summary>
+        public string GeneratedCode { get; set; } = "";
+
+
         #region Для форми елементу (Type == TypeForms.Element)
 
         /// <summary>

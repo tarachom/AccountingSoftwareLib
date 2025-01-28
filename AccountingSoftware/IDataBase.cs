@@ -228,6 +228,7 @@ namespace AccountingSoftware
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
         ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null);
+        ValueTask<DateTime> SelectCurrentTimestamp();
 
         #endregion
     }

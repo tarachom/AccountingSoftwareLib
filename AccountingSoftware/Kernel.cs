@@ -215,7 +215,8 @@ namespace AccountingSoftware
 
             //Очищення устарівших тригерів оновлення об’єктів
             await DataBase.SpetialTableObjectUpdateTrigerClearOld();
-
+            AfterUpdateSession = await DataBase.SelectCurrentTimestamp();
+            
             while (true)
             {
                 await DataBase.SpetialTableActiveUsersUpdateSession(Session);
@@ -225,7 +226,7 @@ namespace AccountingSoftware
                 if (DirectoryObjectChanged != null || DocumentObjectChanged != null)
                 {
                     SelectRequest_Record resultRecords = await DataBase.SpetialTableObjectUpdateTrigerSelect(AfterUpdateSession);
-                    AfterUpdateSession = DateTime.Now;
+                    AfterUpdateSession = await DataBase.SelectCurrentTimestamp();
 
                     if (resultRecords.Result)
                     {
