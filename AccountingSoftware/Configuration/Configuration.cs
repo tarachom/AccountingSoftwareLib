@@ -1412,13 +1412,16 @@ namespace AccountingSoftware
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string generatedCode = tableForm.Current?.SelectSingleNode("GeneratedCode")?.Value ?? "";
+                    string notSaveToFile = tableForm.Current?.SelectSingleNode("NotSaveToFile")?.Value ?? "";
 
-                    ConfigurationForms.TypeForms typeForms = ConfigurationForms.TypeForms.None;
-                    if (!string.IsNullOrEmpty(type))
-                        Enum.TryParse(type, out typeForms);
+                    if (!Enum.TryParse(type, out ConfigurationForms.TypeForms typeForms))
+                        typeForms = ConfigurationForms.TypeForms.None;
 
-                    ConfigurationForms form = new ConfigurationForms(name, desc, typeForms);
-                    form.GeneratedCode = generatedCode;
+                    ConfigurationForms form = new ConfigurationForms(name, desc, typeForms)
+                    {
+                        GeneratedCode = generatedCode,
+                        NotSaveToFile = notSaveToFile == "1"
+                    };
 
                     if (typeForms == ConfigurationForms.TypeForms.List ||
                         typeForms == ConfigurationForms.TypeForms.ListSmallSelect ||
@@ -2385,6 +2388,11 @@ namespace AccountingSoftware
                 XmlElement nodeForm = xmlConfDocument.CreateElement("Form");
                 nodeForms.AppendChild(nodeForm);
 
+                //Ознака зміни в даних форми, цей атрибут тільки записується але не зчитується
+                XmlAttribute modifiedAttr = xmlConfDocument.CreateAttribute("Modified");
+                modifiedAttr.Value = form.Value.Modified ? "1" : "0";
+                nodeForm.Attributes.Append(modifiedAttr);
+
                 XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                 nodeName.InnerText = form.Key;
                 nodeForm.AppendChild(nodeName);
@@ -2403,6 +2411,10 @@ namespace AccountingSoftware
                 XmlElement nodeGeneratedCode = xmlConfDocument.CreateElement("GeneratedCode");
                 nodeGeneratedCode.AppendChild(xmlConfDocument.CreateCDataSection(form.Value.GeneratedCode));
                 nodeForm.AppendChild(nodeGeneratedCode);
+
+                XmlElement nodeNotSaveToFile = xmlConfDocument.CreateElement("NotSaveToFile");
+                nodeNotSaveToFile.InnerText = form.Value.NotSaveToFile ? "1" : "0";
+                nodeForm.AppendChild(nodeNotSaveToFile);
 
                 if (form.Value.Type == ConfigurationForms.TypeForms.List ||
                     form.Value.Type == ConfigurationForms.TypeForms.ListSmallSelect ||

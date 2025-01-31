@@ -66,6 +66,15 @@ namespace AccountingSoftware
         /// </summary>
         public string GeneratedCode { get; set; } = "";
 
+        /// <summary>
+        /// Форма модифікована
+        /// </summary>
+        public bool Modified { get; set; }
+
+        /// <summary>
+        /// Не зберігати форму в файл
+        /// </summary>
+        public bool NotSaveToFile { get; set; }
 
         #region Для форми елементу (Type == TypeForms.Element)
 

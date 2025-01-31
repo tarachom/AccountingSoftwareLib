@@ -1458,30 +1458,27 @@ WHERE (LockedObject.obj).uuid = @obj
         #endregion
 
         #region Transaction
-        readonly object loсked = new();
-        Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
+        readonly Lock Loсked = new();
+        readonly Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
         volatile byte TransactionCounter = 0;
 
         public async ValueTask<byte> BeginTransaction()
         {
             if (DataSource != null)
             {
-                byte TransactionID = 0;
-
                 NpgsqlConnection Conn = await DataSource.OpenConnectionAsync();
-                NpgsqlTransaction Transaction = await Conn.BeginTransactionAsync();
+                NpgsqlTransaction transaction = await Conn.BeginTransactionAsync();
 
-                lock (loсked)
+                byte transactionID;
+
+                lock (Loсked)
                 {
-                    if (TransactionCounter >= byte.MaxValue)
-                        TransactionCounter = 0;
-
-                    TransactionID = ++TransactionCounter;
-
-                    OpenTransaction.Add(TransactionID, Transaction);
+                    if (TransactionCounter >= byte.MaxValue) TransactionCounter = 0;
+                    transactionID = ++TransactionCounter;
+                    OpenTransaction.Add(transactionID, transaction);
                 }
 
-                return TransactionID;
+                return transactionID;
             }
             else
                 return 0;
@@ -1492,22 +1489,17 @@ WHERE (LockedObject.obj).uuid = @obj
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
 
-            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value))
+            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? transaction))
             {
-                NpgsqlTransaction Transaction = value;
-
-                lock (loсked)
+                lock (Loсked)
                 {
                     OpenTransaction.Remove(transactionID);
                 }
 
-                if (Transaction != null)
-                {
-                    await Transaction.CommitAsync();
+                await transaction.CommitAsync();
 
-                    if (Transaction.Connection != null)
-                        await Transaction.Connection.CloseAsync();
-                }
+                if (transaction.Connection != null)
+                    await transaction.Connection.CloseAsync();
             }
             else
                 throw new IndexOutOfRangeException("Невірний номер транзації");
@@ -1518,22 +1510,17 @@ WHERE (LockedObject.obj).uuid = @obj
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
 
-            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value))
+            if (OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? transaction))
             {
-                NpgsqlTransaction Transaction = value;
-
-                lock (loсked)
+                lock (Loсked)
                 {
                     OpenTransaction.Remove(transactionID);
                 }
 
-                if (Transaction != null)
-                {
-                    await Transaction.RollbackAsync();
+                await transaction.RollbackAsync();
 
-                    if (Transaction.Connection != null)
-                        await Transaction.Connection.CloseAsync();
-                }
+                if (transaction.Connection != null)
+                    await transaction.Connection.CloseAsync();
             }
             else
                 throw new IndexOutOfRangeException("Невірний номер транзації");
@@ -1542,7 +1529,7 @@ WHERE (LockedObject.obj).uuid = @obj
         private NpgsqlTransaction? GetTransactionByID(byte transactionID)
         {
             if (transactionID == 0) return null;
-            return OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? value) ? value : null;
+            return OpenTransaction.TryGetValue(transactionID, out NpgsqlTransaction? transaction) ? transaction : null;
         }
 
         #endregion
