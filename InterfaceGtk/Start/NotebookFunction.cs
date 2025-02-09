@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using AccountingSoftware;
 using Gtk;
 
 namespace InterfaceGtk
@@ -30,6 +31,7 @@ namespace InterfaceGtk
         public const string DataKey_HistorySwitchList = "history_switch_list";
         public const string DataKey_ParentNotebook = "parent_notebook";
         public const string DataKey_AfterClosePageFunc = "after_close_page_func";
+        public const string DataKey_ObjectChangeEvents = "object_change_events";
 
         /// <summary>
         /// Функція створює блокнот з верхнім положенням вкладок
@@ -209,6 +211,14 @@ namespace InterfaceGtk
                             afterClosePageFunc.Invoke();
                         }
 
+                        //
+                        var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+                        if (objectChangeEvents != null)
+                        {
+                            foreach (var item in objectChangeEvents.Values)
+                                item.RemoveAll(x => x.codePage == codePage);
+                        }
+
                         notebook.DetachTab(wg);
                     }
                 });
@@ -282,5 +292,84 @@ namespace InterfaceGtk
         {
             return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
         }
+
+        #region ObjectChangeEvents
+
+        /// <summary>
+        /// Підключення до подій зміни об’єкта
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="kernel">Ядро</param>
+        public static void ConnectingToKernelObjectChangeEvents(Notebook notebook, Kernel kernel)
+        {
+            notebook.Data.Add(DataKey_ObjectChangeEvents,
+                new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>
+                {
+                    { GroupObjectChangeEvents.Directory, [] },
+                    { GroupObjectChangeEvents.Document, [] }
+                }
+            );
+
+            kernel.DirectoryObjectChanged += (_, directory) => InvokeObjectChangeEvents(notebook, GroupObjectChangeEvents.Directory, directory);
+            kernel.DocumentObjectChanged += (_, document) => InvokeObjectChangeEvents(notebook, GroupObjectChangeEvents.Document, document);
+        }
+
+        static async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<Guid>> directoryOrDocument)
+        {
+            var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+            if (objectChangeEvents != null)
+                foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
+                    if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
+                        await func.Invoke();
+        }
+
+        static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
+        {
+            var object_change_events = notebook?.Data[DataKey_ObjectChangeEvents];
+            return object_change_events != null ? (Dictionary<GroupObjectChangeEvents, List<(string, Func<ValueTask>, string[])>>)object_change_events : null;
+        }
+
+        /// <summary>
+        /// Добавлення функції реакції на зміни об'єктів
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="codePage">Код сторінки</param>
+        /// <param name="func">Функція</param>
+        /// <param name="pointerPattern">Фільтр по типу даних</param>
+        public static void AddChangeFunc(Notebook? notebook, string codePage, Func<ValueTask> func, string pointerPattern)
+        {
+            var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
+
+            GroupObjectChangeEvents group = pointerGroup switch
+            {
+                "Довідники" => GroupObjectChangeEvents.Directory,
+                "Документи" => GroupObjectChangeEvents.Document,
+                _ => throw ex ?? new Exception("Тільки 'Довідники' або 'Документи'")
+            };
+
+            var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+            objectChangeEvents?[group].Add((codePage, func, [pointerType]));
+        }
+
+        /// <summary>
+        /// Добавлення функції реакції на зміни об'єктів для журналу документів
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="codePage">Код сторінки</param>
+        /// <param name="func">Функція</param>
+        /// <param name="typeDocs">Типи документів які належать журналу</param>
+        public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Func<ValueTask> func, string[] allowDocument)
+        {
+            var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+            objectChangeEvents?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
+        }
+
+        enum GroupObjectChangeEvents
+        {
+            Directory,
+            Document
+        }
+
+        #endregion
     }
 }

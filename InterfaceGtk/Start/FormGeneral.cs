@@ -84,6 +84,7 @@ namespace InterfaceGtk
             CreateLeftMenu(hBox);
 
             hBox.PackStart(Notebook, true, true, 0);
+            NotebookFunction.ConnectingToKernelObjectChangeEvents(Notebook, kernel);
 
             vBox.PackStart(StatusBar, false, false, 0);
             ShowAll();
