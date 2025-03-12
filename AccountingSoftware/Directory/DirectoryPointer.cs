@@ -43,9 +43,7 @@ namespace AccountingSoftware
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-
-                //Відбір по uid
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid));
+                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }

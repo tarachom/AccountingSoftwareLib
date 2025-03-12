@@ -26,70 +26,16 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Документ Вибірка вказівників
 	/// </summary>
-	public abstract class DocumentSelect
+	public abstract class DocumentSelect(Kernel kernel, string table) : Select(kernel, table)
 	{
-		public DocumentSelect(Kernel kernel, string table)
+		/// <summary>
+		/// Поточний вказівник !!! Видалити пізніше
+		/// </summary>
+		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition
 		{
-			QuerySelect = new Query(table);
-			Kernel = kernel;
-		}
-
-		/// <summary>
-		/// Запит SELECT
-		/// </summary>
-		public Query QuerySelect { get; set; }
-
-		/// <summary>
-		/// Переміститися в початок вибірки
-		/// </summary>
-		public void MoveToFirst()
-		{
-			Position = 0;
-			MoveToPosition();
-		}
-
-		/// <summary>
-		/// Кількість елементів вибірки
-		/// </summary>
-		public int Count()
-		{
-			return BaseSelectList.Count;
-		}
-
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		protected Kernel Kernel { get; private set; }
-
-		/// <summary>
-		/// Поточна позиція
-		/// </summary>
-		protected int Position { get; private set; }
-
-		/// <summary>
-		/// Поточний вказівник
-		/// </summary>
-		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition { get; private set; } = null;
-
-		/// <summary>
-		/// Список вибраних вказівників (UnigueID and Dictionary<string, object>?)
-		/// </summary>
-		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
-
-		/// <summary>
-		/// Переміститися на наступну позицію
-		/// </summary>
-		protected bool MoveToPosition()
-		{
-			if (Position < BaseSelectList.Count)
+			get
 			{
-				DocumentPointerPosition = BaseSelectList[Position++];
-				return true;
-			}
-			else
-			{
-				DocumentPointerPosition = null;
-				return false;
+				return CurrentPointerPosition;
 			}
 		}
 
@@ -99,7 +45,7 @@ namespace AccountingSoftware
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DocumentPointerPosition = null;
+			CurrentPointerPosition = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
@@ -112,12 +58,12 @@ namespace AccountingSoftware
 		/// </summary>
 		protected async ValueTask<bool> BaseSelectSingle()
 		{
-			int oldLimitValue = QuerySelect.Limit;
+			int oldLimit = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
 
 			await BaseSelect();
 
-			QuerySelect.Limit = oldLimitValue;
+			QuerySelect.Limit = oldLimit;
 
 			return Count() > 0;
 		}

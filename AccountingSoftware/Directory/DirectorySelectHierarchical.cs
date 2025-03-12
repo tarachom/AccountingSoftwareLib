@@ -26,75 +26,36 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelectHierarchical
+	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField) : Select(kernel, table, parentField)
 	{
-		public DirectorySelectHierarchical(Kernel kernel, string table, string parentField)
-		{
-			Kernel = kernel;
-			Table = table;
-			QuerySelect = new Query(table) { ParentField = parentField };
-		}
-
 		/// <summary>
-		/// Запит SELECT
-		/// </summary>
-		public Query QuerySelect { get; set; }
-
-		/// <summary>
-		/// Перейти на початок вибірки
-		/// </summary>
-		public void MoveToFirst()
-		{
-			Position = 0;
-			MoveToPosition();
-		}
-
-		/// <summary>
-		/// Кількість елементів у вибірці
-		/// </summary>
-		public int Count()
-		{
-			return BaseSelectList.Count;
-		}
-
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		private Kernel Kernel { get; set; }
-
-		/// <summary>
-		/// Таблиця
-		/// </summary>
-		private string Table { get; set; }
-
-		/// <summary>
-		/// Поточна позиція
-		/// </summary>
-		protected int Position { get; private set; }
-
-		/// <summary>
-		/// Поточний вказівник
+		/// Поточний вказівник !!! Видалити пізніше
 		/// </summary>
 		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
 
 		/// <summary>
+		/// Поточний вказівник
+		/// </summary>
+		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;
+
+		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
+		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> BaseSelectListHierarchical { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці
 		/// </summary>
-		protected bool MoveToPosition()
+		protected override bool MoveToPosition()
 		{
-			if (Position < BaseSelectList.Count)
+			if (Position < BaseSelectListHierarchical.Count)
 			{
-				DirectoryPointerPosition = BaseSelectList[Position++];
+				CurrentPointerPositionHierarchical = BaseSelectListHierarchical[Position++];
 				return true;
 			}
 			else
 			{
-				DirectoryPointerPosition = null;
+				CurrentPointerPositionHierarchical = null;
 				return false;
 			}
 		}
@@ -105,10 +66,10 @@ namespace AccountingSoftware
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DirectoryPointerPosition = null;
-			BaseSelectList.Clear();
+			CurrentPointerPositionHierarchical = null;
+			BaseSelectListHierarchical.Clear();
 
-			await Kernel.DataBase.SelectDirectoryPointersHierarchical(QuerySelect, BaseSelectList);
+			await Kernel.DataBase.SelectDirectoryPointersHierarchical(QuerySelect, BaseSelectListHierarchical);
 
 			return Count() > 0;
 		}

@@ -26,77 +26,16 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelect
+	public abstract class DirectorySelect(Kernel kernel, string table) : Select(kernel, table)
 	{
-		public DirectorySelect(Kernel kernel, string table)
+		/// <summary>
+		/// Поточний вказівник !!! Видалити пізніше
+		/// </summary>
+		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DirectoryPointerPosition
 		{
-			Kernel = kernel;
-			Table = table;
-
-			QuerySelect = new Query(table);
-		}
-
-		/// <summary>
-		/// Запит SELECT
-		/// </summary>
-		public Query QuerySelect { get; set; }
-
-		/// <summary>
-		/// Перейти на початок вибірки
-		/// </summary>
-		public void MoveToFirst()
-		{
-			Position = 0;
-			MoveToPosition();
-		}
-
-		/// <summary>
-		/// Кількість елементів у вибірці
-		/// </summary>
-		public int Count()
-		{
-			return BaseSelectList.Count;
-		}
-
-		/// <summary>
-		/// Ядро
-		/// </summary>
-		private Kernel Kernel { get; set; }
-
-		/// <summary>
-		/// Таблиця
-		/// </summary>
-		private string Table { get; set; }
-
-		/// <summary>
-		/// Поточна позиція
-		/// </summary>
-		protected int Position { get; private set; }
-
-		/// <summary>
-		/// Поточний вказівник
-		/// </summary>
-		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
-
-		/// <summary>
-		/// Вибірка вказівників
-		/// </summary>
-		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
-
-		/// <summary>
-		/// Переміститися на одну позицію у вибірці
-		/// </summary>
-		protected bool MoveToPosition()
-		{
-			if (Position < BaseSelectList.Count)
+			get
 			{
-				DirectoryPointerPosition = BaseSelectList[Position++];
-				return true;
-			}
-			else
-			{
-				DirectoryPointerPosition = null;
-				return false;
+				return CurrentPointerPosition;
 			}
 		}
 
@@ -106,7 +45,7 @@ namespace AccountingSoftware
 		protected async ValueTask<bool> BaseSelect()
 		{
 			Position = 0;
-			DirectoryPointerPosition = null;
+			CurrentPointerPosition = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
@@ -115,16 +54,16 @@ namespace AccountingSoftware
 		}
 
 		/// <summary>
-		/// Вибрати один запис з бази даних
+		/// Зчитати один вказівник
 		/// </summary>
 		protected async ValueTask<bool> BaseSelectSingle()
 		{
-			int oldLimitValue = QuerySelect.Limit;
+			int oldLimit = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
 
 			await BaseSelect();
 
-			QuerySelect.Limit = oldLimitValue;
+			QuerySelect.Limit = oldLimit;
 
 			return Count() > 0;
 		}
@@ -161,12 +100,6 @@ namespace AccountingSoftware
 			await Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);
 
 			return directoryPointerList;
-		}
-
-		public async ValueTask DeleteTempTable()
-		{
-			await Kernel.DataBase.DeleteDirectoryTempTable(this);
-			QuerySelect.CreateTempTable = false;
 		}
 	}
 }
