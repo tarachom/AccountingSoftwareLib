@@ -102,8 +102,6 @@ namespace InterfaceGtk
 
         #region Virtual Function
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
-
         protected abstract void PeriodChanged();
 
         #endregion

@@ -59,6 +59,12 @@ namespace InterfaceGtk
         }
 
         /// <summary>
+        /// Спрощений режим
+        /// Прапорець який на даний момент ні на що не впривляє
+        /// </summary>
+        public bool LiteMode { get; set; } = false;
+
+        /// <summary>
         /// Функція повертає список UnigueID виділених рядків дерева
         /// </summary>
         public List<UnigueID> GetSelectedRows()
@@ -71,7 +77,7 @@ namespace InterfaceGtk
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                     unigueIDList.Add(new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
                 }
-                
+
             return unigueIDList;
         }
 
@@ -85,12 +91,18 @@ namespace InterfaceGtk
         /// <summary>
         /// Завантаження списку
         /// </summary>
-        protected abstract ValueTask LoadRecords();
+        public abstract ValueTask LoadRecords();
 
         /// <summary>
         /// Завантаження списку про пошуку
         /// </summary>
-        protected abstract ValueTask LoadRecords_OnSearch(string searchText);
+        public abstract ValueTask LoadRecords_OnSearch(string searchText);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         #endregion
     }

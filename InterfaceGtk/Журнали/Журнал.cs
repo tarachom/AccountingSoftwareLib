@@ -165,8 +165,6 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
-
         protected abstract void OpenTypeListDocs(Widget relative_to);
 
         protected abstract void PeriodChanged();

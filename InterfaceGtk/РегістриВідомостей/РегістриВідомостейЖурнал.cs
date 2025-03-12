@@ -133,8 +133,6 @@ namespace InterfaceGtk
 
         #region Virtual Function
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
-
         protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
 
         protected virtual ValueTask Delete(UnigueID unigueID) { return new ValueTask(); }

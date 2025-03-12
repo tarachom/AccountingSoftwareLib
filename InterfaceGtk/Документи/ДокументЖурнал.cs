@@ -233,8 +233,6 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
-
         protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
 
         protected virtual void PrintingSubMenu(Menu Menu) { }

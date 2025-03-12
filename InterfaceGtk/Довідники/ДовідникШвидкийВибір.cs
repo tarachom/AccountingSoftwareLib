@@ -95,6 +95,11 @@ namespace InterfaceGtk
 
         public override async ValueTask SetValue()
         {
+            await BeforeSetValue();
+        }
+
+        protected override async ValueTask BeforeSetValue()
+        {
             await LoadRecords();
         }
 
