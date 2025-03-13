@@ -33,17 +33,11 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ФункціїДляДинамічногоВідкриття
+    public abstract class ФункціїДляДинамічногоВідкриття(string nameSpageProgram, string nameSpageCodeGeneration)
     {
-        string NameSpageProgram { get; set; }
-        string NameSpageCodeGeneration { get; set; }
+        string NameSpageProgram { get; set; } = nameSpageProgram;
+        string NameSpageCodeGeneration { get; set; } = nameSpageCodeGeneration;
         Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-
-        public ФункціїДляДинамічногоВідкриття(string nameSpageProgram, string nameSpageCodeGeneration)
-        {
-            NameSpageProgram = nameSpageProgram;
-            NameSpageCodeGeneration = nameSpageCodeGeneration;
-        }
 
         #region Virtual & Abstract Function
 
@@ -240,7 +234,7 @@ namespace InterfaceGtk
             foreach (KeyValuePair<string, string> typeDoc in allowDocument)
             {
                 LinkButton lb = new LinkButton(typeDoc.Value, typeDoc.Value) { Halign = Align.Start };
-                lb.Clicked += (object? sender, EventArgs args) => ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID());
+                lb.Clicked += (sender, args) => ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID());
                 vBox.PackStart(lb, false, false, 0);
             }
 

@@ -46,7 +46,7 @@ namespace InterfaceGtk
             LinkButton linkButton = new LinkButton(uri, " " + uri) { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
             parentBox.PackStart(linkButton, false, false, 0);
 
-            linkButton.Clicked += (object? sender, EventArgs args) => click?.Invoke();
+            linkButton.Clicked += (sender, args) => click?.Invoke();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace InterfaceGtk
                 LinkButton linkButton = new LinkButton(uri, " " + uri);
                 parentBox.PackStart(linkButton, false, false, 5);
 
-                linkButton.Clicked += (object? sender, EventArgs args) => click?.Invoke();
+                linkButton.Clicked += (sender, args) => click?.Invoke();
             }
             else
             {

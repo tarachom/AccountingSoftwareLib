@@ -61,7 +61,7 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+            Пошук.Select = async x => await LoadRecords_OnSearch(x);
             Пошук.Clear = async () => await LoadRecords();
             HBoxPeriod.PackStart(Пошук, false, false, 2);
 

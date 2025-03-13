@@ -92,7 +92,7 @@ namespace AccountingSoftware
 
             //Відбір по власнику
             {
-                QuerySelect.Where.RemoveAll((Where w) => w.Name == "owner");
+                QuerySelect.Where.RemoveAll(w => w.Name == "owner");
                 QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
             }
 

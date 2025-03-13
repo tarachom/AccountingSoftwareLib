@@ -211,7 +211,7 @@ namespace InterfaceGtk
                             afterClosePageFunc.Invoke();
                         }
 
-                        //
+                        //Очищення вказівників на функції реакції на зміни об'єктів
                         var objectChangeEvents = GetDataObjectChangeEvents(notebook);
                         if (objectChangeEvents != null)
                         {
@@ -295,6 +295,19 @@ namespace InterfaceGtk
 
         #region ObjectChangeEvents
 
+        /*
+
+        Цей блок використовується для прив'язки до блокнота функцій оновлення журналів документів та довідників після змін об'єктів.
+        Прив'язка функції відбувається до сторінки блокноту.
+        Коли сторінка блокноту закривається прив'язана функція видаляється.
+
+        ConnectingToKernelObjectChangeEvents викликається після запуску програми один раз для ініціалізації.
+
+        AddChangeFunc викликається із журналу довідника чи документу для привязки функції.
+        AddChangeFuncJournal викликається із журналу документів для прив'язки функції.
+
+        */
+
         /// <summary>
         /// Підключення до подій зміни об’єкта
         /// </summary>
@@ -310,19 +323,26 @@ namespace InterfaceGtk
                 }
             );
 
+            //Внутрішня функція для виклику функцій реакції на зміни об'єктів
+            async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<Guid>> directoryOrDocument)
+            {
+                var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+                if (objectChangeEvents != null && objectChangeEvents[group].Count > 0)
+                    foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
+                        if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
+                            await func.Invoke();
+            }
+
+            //Зміни в довідниках
             kernel.DirectoryObjectChanged += (_, directory) => InvokeObjectChangeEvents(notebook, GroupObjectChangeEvents.Directory, directory);
+
+            //Зміни в документах
             kernel.DocumentObjectChanged += (_, document) => InvokeObjectChangeEvents(notebook, GroupObjectChangeEvents.Document, document);
         }
 
-        static async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<Guid>> directoryOrDocument)
-        {
-            var objectChangeEvents = GetDataObjectChangeEvents(notebook);
-            if (objectChangeEvents != null)
-                foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
-                    if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
-                        await func.Invoke();
-        }
-
+        /// <summary>
+        /// Функція повертає колекцію функцій реакції на зміни об'єктів
+        /// </summary>
         static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
         {
             var object_change_events = notebook?.Data[DataKey_ObjectChangeEvents];

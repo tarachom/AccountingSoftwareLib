@@ -40,11 +40,11 @@ namespace InterfaceGtk
         public РегістриВідомостейЕлемент()
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
-            bSaveAndClose.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true);
+            bSaveAndClose.Clicked += (sender, args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSaveAndClose, false, false, 10);
 
             Button bSave = new Button("Зберегти");
-            bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave();
+            bSave.Clicked += (sender, args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
             PackStart(HBoxTop, false, false, 10);

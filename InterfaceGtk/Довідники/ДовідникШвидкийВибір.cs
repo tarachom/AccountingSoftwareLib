@@ -71,7 +71,7 @@ namespace InterfaceGtk
 
             if (visibleSearch)
             {
-                Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+                Пошук.Select = async x => await LoadRecords_OnSearch(x);
                 Пошук.Clear = async () => await LoadRecords();
             }
 

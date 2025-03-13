@@ -74,7 +74,7 @@ namespace InterfaceGtk
             HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async (string x) => await LoadRecords_OnSearch(x);
+            Пошук.Select = async x => await LoadRecords_OnSearch(x);
             Пошук.Clear = PeriodChanged;
             HBoxTop.PackStart(Пошук, false, false, 2);
 
@@ -142,19 +142,19 @@ namespace InterfaceGtk
             if (menuItem != null)
             {
                 MenuToolButton naOsnoviButton = new MenuToolButton(new Image(Stock.New, IconSize.Menu), "Ввести на основі") { IsImportant = true };
-                naOsnoviButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
+                naOsnoviButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
                 naOsnoviButton.Menu = menuItem;
                 ToolbarTop.Add(naOsnoviButton);
             }
 
             MenuToolButton printingButton = new MenuToolButton(new Image(Stock.Print, IconSize.Menu), "Друк") { IsImportant = true };
-            printingButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
+            printingButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             printingButton.Menu = ToolbarPrintingSubMenu();
             ToolbarTop.Add(printingButton);
 
             //Експорт
             MenuToolButton exportButton = new MenuToolButton(new Image(Stock.Convert, IconSize.Menu), "Експорт") { IsImportant = true };
-            exportButton.Clicked += (object? sender, EventArgs arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
+            exportButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             exportButton.Menu = ToolbarExportSubMenu();
             ToolbarTop.Add(exportButton);
         }
@@ -164,11 +164,11 @@ namespace InterfaceGtk
             Menu Menu = new Menu();
 
             MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(true);
+            spendTheDocumentButton.Activated += (sender, args) => SpendTheDocumentOrClear(true);
             Menu.Append(spendTheDocumentButton);
 
             MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(false);
+            clearSpendButton.Activated += (sender, args) => SpendTheDocumentOrClear(false);
             Menu.Append(clearSpendButton);
 
             Menu.ShowAll();
@@ -181,11 +181,11 @@ namespace InterfaceGtk
             Menu Menu = new Menu();
 
             MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(true);
+            spendTheDocumentButton.Activated += (sender, args) => SpendTheDocumentOrClear(true);
             Menu.Append(spendTheDocumentButton);
 
             MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += (object? sender, EventArgs args) => SpendTheDocumentOrClear(false);
+            clearSpendButton.Activated += (sender, args) => SpendTheDocumentOrClear(false);
             Menu.Append(clearSpendButton);
 
             MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");

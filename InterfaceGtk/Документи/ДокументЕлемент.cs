@@ -62,21 +62,21 @@ namespace InterfaceGtk
         public ДокументЕлемент()
         {
             Button bSaveAndSpend = new Button("Провести та закрити");
-            bSaveAndSpend.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true, true);
+            bSaveAndSpend.Clicked += (sender, args) => BeforeAndAfterSave(true, true);
             HBoxTop.PackStart(bSaveAndSpend, false, false, 10);
 
             Button bSpend = new Button("Провести");
-            bSpend.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true);
+            bSpend.Clicked += (sender, args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSpend, false, false, 10);
 
             Button bSave = new Button("Зберегти");
-            bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(false);
+            bSave.Clicked += (sender, args) => BeforeAndAfterSave(false);
             HBoxTop.PackStart(bSave, false, false, 10);
 
             //Проводки
             {
                 LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-                linkNew.Clicked += (object? sender, EventArgs args) =>
+                linkNew.Clicked += (sender, args) =>
                 {
                     if (UnigueID != null)
                         ReportSpendTheDocument(UnigueID);
@@ -94,7 +94,7 @@ namespace InterfaceGtk
             };
 
             bLock.Image.MarginEnd = 5;
-            bLock.Clicked += (object? sender, EventArgs args) => { };
+            bLock.Clicked += (sender, args) => { };
             HBoxTop.PackEnd(bLock, false, false, 10);
 
             PackStart(HBoxTop, false, false, 10);

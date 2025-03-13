@@ -89,6 +89,11 @@ namespace InterfaceGtk
         public abstract ValueTask SetValue();
 
         /// <summary>
+        /// Додаткова функція яка викликається із SetValue
+        /// </summary>
+        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+
+        /// <summary>
         /// Завантаження списку
         /// </summary>
         public abstract ValueTask LoadRecords();
@@ -97,12 +102,6 @@ namespace InterfaceGtk
         /// Завантаження списку про пошуку
         /// </summary>
         public abstract ValueTask LoadRecords_OnSearch(string searchText);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
         #endregion
     }

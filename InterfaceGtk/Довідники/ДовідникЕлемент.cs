@@ -52,11 +52,11 @@ namespace InterfaceGtk
         public ДовідникЕлемент()
         {
             Button bSaveAndClose = new Button("Зберегти та закрити");
-            bSaveAndClose.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave(true);
+            bSaveAndClose.Clicked += (sender, args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSaveAndClose, false, false, 10);
 
             Button bSave = new Button("Зберегти");
-            bSave.Clicked += (object? sender, EventArgs args) => BeforeAndAfterSave();
+            bSave.Clicked += (sender, args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
             Button bLock = new Button
@@ -68,7 +68,7 @@ namespace InterfaceGtk
             };
 
             bLock.Image.MarginEnd = 5;
-            bLock.Clicked += (object? sender, EventArgs args) => Lock();
+            bLock.Clicked += (sender, args) => Lock();
             HBoxTop.PackEnd(bLock, false, false, 10);
 
             //Індикатор стану блокування

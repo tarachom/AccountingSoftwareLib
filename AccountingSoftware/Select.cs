@@ -28,6 +28,7 @@ namespace AccountingSoftware
     /// 
     /// Основа для класів:
     ///    DirectorySelect
+    ///    DirectorySelectHierarchical
     ///    DocumentSelect
     /// </summary>
     public abstract class Select(Kernel kernel, string table, string parentField = "")
