@@ -36,7 +36,6 @@ namespace InterfaceGtk
 
         public Button ButtonMessage;
 
-
         public FormGeneral(Kernel kernel) : base("")
         {
             Kernel = kernel;
@@ -63,7 +62,7 @@ namespace InterfaceGtk
                 {
                     //Повідомлення
                     ButtonMessage = new Button() { Image = new Image(Stock.Index, IconSize.Button), TooltipText = "Повідомлення" };
-                    ButtonMessage.Clicked += (object? sender, EventArgs args) => ButtonMessageClicked();
+                    ButtonMessage.Clicked += (sender, args) => ButtonMessageClicked();
                     headerBar.PackEnd(ButtonMessage);
 
                     //Повнотекстовий пошук
@@ -107,7 +106,7 @@ namespace InterfaceGtk
             Popover PopoverFind = new Popover((Button)sender!) { Position = PositionType.Bottom, BorderWidth = 5 };
 
             SearchEntry entryFullTextSearch = new SearchEntry() { WidthRequest = 500 };
-            entryFullTextSearch.KeyReleaseEvent += (object? sender, KeyReleaseEventArgs args) =>
+            entryFullTextSearch.KeyReleaseEvent += (sender, args) =>
             {
                 if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
                     ButtonFindClicked(((SearchEntry)sender!).Text);
@@ -168,7 +167,7 @@ namespace InterfaceGtk
             };
 
             lb.Image.Valign = Align.End;
-            lb.Clicked += (object? sender, EventArgs args) => ClikAction.Invoke(lb);
+            lb.Clicked += (sender, args) => ClikAction.Invoke(lb);
 
             vBox.PackStart(lb, false, false, 10);
         }
@@ -191,7 +190,7 @@ namespace InterfaceGtk
                 vBoxList.PackStart(new Label("Документи"), false, false, 2);
 
                 ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
-                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                listBox.ButtonPressEvent += (sender, args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                         ВідкритиДокументВідповідноДоВиду(listBox.SelectedRows[0].Name);
@@ -203,7 +202,7 @@ namespace InterfaceGtk
 
                 vBoxList.PackStart(scrollList, false, false, 2);
 
-                foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents)
+                foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents.OrderBy(x => x.Value.Name))
                 {
                     string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
 
@@ -239,7 +238,7 @@ namespace InterfaceGtk
                 vBoxList.PackStart(new Label("Довідники"), false, false, 2);
 
                 ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                listBox.ButtonPressEvent += (sender, args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                         ВідкритиДовідникВідповідноДоВиду(listBox.SelectedRows[0].Name);
@@ -251,7 +250,7 @@ namespace InterfaceGtk
 
                 vBoxList.PackStart(scrollList, false, false, 2);
 
-                foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories)
+                foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories.OrderBy(x => x.Value.Name))
                 {
                     string title = string.IsNullOrEmpty(directories.Value.FullName) ? directories.Value.Name : directories.Value.FullName;
 
@@ -287,7 +286,7 @@ namespace InterfaceGtk
                 vBoxList.PackStart(new Label("Журнали"), false, false, 2);
 
                 ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                listBox.ButtonPressEvent += (sender, args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                         ВідкритиЖурналВідповідноДоВиду(listBox.SelectedRows[0].Name);
@@ -299,7 +298,7 @@ namespace InterfaceGtk
 
                 vBoxList.PackStart(scrollList, false, false, 2);
 
-                foreach (KeyValuePair<string, ConfigurationJournals> journal in Kernel.Conf.Journals)
+                foreach (KeyValuePair<string, ConfigurationJournals> journal in Kernel.Conf.Journals.OrderBy(x => x.Value.Name))
                 {
                     string title = journal.Value.Name;
 
@@ -351,7 +350,7 @@ namespace InterfaceGtk
                     vBoxBlock.PackStart(new Label("Регістри відомостей"), false, false, 2);
 
                     ListBox listBox = new ListBox();
-                    listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                    listBox.ButtonPressEvent += (sender, args) =>
                     {
                         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                             ВідкритиРегістрВідомостейВідповідноДоВиду(listBox.SelectedRows[0].Name);
@@ -363,7 +362,7 @@ namespace InterfaceGtk
 
                     vBoxBlock.PackStart(scrollList, false, false, 2);
 
-                    foreach (KeyValuePair<string, ConfigurationRegistersInformation> register in Kernel.Conf.RegistersInformation)
+                    foreach (KeyValuePair<string, ConfigurationRegistersInformation> register in Kernel.Conf.RegistersInformation.OrderBy(x => x.Value.Name))
                     {
                         string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
 
@@ -382,7 +381,7 @@ namespace InterfaceGtk
                     vBoxBlock.PackStart(new Label("Регістри накопичення"), false, false, 2);
 
                     ListBox listBox = new ListBox();
-                    listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                    listBox.ButtonPressEvent += (sender, args) =>
                     {
                         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                             ВідкритиРегістрНакопиченняВідповідноДоВиду(listBox.SelectedRows[0].Name);
@@ -394,7 +393,7 @@ namespace InterfaceGtk
 
                     vBoxBlock.PackStart(scrollList, false, false, 2);
 
-                    foreach (KeyValuePair<string, ConfigurationRegistersAccumulation> register in Kernel.Conf.RegistersAccumulation)
+                    foreach (KeyValuePair<string, ConfigurationRegistersAccumulation> register in Kernel.Conf.RegistersAccumulation.OrderBy(x => x.Value.Name))
                     {
                         string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
 

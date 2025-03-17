@@ -1922,7 +1922,7 @@ WHERE (LockedObject.obj).uuid = @obj
             {
                 if (directorySelect.QuerySelect.CreateTempTable == true &&
                     directorySelect.QuerySelect.TempTable != "" &&
-                    directorySelect.QuerySelect.TempTable.Substring(0, 4) == "tmp_")
+                    directorySelect.QuerySelect.TempTable[..4] == "tmp_")
                 {
                     string query = $"DROP TABLE IF EXISTS {directorySelect.QuerySelect.TempTable}";
 

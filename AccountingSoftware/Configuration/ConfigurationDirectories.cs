@@ -42,13 +42,9 @@ namespace AccountingSoftware
         /// <param name="desc">Опис</param>
         /// <param name="automaticNumeration">Автоматична нумерація</param>
         /// <param name="typeDirectory">Тип довідника</param>
-        /// <param name="pointerFolders">Вказівник на ієрархію у іншому довіднику</param>
         public ConfigurationDirectories(string name, string fullname, string table,
             string desc = "", bool automaticNumeration = false,
-            TypeDirectories typeDirectory = TypeDirectories.Normal,
-            string pointerFolders_HierarchyInAnotherDirectory = "",
-            string parentField_Hierarchical = "", string iconTree_Hierarchical = "",
-            string directoryOwner_Subordination = "", string pointerFieldOwner_Subordination = "")
+            TypeDirectories typeDirectory = TypeDirectories.Normal)
         {
             Name = name;
             FullName = fullname;
@@ -56,11 +52,6 @@ namespace AccountingSoftware
             Desc = desc;
             AutomaticNumeration = automaticNumeration;
             TypeDirectory = typeDirectory;
-            PointerFolders_HierarchyInAnotherDirectory = pointerFolders_HierarchyInAnotherDirectory;
-            ParentField_Hierarchical = parentField_Hierarchical;
-            IconTree_Hierarchical = iconTree_Hierarchical;
-            DirectoryOwner_Subordination = directoryOwner_Subordination;
-            PointerFieldOwner_Subordination = pointerFieldOwner_Subordination;
         }
 
         /// <summary>
@@ -134,12 +125,14 @@ namespace AccountingSoftware
         /// <summary>
         /// Створити копію
         /// </summary>
-        /// <returns></returns>
         public ConfigurationDirectories Copy()
         {
             ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.FullName, this.Table, this.Desc,
-                false, /* Автоматична нумерація не копіюється */
-                this.TypeDirectory, this.PointerFolders_HierarchyInAnotherDirectory, this.ParentField_Hierarchical);
+                false, /* Автоматична нумерація не копіюється */ this.TypeDirectory)
+            {
+                PointerFolders_HierarchyInAnotherDirectory = this.PointerFolders_HierarchyInAnotherDirectory,
+                ParentField_Hierarchical = this.ParentField_Hierarchical
+            };
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confDirCopy.Fields.Add(fields.Key, fields.Value.Copy());

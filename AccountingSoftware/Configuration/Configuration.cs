@@ -1195,34 +1195,44 @@ namespace AccountingSoftware
                 string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                 string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                string autoNum = directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
-                string type = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? ""; //Тип довідника (звичайний , ієрархічний чи ієрархія в окремому довіднику)
+                bool autoNum = (directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1";
                 string directoryOwner = directoryNodes.Current?.SelectSingleNode("DirectoryOwner")?.Value ?? ""; //Власник довідника
                 string pointerFieldOwner = directoryNodes.Current?.SelectSingleNode("PointerFieldOwner")?.Value ?? ""; //Поле яке відповідає за підпорядкування власнику
 
-                ConfigurationDirectories.TypeDirectories typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
-                string pointerFoldersForHierarchical = "";
-                string parentFieldForHierarchical = "";
-                string iconTreeForHierarchical = "";
-
-                if (type == "Normal")
-                    typeDirectory = ConfigurationDirectories.TypeDirectories.Normal;
-                else if (type == "Hierarchical")
+                //Тип довідника (звичайний , ієрархічний чи ієрархія в окремому довіднику)
+                ConfigurationDirectories.TypeDirectories typeDirectory = (directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? "") switch
                 {
-                    typeDirectory = ConfigurationDirectories.TypeDirectories.Hierarchical;
-                    parentFieldForHierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
-                    iconTreeForHierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? "";
-                }
-                else if (type == "HierarchyInAnotherDirectory")
-                {
-                    typeDirectory = ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory;
-                    pointerFoldersForHierarchical = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
-                }
-                ;
+                    "Normal" => ConfigurationDirectories.TypeDirectories.Normal,
+                    "Hierarchical" => ConfigurationDirectories.TypeDirectories.Hierarchical,
+                    "HierarchyInAnotherDirectory" => ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory,
+                    _ => ConfigurationDirectories.TypeDirectories.Normal
+                };
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum == "1", typeDirectory,
-                    pointerFoldersForHierarchical, parentFieldForHierarchical, iconTreeForHierarchical,
-                    directoryOwner, pointerFieldOwner);
+                string parentField_Hierarchical = "";
+                string iconTree_Hierarchical = "";
+                string pointerFolders_HierarchyInAnotherDirectory = "";
+
+                if (typeDirectory == ConfigurationDirectories.TypeDirectories.Hierarchical)
+                {
+                    parentField_Hierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
+                    iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? "";
+                }
+                else if (typeDirectory == ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory)
+                    pointerFolders_HierarchyInAnotherDirectory = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
+
+                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum, typeDirectory)
+                {
+                    //Hierarchical
+                    ParentField_Hierarchical = parentField_Hierarchical,
+                    IconTree_Hierarchical = iconTree_Hierarchical,
+
+                    //HierarchyInAnotherDirectory
+                    PointerFolders_HierarchyInAnotherDirectory = pointerFolders_HierarchyInAnotherDirectory,
+
+                    //Subordination
+                    DirectoryOwner_Subordination = directoryOwner,
+                    PointerFieldOwner_Subordination = pointerFieldOwner
+                };
 
                 Conf.Directories.Add(ConfObjectDirectories.Name, ConfObjectDirectories);
 

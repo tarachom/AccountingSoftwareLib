@@ -55,7 +55,7 @@ namespace InterfaceGtk
                 notebook.Data.Add(DataKey_HistorySwitchList, new List<string>());
 
                 //Обробка переключення вкладок
-                notebook.SwitchPage += (object? sender, SwitchPageArgs args) =>
+                notebook.SwitchPage += (sender, args) =>
                 {
                     string currPageUID = args.Page.Name;
 
@@ -170,7 +170,7 @@ namespace InterfaceGtk
                     TooltipText = "Закрити"
                 };
 
-                lbClose.Clicked += (object? sender, EventArgs args) => CloseNotebookPageToCode(notebook, codePage);
+                lbClose.Clicked += (sender, args) => CloseNotebookPageToCode(notebook, codePage);
 
                 hBoxLabel.PackEnd(lbClose, false, false, 0);
             }

@@ -139,16 +139,7 @@ namespace InterfaceGtk
 
         public static ConfigurationParam? GetConfigurationParam(string key)
         {
-            ConfigurationParam? selectConfigurationParam = null;
-
-            foreach (ConfigurationParam itemConfigurationParam in ListConfigurationParam)
-                if (itemConfigurationParam.ConfigurationKey == key)
-                {
-                    selectConfigurationParam = itemConfigurationParam;
-                    break;
-                }
-
-            return selectConfigurationParam;
+            return ListConfigurationParam.Find(x => x.ConfigurationKey == key);
         }
 
         public static bool RemoveConfigurationParam(string key)

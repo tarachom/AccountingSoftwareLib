@@ -32,9 +32,6 @@ namespace InterfaceGtk
         Kernel? ProgramKernel { get; set; }
         Kernel? ConfiguratorKernel { get; set; }
 
-        public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
-        public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
-
         Toolbar? toolBar;
         ListBox listBox;
         Button? buttonOpen;
@@ -98,10 +95,7 @@ namespace InterfaceGtk
                 hBoxOpen.PackStart(buttonOpen, false, false, 2);
 
                 //Фокус для кнопки Відкрити після відкриття форми
-                Shown += (object? sender, EventArgs args) =>
-                {
-                    buttonOpen.GrabFocus();
-                };
+                Shown += (sender, args) => buttonOpen.GrabFocus();
             }
 
             //Кнопка Конфігуратор
@@ -116,10 +110,7 @@ namespace InterfaceGtk
 
                 if (TypeOpenForm == TypeForm.Configurator)
                     //Фокус для кнопки Конфігуратор після відкриття форми
-                    Shown += (object? sender, EventArgs args) =>
-                    {
-                        buttonConfigurator.GrabFocus();
-                    };
+                    Shown += (sender, args) => buttonConfigurator.GrabFocus();
             }
 
             //Spinner
@@ -136,6 +127,13 @@ namespace InterfaceGtk
             LoadConfigurationParam();
             FillListBoxDataBase();
         }
+
+        #region Virtual Functions
+
+        public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
+        public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
+
+        #endregion
 
         void CreateToolbar(Box vBox)
         {
@@ -215,8 +213,7 @@ namespace InterfaceGtk
 
         async void OnButtonOpenClicked(object? sender, EventArgs args)
         {
-            if (ProgramKernel == null)
-                return;
+            if (ProgramKernel == null) return;
 
             SensitiveWidgets(false);
 

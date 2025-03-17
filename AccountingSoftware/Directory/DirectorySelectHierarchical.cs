@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник !!! Видалити пізніше
 		/// </summary>
-		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
+		//protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
 
 		/// <summary>
 		/// Поточний вказівник

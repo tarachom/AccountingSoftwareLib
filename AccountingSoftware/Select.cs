@@ -31,6 +31,9 @@ namespace AccountingSoftware
     ///    DirectorySelectHierarchical
     ///    DocumentSelect
     /// </summary>
+    /// <param name="kernel">Ядро</param>
+    /// <param name="table">Таблиця</param>
+    /// <param name="parentField">Батьківське поле</param>
     public abstract class Select(Kernel kernel, string table, string parentField = "")
     {
         /// <summary>

@@ -28,16 +28,18 @@ namespace InterfaceGtk
 {
     class FormConfigurationSelectionParam : Window
     {
-        #region Fields
-        Entry ConfName = new Entry();
-        Entry Server = new Entry();
-        Entry Port = new Entry();
-        Entry Login = new Entry();
-        Entry Password = new Entry();
-        Entry Basename = new Entry();
-        #endregion
+        public System.Action<ConfigurationParam>? CallBackUpdate { get; set; }
 
-        Button buttonCreateBase;
+        #region Fields
+
+        Entry ConfName = new Entry() { WidthRequest = 300 };
+        Entry Server = new Entry() { WidthRequest = 300 };
+        Entry Port = new Entry() { WidthRequest = 300 };
+        Entry Login = new Entry() { WidthRequest = 300 };
+        Entry Password = new Entry() { WidthRequest = 300 };
+        Entry Basename = new Entry() { WidthRequest = 300 };
+
+        #endregion
 
         public FormConfigurationSelectionParam() : base("Параметри підключення PostgreSQL")
         {
@@ -49,16 +51,16 @@ namespace InterfaceGtk
             BorderWidth = 5;
 
             if (File.Exists(Іконки.ДляФорми.Configurator))
-                SetDefaultIconFromFile(Іконки.ДляФорми.Configurator);            
+                SetDefaultIconFromFile(Іконки.ДляФорми.Configurator);
 
             Box vbox = new Box(Orientation.Vertical, 0);
 
-            AddNameAndField(vbox, "Назва", ConfName);
-            AddNameAndField(vbox, "Сервер", Server);
-            AddNameAndField(vbox, "Порт", Port);
-            AddNameAndField(vbox, "Логін", Login);
-            AddNameAndField(vbox, "Пароль", Password);
-            AddNameAndField(vbox, "База даних", Basename);
+            AddNameAndField(vbox, "Назва:", ConfName);
+            AddNameAndField(vbox, "Сервер:", Server);
+            AddNameAndField(vbox, "Порт:", Port);
+            AddNameAndField(vbox, "Логін:", Login);
+            AddNameAndField(vbox, "Пароль:", Password);
+            AddNameAndField(vbox, "База даних:", Basename);
 
             Separator separator = new Separator(Orientation.Vertical);
             vbox.PackStart(separator, false, false, 5);
@@ -66,19 +68,15 @@ namespace InterfaceGtk
             Box hBoxButton = new Box(Orientation.Horizontal, 0);
 
             Button buttonSave = new Button("Зберегти");
-            buttonSave.SetSizeRequest(0, 35);
             buttonSave.Clicked += OnButtonSaveClicked;
+            hBoxButton.PackStart(buttonSave, false, false, 5);
 
-            buttonCreateBase = new Button("Створити базу даних");
-            buttonCreateBase.SetSizeRequest(0, 35);
+            Button buttonCreateBase = new Button("Створити базу даних");
             buttonCreateBase.Clicked += OnButtonCreateBaseClicked;
+            hBoxButton.PackStart(buttonCreateBase, false, false, 5);
 
             Button buttonClose = new Button("Закрити");
-            buttonClose.SetSizeRequest(0, 35);
             buttonClose.Clicked += OnCancel;
-
-            hBoxButton.PackStart(buttonSave, false, false, 5);
-            hBoxButton.PackStart(buttonCreateBase, false, false, 5);
             hBoxButton.PackStart(buttonClose, false, false, 5);
 
             vbox.PackStart(hBoxButton, false, false, 5);
@@ -87,24 +85,22 @@ namespace InterfaceGtk
             ShowAll();
         }
 
-        public System.Action<ConfigurationParam>? CallBackUpdate { get; set; }
-
-        private ConfigurationParam? mOpenConfigurationParam;
+        private ConfigurationParam? openConfigurationParam;
         public ConfigurationParam? OpenConfigurationParam
         {
-            get { return mOpenConfigurationParam; }
+            get { return openConfigurationParam; }
             set
             {
-                mOpenConfigurationParam = value;
+                openConfigurationParam = value;
 
-                if (mOpenConfigurationParam != null)
+                if (openConfigurationParam != null)
                 {
-                    ConfName.Text = mOpenConfigurationParam.ConfigurationName;
-                    Server.Text = mOpenConfigurationParam.DataBaseServer;
-                    Port.Text = mOpenConfigurationParam.DataBasePort.ToString();
-                    Login.Text = mOpenConfigurationParam.DataBaseLogin;
-                    Password.Text = mOpenConfigurationParam.DataBasePassword;
-                    Basename.Text = mOpenConfigurationParam.DataBaseBaseName;
+                    ConfName.Text = openConfigurationParam.ConfigurationName;
+                    Server.Text = openConfigurationParam.DataBaseServer;
+                    Port.Text = openConfigurationParam.DataBasePort.ToString();
+                    Login.Text = openConfigurationParam.DataBaseLogin;
+                    Password.Text = openConfigurationParam.DataBasePassword;
+                    Basename.Text = openConfigurationParam.DataBaseBaseName;
                 }
             }
         }
@@ -112,11 +108,8 @@ namespace InterfaceGtk
         private void AddNameAndField(Box vbox, string name, Entry field)
         {
             Fixed fix = new Fixed();
-            Label label = new Label(name);
 
-            field.SetSizeRequest(300, 0);
-
-            fix.Put(label, 5, 8);
+            fix.Put(new Label(name), 5, 8);
             fix.Put(field, 100, 0);
 
             vbox.PackStart(fix, false, false, 5);
@@ -124,7 +117,7 @@ namespace InterfaceGtk
 
         bool SaveConfParam()
         {
-            if (!int.TryParse(Port.Text, out int rezult))
+            if (!int.TryParse(Port.Text, out int portInteger))
             {
                 Message.Error(this, "Порт має бути цілим числом!");
                 return false;
@@ -136,7 +129,7 @@ namespace InterfaceGtk
                 OpenConfigurationParam.DataBaseServer = Server.Text;
                 OpenConfigurationParam.DataBaseLogin = Login.Text;
                 OpenConfigurationParam.DataBasePassword = Password.Text;
-                OpenConfigurationParam.DataBasePort = int.Parse(Port.Text);
+                OpenConfigurationParam.DataBasePort = portInteger;
                 OpenConfigurationParam.DataBaseBaseName = Basename.Text;
 
                 CallBackUpdate.Invoke(OpenConfigurationParam);
@@ -155,14 +148,15 @@ namespace InterfaceGtk
 
         async void OnButtonCreateBaseClicked(object? sender, EventArgs args)
         {
-            if (OpenConfigurationParam == null)
+            if (OpenConfigurationParam == null || sender == null)
                 return;
 
             if (SaveConfParam())
             {
+                Button buttonCreateBase = (Button)sender;
                 buttonCreateBase.Sensitive = false;
 
-                Kernel kernel = new();
+                Kernel kernel = new Kernel();
 
                 bool ifExistsDatabase = await kernel.IfExistDatabase(
                     OpenConfigurationParam.DataBaseServer,

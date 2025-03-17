@@ -31,13 +31,13 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник !!! Видалити пізніше
 		/// </summary>
-		protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition
+		/*protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition
 		{
 			get
 			{
 				return CurrentPointerPosition;
 			}
-		}
+		}*/
 
 		/// <summary>
 		/// Зчитати

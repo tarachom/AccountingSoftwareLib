@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-
 namespace AccountingSoftware
 {
     /// <summary>
