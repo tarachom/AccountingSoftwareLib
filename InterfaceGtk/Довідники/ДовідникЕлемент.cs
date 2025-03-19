@@ -23,7 +23,6 @@ limitations under the License.
 
 using Gtk;
 using AccountingSoftware;
-using System.Threading.Tasks;
 
 namespace InterfaceGtk
 {
@@ -46,18 +45,27 @@ namespace InterfaceGtk
         protected Paned HPanedTop = new Paned(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
 
         /// <summary>
+        /// Кнопки "Зберегти та закрити", "Зберегти"
+        /// </summary>
+        Button bSaveAndClose, bSave;
+
+        /// <summary>
         /// Індикатор стану блокування
         /// </summary>
         Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+
+        /// <summary>
+        /// Функція для отримання інформації про блокування
+        /// </summary>
         Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
 
         public ДовідникЕлемент()
         {
-            Button bSaveAndClose = new Button("Зберегти та закрити");
+            bSaveAndClose = new Button("Зберегти та закрити");
             bSaveAndClose.Clicked += (sender, args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSaveAndClose, false, false, 10);
 
-            Button bSave = new Button("Зберегти");
+            bSave = new Button("Зберегти");
             bSave.Clicked += (sender, args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
@@ -69,7 +77,6 @@ namespace InterfaceGtk
                     AlwaysShowImage = true,
                     Image = Image.NewFromIconName(Stock.Info, IconSize.Button),
                 };
-                HBoxTop.PackEnd(bLock, false, false, 10);
 
                 bLock.Clicked += async (sender, args) =>
                 {
@@ -77,29 +84,30 @@ namespace InterfaceGtk
                     {
                         LockedObject_Record recordResult = await FuncLockInfo.Invoke();
 
-                        Popover popover = new Popover((Button)sender!)
-                        {
-                            Position = PositionType.Left,
-                            BorderWidth = 2
-                        };
+                        Popover popover = new Popover((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
+
+                        Box vBox = new Box(Orientation.Vertical, 0);
+                        Box hBox = new Box(Orientation.Horizontal, 0);
+                        vBox.PackStart(hBox, false, false, 10);
 
                         string info = "";
                         if (recordResult.Result)
                         {
                             info += "Заблоковано" + "\n\n" +
                                 "Користувач: " + recordResult.UserName + "\n" +
-                                "Дата: " + recordResult.DateLock.ToString("HH:mm:ss") + "\n";
+                                "Дата: " + recordResult.DateLock.ToString("HH:mm:ss");
                         }
                         else
                             info += "Не заблоковано";
 
-                        Box vBox = new Box(Orientation.Vertical, 0);
-                        CreateField(vBox, info, null, Align.Start);
+                        hBox.PackStart(new Label(info), false, false, 10);
 
                         popover.Add(vBox);
                         popover.ShowAll();
                     }
                 };
+
+                HBoxTop.PackEnd(bLock, false, false, 10);
 
                 //Індикатор стану блокування
                 HBoxTop.PackEnd(LabelLock, false, false, 10);
@@ -136,14 +144,20 @@ namespace InterfaceGtk
 
         #endregion
 
-        public void LockInfo(bool isLock, Func<ValueTask<LockedObject_Record>>? funcLockInfo)
+        /// <summary>
+        /// Функція для відображення інформації про блокування
+        /// </summary>
+        /// <param name="accountingObject">Обєкт</param>
+        public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
         {
-            if (funcLockInfo != null) FuncLockInfo = funcLockInfo;
+            bool isLock = await accountingObject.IsLock();
+            bSaveAndClose.Sensitive = bSave.Sensitive = isLock;
 
             string color = isLock ? "green" : "red";
             string text = isLock ? "Заблоковано" : "Тільки для читання";
-
             LabelLock.Markup = $"<span color='{color}'>{text}</span>";
+
+            FuncLockInfo = accountingObject.LockInfo;
         }
 
         /// <summary>

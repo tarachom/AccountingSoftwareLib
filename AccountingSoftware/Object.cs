@@ -129,12 +129,20 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Чи заблокований?
+        /// </summary>
+        public async ValueTask<bool> IsLock()
+        {
+            return await Kernel.DataBase.SpetialTableLockedObjectIsLock(LockKey);
+        }
+
+        /// <summary>
         /// Розширена версія Чи заблокований?
         /// </summary>
         /// <returns>Набір даних</returns>
         public async ValueTask<LockedObject_Record> LockInfo()
         {
-            return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
+            return await Kernel.DataBase.SpetialTableLockedObjectLockInfo(GetBasis());
         }
 
         #endregion

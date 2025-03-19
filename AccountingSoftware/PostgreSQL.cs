@@ -1345,13 +1345,18 @@ WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')
         {
             UnigueID unigueID = new UnigueID();
 
-            if (!await SpetialTableLockedObjectIsLock(obj))
+            //Перевірка наявності блокування об'єкту
+            string query = $@"SELECT count(uid) FROM {SpecialTables.LockedObject} WHERE (obj).uuid = @uid";
+            object? count = await ExecuteSQLScalar(query, new() { { "uid", obj.Uuid } });
+
+            //Якщо блокування немає то додаємо
+            if (count == null || (long)count == 0)
             {
                 unigueID.New();
 
                 Dictionary<string, object> paramQuery = new()
                 {
-                    { "uid", unigueID.UGuid},
+                    { "uid", unigueID.UGuid },
                     { "session", session_uid },
                     { "user", user_uid },
                     { "obj", obj }
@@ -1379,17 +1384,18 @@ VALUES
             return unigueID;
         }
 
-        async ValueTask<bool> SpetialTableLockedObjectIsLock(UuidAndText obj)
+        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UnigueID lockKey)
         {
-            string query = $@"
-SELECT
-    count(uid) AS count
-FROM {SpecialTables.LockedObject}
-WHERE (obj).uuid = @uid
-";
-            object? count = await ExecuteSQLScalar(query, new() { { "uid", obj.Uuid } });
-            if (count != null && (long)count == 1)
-                return true;
+            if (!lockKey.IsEmpty())
+            {
+                string query = $@"SELECT count(uid) FROM {SpecialTables.LockedObject} WHERE uid = @uid";
+                object? count = await ExecuteSQLScalar(query, new() { { "uid", lockKey.UGuid } });
+
+                if (count != null && (long)count == 1)
+                    return true;
+                else
+                    return false;
+            }
             else
                 return false;
         }
@@ -1411,7 +1417,7 @@ ORDER BY
             return await SelectRequest(query);
         }
 
-        public async ValueTask<LockedObject_Record> SpetialTableLockedObjectIsLockInfo(UuidAndText obj)
+        public async ValueTask<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj)
         {
             LockedObject_Record record = new();
 

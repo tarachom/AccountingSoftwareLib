@@ -423,14 +423,14 @@ namespace InterfaceGtk
         /// <param name="codePage">Код сторінки</param>
         /// <param name="lockFunc">Функція блокування</param>
         /// <param name="unlockFunc">Функція розблокування</param>
-        public static async ValueTask<bool> AddLockObjectFunc(Notebook? notebook, string codePage, Func<ValueTask<bool>> lockFunc, Func<ValueTask> unlockFunc)
+        public static async ValueTask AddLockObjectFunc(Notebook? notebook, string codePage, AccountingSoftware.Object accountingObject)
         {
             //Функція розблокування після закриття сторінки
             var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
-            lockObjectPageFunc?.Add(codePage, unlockFunc);
+            lockObjectPageFunc?.Add(codePage, accountingObject.UnLock);
 
             //Блокування
-            return await lockFunc.Invoke();
+            await accountingObject.Lock();
         }
 
         #endregion

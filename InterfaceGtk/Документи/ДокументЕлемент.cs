@@ -59,43 +59,86 @@ namespace InterfaceGtk
         /// </summary>
         protected Notebook NotebookTablePart = NotebookFunction.CreateNotebook(false);
 
+        /// <summary>
+        /// Кнопки "Зберегти та провести", "Провести", "Зберегти"
+        /// </summary>
+        Button bSaveAndSpend, bSpend, bSave;
+
+        /// <summary>
+        /// Індикатор стану блокування
+        /// </summary>
+        Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+
+        /// <summary>
+        /// Функція для отримання інформації про блокування
+        /// </summary>
+        Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
+
         public ДокументЕлемент()
         {
-            Button bSaveAndSpend = new Button("Провести та закрити");
+            bSaveAndSpend = new Button("Провести та закрити");
             bSaveAndSpend.Clicked += (sender, args) => BeforeAndAfterSave(true, true);
             HBoxTop.PackStart(bSaveAndSpend, false, false, 10);
 
-            Button bSpend = new Button("Провести");
+            bSpend = new Button("Провести");
             bSpend.Clicked += (sender, args) => BeforeAndAfterSave(true);
             HBoxTop.PackStart(bSpend, false, false, 10);
 
-            Button bSave = new Button("Зберегти");
+            bSave = new Button("Зберегти");
             bSave.Clicked += (sender, args) => BeforeAndAfterSave(false);
             HBoxTop.PackStart(bSave, false, false, 10);
 
             //Проводки
             {
                 LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-                linkNew.Clicked += (sender, args) =>
-                {
-                    if (UnigueID != null)
-                        ReportSpendTheDocument(UnigueID);
-                };
+                linkNew.Clicked += (sender, args) => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); };
 
                 HBoxTop.PackStart(linkNew, false, false, 0);
             }
 
-            Button bLock = new Button
+            //Інформація про блокування
             {
-                Label = "Заблокувати",
-                ImagePosition = PositionType.Left,
-                AlwaysShowImage = true,
-                Image = Image.NewFromIconName(Stock.Add, IconSize.Button),
-            };
+                Button bLock = new Button
+                {
+                    ImagePosition = PositionType.Left,
+                    AlwaysShowImage = true,
+                    Image = Image.NewFromIconName(Stock.Info, IconSize.Button),
+                };
 
-            bLock.Image.MarginEnd = 5;
-            bLock.Clicked += (sender, args) => { };
-            HBoxTop.PackEnd(bLock, false, false, 10);
+                bLock.Clicked += async (sender, args) =>
+                {
+                    if (FuncLockInfo != null)
+                    {
+                        LockedObject_Record recordResult = await FuncLockInfo.Invoke();
+
+                        Popover popover = new Popover((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
+
+                        Box vBox = new Box(Orientation.Vertical, 0);
+                        Box hBox = new Box(Orientation.Horizontal, 0);
+                        vBox.PackStart(hBox, false, false, 10);
+
+                        string info = "";
+                        if (recordResult.Result)
+                        {
+                            info += "Заблоковано" + "\n\n" +
+                                "Користувач: " + recordResult.UserName + "\n" +
+                                "Дата: " + recordResult.DateLock.ToString("HH:mm:ss");
+                        }
+                        else
+                            info += "Не заблоковано";
+
+                        hBox.PackStart(new Label(info), false, false, 10);
+
+                        popover.Add(vBox);
+                        popover.ShowAll();
+                    }
+                };
+
+                HBoxTop.PackEnd(bLock, false, false, 10);
+
+                //Індикатор стану блокування
+                HBoxTop.PackEnd(LabelLock, false, false, 10);
+            }
 
             PackStart(HBoxTop, false, false, 10);
 
@@ -188,6 +231,22 @@ namespace InterfaceGtk
             HBoxName.PackStart(НомерДок, false, false, 5);
             HBoxName.PackStart(new Label("від:"), false, false, 5);
             HBoxName.PackStart(ДатаДок, false, false, 5);
+        }
+
+        /// <summary>
+        /// Функція для відображення інформації про блокування
+        /// </summary>
+        /// <param name="accountingObject">Обєкт</param>
+        public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
+        {
+            bool isLock = await accountingObject.IsLock();
+            bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = isLock;
+
+            string color = isLock ? "green" : "red";
+            string text = isLock ? "Заблоковано" : "Тільки для читання";
+            LabelLock.Markup = $"<span color='{color}'>{text}</span>";
+
+            FuncLockInfo = accountingObject.LockInfo;
         }
 
         /// <summary>

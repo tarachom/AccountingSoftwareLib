@@ -106,7 +106,8 @@ namespace AccountingSoftware
 
         ValueTask<UnigueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj);
         ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect();
-        ValueTask<LockedObject_Record> SpetialTableLockedObjectIsLockInfo(UuidAndText obj);
+        ValueTask<bool> SpetialTableLockedObjectIsLock(UnigueID lockKey);
+        ValueTask<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj);
         ValueTask SpetialTableLockedObjectClear(UnigueID uid);
 
         #endregion
