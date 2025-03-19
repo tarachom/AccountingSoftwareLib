@@ -113,38 +113,10 @@ namespace AccountingSoftware
         /// <summary>
         /// Заблокувати
         /// </summary>
-        /// <returns>true якщо вдалось заблокувати</returns>
         public async ValueTask<bool> Lock()
         {
-            UnigueID unigueID = await Kernel.DataBase.SpetialTableLockedObjectAdd(Kernel.User, Kernel.Session, GetBasis());
-            if (!unigueID.IsEmpty())
-            {
-                LockKey = unigueID;
-                return true;
-            }
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Чи заблокований?
-        /// </summary>
-        /// <returns>true якщо заблокований</returns>
-        public async ValueTask<bool> IsLock()
-        {
-            return await Kernel.DataBase.SpetialTableLockedObjectIsLock(GetBasis());
-        }
-
-        /// <summary>
-        /// Розширена версія Чи заблокований?
-        /// </summary>
-        /// <returns>Набір даних</returns>
-        public async ValueTask<LockedObject_Record> IsLockInfo()
-        {
-            if (!LockKey.IsEmpty())
-                return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
-            else
-                return new LockedObject_Record();
+            LockKey = await Kernel.DataBase.SpetialTableLockedObjectAdd(Kernel.User, Kernel.Session, GetBasis());
+            return !LockKey.IsEmpty();
         }
 
         /// <summary>
@@ -154,6 +126,15 @@ namespace AccountingSoftware
         {
             await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
             LockKey.Clear();
+        }
+
+        /// <summary>
+        /// Розширена версія Чи заблокований?
+        /// </summary>
+        /// <returns>Набір даних</returns>
+        public async ValueTask<LockedObject_Record> LockInfo()
+        {
+            return await Kernel.DataBase.SpetialTableLockedObjectIsLockInfo(GetBasis());
         }
 
         #endregion

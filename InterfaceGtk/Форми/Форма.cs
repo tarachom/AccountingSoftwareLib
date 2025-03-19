@@ -94,7 +94,7 @@ namespace InterfaceGtk
         /// <param name="field">Поле</param>
         /// <param name="halign">Положення</param>
         /// <param name="put_vbox">Вкласти в додатковий вертикальний блок</param>
-        protected Box CreateField(Box parentBox, string? label, Widget? field, Align halign = Align.End, bool put_vbox = false)
+        protected Box CreateField(Box parentBox, string? label, Widget? field = null, Align halign = Align.End, bool put_vbox = false)
         {
             Box usingBox = parentBox;
 

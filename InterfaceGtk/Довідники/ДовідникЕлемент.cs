@@ -23,6 +23,7 @@ limitations under the License.
 
 using Gtk;
 using AccountingSoftware;
+using System.Threading.Tasks;
 
 namespace InterfaceGtk
 {
@@ -47,7 +48,8 @@ namespace InterfaceGtk
         /// <summary>
         /// Індикатор стану блокування
         /// </summary>
-        protected Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+        Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+        Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
 
         public ДовідникЕлемент()
         {
@@ -59,20 +61,49 @@ namespace InterfaceGtk
             bSave.Clicked += (sender, args) => BeforeAndAfterSave();
             HBoxTop.PackStart(bSave, false, false, 10);
 
-            Button bLock = new Button
+            //Інформація про блокування
             {
-                Label = "Заблокувати",
-                ImagePosition = PositionType.Left,
-                AlwaysShowImage = true,
-                Image = Image.NewFromIconName(Stock.Add, IconSize.Button),
-            };
+                Button bLock = new Button
+                {
+                    ImagePosition = PositionType.Left,
+                    AlwaysShowImage = true,
+                    Image = Image.NewFromIconName(Stock.Info, IconSize.Button),
+                };
+                HBoxTop.PackEnd(bLock, false, false, 10);
 
-            bLock.Image.MarginEnd = 5;
-            bLock.Clicked += (sender, args) => Lock();
-            HBoxTop.PackEnd(bLock, false, false, 10);
+                bLock.Clicked += async (sender, args) =>
+                {
+                    if (FuncLockInfo != null)
+                    {
+                        LockedObject_Record recordResult = await FuncLockInfo.Invoke();
 
-            //Індикатор стану блокування
-            HBoxTop.PackEnd(LabelLock, false, false, 10);
+                        Popover popover = new Popover((Button)sender!)
+                        {
+                            Position = PositionType.Left,
+                            BorderWidth = 2
+                        };
+
+                        string info = "";
+                        if (recordResult.Result)
+                        {
+                            info += "Заблоковано" + "\n\n" +
+                                "Користувач: " + recordResult.UserName + "\n" +
+                                "Дата: " + recordResult.DateLock.ToString("HH:mm:ss") + "\n";
+                        }
+                        else
+                            info += "Не заблоковано";
+
+                        Box vBox = new Box(Orientation.Vertical, 0);
+                        CreateField(vBox, info, null, Align.Start);
+
+                        popover.Add(vBox);
+                        popover.ShowAll();
+                    }
+                };
+
+                //Індикатор стану блокування
+                HBoxTop.PackEnd(LabelLock, false, false, 10);
+            }
 
             PackStart(HBoxTop, false, false, 10);
 
@@ -103,18 +134,16 @@ namespace InterfaceGtk
         /// </summary>
         protected virtual void CreatePack2(Box vBox) { }
 
-        /// <summary>
-        /// Заблокувати
-        /// </summary>
-        protected virtual void Lock() { }
-
         #endregion
 
-        protected void LockInfo(LockedObject_Record record)
+        public void LockInfo(bool isLock, Func<ValueTask<LockedObject_Record>>? funcLockInfo)
         {
-            LabelLock.Markup = record.Result ?
-                $"<span color='green'>Заблоковано</span>" : //{record.UserName}, {record.DateLock}
-                "<span color='red'>Тільки для читання</span>";
+            if (funcLockInfo != null) FuncLockInfo = funcLockInfo;
+
+            string color = isLock ? "green" : "red";
+            string text = isLock ? "Заблоковано" : "Тільки для читання";
+
+            LabelLock.Markup = $"<span color='{color}'>{text}</span>";
         }
 
         /// <summary>

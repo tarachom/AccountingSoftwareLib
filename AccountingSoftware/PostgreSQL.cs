@@ -1379,6 +1379,21 @@ VALUES
             return unigueID;
         }
 
+        async ValueTask<bool> SpetialTableLockedObjectIsLock(UuidAndText obj)
+        {
+            string query = $@"
+SELECT
+    count(uid) AS count
+FROM {SpecialTables.LockedObject}
+WHERE (obj).uuid = @uid
+";
+            object? count = await ExecuteSQLScalar(query, new() { { "uid", obj.Uuid } });
+            if (count != null && (long)count == 1)
+                return true;
+            else
+                return false;
+        }
+
         public async ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect()
         {
             string query = $@"
@@ -1396,28 +1411,11 @@ ORDER BY
             return await SelectRequest(query);
         }
 
-        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UuidAndText obj)
-        {
-            Dictionary<string, object> paramQuery = new() { { "uid", obj.Uuid } };
-
-            string query = $@"
-SELECT
-    count(uid) AS count
-FROM {SpecialTables.LockedObject}
-WHERE (obj).uuid = @uid
-";
-            object? count = await ExecuteSQLScalar(query, paramQuery);
-            if (count != null && (long)count == 1)
-                return true;
-            else
-                return false;
-        }
-
         public async ValueTask<LockedObject_Record> SpetialTableLockedObjectIsLockInfo(UuidAndText obj)
         {
             LockedObject_Record record = new();
 
-            if (DataSource != null)
+            if (DataSource != null && !obj.IsEmpty())
             {
                 string query = $@"
 SELECT 

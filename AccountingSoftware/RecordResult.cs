@@ -40,7 +40,7 @@ namespace AccountingSoftware
         public bool Result;
 
         /// <summary>
-        /// Ключ блоування
+        /// Ключ блокування
         /// </summary>
         public UnigueID? LockKey;
 

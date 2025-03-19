@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Threading.Tasks;
 using AccountingSoftware;
 using Gtk;
 
@@ -32,6 +33,7 @@ namespace InterfaceGtk
         public const string DataKey_ParentNotebook = "parent_notebook";
         public const string DataKey_AfterClosePageFunc = "after_close_page_func";
         public const string DataKey_ObjectChangeEvents = "object_change_events";
+        public const string DataKey_LockObjectPageFunc = "lock_object_page_func";
 
         /// <summary>
         /// Функція створює блокнот з верхнім положенням вкладок
@@ -68,6 +70,20 @@ namespace InterfaceGtk
                     }
                 };
             }
+
+            //Структура для функцій реакцій на зміни об'єктів
+            notebook.Data.Add(DataKey_ObjectChangeEvents,
+                new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>
+                {
+                    { GroupObjectChangeEvents.Directory, [] },
+                    { GroupObjectChangeEvents.Document, [] }
+                }
+            );
+
+            //Структура для функцій розблокування об'єктів
+            notebook.Data.Add(DataKey_LockObjectPageFunc,
+                new Dictionary<string, Func<ValueTask>>()
+            );
 
             return notebook;
         }
@@ -188,7 +204,7 @@ namespace InterfaceGtk
         public static void CloseNotebookPageToCode(Notebook? notebook, string codePage)
         {
             notebook?.Foreach(
-                (Widget wg) =>
+                async (Widget wg) =>
                 {
                     if (wg.Name == codePage)
                     {
@@ -217,6 +233,14 @@ namespace InterfaceGtk
                         {
                             foreach (var item in objectChangeEvents.Values)
                                 item.RemoveAll(x => x.codePage == codePage);
+                        }
+
+                        //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
+                        var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
+                        if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                        {
+                            await unlockFunc.Invoke();
+                            lockObjectPageFunc.Remove(codePage);
                         }
 
                         notebook.DetachTab(wg);
@@ -315,14 +339,6 @@ namespace InterfaceGtk
         /// <param name="kernel">Ядро</param>
         public static void ConnectingToKernelObjectChangeEvents(Notebook notebook, Kernel kernel)
         {
-            notebook.Data.Add(DataKey_ObjectChangeEvents,
-                new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>
-                {
-                    { GroupObjectChangeEvents.Directory, [] },
-                    { GroupObjectChangeEvents.Document, [] }
-                }
-            );
-
             //Внутрішня функція для виклику функцій реакції на зміни об'єктів
             async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<Guid>> directoryOrDocument)
             {
@@ -388,6 +404,33 @@ namespace InterfaceGtk
         {
             Directory,
             Document
+        }
+
+        #endregion
+
+        #region Lock Element
+
+        static Dictionary<string, Func<ValueTask>>? GetDataLockObjectFunc(Notebook? notebook)
+        {
+            var lock_object_page_func = notebook?.Data[DataKey_LockObjectPageFunc];
+            return lock_object_page_func != null ? (Dictionary<string, Func<ValueTask>>)lock_object_page_func : null;
+        }
+
+        /// <summary>
+        /// Додати функцію блокування та розблокування об'єкта
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="codePage">Код сторінки</param>
+        /// <param name="lockFunc">Функція блокування</param>
+        /// <param name="unlockFunc">Функція розблокування</param>
+        public static async ValueTask<bool> AddLockObjectFunc(Notebook? notebook, string codePage, Func<ValueTask<bool>> lockFunc, Func<ValueTask> unlockFunc)
+        {
+            //Функція розблокування після закриття сторінки
+            var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
+            lockObjectPageFunc?.Add(codePage, unlockFunc);
+
+            //Блокування
+            return await lockFunc.Invoke();
         }
 
         #endregion
