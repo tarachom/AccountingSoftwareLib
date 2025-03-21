@@ -32,9 +32,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class ЗвітСторінка : Форма
+    public abstract class ЗвітСторінка(Kernel kernel) : Форма
     {
-        Kernel Kernel { get; set; }
+        Kernel Kernel { get; set; } = kernel;
         TreeView? TreeViewGrid = null;
 
         /// <summary>
@@ -72,11 +72,6 @@ namespace InterfaceGtk
         /// </summary>
         public Func<ValueTask<string>>? GetInfo { get; set; } = null;
 
-        public ЗвітСторінка(Kernel kernel)
-        {
-            Kernel = kernel;
-        }
-
         public record ColumnsSettings(string Caption = "", string DataColumn = "", string Type = "", float Xalign = 0, TreeCellDataFunc? Func = null)
         {
             public string Caption { get; set; } = Caption;
@@ -85,6 +80,27 @@ namespace InterfaceGtk
             public float Xalign { get; set; } = Xalign;
             public TreeCellDataFunc? Func { get; set; } = Func;
         }
+
+        #region PDF
+
+        public Dictionary<string, PDFColumnsSettings> PDFColumnSettings { get; set; } = [];
+
+        public record PDFColumnsSettings(string Caption = "", float Width = 1, TypePDFColumn TypeColumn = TypePDFColumn.Relative, float Xalign = 0, Func<object, string>? Func = null)
+        {
+            public string Caption { get; set; } = Caption;
+            public float Width { get; set; } = Width;
+            public TypePDFColumn Type { get; set; } = TypeColumn;
+            public float Xalign { get; set; } = Xalign;
+            public Func<object, string>? Func { get; set; } = Func;
+        }
+
+        public enum TypePDFColumn
+        {
+            Constant,
+            Relative
+        }
+
+        #endregion
 
         /// <summary>
         /// Вибірка даних
@@ -97,24 +113,23 @@ namespace InterfaceGtk
         /// <summary>
         /// Вигрузка даних у список
         /// </summary>
-        /// <returns></returns>
         public List<string[]> FillList()
         {
-            List<string> columnsList = RecordResult.ColumnsName.ToList();
+            Dictionary<string, ColumnsSettings> newColumnSettings = [];
             List<string[]> rows = [];
 
-            Dictionary<string, ColumnsSettings> newColumnSettings = [];
+            List<string> columns = [.. RecordResult.ColumnsName];
 
             //Перевірка наявності колонки
             foreach (var columnSettings in ColumnSettings)
-                if (columnsList.Exists((x) => x == columnSettings.Key))
+                if (columns.Exists((x) => x == columnSettings.Key))
                     newColumnSettings.Add(columnSettings.Key, columnSettings.Value);
 
-            int colsLen = newColumnSettings.Count;
+            int columnsCount = newColumnSettings.Count;
 
             //Заголовки колонок
             {
-                string[] cols = new string[colsLen];
+                string[] cols = new string[columnsCount];
                 rows.Add(cols);
 
                 int counter = 0;
@@ -125,7 +140,7 @@ namespace InterfaceGtk
             //Дані
             foreach (Dictionary<string, object> row in RecordResult.ListRow)
             {
-                string[] cols = new string[colsLen];
+                string[] cols = new string[columnsCount];
                 rows.Add(cols);
 
                 int counter = 0;
@@ -134,6 +149,44 @@ namespace InterfaceGtk
             }
 
             return rows;
+        }
+
+        /// <summary>
+        /// Функція повертає набір рядків із налаштуваннями для створення PDF
+        /// </summary>
+        public (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) FillListForPDF()
+        {
+            Dictionary<string, PDFColumnsSettings> newPDFColumnSettings = [];
+            List<string[]> rows = [];
+
+            List<string> columns = [.. RecordResult.ColumnsName];
+
+            //Перевірка наявності колонки з результатів запиту в налаштуваннях
+            foreach (var columnSettings in PDFColumnSettings)
+                if (columns.Exists((x) => x == columnSettings.Key))
+                    newPDFColumnSettings.Add(columnSettings.Key, columnSettings.Value);
+
+            int columnsCount = newPDFColumnSettings.Count;
+
+            //Дані
+            foreach (Dictionary<string, object> row in RecordResult.ListRow)
+            {
+                string[] cols = new string[columnsCount];
+
+                int counter = 0;
+                foreach (var columnSettings in newPDFColumnSettings)
+                {
+                    string value = row[columnSettings.Key]?.ToString() ?? "";
+                    if (columnSettings.Value.Func != null)
+                        value = columnSettings.Value.Func(value);
+
+                    cols[counter++] = value;
+                }
+
+                rows.Add(cols);
+            }
+
+            return (newPDFColumnSettings, rows);
         }
 
         /// <summary>
@@ -261,7 +314,7 @@ namespace InterfaceGtk
                     button.Clicked += async (object? sender, EventArgs args) =>
                     {
                         await Select();
-                        await ВигрузитиВФайл_PDF(this, FillList());
+                        await ВигрузитиВФайл_PDF(this, FillListForPDF());
                     };
                 }
 
@@ -381,7 +434,7 @@ namespace InterfaceGtk
         protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID);
         protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
-        protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
 
         #endregion
@@ -412,6 +465,17 @@ namespace InterfaceGtk
                     else
                         cellText.Foreground = (result >= 0) ? "green" : "red";
                 }
+        }
+
+        public static string ФункціяДляКолонкиБазоваДляЧисла(object? value)
+        {
+            string? valueString = value?.ToString();
+            if (string.IsNullOrEmpty(valueString)) return "";
+
+            if (float.TryParse(valueString, out float result))
+                return result == 0 ? "" : result.ToString();
+            else
+                return valueString ?? "";
         }
 
         #endregion
