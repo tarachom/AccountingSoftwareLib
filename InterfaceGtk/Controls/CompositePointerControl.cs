@@ -312,7 +312,7 @@ namespace InterfaceGtk
                 vBox.PackStart(new Label("Довідники"), false, false, 2);
 
                 ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                listBox.ButtonPressEvent += (sender, args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                         Select("Довідники", listBox.SelectedRows[0].Name);
@@ -344,7 +344,7 @@ namespace InterfaceGtk
                 vBox.PackStart(new Label("Документи"), false, false, 2);
 
                 ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (object? sender, ButtonPressEventArgs args) =>
+                listBox.ButtonPressEvent += (sender, args) =>
                 {
                     if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
                         Select("Документи", listBox.SelectedRows[0].Name);

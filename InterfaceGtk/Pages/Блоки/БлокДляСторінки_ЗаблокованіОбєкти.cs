@@ -60,7 +60,7 @@ namespace InterfaceGtk
         public БлокДляСторінки_ЗаблокованіОбєкти(Kernel kernel) : base()
         {
             Kernel = kernel;
-            Kernel.UpdateSession += async (object? sender, EventArgs args) => await LoadRecords();
+            Kernel.UpdateSession += async (sender, args) => await LoadRecords();
 
             Box hBoxCaption = new Box(Orientation.Horizontal, 0);
             hBoxCaption.PackStart(new Label("<b>Заблоковані об'єкти</b>") { UseMarkup = true }, false, false, 5);

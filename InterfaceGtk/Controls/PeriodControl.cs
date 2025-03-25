@@ -47,7 +47,7 @@ namespace InterfaceGtk
             PackStart(new Label(" по "), false, false, 5);
             PackStart(dateStop, false, false, 2);
 
-            bSelect.Clicked += (object? sender, EventArgs args) =>
+            bSelect.Clicked += (sender, args) =>
             {
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.Особливий)
                     Changed?.Invoke();
@@ -58,7 +58,7 @@ namespace InterfaceGtk
             PackStart(bSelect, false, false, 1);
 
             comboBoxPeriod = ПеріодДляЖурналу.СписокВідбірПоПеріоду();
-            comboBoxPeriod.Changed += (object? sender, EventArgs args) =>
+            comboBoxPeriod.Changed += (sender, args) =>
             {
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод)
                     dateStart.Value = DateTime.MinValue;

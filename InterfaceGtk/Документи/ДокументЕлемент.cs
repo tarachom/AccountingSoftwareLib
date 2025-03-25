@@ -196,7 +196,12 @@ namespace InterfaceGtk
             vBox.PackStart(NotebookTablePart, true, true, 0);
 
             Box vBoxPage = new Box(Orientation.Vertical, 0);
-            NotebookTablePart.AppendPage(vBoxPage, new Label("Додаткові реквізити"));
+
+            ScrolledWindow scroll = new ScrolledWindow();
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Add(vBoxPage);
+
+            NotebookTablePart.AppendPage(scroll, new Label("Додаткові реквізити"));
 
             //Два блоки для полів -->
             Box hBoxContainer = new Box(Orientation.Horizontal, 0);

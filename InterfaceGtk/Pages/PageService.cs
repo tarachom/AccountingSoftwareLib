@@ -126,8 +126,8 @@ namespace InterfaceGtk
                 await SpendTheDocument(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));
             };
 
-            bStop.Clicked += (object? sender, EventArgs args) => CancellationToken?.Cancel();
-            bClear.Clicked += (object? sender, EventArgs args) => Лог.ClearMessage();
+            bStop.Clicked += (sender, args) => CancellationToken?.Cancel();
+            bClear.Clicked += (sender, args) => Лог.ClearMessage();
 
             return vBox;
         }
@@ -165,8 +165,8 @@ namespace InterfaceGtk
                 await ClearDeletionLabel(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));
             };
 
-            bStop.Clicked += (object? sender, EventArgs args) => CancellationToken?.Cancel();
-            bClear.Clicked += (object? sender, EventArgs args) => Лог.ClearMessage();
+            bStop.Clicked += (sender, args) => CancellationToken?.Cancel();
+            bClear.Clicked += (sender, args) => Лог.ClearMessage();
 
             return vBox;
         }

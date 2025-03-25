@@ -56,7 +56,7 @@ namespace InterfaceGtk
             PackStart(hBoxTop, false, false, 10);
 
             hBoxTop.PackStart(entryTextSearch, false, false, 10);
-            entryTextSearch.KeyReleaseEvent += (object? sender, KeyReleaseEventArgs args) =>
+            entryTextSearch.KeyReleaseEvent += (sender, args) =>
             {
                 if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
                     Find(entryTextSearch.Text, offset = 0);
@@ -148,7 +148,7 @@ namespace InterfaceGtk
             if (offset >= maxRowsToPage)
             {
                 LinkButton linkButtonLast = new LinkButton("", " Попередня сторінка") { Halign = Align.Start, Image = new Image(Stock.GoBack, IconSize.Button), AlwaysShowImage = true };
-                linkButtonLast.Clicked += (object? sender, EventArgs args) =>
+                linkButtonLast.Clicked += (sender, args) =>
                 {
                     if (offset >= maxRowsToPage) offset -= maxRowsToPage;
                     Find(entryTextSearch.Text, offset);
@@ -160,7 +160,7 @@ namespace InterfaceGtk
             if (count == maxRowsToPage)
             {
                 LinkButton linkButtonNext = new LinkButton("", " Наступна сторінка") { Halign = Align.Start, Image = new Image(Stock.GoForward, IconSize.Button), AlwaysShowImage = true, ImagePosition = PositionType.Right };
-                linkButtonNext.Clicked += (object? sender, EventArgs args) => Find(entryTextSearch.Text, offset += maxRowsToPage);
+                linkButtonNext.Clicked += (sender, args) => Find(entryTextSearch.Text, offset += maxRowsToPage);
 
                 hBoxPagination.PackStart(linkButtonNext, false, false, 0);
             }
