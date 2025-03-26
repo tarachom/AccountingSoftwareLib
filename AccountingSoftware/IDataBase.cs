@@ -167,6 +167,7 @@ namespace AccountingSoftware
         ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers);
+        ValueTask<UnigueID?> FindDocumentPointer(Query QuerySelect);
         ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
         ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);

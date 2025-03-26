@@ -29,11 +29,6 @@ namespace AccountingSoftware
 	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField) : Select(kernel, table, parentField)
 	{
 		/// <summary>
-		/// Поточний вказівник !!! Видалити пізніше
-		/// </summary>
-		//protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? DirectoryPointerPosition { get; private set; } = null;
-
-		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
 		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;

@@ -29,17 +29,6 @@ namespace AccountingSoftware
 	public abstract class DocumentSelect(Kernel kernel, string table) : Select(kernel, table)
 	{
 		/// <summary>
-		/// Поточний вказівник !!! Видалити пізніше
-		/// </summary>
-		/*protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DocumentPointerPosition
-		{
-			get
-			{
-				return CurrentPointerPosition;
-			}
-		}*/
-
-		/// <summary>
 		/// Зчитати
 		/// </summary>
 		protected async ValueTask<bool> BaseSelect()
@@ -66,6 +55,40 @@ namespace AccountingSoftware
 			QuerySelect.Limit = oldLimit;
 
 			return Count() > 0;
+		}
+
+		/// <summary>
+		/// Пошук по значенню поля (наприклад пошук по назві)
+		/// </summary>
+		/// <param name="fieldName">Назва поля в базі даних</param>
+		/// <param name="fieldValue">Значення поля</param>
+		/// <returns>Повертає перший знайдений вказівник</returns>
+		protected async ValueTask<UnigueID?> BaseFindByField(string fieldName, object fieldValue)
+		{
+			Query querySelect = new(Table);
+			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
+
+			return await Kernel.DataBase.FindDocumentPointer(querySelect);
+		}
+
+		/// <summary>
+		/// Пошук по значенню поля (наприклад пошук по назві)
+		/// </summary>
+		/// <param name="fieldName">Назва поля в базі даних<</param>
+		/// <param name="fieldValue">Значення поля</param>
+		/// <param name="limit">Кількість елементів які можна вибрати</param>
+		/// <param name="offset">Зміщення від початку вибірки</param>
+		/// <returns>Повертає список знайдених вказівників</returns>
+		protected async ValueTask<List<(UnigueID UnigueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		{
+			List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> documentPointerList = [];
+
+			Query querySelect = new(Table) { Limit = limit, Offset = offset };
+			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
+
+			await Kernel.DataBase.SelectDocumentPointer(querySelect, documentPointerList);
+
+			return documentPointerList;
 		}
 	}
 }

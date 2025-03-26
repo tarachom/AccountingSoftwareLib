@@ -1861,7 +1861,6 @@ WHERE (LockedObject.obj).uuid = @obj
             }
         }
 
-
         public async ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect)
         {
             UnigueID? directoryPointer = null;
@@ -2192,6 +2191,33 @@ WHERE (LockedObject.obj).uuid = @obj
                 }
                 await reader.CloseAsync();
             }
+        }
+
+        public async ValueTask<UnigueID?> FindDocumentPointer(Query QuerySelect)
+        {
+            UnigueID? documentPointer = null;
+
+            if (DataSource != null)
+            {
+                QuerySelect.Limit = 1;
+
+                string query = QuerySelect.Construct();
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+
+                if (QuerySelect.Where.Count > 0)
+                    foreach (Where field in QuerySelect.Where)
+                        command.Parameters.AddWithValue(field.Alias, field.Value);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                    documentPointer = new UnigueID(reader["uid"]);
+
+                await reader.CloseAsync();
+            }
+
+            return documentPointer;
         }
 
         public async ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)

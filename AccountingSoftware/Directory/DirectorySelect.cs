@@ -29,17 +29,6 @@ namespace AccountingSoftware
 	public abstract class DirectorySelect(Kernel kernel, string table) : Select(kernel, table)
 	{
 		/// <summary>
-		/// Поточний вказівник !!! Видалити пізніше
-		/// </summary>
-		/*protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? DirectoryPointerPosition
-		{
-			get
-			{
-				return CurrentPointerPosition;
-			}
-		}*/
-
-		/// <summary>
 		/// Вибрати дані
 		/// </summary>
 		protected async ValueTask<bool> BaseSelect()
