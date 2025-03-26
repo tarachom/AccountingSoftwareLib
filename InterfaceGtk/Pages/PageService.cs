@@ -159,7 +159,7 @@ namespace InterfaceGtk
 
             CancellationTokenSource? CancellationToken = null;
 
-            bClearDeletionLabel.Clicked += async (object? sender, EventArgs args) =>
+            bClearDeletionLabel.Clicked += async (sender, args) =>
             {
                 ButtonSensitive(false);
                 await ClearDeletionLabel(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));

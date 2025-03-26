@@ -21,6 +21,8 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using Gtk;
+
 namespace InterfaceGtk
 {
     /// <summary>
@@ -29,9 +31,23 @@ namespace InterfaceGtk
     /// </summary>
     public abstract class ФормаОбробка : Форма
     {
+        /// <summary>
+        /// Верхній блок для кнопок
+        /// </summary>
+        protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+
+        //Лог
+        protected LogMessage Лог = new LogMessage();
+
         public ФормаОбробка()
         {
-            
+            //Кнопки
+            PackStart(HBoxTop, false, false, 10);
+
+            //Для виводу результатів
+            PackStart(Лог, true, true, 0);
+
+            ShowAll();
         }
     }
 }
