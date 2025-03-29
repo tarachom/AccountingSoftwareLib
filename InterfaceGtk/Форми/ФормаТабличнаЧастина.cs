@@ -255,12 +255,12 @@ namespace InterfaceGtk
         #region Virtual & Abstract 
 
         public abstract ValueTask LoadRecords();
-        public abstract ValueTask SaveRecords();
+        public virtual async ValueTask SaveRecords() { await ValueTask.FromResult(true); }
         protected virtual ФормаЖурнал? OpenSelect(TreeIter iter, int rowNumber, int colNumber) { return null; }
         protected virtual void ClearCell(TreeIter iter, int rowNumber, int colNumber) { }
-        protected abstract void AddRecord();
-        protected abstract void CopyRecord(int rowNumber);
-        protected abstract void DeleteRecord(TreeIter iter, int rowNumber);
+        protected virtual void AddRecord() { }
+        protected virtual void CopyRecord(int rowNumber) { }
+        protected virtual void DeleteRecord(TreeIter iter, int rowNumber) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, string newText) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, bool newValue) { }
         protected virtual bool IsEditingCell() { return false; }
