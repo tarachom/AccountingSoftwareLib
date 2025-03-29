@@ -36,6 +36,11 @@ namespace InterfaceGtk
         /// </summary>
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
 
+        /// <summary>
+        /// Середній блок
+        /// </summary>
+        protected Box HBoxBody = new Box(Orientation.Horizontal, 0);
+
         //Лог
         protected LogMessage Лог = new LogMessage();
 
@@ -44,8 +49,11 @@ namespace InterfaceGtk
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
 
+            //Середній блок
+            PackStart(HBoxBody, false, false, 0);
+
             //Для виводу результатів
-            PackStart(Лог, true, true, 0);
+            PackStart(Лог, true, true, 5);
 
             ShowAll();
         }
