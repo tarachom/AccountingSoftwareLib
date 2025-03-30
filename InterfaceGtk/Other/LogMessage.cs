@@ -74,6 +74,11 @@ namespace InterfaceGtk
             }
         }
 
+        Label AddLabel(string text)
+        {
+            return new Label(text) { Wrap = true, LineWrapMode = Pango.WrapMode.Char, Selectable = true, UseMarkup = true, UseUnderline = false };
+        }
+
         public Box CreateMessage(string message, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
         {
             Box hBoxInfo = new Box(Orientation.Horizontal, 0);
@@ -81,7 +86,7 @@ namespace InterfaceGtk
 
             AddImage(hBoxInfo, typeMsg);
 
-            hBoxInfo.PackStart(new Label(message) { Wrap = true, Selectable = true, UseMarkup = true, UseUnderline = false }, false, false, 0);
+            hBoxInfo.PackStart(AddLabel(message), false, false, 0);
             hBoxInfo.ShowAll();
 
             if (appendEmpty)
@@ -96,7 +101,7 @@ namespace InterfaceGtk
         {
             AddImage(hBoxInfo, typeMsg);
 
-            hBoxInfo.PackStart(new Label(message) { Wrap = true, Selectable = true }, false, false, 0);
+            hBoxInfo.PackStart(AddLabel(message), false, false, 0);
             hBoxInfo.ShowAll();
 
             scrollMessage.Vadjustment.Value = scrollMessage.Vadjustment.Upper;
@@ -124,7 +129,7 @@ namespace InterfaceGtk
 
             return hBoxInfo;
         }
-        
+
         public void AppendWidget(Box hBoxInfo, Widget widget, TypeMessage typeMsg = TypeMessage.Ok)
         {
             AddImage(hBoxInfo, typeMsg);
