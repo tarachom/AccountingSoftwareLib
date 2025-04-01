@@ -27,31 +27,19 @@ namespace InterfaceGtk
 {
     public class NumericControl : Box
     {
-        Label labelCaption = new Label();
         Entry entryNumeric = new Entry() { WidthChars = 10 };
         Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
 
         public NumericControl() : base(Orientation.Horizontal, 0)
         {
-            PackStart(labelCaption, false, false, 5);
-
             PackStart(hBoxInfoValid, false, false, 1);
 
             entryNumeric.Changed += OnEntryNumericChanged;
-            PackStart(entryNumeric, false, false, 1);
+            PackStart(entryNumeric, false, false, 2);
         }
 
-        public string Caption
-        {
-            get
-            {
-                return labelCaption.Text;
-            }
-            set
-            {
-                labelCaption.Text = value;
-            }
-        }
+        [Obsolete("Не використовувати, буде видалено")]
+        public string Caption { get; set; } = "";
 
         decimal mValue;
         public decimal Value
