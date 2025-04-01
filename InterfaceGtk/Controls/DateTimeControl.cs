@@ -73,6 +73,7 @@ namespace InterfaceGtk
                 {
                     mValue = mValue.Date;
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy");
+                    entryDateTimeValue.WidthChars = 10;
                 }
                 else
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy HH:mm:ss");

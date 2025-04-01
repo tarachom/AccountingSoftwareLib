@@ -27,7 +27,7 @@ namespace InterfaceGtk
 {
     public class IntegerControl : Box
     {
-        Entry entryInteger = new Entry();
+        Entry entryInteger = new Entry() { WidthChars = 10 };
         Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
 
         public IntegerControl() : base(Orientation.Horizontal, 0)

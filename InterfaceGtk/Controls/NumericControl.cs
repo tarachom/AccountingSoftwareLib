@@ -28,7 +28,7 @@ namespace InterfaceGtk
     public class NumericControl : Box
     {
         Label labelCaption = new Label();
-        Entry entryNumeric = new Entry();
+        Entry entryNumeric = new Entry() { WidthChars = 10 };
         Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
 
         public NumericControl() : base(Orientation.Horizontal, 0)
