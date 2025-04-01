@@ -55,9 +55,19 @@ namespace InterfaceGtk
         protected Paned HPanedTop = new Paned(Orientation.Vertical) { BorderWidth = 5 };
 
         /// <summary>
+        /// Верхній контейнер який вкладається в експандер "Реквізити шапки"
+        /// </summary>
+        protected Box HBoxTopContainer = new Box(Orientation.Horizontal, 0);
+
+        /// <summary>
         /// Блокнот для табличних частин і додаткових реквізитів
         /// </summary>
         protected Notebook NotebookTablePart = NotebookFunction.CreateNotebook(false);
+
+        /// <summary>
+        /// Контейнер для додаткових реквізитів який вкладається у вкладку блокноту "Додаткові реквізити"
+        /// </summary>
+        protected Box HBoxOtherContainer = new Box(Orientation.Horizontal, 0);
 
         /// <summary>
         /// Кнопки "Зберегти та провести", "Провести", "Зберегти"
@@ -164,23 +174,20 @@ namespace InterfaceGtk
         {
             vBox.PackStart(HBoxName, false, false, 5);
 
-            //Два блоки для полів -->
-            Box hBoxContainer = new Box(Orientation.Horizontal, 0);
-
             Expander expanderHead = new Expander("Реквізити шапки") { Expanded = true };
-            expanderHead.Add(hBoxContainer);
+            expanderHead.Add(HBoxTopContainer);
 
             vBox.PackStart(expanderHead, false, false, 5);
 
             //Container1
             Box vBoxContainer1 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
-            hBoxContainer.PackStart(vBoxContainer1, false, false, 5);
+            HBoxTopContainer.PackStart(vBoxContainer1, false, false, 5);
 
             CreateContainer1(vBoxContainer1);
 
             //Container2
             Box vBoxContainer2 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
-            hBoxContainer.PackStart(vBoxContainer2, false, false, 5);
+            HBoxTopContainer.PackStart(vBoxContainer2, false, false, 5);
 
             CreateContainer2(vBoxContainer2);
             // <--
@@ -204,16 +211,15 @@ namespace InterfaceGtk
             NotebookTablePart.AppendPage(scroll, new Label("Додаткові реквізити"));
 
             //Два блоки для полів -->
-            Box hBoxContainer = new Box(Orientation.Horizontal, 0);
-            vBoxPage.PackStart(hBoxContainer, false, false, 5);
+            vBoxPage.PackStart(HBoxOtherContainer, false, false, 5);
 
             Box vBoxContainer1 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
-            hBoxContainer.PackStart(vBoxContainer1, false, false, 5);
+            HBoxOtherContainer.PackStart(vBoxContainer1, false, false, 5);
 
             CreateContainer3(vBoxContainer1);
 
             Box vBoxContainer2 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
-            hBoxContainer.PackStart(vBoxContainer2, false, false, 5);
+            HBoxOtherContainer.PackStart(vBoxContainer2, false, false, 5);
 
             CreateContainer4(vBoxContainer2);
             // <--
