@@ -344,9 +344,13 @@ namespace InterfaceGtk
             {
                 var objectChangeEvents = GetDataObjectChangeEvents(notebook);
                 if (objectChangeEvents != null && objectChangeEvents[group].Count > 0)
-                    foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
-                        if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
-                            await func.Invoke();
+                    try
+                    {
+                        foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
+                            if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
+                                await func.Invoke();
+                    }
+                    catch (Exception) { }
             }
 
             //Зміни в довідниках
