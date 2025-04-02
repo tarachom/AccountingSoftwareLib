@@ -222,8 +222,7 @@ namespace InterfaceGtk
                     while (journalSelect.MoveNext())
                         if (journalSelect.Current != null)
                         {
-                            if (cancellationToken!.IsCancellationRequested)
-                                break;
+                            if (cancellationToken!.IsCancellationRequested) break;
 
                             //Список документів які ігноруються при обрахунку регістрів накопичення
                             if (dateTimeCurrDoc != journalSelect.Current.DocDate.Date)
@@ -297,8 +296,7 @@ namespace InterfaceGtk
             Лог.CreateMessage($"<b>Обробка довідників</b>", LogMessage.TypeMessage.Info);
             foreach (ConfigurationDirectories confDirectories in Kernel.Conf.Directories.Values)
             {
-                if (cancellationToken!.IsCancellationRequested)
-                    break;
+                if (cancellationToken!.IsCancellationRequested) break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Довідник <b>{confDirectories.Name}</b>", LogMessage.TypeMessage.Info);
                 var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDirectories.Table));
@@ -313,6 +311,8 @@ namespace InterfaceGtk
                         dynamic directoryObject = directoryObjectInstance;
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
+                            if (cancellationToken!.IsCancellationRequested) break;
+
                             UnigueID unigueID = new(row["uid"]);
                             if (await directoryObject.Read(unigueID))
                             {
@@ -333,8 +333,7 @@ namespace InterfaceGtk
             Лог.CreateMessage($"<b>Обробка документів</b>", LogMessage.TypeMessage.Info);
             foreach (ConfigurationDocuments confDocuments in Kernel.Conf.Documents.Values)
             {
-                if (cancellationToken!.IsCancellationRequested)
-                    break;
+                if (cancellationToken!.IsCancellationRequested) break;
 
                 Box hBoxInfo = Лог.CreateMessage($"Документ <b>{confDocuments.Name}</b>", LogMessage.TypeMessage.Info);
                 var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDocuments.Table));
@@ -351,6 +350,8 @@ namespace InterfaceGtk
                         dynamic documentObject = documentObjectInstance;
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                         {
+                            if (cancellationToken!.IsCancellationRequested) break;
+
                             UnigueID unigueID = new(row["uid"]);
                             if (await documentObject.Read(unigueID))
                             {
