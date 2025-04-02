@@ -160,10 +160,7 @@ namespace InterfaceGtk
 
             if (vBox.Children.Length > maxChildren)
                 for (int i = 0; i < vBox.Children.Length - maxChildren; i++)
-                {
-                    Widget Child = vBox.Children[i];
-                    vBox.Remove(Child);
-                }
+                    vBox.Remove(vBox.Children[i]);
         }
 
         public enum TypeMessage
