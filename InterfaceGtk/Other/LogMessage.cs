@@ -81,6 +81,8 @@ namespace InterfaceGtk
 
         public Box CreateMessage(string message, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
         {
+            TrimMessage();
+
             Box hBoxInfo = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBoxInfo, false, false, 2);
 
@@ -99,6 +101,8 @@ namespace InterfaceGtk
 
         public void AppendMessage(Box hBoxInfo, string message, TypeMessage typeMsg = TypeMessage.Ok)
         {
+            TrimMessage();
+
             AddImage(hBoxInfo, typeMsg);
 
             hBoxInfo.PackStart(AddLabel(message), false, false, 0);
@@ -114,6 +118,8 @@ namespace InterfaceGtk
 
         public Box CreateWidget(Widget? widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
         {
+            TrimMessage();
+
             Box hBoxInfo = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBoxInfo, false, false, 2);
 
@@ -132,6 +138,8 @@ namespace InterfaceGtk
 
         public void AppendWidget(Box hBoxInfo, Widget widget, TypeMessage typeMsg = TypeMessage.Ok)
         {
+            TrimMessage();
+
             AddImage(hBoxInfo, typeMsg);
 
             hBoxInfo.PackStart(widget, false, false, 0);
@@ -144,6 +152,18 @@ namespace InterfaceGtk
         {
             foreach (Widget Child in vBox.Children)
                 vBox.Remove(Child);
+        }
+
+        public void TrimMessage()
+        {
+            const int maxChildren = 100;
+
+            if (vBox.Children.Length > maxChildren)
+                for (int i = 0; i < vBox.Children.Length - maxChildren; i++)
+                {
+                    Widget Child = vBox.Children[i];
+                    vBox.Remove(Child);
+                }
         }
 
         public enum TypeMessage
