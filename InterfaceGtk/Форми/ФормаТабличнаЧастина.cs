@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System.Reflection;
 using Gtk;
 
 namespace InterfaceGtk
@@ -123,15 +122,15 @@ namespace InterfaceGtk
         /// <summary>
         /// Функція відкриває вибір у спливаючому вікні для довідника або документу.
         /// 
-        /// Добавилась можливість відкривати довільну форму якщо не оприділений вибір з довідника чи документа,
-        /// корисно наприклад для перегляду великого тексту в спливаючому вікні
+        /// Добавилась можливість відкривати довільну форму в спливаючому вікні якщо не оприділений вибір з довідника чи документа,
+        /// корисно наприклад для перегляду великого тексту чи вибору дати
         /// </summary>
         async void Select(TreePath path, TreeViewColumn column, TreeIter iter, int rowNumber, int colNumber)
         {
             //Прив'язка до ячейки
             Gdk.Rectangle rectangleCell = TreeViewGrid.GetCellArea(path, column);
             rectangleCell.Offset(-(int)ScrollTree.Hadjustment.Value, rectangleCell.Height);
-                
+
             //Форма для вибору
             ФормаЖурнал? page = OpenSelect(iter, rowNumber, colNumber);
             if (page != null)
@@ -164,20 +163,19 @@ namespace InterfaceGtk
             }
             else
             {
-                Форма? form = OpenForm(iter, rowNumber, colNumber);
-                if (form != null)
+                ФормаСпливаючеВікно? formPopover = OpenForm(iter, rowNumber, colNumber);
+                if (formPopover != null)
                 {
                     //Спливаюче вікно
-                    Popover popover = new Popover(TreeViewGrid)
+                    formPopover.PopoverParent = new Popover(TreeViewGrid)
                     {
                         PointingTo = rectangleCell,
                         Position = PositionType.Bottom,
-                        BorderWidth = 2,
-                        HeightRequest = 400
+                        BorderWidth = 2
                     };
 
-                    popover.Add(form);
-                    popover.ShowAll();
+                    formPopover.PopoverParent.Add(formPopover);
+                    formPopover.PopoverParent.ShowAll();
                 }
             }
         }
@@ -279,7 +277,7 @@ namespace InterfaceGtk
         public abstract ValueTask LoadRecords();
         public virtual async ValueTask SaveRecords() { await ValueTask.FromResult(true); }
         protected virtual ФормаЖурнал? OpenSelect(TreeIter iter, int rowNumber, int colNumber) { return null; }
-        protected virtual Форма? OpenForm(TreeIter iter, int rowNumber, int colNumber) { return null; }
+        protected virtual ФормаСпливаючеВікно? OpenForm(TreeIter iter, int rowNumber, int colNumber) { return null; }
         protected virtual void ClearCell(TreeIter iter, int rowNumber, int colNumber) { }
         protected virtual void AddRecord() { }
         protected virtual void CopyRecord(int rowNumber) { }
