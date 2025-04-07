@@ -76,7 +76,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Пошук
         /// </summary>
-        SearchControl Пошук = new SearchControl();
+        protected SearchControl Пошук = new SearchControl();
 
         public ДовідникЖурнал()
         {
@@ -84,25 +84,34 @@ namespace InterfaceGtk
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            Пошук.Select = async x => await LoadRecords_OnSearch(x);
-            Пошук.Clear = async () => await LoadRecords();
+            Пошук.Select = async x =>
+            {
+                ClearPages();
+                await LoadRecords_OnSearch(x);
+            };
+
+            Пошук.Clear = async () =>
+            {
+                ClearPages();
+                await LoadRecords();
+            };
+
             HBoxTop.PackStart(Пошук, false, false, 2);
 
             CreateToolbar();
-
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
-            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
 
-            scrollTree.Add(TreeViewGrid);
+            ScrollTree.Add(TreeViewGrid);
 
-            HPanedTable.Pack1(scrollTree, true, true);
+            HPanedTable.Pack1(ScrollTree, true, true);
 
             PackStart(HPanedTable, true, true, 0);
+
+            PackStart(ScrollPages, false, true, 0);
 
             ShowAll();
         }
@@ -179,6 +188,7 @@ namespace InterfaceGtk
         protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
+            ClearPages();
             await LoadRecords();
         }
 
@@ -239,7 +249,7 @@ namespace InterfaceGtk
                     }
                 case Gdk.Key.F5:
                     {
-                        await LoadRecords();
+                        OnRefreshClick(null, new EventArgs());
                         break;
                     }
                 case Gdk.Key.KP_Enter:
@@ -278,6 +288,9 @@ namespace InterfaceGtk
         async void OnEditClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                ToolButtonSensitive(sender, false);
+
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
@@ -285,11 +298,19 @@ namespace InterfaceGtk
                         if (!unigueID.IsEmpty())
                             await OpenPageElement(false, unigueID);
                     }
+
+                ToolButtonSensitive(sender, true);
+            }
         }
 
         async void OnRefreshClick(object? sender, EventArgs args)
         {
+            ToolButtonSensitive(sender, false);
+
+            ClearPages();
             await LoadRecords();
+
+            ToolButtonSensitive(sender, true);
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
@@ -297,6 +318,8 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
+                    ToolButtonSensitive(sender, false);
+
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -310,6 +333,8 @@ namespace InterfaceGtk
                     }
 
                     await LoadRecords();
+
+                    ToolButtonSensitive(sender, true);
                 }
         }
 
@@ -318,6 +343,8 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
+                    ToolButtonSensitive(sender, false);
+
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -330,7 +357,10 @@ namespace InterfaceGtk
                         }
                     }
 
+                    ClearPages();
                     await LoadRecords();
+
+                    ToolButtonSensitive(sender, true);
                 }
         }
 

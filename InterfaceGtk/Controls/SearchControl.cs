@@ -50,7 +50,7 @@ namespace InterfaceGtk
 
         void OnKeyReleaseEntrySearch(object? sender, KeyReleaseEventArgs args)
         {
-            if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
+            if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.BackSpace)
             {
                 string txt = entrySearch.Text.Trim();
 
@@ -64,7 +64,8 @@ namespace InterfaceGtk
 
         void OnClear(object? sender, EventArgs args)
         {
-            Clear?.Invoke();
+            if (string.IsNullOrEmpty(entrySearch.Text))
+                Clear?.Invoke();
         }
 
         public string Text

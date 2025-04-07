@@ -47,7 +47,7 @@ namespace AccountingSoftware
 		/// </summary>
 		protected async ValueTask<bool> BaseSelectSingle()
 		{
-			int oldLimit = QuerySelect.Limit;
+			long? oldLimit = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
 
 			await BaseSelect();

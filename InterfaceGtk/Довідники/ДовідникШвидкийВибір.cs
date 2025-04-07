@@ -71,24 +71,34 @@ namespace InterfaceGtk
 
             if (visibleSearch)
             {
-                Пошук.Select = async x => await LoadRecords_OnSearch(x);
-                Пошук.Clear = async () => await LoadRecords();
+                //Пошук
+                Пошук.Select = async x =>
+                {
+                    ClearPages();
+                    await LoadRecords_OnSearch(x);
+                };
+
+                Пошук.Clear = async () =>
+                {
+                    ClearPages();
+                    await LoadRecords();
+                };
             }
 
             CreateToolbar(visibleSearch);
 
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = width, HeightRequest = height };
-            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            ScrollTree.WidthRequest = width;
+            ScrollTree.HeightRequest = height;
 
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ActivateOnSingleClick = true;
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
 
-            scrollTree.Add(TreeViewGrid);
+            ScrollTree.Add(TreeViewGrid);
 
-            PackStart(scrollTree, true, true, 0);
+            PackStart(ScrollTree, true, true, 0);
+
+            PackStart(ScrollPages, false, true, 0);
 
             ShowAll();
         }
@@ -220,6 +230,9 @@ namespace InterfaceGtk
         async void OnEditClick(object? sender, EventArgs args)
         {
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                ToolButtonSensitive(sender, false);
+
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                     {
@@ -227,6 +240,9 @@ namespace InterfaceGtk
                         if (!unigueID.IsEmpty())
                             await OpenPageElement(false, unigueID);
                     }
+
+                ToolButtonSensitive(sender, true);
+            }
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
@@ -234,6 +250,8 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
+                    ToolButtonSensitive(sender, false);
+
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                     {
                         TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
@@ -247,12 +265,19 @@ namespace InterfaceGtk
                     }
 
                     await LoadRecords();
+
+                    ToolButtonSensitive(sender, true);
                 }
         }
 
         async void OnRefreshClick(object? sender, EventArgs args)
         {
+            ToolButtonSensitive(sender, false);
+
+            ClearPages();
             await LoadRecords();
+
+            ToolButtonSensitive(sender, true);
         }
 
         void OnMultipleSelectClick(object? sender, EventArgs args)

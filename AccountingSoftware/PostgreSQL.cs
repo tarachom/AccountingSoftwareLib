@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Npgsql;
 
@@ -1683,6 +1684,224 @@ WHERE (LockedObject.obj).uuid = @obj
                 return false;
         }
 
+        /// <summary>
+        /// Обчислює розмір вибірки для запиту 
+        /// </summary>
+        /// <param name="QuerySelect">Запит SELECT</param>
+        // public async ValueTask<long> GetSelectCount(Query QuerySelect)
+        // {
+        //     //
+        //     // !!! ВИДАЛИТИ пізніше функція непотрібна
+        //     //
+
+        //     if (DataSource != null)
+        //     {
+        //         string query = $"SELECT count(*) FROM ({QuerySelect.Construct()})";
+        //         NpgsqlCommand command = DataSource.CreateCommand(query);
+
+        //         foreach (Where field in QuerySelect.Where)
+        //             command.Parameters.AddWithValue(field.Alias, field.Value);
+
+        //         object? count = await command.ExecuteScalarAsync();
+        //         return count != null ? (long)count : 0;
+        //     }
+        //     else
+        //         return 0;
+        // }
+
+        /// <summary>
+        /// Обчислює позицію unigueID у вибірці і розмір вибірки
+        /// </summary>
+        /// <param name="QuerySelect">Конструктор запиту</param>
+        /// <param name="unigueID">Елемент вибірки</param>
+        /// <returns>(long Position, long Count) - позиція і розмір вибірки</returns>
+        //         public async ValueTask<(long Position, long Count)> GetSelectPositionAndCount(Query QuerySelect, UnigueID unigueID)
+        //         {
+        //             if (DataSource != null)
+        //             {
+
+        //                 //
+        //                 // !!! ВИДАЛИТИ пізніше функція непотрібна
+        //                 //
+
+        //                 // !!! Доробити щоб для number і count задавались унікальні імена, 
+        //                 // для цього треба перевірити чи вже є такі імена і сформувати нові
+        //                 //
+
+        //                 string rowNumberOrder = "";
+
+        //                 if (QuerySelect.Order.Count > 0)
+        //                 {
+        //                     int len = 0;
+        //                     rowNumberOrder = "ORDER BY ";
+
+        //                     foreach (KeyValuePair<string, SelectOrder> field in QuerySelect.Order)
+        //                     {
+        //                         rowNumberOrder += (len > 0 ? ", " : "") + field.Key + " " + field.Value;
+        //                         len++;
+        //                     }
+        //                 }
+
+        //                 //Порядковий номер
+        //                 QuerySelect.FieldAndAlias.Add(new NameValue<string>($"row_number() OVER({rowNumberOrder})", "number"));
+
+        //                 //Розмір вибірки
+        //                 QuerySelect.FieldAndAlias.Add(new NameValue<string>($"count(*) OVER()", "count"));
+
+        //                 string query = $@"
+        // WITH S AS 
+        // (
+        //     {QuerySelect.Construct()}
+        // )
+        // Select * FROM S WHERE uid = '{unigueID.UGuid}'";
+
+        //                 Console.WriteLine(query);
+
+        //                 NpgsqlCommand command = DataSource.CreateCommand(query);
+
+        //                 foreach (Where field in QuerySelect.Where)
+        //                     command.Parameters.AddWithValue(field.Alias, field.Value);
+
+        //                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+        //                 long position = 0;
+        //                 long count = 0;
+
+        //                 while (await reader.ReadAsync())
+        //                 {
+        //                     position = (long)reader["number"];
+        //                     count = (long)reader["count"];
+        //                 }
+        //                 await reader.CloseAsync();
+
+        //                 QuerySelect.FieldAndAlias.RemoveAll(x => new string[] { "number", "count" }.Contains(x.Value));
+
+        //                 return (position, count);
+        //             }
+        //             else
+        //                 return (0, 0);
+        //         }
+
+        /// <summary>
+        /// Функція обчислює розмір вибірки і кількість сторінок на яку можна розбити вибірку
+        /// </summary>
+        /// <param name="QuerySelect">Запит</param>
+        /// <param name="unigueID">Елемент на який треба спозиціонуватися</param>
+        /// <param name="pageSize">Розмір сторінки</param>
+        /// <returns></returns>
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UnigueID? unigueID, int pageSize = 1000)
+        {
+            SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
+
+            if (DataSource != null)
+            {
+                string query = "";
+                UnigueID unigueIDLocal = unigueID ?? new UnigueID();
+
+                if (!unigueIDLocal.IsEmpty())
+                {
+                    /*
+                    Обчислюється позиція вибраного елементу у вибірці і розмір вибірки
+                    */
+
+                    string order = "";
+                    if (QuerySelect.Order.Count > 0)
+                    {
+                        int len = 0;
+                        order = "ORDER BY ";
+
+                        foreach (KeyValuePair<string, SelectOrder> field in QuerySelect.Order)
+                        {
+                            string table = "";
+                            string fieldKey = field.Key;
+                            if (QuerySelect.FieldAndAlias.Count > 0)
+                                if (QuerySelect.Field.Contains(field.Key))
+                                    table = QuerySelect.Table;
+                                else
+                                {
+                                    NameValue<string>? nameValue = QuerySelect.FieldAndAlias.Find(x => x.Value == field.Key);
+                                    if (nameValue != null)
+                                        fieldKey = nameValue.Name;
+                                }
+
+                            order += (len > 0 ? ", " : "") + (!string.IsNullOrEmpty(table) ? table + "." : "") + fieldKey + " " + field.Value;
+                            len++;
+                        }
+                    }
+
+                    //Порядковий номер та розмір вибірки
+                    QuerySelect.FieldAndAlias.AddRange(
+                        new NameValue<string>($"row_number() OVER({order})", "row_number"),
+                        new NameValue<string>($"count(*) OVER()", "row_count")
+                    );
+
+                    query = $@"
+WITH S AS 
+(
+    {QuerySelect.Construct()}
+)
+Select row_number, row_count 
+FROM S WHERE uid = '{unigueIDLocal.UGuid}'";
+                }
+                else
+                {
+                    /*
+                    Обчислюється тільки розмір вибірки для даного запиту
+                    */
+
+                    query = $@"
+SELECT 
+    count(*) AS row_count
+FROM 
+(
+    {QuerySelect.Construct()}
+)";
+                }
+
+                //Console.WriteLine(query + "\n");
+                
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+
+                foreach (Where field in QuerySelect.Where)
+                    command.Parameters.AddWithValue(field.Alias, field.Value);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
+
+                while (await reader.ReadAsync())
+                {
+                    record.Position = !unigueIDLocal.IsEmpty() ? (long)reader["row_number"] : 0;
+                    record.Count = (long)reader["row_count"];
+                }
+                await reader.CloseAsync();
+
+                if (record.Result && record.Count > 0)
+                {
+                    //Кількість сторінок
+                    record.Pages = (int)(record.Count / record.PageSize);
+                    if (record.Pages * record.PageSize < record.Count) record.Pages++;
+
+                    //Поточна сторінка
+                    if (record.Position > 0)
+                        for (int i = 1; i <= record.Pages; i++)
+                        {
+                            //Межі сторінки
+                            long rightRange = i * record.PageSize;
+                            long leftRange = rightRange - record.PageSize + 1;
+
+                            if (record.Position >= leftRange && record.Position <= rightRange)
+                                record.CurrentPage = i;
+                        }
+                }
+
+                //Очищення
+                if (!unigueIDLocal.IsEmpty())
+                    QuerySelect.FieldAndAlias.RemoveAll(x => new string[] { "row_number", "row_count" }.Contains(x.Value));
+            }
+
+            return record;
+        }
+
         #endregion
 
         #region Directory
@@ -1923,9 +2142,8 @@ WHERE (LockedObject.obj).uuid = @obj
 
             if (DataSource != null)
             {
-                if (directorySelect.QuerySelect.CreateTempTable == true &&
-                    directorySelect.QuerySelect.TempTable != "" &&
-                    directorySelect.QuerySelect.TempTable[..4] == "tmp_")
+                if (directorySelect.QuerySelect.UseTempTable == true &&
+                    !string.IsNullOrEmpty(directorySelect.QuerySelect.TempTable) && directorySelect.QuerySelect.TempTable[..4] == "tmp_")
                 {
                     string query = $"DROP TABLE IF EXISTS {directorySelect.QuerySelect.TempTable}";
 

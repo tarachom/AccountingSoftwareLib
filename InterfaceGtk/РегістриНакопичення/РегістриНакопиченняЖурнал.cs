@@ -61,8 +61,17 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async x => await LoadRecords_OnSearch(x);
-            Пошук.Clear = async () => await LoadRecords();
+            Пошук.Select = async x =>
+            {
+                ClearPages();
+                await LoadRecords_OnSearch(x);
+            };
+
+            Пошук.Clear = () =>
+            {
+                ClearPages();
+                PeriodChanged();
+            };
             HBoxPeriod.PackStart(Пошук, false, false, 2);
 
             //Кнопки
@@ -70,14 +79,14 @@ namespace InterfaceGtk
 
             CreateToolbar();
 
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
-            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
-            scrollTree.Add(TreeViewGrid);
 
-            PackStart(scrollTree, true, true, 0);
+            ScrollTree.Add(TreeViewGrid);
+
+            PackStart(ScrollTree, true, true, 0);
+
+            PackStart(ScrollPages, false, true, 0);
 
             ShowAll();
         }
@@ -117,13 +126,13 @@ namespace InterfaceGtk
             }
         }
 
-        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
                 case Gdk.Key.F5:
                     {
-                        await LoadRecords();
+                        OnRefreshClick(null, new EventArgs());
                         break;
                     }
                 case Gdk.Key.End:
@@ -145,7 +154,12 @@ namespace InterfaceGtk
 
         async void OnRefreshClick(object? sender, EventArgs args)
         {
+            ToolButtonSensitive(sender, false);
+
+            ClearPages();
             await LoadRecords();
+
+            ToolButtonSensitive(sender, true);
         }
 
         #endregion

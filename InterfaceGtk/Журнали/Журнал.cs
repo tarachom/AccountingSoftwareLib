@@ -59,16 +59,14 @@ namespace InterfaceGtk
 
             CreateToolbar();
 
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
-            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-
             TreeViewGrid.RowActivated += OnRowActivated;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
-            scrollTree.Add(TreeViewGrid);
 
-            PackStart(scrollTree, true, true, 0);
+            ScrollTree.Add(TreeViewGrid);
+
+            PackStart(ScrollTree, true, true, 0);
 
             ShowAll();
         }

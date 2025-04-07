@@ -27,10 +27,47 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
+    #region Розбивка вибірки на сторінки
+
+    public record SplitSelectToPages_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        /// <summary>
+        /// Позиція вибраного елементу у вибірці
+        /// </summary>
+        public long Position;
+
+        /// <summary>
+        /// Розмір вибірки
+        /// </summary>
+        public long Count;
+
+        /// <summary>
+        /// Кількість сторінок
+        /// </summary>
+        public int Pages;
+
+        /// <summary>
+        /// Поточна знайдена сторінка
+        /// </summary>
+        public int CurrentPage;
+
+        /// <summary>
+        /// Кількість сторінок
+        /// </summary>
+        public int PageSize;
+    }
+
+    #endregion
+
     #region LockedObject
 
     /// <summary>
-    /// 
+    /// Інформація про блокування
     /// </summary>
     public record LockedObject_Record
     {

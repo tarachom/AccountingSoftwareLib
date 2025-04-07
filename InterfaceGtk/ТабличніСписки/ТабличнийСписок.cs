@@ -78,5 +78,51 @@ namespace InterfaceGtk
 
             listBox.Add(new ListBoxRow() { vBox });
         }
+
+        #region Сторінки
+
+        public static void Сторінки(TreeView treeView, Сторінки.Налаштування settings)
+        {
+            if (!treeView.Data.ContainsKey("Pages"))
+                treeView.Data.Add("Pages", settings);
+            else
+                treeView.Data["Pages"] = settings;
+        }
+
+        public static Сторінки.Налаштування? ОтриматиСторінки(TreeView treeView)
+        {
+            var pages = treeView.Data["Pages"];
+            return pages != null ? (Сторінки.Налаштування)pages : null;
+        }
+
+        public static void ОчиститиСторінки(TreeView treeView)
+        {
+            var pages = treeView.Data["Pages"];
+            if (pages != null) ((Сторінки.Налаштування)pages).Clear();
+        }
+
+        public static async ValueTask ЗаповнитиСторінки(Func<UnigueID?, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesFunc,
+            Сторінки.Налаштування settings, Query querySelect, UnigueID? unigueID)
+        {
+            if (!settings.Calculated)
+            {
+                settings.Record = await splitSelectToPagesFunc.Invoke(unigueID, settings.PageSize);
+                settings.Calculated = true;
+
+                if (unigueID != null && settings.Record.CurrentPage > 0)
+                    settings.CurrentPage = settings.Record.CurrentPage;
+                //Для журналів документів при відкритті ставиться остання сторінка
+                else if (settings.Тип == InterfaceGtk.Сторінки.ТипЖурналу.Документи)
+                    settings.CurrentPage = settings.Record.Pages;
+            }
+
+            if (settings.Calculated && settings.Record.Result)
+            {
+                querySelect.Limit = settings.Record.PageSize;
+                querySelect.Offset = settings.Record.PageSize * (settings.CurrentPage - 1);
+            }
+        }
+
+        #endregion
     }
 }

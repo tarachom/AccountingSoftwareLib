@@ -48,14 +48,25 @@ namespace AccountingSoftware
         public string Table { get; set; } = table;
 
         /// <summary>
-        /// Назва тимчасової таблиці
+        /// Назва тимчасової таблиці сформована функцією CreateTempTableName()
         /// </summary>
-        public string TempTable { get; set; } = "";
+        public string TempTable { get; private set; } = "";
 
         /// <summary>
-        /// Створити тимчасову таблицю на основі запиту
+        /// Використовувати тимчасову таблицю
         /// </summary>
-        public bool CreateTempTable { get; set; }
+        public bool UseTempTable { get; set; } = false;
+
+        /// <summary>
+        /// Створити назву тимчасової таблиці
+        /// </summary>
+        public string CreateTempTableName()
+        {
+            UseTempTable = true;
+            TempTable = "tmp_" + Guid.NewGuid().ToString().Replace("-", "");
+
+            return TempTable;
+        }
 
         /// <summary>
         /// Поле Родич для ієрархічного довідника
@@ -97,12 +108,12 @@ namespace AccountingSoftware
         /// <summary>
         /// Обмеження вибірки
         /// </summary>
-        public int Limit { get; set; }
+        public long? Limit { get; set; } = null;
 
         /// <summary>
         /// Пропустити задану кількість записів
         /// </summary>
-        public int Offset { get; set; }
+        public long? Offset { get; set; } = null;
 
         /// <summary>
         /// Збирає запит
@@ -112,11 +123,8 @@ namespace AccountingSoftware
         {
             string query = "";
 
-            if (CreateTempTable)
-            {
-                TempTable = "tmp_" + Guid.NewGuid().ToString().Replace("-", "");
-                query = "CREATE TEMP TABLE " + TempTable + " AS \n";
-            }
+            if (UseTempTable && !string.IsNullOrEmpty(TempTable))
+                query = "CREATE TEMP TABLE " + TempTable + " AS \n(";
 
             query += "SELECT " + (Joins.Count > 0 ? Table + "." : "") + "uid";
 
@@ -276,10 +284,10 @@ namespace AccountingSoftware
                 }
             }
 
-            if (Limit > 0)
+            if (Limit != null && Limit >= 0)
                 query += "\nLIMIT " + Limit.ToString();
 
-            if (Offset > 0)
+            if (Offset != null && Offset >= 0)
                 query += "\nOFFSET " + Offset.ToString();
 
             return query;

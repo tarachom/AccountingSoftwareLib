@@ -67,6 +67,17 @@ namespace AccountingSoftware
 		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
 
         /// <summary>
+        /// Обчислення розміру вибірки і обчислнення кількості сторінок
+        /// </summary>
+        /// <param name="unigueID">Вибраний елемент</param>
+        /// <param name="pageSize">Розмір сторінки</param>
+        /// <returns></returns>
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UnigueID? unigueID, int pageSize = 1000)
+        {
+            return await Kernel.DataBase.SplitSelectToPages(QuerySelect, unigueID, pageSize);
+        }
+
+        /// <summary>
         /// Перейти на початок вибірки
         /// </summary>
         public void MoveToFirst()

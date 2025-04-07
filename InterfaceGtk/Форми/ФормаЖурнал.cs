@@ -52,10 +52,30 @@ namespace InterfaceGtk
         /// </summary>
         protected TreeView TreeViewGrid = new TreeView();
 
+        /// <summary>
+        /// Прокрутка дерева
+        /// </summary>
+        protected ScrolledWindow ScrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
+
+        /// <summary>
+        /// Прокрутка для сторінок
+        /// </summary>
+        protected ScrolledWindow ScrollPages = new ScrolledWindow() { ShadowType = ShadowType.None };
+
+        /// <summary>
+        /// Бокс для сторінок
+        /// </summary>
+        protected Box HBoxPages = new Box(Orientation.Horizontal, 0);
+
         public ФормаЖурнал()
         {
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
             TreeViewGrid.ActivateOnSingleClick = true;
+
+            ScrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+
+            ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
+            ScrollPages.Add(HBoxPages);
         }
 
         /// <summary>
@@ -99,9 +119,98 @@ namespace InterfaceGtk
         public abstract ValueTask LoadRecords();
 
         /// <summary>
-        /// Завантаження списку про пошуку
+        /// Завантаження списку при пошуку
         /// </summary>
         public abstract ValueTask LoadRecords_OnSearch(string searchText);
+
+        /// <summary>
+        /// Функція для повного обновлення списку
+        /// </summary>
+        /// <returns></returns>
+        public async ValueTask ReLoadRecords()
+        {
+            ClearPages();
+            await LoadRecords();
+        }
+
+        #endregion
+
+        #region ToolBar
+
+        protected void ToolButtonSensitive(object? sender, bool sensitive)
+        {
+            if (sender != null && sender is ToolButton button)
+                button.Sensitive = sensitive;
+        }
+
+        #endregion
+
+        #region  TreeView
+
+        protected void ClearPages()
+        {
+            ТабличнийСписок.ОчиститиСторінки(TreeViewGrid);
+        }
+
+        protected void PagesShow(Func<ValueTask> funcLoadRecords)
+        {
+            const int offset = 5;
+            bool writeSpace = false;
+
+            //Очищення
+            foreach (var widget in HBoxPages.Children)
+                HBoxPages.Remove(widget);
+
+            Сторінки.Налаштування? settings = ТабличнийСписок.ОтриматиСторінки(TreeViewGrid);
+            if (settings != null && settings.Record.Pages > 1)
+            {
+                HBoxPages.PackStart(new Label("<b>Сторінки:</b> ") { UseMarkup = true }, false, false, 2);
+
+                for (int i = 1; i <= settings.Record.Pages; i++)
+                    if (i == settings.CurrentPage)
+                        HBoxPages.PackStart(new Label($"<b>{i}</b>") { UseMarkup = true }, false, false, 19);
+                    else if (i == 1 || i == settings.Record.Pages || (i > settings.CurrentPage - offset && i < settings.CurrentPage + offset))
+                    {
+                        LinkButton link = new LinkButton(i.ToString()) { Name = i.ToString() };
+                        link.Clicked += async (sender, args) =>
+                        {
+                            settings.CurrentPage = int.Parse(link.Name);
+                            await funcLoadRecords.Invoke();
+                        };
+
+                        HBoxPages.PackStart(link, false, false, 0);
+                        writeSpace = false;
+                    }
+                    else if (!writeSpace)
+                    {
+                        HBoxPages.PackStart(new Label("..") { UseMarkup = true }, false, false, 19);
+                        writeSpace = true;
+                    }
+            }
+
+            HBoxPages.ShowAll();
+        }
+
+        #endregion
+
+        #region ScrolledWindow
+
+        // async void OnValueChanged(object? sender, EventArgs args)
+        // {
+        //if (!ТабличнийСписок.СтанДоповнення(TreeViewGrid))
+        /*if (ScrollTree.Vadjustment.Value == 0)
+        {
+            ТабличнийСписок.ТипДоповнення(TreeViewGrid, Прокручування.ТипДобавленняДаних.Зверху);
+            await LoadRecords_OnScrolling();
+        }
+        else if (ScrollTree.Vadjustment.Upper == ScrollTree.Vadjustment.Value + ScrollTree.Vadjustment.PageSize)
+        {
+            ТабличнийСписок.ТипДоповнення(TreeViewGrid, Прокручування.ТипДобавленняДаних.Знизу);
+            await LoadRecords_OnScrolling();
+        }*/
+
+        //     await ValueTask.FromResult(true);
+        // }
 
         #endregion
     }
