@@ -101,6 +101,14 @@ namespace InterfaceGtk
             if (pages != null) ((Сторінки.Налаштування)pages).Clear();
         }
 
+        /// <summary>
+        /// Для довідників, документів та регістрів
+        /// </summary>
+        /// <param name="splitSelectToPagesFunc"></param>
+        /// <param name="settings"></param>
+        /// <param name="querySelect"></param>
+        /// <param name="unigueID"></param>
+        /// <returns></returns>
         public static async ValueTask ЗаповнитиСторінки(Func<UnigueID?, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesFunc,
             Сторінки.Налаштування settings, Query querySelect, UnigueID? unigueID)
         {
@@ -121,6 +129,36 @@ namespace InterfaceGtk
                 querySelect.Limit = settings.Record.PageSize;
                 querySelect.Offset = settings.Record.PageSize * (settings.CurrentPage - 1);
             }
+        }
+
+        /// <summary>
+        /// Для журналів
+        /// </summary>
+        /// <param name="splitSelectToPagesForJournalFunc"></param>
+        /// <param name="settings"></param>
+        /// <param name="query"></param>
+        /// <param name="paramQuery"></param>
+        /// <returns></returns>
+        public static async ValueTask<string> ЗаповнитиСторінки(Func<string, Dictionary<string, object>, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesForJournalFunc,
+            Сторінки.Налаштування settings, string query, Dictionary<string, object> paramQuery)
+        {
+            if (!settings.Calculated)
+            {
+                settings.Record = await splitSelectToPagesForJournalFunc.Invoke(query, paramQuery, settings.PageSize);
+                settings.Calculated = true;
+
+                settings.CurrentPage = settings.Record.Pages;
+            }
+
+            if (settings.Calculated && settings.Record.Result)
+            {
+                string Limit = $"\n\nLIMIT {settings.Record.PageSize}\n";
+                string Offset = $"OFFSET {settings.Record.PageSize * (settings.CurrentPage - 1)}\n";
+
+                return query + Limit + Offset;
+            }
+            else
+                return query; //??
         }
 
         #endregion

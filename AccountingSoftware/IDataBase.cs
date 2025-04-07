@@ -136,6 +136,7 @@ namespace AccountingSoftware
 
         ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table);
         ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UnigueID? unigueID, int pageSize = 1000);
+        ValueTask<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000);
 
         #endregion
 

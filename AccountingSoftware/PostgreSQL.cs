@@ -1859,7 +1859,7 @@ FROM
                 }
 
                 //Console.WriteLine(query + "\n");
-                
+
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
                 foreach (Where field in QuerySelect.Where)
@@ -1897,6 +1897,40 @@ FROM
                 //Очищення
                 if (!unigueIDLocal.IsEmpty())
                     QuerySelect.FieldAndAlias.RemoveAll(x => new string[] { "row_number", "row_count" }.Contains(x.Value));
+            }
+
+            return record;
+        }
+
+        /// <summary>
+        /// Функція обчислює розмір вибірки і кількість сторінок для журналів
+        /// </summary>
+        /// <param name="query">Запит</param>
+        /// <param name="paramQuery">Параметри</param>
+        /// <param name="pageSize">Розмір сторінки</param>
+        /// <returns></returns>
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000)
+        {
+            SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
+
+            if (DataSource != null)
+            {
+                NpgsqlCommand command = DataSource.CreateCommand($"SELECT count(*) FROM ({query})");
+
+                foreach (KeyValuePair<string, object> param in paramQuery)
+                    command.Parameters.AddWithValue(param.Key, param.Value);
+
+                object? count = await command.ExecuteScalarAsync();
+
+                record.Result = count != null;
+                record.Count = count != null ? (long)count : 0;
+
+                if (record.Result && record.Count > 0)
+                {
+                    //Кількість сторінок
+                    record.Pages = (int)(record.Count / record.PageSize);
+                    if (record.Pages * record.PageSize < record.Count) record.Pages++;
+                }
             }
 
             return record;

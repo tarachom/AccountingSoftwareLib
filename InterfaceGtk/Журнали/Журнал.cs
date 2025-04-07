@@ -68,6 +68,8 @@ namespace InterfaceGtk
 
             PackStart(ScrollTree, true, true, 0);
 
+            PackStart(ScrollPages, false, true, 0);
+
             ShowAll();
         }
 
@@ -215,7 +217,7 @@ namespace InterfaceGtk
                 }
         }
 
-        async void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
+        void OnKeyReleaseEvent(object? sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
             {
@@ -227,7 +229,7 @@ namespace InterfaceGtk
                     }
                 case Gdk.Key.F5:
                     {
-                        await LoadRecords();
+                        OnRefreshClick(null, new EventArgs());
                         break;
                     }
                 case Gdk.Key.KP_Enter:
@@ -265,7 +267,12 @@ namespace InterfaceGtk
 
         async void OnRefreshClick(object? sender, EventArgs args)
         {
+            ToolButtonSensitive(sender, false);
+
+            ClearPages();
             await LoadRecords();
+
+            ToolButtonSensitive(sender, true);
         }
 
         void OnTypeDocsClick(object? sender, EventArgs args)
@@ -279,6 +286,8 @@ namespace InterfaceGtk
             {
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
+                    ToolButtonSensitive(sender, false);
+
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
                     foreach (TreePath itemPath in selectionRows)
                     {
@@ -304,6 +313,7 @@ namespace InterfaceGtk
                     }
 
                     await LoadRecords();
+                    ToolButtonSensitive(sender, true);
                 }
             }
         }
