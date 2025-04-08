@@ -95,7 +95,6 @@ namespace InterfaceGtk
                 ClearPages();
                 await LoadRecords();
             };
-
             HBoxTop.PackStart(Пошук, false, false, 2);
 
             CreateToolbar();
