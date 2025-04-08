@@ -150,7 +150,7 @@ namespace InterfaceGtk
                 settings.CurrentPage = settings.Record.Pages;
             }
 
-            if (settings.Calculated && settings.Record.Result)
+            if (settings.Calculated && settings.Record.Result && settings.CurrentPage > 0)
             {
                 string Limit = $"\n\nLIMIT {settings.Record.PageSize}\n";
                 string Offset = $"OFFSET {settings.Record.PageSize * (settings.CurrentPage - 1)}\n";
