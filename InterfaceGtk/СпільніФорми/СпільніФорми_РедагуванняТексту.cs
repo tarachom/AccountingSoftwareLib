@@ -77,6 +77,14 @@ namespace InterfaceGtk
             }
         }
 
+        public WrapMode Wrap
+        {
+            set
+            {
+                text.WrapMode = value;
+            }
+        }
+
         public int Height
         {
             set
