@@ -26,11 +26,8 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Документ Запис табличної частини
 	/// </summary>
-	public abstract class DocumentTablePartRecord
+	public abstract class DocumentTablePartRecord : TablePartRecord
 	{
-		/// <summary>
-		/// Унікальний ідентифікатор
-		/// </summary>
-		public Guid UID { get; set; }
+		
 	}
 }

@@ -24,10 +24,18 @@ limitations under the License.
 namespace AccountingSoftware
 {
 	/// <summary>
-	/// Константа Запис табличної частини
+	/// Запис табличної частини
 	/// </summary>
-	public abstract class RegisterAccumulationTablePartRecord : TablePartRecord
+	public abstract class TablePartRecord
 	{
+		/// <summary>
+		/// Унікальний ідентифікатор запису
+		/// </summary>
+		public Guid UID { get; set; }
 
+		/// <summary>
+		/// Колекція додаткових полів FieldAndAlias із запиту
+		/// </summary>
+		public Dictionary<string, string> JoinItemValue { get; set; } = [];
 	}
 }

@@ -26,8 +26,8 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Константа Запис табличної частини
 	/// </summary>
-	public abstract class ConstantsTablePartRecord
+	public abstract class ConstantsTablePartRecord : TablePartRecord
 	{
-		public Guid UID { get; set; }
+
 	}
 }
