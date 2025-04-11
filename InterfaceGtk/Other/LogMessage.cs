@@ -154,9 +154,14 @@ namespace InterfaceGtk
                 vBox.Remove(Child);
         }
 
-        public void TrimMessage()
+        /// <summary>
+        /// Максимальна кількість рядків в Лог
+        /// </summary>
+        public int MaxLine { get; set; } = 100;
+
+        void TrimMessage()
         {
-            const int maxChildren = 100;
+            int maxChildren = MaxLine;
 
             if (vBox.Children.Length > maxChildren)
                 for (int i = 0; i < vBox.Children.Length - maxChildren; i++)
