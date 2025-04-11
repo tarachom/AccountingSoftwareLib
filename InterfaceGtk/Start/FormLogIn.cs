@@ -33,7 +33,7 @@ namespace InterfaceGtk
         public Kernel? ProgramKernel { get; set; }
 
         ComboBoxText comboBoxAllUsers = new ComboBoxText() { WidthRequest = 200 };
-        Entry passwordUser = new Entry() { WidthRequest = 200 };
+        Entry passwordUser = new Entry() { WidthRequest = 200, Visibility = false };
         Button bLogIn = new Button("Авторизація") { Sensitive = false };
         Button bCancel = new Button("Відмінити");
 
@@ -98,7 +98,7 @@ namespace InterfaceGtk
                     if (ModalResult != ResponseType.Cancel)
                     {
                         ModalResult = ResponseType.Ok;
-                        
+
                         ProgramKernel.LoopUpdateSession();
                         ThisClose();
                     }

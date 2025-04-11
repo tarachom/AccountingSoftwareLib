@@ -36,7 +36,7 @@ namespace InterfaceGtk
         Entry Server = new Entry() { WidthRequest = 300 };
         Entry Port = new Entry() { WidthRequest = 300 };
         Entry Login = new Entry() { WidthRequest = 300 };
-        Entry Password = new Entry() { WidthRequest = 300 };
+        Entry Password = new Entry() { WidthRequest = 300, Visibility = false };
         Entry Basename = new Entry() { WidthRequest = 300 };
 
         #endregion
