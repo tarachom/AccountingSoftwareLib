@@ -153,7 +153,7 @@ namespace InterfaceGtk
             ТабличнийСписок.ОчиститиСторінки(TreeViewGrid);
         }
 
-        protected void PagesShow(Func<ValueTask> funcLoadRecords)
+        protected void PagesShow(Func<ValueTask>? funcLoadRecords = null)
         {
             const int offset = 5;
             bool writeSpace = false;
@@ -176,7 +176,7 @@ namespace InterfaceGtk
                         link.Clicked += async (sender, args) =>
                         {
                             settings.CurrentPage = int.Parse(link.Name);
-                            await funcLoadRecords.Invoke();
+                            if (funcLoadRecords != null) await funcLoadRecords.Invoke();
                         };
 
                         HBoxPages.PackStart(link, false, false, 0);
