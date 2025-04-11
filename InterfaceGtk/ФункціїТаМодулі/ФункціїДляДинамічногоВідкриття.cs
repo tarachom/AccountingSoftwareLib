@@ -162,7 +162,7 @@ namespace InterfaceGtk
 
             try
             {
-                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeReg}");
+                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.РегістриВідомостей.{typeReg}");
             }
             catch (Exception ex)
             {
@@ -195,7 +195,7 @@ namespace InterfaceGtk
 
             try
             {
-                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeReg}");
+                registerInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.РегістриНакопичення.{typeReg}");
             }
             catch (Exception ex)
             {

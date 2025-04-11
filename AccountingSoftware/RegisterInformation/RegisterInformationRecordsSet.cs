@@ -95,6 +95,17 @@ namespace AccountingSoftware
             IsRead = true;
         }
 
+        /// <summary>
+        /// Обчислення розміру вибірки і обчислнення кількості сторінок
+        /// </summary>
+        /// <param name="unigueID">Вибраний елемент</param>
+        /// <param name="pageSize">Розмір сторінки</param>
+        /// <returns></returns>
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UnigueID? unigueID, int pageSize = 1000)
+        {
+            return await Kernel.DataBase.SplitSelectToPages(QuerySelect, unigueID, pageSize);
+        }
+
         private byte TransactionID = 0;
 
         protected async ValueTask BaseBeginTransaction()

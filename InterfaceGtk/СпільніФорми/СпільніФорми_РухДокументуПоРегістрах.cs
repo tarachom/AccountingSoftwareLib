@@ -64,5 +64,22 @@ namespace InterfaceGtk
 
             ShowAll();
         }
+
+        protected virtual void ДодатиБлокНаФорму(string blockName, Widget form)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            Expander expander = new Expander(blockName) { Expanded = true };
+            expander.Add(vBox);
+
+            Box hBox = new Box(Orientation.Horizontal, 0);
+            hBox.PackStart(form, true, true, 5);
+            vBox.PackStart(hBox, false, false, 5);
+
+            PackStart(expander, false, false, 10);
+
+            ShowAll();
+        }
+
     }
 }
