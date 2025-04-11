@@ -122,7 +122,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Завантаження списку при пошуку
         /// </summary>
-        public abstract ValueTask LoadRecords_OnSearch(string searchText);
+        public virtual async ValueTask LoadRecords_OnSearch(string searchText) { await ValueTask.FromResult(true); }
 
         /// <summary>
         /// Функція для повного обновлення списку
