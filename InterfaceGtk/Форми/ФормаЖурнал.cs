@@ -128,11 +128,11 @@ namespace InterfaceGtk
         /// Функція для повного обновлення списку
         /// </summary>
         /// <returns></returns>
-        public async ValueTask ReLoadRecords()
-        {
-            ClearPages();
-            await LoadRecords();
-        }
+        // public async ValueTask ReLoadRecords()
+        // {
+        //     ClearPages();
+        //     await LoadRecords();
+        // }
 
         #endregion
 

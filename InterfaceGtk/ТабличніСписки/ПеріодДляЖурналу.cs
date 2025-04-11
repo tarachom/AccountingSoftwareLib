@@ -6,6 +6,7 @@ namespace InterfaceGtk
 {
     public static class ПеріодДляЖурналу
     {
+        /*
         public enum ТипПеріоду
         {
             ВесьПеріод = 1,
@@ -25,7 +26,25 @@ namespace InterfaceGtk
             ДваДні,
             День
         }
+        */
 
+        public enum ТипПеріоду
+        {
+            ВесьПеріод = 1,
+            Особливий,
+            ЦейРік,
+            МинулийРік,
+            ЦейКвартал,
+            МинулийКвартал,
+            ЦейМісяць,
+            МинулийМісяць,
+            ЦейТиждень,
+            МинулийТиждень,
+            Сьогодні,
+            Вчора
+        }
+
+        /*
         static string ТипПеріоду_Alias(ТипПеріоду value)
         {
             return value switch
@@ -49,6 +68,27 @@ namespace InterfaceGtk
                 _ => ""
             };
         }
+        */
+
+        static string ТипПеріоду_Alias(ТипПеріоду value)
+        {
+            return value switch
+            {
+                ТипПеріоду.ВесьПеріод => "Весь період",
+                ТипПеріоду.Особливий => "Особливий",
+                ТипПеріоду.ЦейРік => "Цей рік",
+                ТипПеріоду.МинулийРік => "Минулий рік",
+                ТипПеріоду.ЦейКвартал => "Цей квартал",
+                ТипПеріоду.МинулийКвартал => "Минулий квартал",
+                ТипПеріоду.ЦейМісяць => "Цей місяць",
+                ТипПеріоду.МинулийМісяць => "Минулий місяць",
+                ТипПеріоду.ЦейТиждень => "Цей тиждень",
+                ТипПеріоду.МинулийТиждень => "Минулий тиждень",
+                ТипПеріоду.Сьогодні => "Сьогодні",
+                ТипПеріоду.Вчора => "Вчора",
+                _ => ""
+            };
+        }
 
         public static ComboBoxText СписокВідбірПоПеріоду()
         {
@@ -60,6 +100,7 @@ namespace InterfaceGtk
             return сomboBox;
         }
 
+        /*
         public static DateTime? ДатаПочатокЗПеріоду(ТипПеріоду типПеріоду)
         {
             DateTime? dateTime = типПеріоду switch
@@ -78,6 +119,27 @@ namespace InterfaceGtk
                 ТипПеріоду.ТриДні => DateTime.Now.AddDays(-2),
                 ТипПеріоду.ДваДні => DateTime.Now.AddDays(-1),
                 ТипПеріоду.День => DateTime.Now,
+                _ => null
+            };
+
+            return dateTime?.Date;
+        }
+        */
+
+        public static DateTime? ДатаПочатокЗПеріоду(ТипПеріоду типПеріоду)
+        {
+            DateTime? dateTime = типПеріоду switch
+            {
+                ТипПеріоду.ЦейРік => new DateTime(DateTime.Now.Year, 1, 1),
+                ТипПеріоду.МинулийРік => new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1),
+                ТипПеріоду.ЦейКвартал => DateTime.Now.AddMonths(-3),
+                ТипПеріоду.МинулийКвартал => DateTime.Now.AddMonths(-6),
+                ТипПеріоду.ЦейМісяць => DateTime.Now.AddMonths(-1),
+                ТипПеріоду.МинулийМісяць => DateTime.Now.AddMonths(-2),
+                ТипПеріоду.ЦейТиждень => DateTime.Now.AddDays(-6),
+                ТипПеріоду.МинулийТиждень => DateTime.Now.AddDays(-13),
+                ТипПеріоду.Сьогодні => DateTime.Now,
+                ТипПеріоду.Вчора => DateTime.Now.AddDays(-1),
                 _ => null
             };
 

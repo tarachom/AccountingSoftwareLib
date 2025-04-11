@@ -49,7 +49,19 @@ namespace InterfaceGtk
         /// <summary>
         /// Тільки дата, без часу
         /// </summary>
-        public bool OnlyDate { get; set; } = false;
+        bool mOnlyDate = false;
+        public bool OnlyDate
+        {
+            get
+            {
+                return mOnlyDate;
+            }
+            set
+            {
+                mOnlyDate = value;
+                if (mOnlyDate) entryDateTimeValue.WidthChars = 10;
+            }
+        }
 
         /// <summary>
         /// Не відображати мінімальне значення дати DateTime.MinValue
@@ -73,7 +85,6 @@ namespace InterfaceGtk
                 {
                     mValue = mValue.Date;
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy");
-                    entryDateTimeValue.WidthChars = 10;
                 }
                 else
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy HH:mm:ss");
