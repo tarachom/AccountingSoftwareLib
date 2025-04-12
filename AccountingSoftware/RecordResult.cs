@@ -57,7 +57,7 @@ namespace AccountingSoftware
         public int CurrentPage;
 
         /// <summary>
-        /// Кількість сторінок
+        /// Кількість елементів на сторінку
         /// </summary>
         public int PageSize;
     }

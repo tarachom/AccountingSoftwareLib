@@ -124,16 +124,6 @@ namespace InterfaceGtk
         /// </summary>
         public virtual async ValueTask LoadRecords_OnSearch(string searchText) { await ValueTask.FromResult(true); }
 
-        /// <summary>
-        /// Функція для повного обновлення списку
-        /// </summary>
-        /// <returns></returns>
-        // public async ValueTask ReLoadRecords()
-        // {
-        //     ClearPages();
-        //     await LoadRecords();
-        // }
-
         #endregion
 
         #region ToolBar
@@ -148,15 +138,23 @@ namespace InterfaceGtk
 
         #region  TreeView
 
+        /// <summary>
+        /// Скидає налаштування сторінок для TreeViewGrid
+        /// При наступному виводі даних в TreeViewGrid це призведе до повторного перерахунку кількості сторінок
+        /// </summary>
         protected void ClearPages()
         {
             ТабличнийСписок.ОчиститиСторінки(TreeViewGrid);
         }
 
+        /// <summary>
+        /// Вивід сторінок для TreeViewGrid.
+        /// Інформація про кількість сторінок береться із самого TreeViewGrid
+        /// </summary>
+        /// <param name="funcLoadRecords">Функція яка спрацьовує при виборі сторінки</param>
         protected void PagesShow(Func<ValueTask>? funcLoadRecords = null)
         {
             const int offset = 5;
-            bool writeSpace = false;
 
             //Очищення
             foreach (var widget in HBoxPages.Children)
@@ -167,6 +165,7 @@ namespace InterfaceGtk
             {
                 HBoxPages.PackStart(new Label("<b>Сторінки:</b> ") { UseMarkup = true }, false, false, 2);
 
+                bool writeSpace = false;
                 for (int i = 1; i <= settings.Record.Pages; i++)
                     if (i == settings.CurrentPage)
                         HBoxPages.PackStart(new Label($"<b>{i}</b>") { UseMarkup = true }, false, false, 19);
@@ -191,27 +190,6 @@ namespace InterfaceGtk
 
             HBoxPages.ShowAll();
         }
-
-        #endregion
-
-        #region ScrolledWindow
-
-        // async void OnValueChanged(object? sender, EventArgs args)
-        // {
-        //if (!ТабличнийСписок.СтанДоповнення(TreeViewGrid))
-        /*if (ScrollTree.Vadjustment.Value == 0)
-        {
-            ТабличнийСписок.ТипДоповнення(TreeViewGrid, Прокручування.ТипДобавленняДаних.Зверху);
-            await LoadRecords_OnScrolling();
-        }
-        else if (ScrollTree.Vadjustment.Upper == ScrollTree.Vadjustment.Value + ScrollTree.Vadjustment.PageSize)
-        {
-            ТабличнийСписок.ТипДоповнення(TreeViewGrid, Прокручування.ТипДобавленняДаних.Знизу);
-            await LoadRecords_OnScrolling();
-        }*/
-
-        //     await ValueTask.FromResult(true);
-        // }
 
         #endregion
     }

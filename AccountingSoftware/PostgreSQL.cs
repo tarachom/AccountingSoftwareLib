@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Npgsql;
 
