@@ -34,9 +34,19 @@ namespace AccountingSoftware
         public string Spend { get; set; } = "Spend";
 
         /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool SpendAction { get; set; }
+
+        /// <summary>
         /// Обробка очищення проводок документу
         /// </summary>
         public string ClearSpend { get; set; } = "Clear";
+
+        /// <summary>
+        /// Доступність тригеру
+        /// </summary>
+        public bool ClearSpendAction { get; set; }
 
         /// <summary>
         /// Створення копії
@@ -47,7 +57,9 @@ namespace AccountingSoftware
             return new ConfigurationSpendFunctions()
             {
                 Spend = this.Spend,
-                ClearSpend = this.ClearSpend
+                SpendAction = this.SpendAction,
+                ClearSpend = this.ClearSpend,
+                ClearSpendAction = this.ClearSpendAction,
             };
         }
     }

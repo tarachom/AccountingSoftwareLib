@@ -66,6 +66,15 @@ namespace AccountingSoftware
         {
             UnigueID = uid;
             Fields = fields;
+            Name = "";
+        }
+
+        /// <summary>
+        /// Очищення
+        /// </summary>
+        public void Clear()
+        {
+            Init(new UnigueID());
         }
 
         /// <summary>

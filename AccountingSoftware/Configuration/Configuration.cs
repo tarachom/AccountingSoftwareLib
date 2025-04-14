@@ -1280,6 +1280,10 @@ namespace AccountingSoftware
                     {
                         ConfObjectField.Multiline = (fieldNodes.Current?.SelectSingleNode("Multiline")?.Value ?? "") == "1";
                     }
+                    else if (type == "integer")
+                    {
+                        ConfObjectField.AutomaticNumbering = (fieldNodes.Current?.SelectSingleNode("AutomaticNumbering")?.Value ?? "") == "1";
+                    }
                     else if (type == "composite_pointer")
                     {
                         //Не використовувати довідники
@@ -1500,56 +1504,47 @@ namespace AccountingSoftware
 
         private static void LoadTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
         {
-            //Тимчасова функція, пізніше видалити
-            static string RemoveOld(string value)
-            {
-                int position = value.IndexOf('.');
-                return position > 0 ? value[(position + 1)..] : value;
-            }
-
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
             if (nodeTriggerFunctions != null)
             {
                 var nodeNew = nodeTriggerFunctions.SelectSingleNode("New");
-                triggerFunctions.New = RemoveOld(nodeNew?.Value ?? "");
+                triggerFunctions.New = nodeNew?.Value ?? "";
                 triggerFunctions.NewAction = nodeNew?.GetAttribute("Action", "") == "1";
 
                 var nodeCopying = nodeTriggerFunctions.SelectSingleNode("Copying");
-                triggerFunctions.Copying = RemoveOld(nodeCopying?.Value ?? "");
+                triggerFunctions.Copying = nodeCopying?.Value ?? "";
                 triggerFunctions.CopyingAction = nodeCopying?.GetAttribute("Action", "") == "1";
 
                 var nodeBeforeSave = nodeTriggerFunctions.SelectSingleNode("BeforeSave");
-                triggerFunctions.BeforeSave = RemoveOld(nodeBeforeSave?.Value ?? "");
+                triggerFunctions.BeforeSave = nodeBeforeSave?.Value ?? "";
                 triggerFunctions.BeforeSaveAction = nodeBeforeSave?.GetAttribute("Action", "") == "1";
 
                 var nodeAfterSave = nodeTriggerFunctions.SelectSingleNode("AfterSave");
-                triggerFunctions.AfterSave = RemoveOld(nodeAfterSave?.Value ?? "");
+                triggerFunctions.AfterSave = nodeAfterSave?.Value ?? "";
                 triggerFunctions.AfterSaveAction = nodeAfterSave?.GetAttribute("Action", "") == "1";
 
                 var nodeSetDeletionLabel = nodeTriggerFunctions.SelectSingleNode("SetDeletionLabel");
-                triggerFunctions.SetDeletionLabel = RemoveOld(nodeSetDeletionLabel?.Value ?? "");
+                triggerFunctions.SetDeletionLabel = nodeSetDeletionLabel?.Value ?? "";
                 triggerFunctions.SetDeletionLabelAction = nodeSetDeletionLabel?.GetAttribute("Action", "") == "1";
 
                 var nodeBeforeDelete = nodeTriggerFunctions.SelectSingleNode("BeforeDelete");
-                triggerFunctions.BeforeDelete = RemoveOld(nodeBeforeDelete?.Value ?? "");
+                triggerFunctions.BeforeDelete = nodeBeforeDelete?.Value ?? "";
                 triggerFunctions.BeforeDeleteAction = nodeBeforeDelete?.GetAttribute("Action", "") == "1";
             }
         }
 
         private static void LoadSpendFunctions(ConfigurationSpendFunctions spendFunctions, XPathNavigator? xPathDocNavigator)
         {
-            //Тимчасова функція, пізніше видалити
-            static string RemoveOld(string value)
-            {
-                int position = value.IndexOf('.');
-                return position > 0 ? value[(position + 1)..] : value;
-            }
-
             XPathNavigator? nodeSpendFunctions = xPathDocNavigator?.SelectSingleNode("SpendFunctions");
             if (nodeSpendFunctions != null)
             {
-                spendFunctions.Spend = RemoveOld(nodeSpendFunctions.SelectSingleNode("Spend")?.Value ?? "");
-                spendFunctions.ClearSpend = RemoveOld(nodeSpendFunctions.SelectSingleNode("ClearSpend")?.Value ?? "");
+                var nodeSpend = nodeSpendFunctions.SelectSingleNode("Spend");
+                spendFunctions.Spend = nodeSpend?.Value ?? "";
+                spendFunctions.SpendAction = nodeSpend?.GetAttribute("Action", "") == "1";
+
+                var nodeClearSpend = nodeSpendFunctions.SelectSingleNode("ClearSpend");
+                spendFunctions.ClearSpend = nodeClearSpend?.Value ?? "";
+                spendFunctions.ClearSpendAction = nodeClearSpend?.GetAttribute("Action", "") == "1";
             }
         }
 
@@ -2117,6 +2112,12 @@ namespace AccountingSoftware
                     nodeFieldMultiline.InnerText = field.Value.Multiline ? "1" : "0";
                     nodeField.AppendChild(nodeFieldMultiline);
                 }
+                else if (field.Value.Type == "integer")
+                {
+                    XmlElement nodeFieldAutomaticNumbering = xmlConfDocument.CreateElement("AutomaticNumbering");
+                    nodeFieldAutomaticNumbering.InnerText = field.Value.AutomaticNumbering ? "1" : "0";
+                    nodeField.AppendChild(nodeFieldAutomaticNumbering);
+                }
                 else if (field.Value.Type == "composite_pointer")
                 {
                     //Не використовувати довідники
@@ -2634,15 +2635,24 @@ namespace AccountingSoftware
 
         public static void SaveSpendFunctions(ConfigurationSpendFunctions spendFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
+            void AddAttributeAction(XmlElement node, bool value)
+            {
+                XmlAttribute actionAttr = xmlConfDocument.CreateAttribute("Action");
+                actionAttr.Value = value ? "1" : "0";
+                node.Attributes.Append(actionAttr);
+            }
+
             XmlElement nodeSpendFunctions = xmlConfDocument.CreateElement("SpendFunctions");
             rootNode.AppendChild(nodeSpendFunctions);
 
             XmlElement nodeSpend = xmlConfDocument.CreateElement("Spend");
             nodeSpend.InnerText = spendFunctions.Spend;
+            AddAttributeAction(nodeSpend, spendFunctions.SpendAction);
             nodeSpendFunctions.AppendChild(nodeSpend);
 
             XmlElement nodeClearSpend = xmlConfDocument.CreateElement("ClearSpend");
             nodeClearSpend.InnerText = spendFunctions.ClearSpend;
+            AddAttributeAction(nodeClearSpend, spendFunctions.ClearSpendAction);
             nodeSpendFunctions.AppendChild(nodeClearSpend);
         }
 

@@ -115,13 +115,13 @@ namespace InterfaceGtk
         {
             Menu Menu = new Menu();
 
-            MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += OnSpendTheDocument;
-            Menu.Append(spendTheDocumentButton);
+            MenuItem spend = new MenuItem("Провести документ");
+            spend.Activated += OnSpendTheDocument;
+            Menu.Append(spend);
 
-            MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += OnClearSpend;
-            Menu.Append(clearSpendButton);
+            MenuItem clear = new MenuItem("Відмінити проведення");
+            clear.Activated += OnClearSpend;
+            Menu.Append(clear);
 
             Menu.ShowAll();
 
@@ -296,19 +296,15 @@ namespace InterfaceGtk
                         string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                         string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
-                        UnigueID unigueID = new UnigueID(uid);
+                        //Використовується другий конструктор (UnigueID uid, Dictionary<string, object>? fields = null)
+                        object? docPointerInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer",
+                            false, BindingFlags.CreateInstance, null, [new UnigueID(uid), null!], null, null);
 
-                        object? docObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
-                        if (docObjestInstance != null)
+                        if (docPointerInstance != null)
                         {
-                            dynamic docObjest = docObjestInstance;
-                            if (await docObjest.Read(unigueID, false))
-                            {
-                                await docObjest.SetDeletionLabel(!docObjest.DeletionLabel);
-                                SelectPointerItem = new UnigueID(uid);
-                            }
-                            else
-                                Message.Error(null, "Не вдалось прочитати!");
+                            dynamic docPointer = docPointerInstance;
+                            bool? label = await docPointer.GetDeletionLabel();
+                            if (label.HasValue) await docPointer.SetDeletionLabel(!label.Value);
                         }
                     }
 

@@ -53,6 +53,34 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Повертає признак що документ проведений
+        /// </summary>
+        protected async ValueTask<bool?> BaseIsSpend()
+        {
+            if (!IsEmpty())
+            {
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                return record.Result ? record.Spend : null;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Повертає признак що документ проведний і дату проведення
+        /// </summary>
+        protected async ValueTask<(bool? Spend, DateTime SpendDate)> BaseGetSpend()
+        {
+            if (!IsEmpty())
+            {
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                return record.Result ? (record.Spend, record.SpendDate) : (null, DateTime.MinValue);
+            }
+            else
+                return (null, DateTime.MinValue);
+        }
+
+        /// <summary>
         /// Проведення
         /// </summary>
         /// <param name="spend">Мітка проведення</param>
@@ -66,6 +94,20 @@ namespace AccountingSoftware
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
             }
+        }
+
+        /// <summary>
+        /// Повертає мітку на видалення або null якщо вказівник пустий або не вдалось прочитати
+        /// </summary>
+        protected async ValueTask<bool?> BaseGetDeletionLabel()
+        {
+            if (!IsEmpty())
+            {
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                return record.Result ? record.DeletionLabel : null;
+            }
+            else
+                return null;
         }
 
         /// <summary>

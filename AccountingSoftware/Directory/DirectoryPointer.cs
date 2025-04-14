@@ -52,6 +52,21 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Повертає мітку на видалення або null якщо вказівник пустий або не вдалось прочитати
+        /// </summary>
+        /// <returns></returns>
+        protected async ValueTask<bool?> BaseGetDeletionLabel()
+        {
+            if (!IsEmpty())
+            {
+                var record = await Kernel.DataBase.SelectDirectoryObject(this.UnigueID, Table, []);
+                return record.Result ? record.DeletionLabel : null;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Встановлення мітки на видалення
         /// </summary>
         /// <param name="label">Мітка</param>

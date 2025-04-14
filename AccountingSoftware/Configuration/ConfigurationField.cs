@@ -43,7 +43,7 @@ namespace AccountingSoftware
         /// <param name="isIndex">Індексування</param>
         /// <param name="isFullTextSearch">Повнотекстовий пошук по полю</param>
         public ConfigurationField(string name, string nameInTable, string type, string pointer,
-            string desc = "", bool isPresentation = false, bool isIndex = false, 
+            string desc = "", bool isPresentation = false, bool isIndex = false,
             bool isFullTextSearch = false, bool isSearch = false, bool isExport = false)
         {
             Name = name;
@@ -114,6 +114,15 @@ namespace AccountingSoftware
         /// Багатострічкове поле
         /// </summary>
         public bool Multiline { get; set; }
+
+        #endregion
+
+        #region Додаткові поля які залежать від типу (integer)
+
+        /// <summary>
+        /// Автоматична нумерація
+        /// </summary>
+        public bool AutomaticNumbering { get; set; }
 
         #endregion
 

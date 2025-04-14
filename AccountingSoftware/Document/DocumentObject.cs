@@ -56,7 +56,7 @@ namespace AccountingSoftware
         {
             BaseClear();
 
-            if (uid.IsEmpty() || IsNew == true) return false;
+            if (uid.IsEmpty() || IsNew) return false;
 
             var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, FieldArray, FieldValue);
             if (record.Result)

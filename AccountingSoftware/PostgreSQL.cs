@@ -1997,7 +1997,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDirectoryObject_Record record = new();
 
@@ -2019,8 +2019,9 @@ FROM
                 {
                     record.DeletionLabel = (bool)reader["deletion_label"];
 
-                    foreach (string field in fieldArray)
-                        fieldValue[field] = reader[field];
+                    if (fieldArray.Length != 0 && fieldValue != null)
+                        foreach (string field in fieldArray)
+                            fieldValue[field] = reader[field];
                 }
                 await reader.CloseAsync();
             }
@@ -2284,7 +2285,7 @@ FROM
 
         #region Document
 
-        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDocumentObject_Record record = new();
 
@@ -2309,8 +2310,9 @@ FROM
                     record.Spend = (bool)reader["spend"];
                     record.SpendDate = (DateTime)reader["spend_date"];
 
-                    foreach (string field in fieldArray)
-                        fieldValue[field] = reader[field];
+                    if (fieldArray.Length != 0 && fieldValue != null)
+                        foreach (string field in fieldArray)
+                            fieldValue[field] = reader[field];
                 }
                 await reader.CloseAsync();
             }
