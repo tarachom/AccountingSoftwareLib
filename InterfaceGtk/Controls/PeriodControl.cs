@@ -61,16 +61,18 @@ namespace InterfaceGtk
             comboBoxPeriod.Changed += (sender, args) =>
             {
                 if (Period == ПеріодДляЖурналу.ТипПеріоду.ВесьПеріод)
-                    dateStart.Value = DateTime.MinValue;
-                else
                 {
-                    DateTime? dateTime = ПеріодДляЖурналу.ДатаПочатокЗПеріоду(Period);
-                    if (dateTime != null)
-                        dateStart.Value = dateTime.Value;
-                }
-
-                if (Period != ПеріодДляЖурналу.ТипПеріоду.Особливий)
+                    dateStart.Value = DateTime.MinValue;
                     dateStop.Value = DateTime.Now;
+                }
+                else if (Period != ПеріодДляЖурналу.ТипПеріоду.Особливий)
+                {
+                    DateTime? dtStart = ПеріодДляЖурналу.ДатаПочатокЗПеріоду(Period);
+                    if (dtStart != null) dateStart.Value = dtStart.Value;
+
+                    DateTime? dtStop = ПеріодДляЖурналу.ДатаКінецьЗПеріоду(Period);
+                    dateStop.Value = dtStop != null ? dtStop.Value : DateTime.Now;
+                }
 
                 Changed?.Invoke();
             };

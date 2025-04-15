@@ -126,18 +126,69 @@ namespace InterfaceGtk
         }
         */
 
+        #region Функції
+
+        static DateTime ПочатокТижня(DateTime dt) => dt.AddDays(-(((int)dt.DayOfWeek + 6) % 7));
+
+        static DateTime КінецьТижня(DateTime dt) => ПочатокТижня(dt).AddDays(6);
+
+        static List<(DateTime Початок, DateTime Кінець)> СписокКварталів(DateTime dt)
+        {
+            DateTime ПочатокРоку = new DateTime(DateTime.Now.Year, 1, 1);
+
+            List<(DateTime Початок, DateTime Кінець)> Квартали =
+            [
+                (ПочатокРоку, ПочатокРоку.AddMonths(3).AddDays(-1)),              //1                
+                (ПочатокРоку.AddMonths(3), ПочатокРоку.AddMonths(6).AddDays(-1)), //2                
+                (ПочатокРоку.AddMonths(6), ПочатокРоку.AddMonths(9).AddDays(-1)), //3                
+                (ПочатокРоку.AddMonths(9), ПочатокРоку.AddMonths(12).AddDays(-1)) //4
+            ];
+
+            return Квартали;
+        }
+
+        static DateTime ПочатокКварталу(DateTime dt)
+        {
+            DateTime? Дата = null;
+
+            foreach (var (Початок, Кінець) in СписокКварталів(dt))
+                if (dt >= Початок && dt <= Кінець)
+                {
+                    Дата = Початок;
+                    break;
+                }
+
+            return Дата ?? DateTime.MinValue;
+        }
+
+        static DateTime КінецьКварталу(DateTime dt)
+        {
+            DateTime? Дата = null;
+
+            foreach (var (Початок, Кінець) in СписокКварталів(dt))
+                if (dt >= Початок && dt <= Кінець)
+                {
+                    Дата = Кінець;
+                    break;
+                }
+
+            return Дата ?? DateTime.MinValue;
+        }
+
+        #endregion
+
         public static DateTime? ДатаПочатокЗПеріоду(ТипПеріоду типПеріоду)
         {
             DateTime? dateTime = типПеріоду switch
             {
                 ТипПеріоду.МинулийРік => new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1),
                 ТипПеріоду.ЦейРік => new DateTime(DateTime.Now.Year, 1, 1),
-                ТипПеріоду.МинулийКвартал => DateTime.Now.AddMonths(-6),
-                ТипПеріоду.ЦейКвартал => DateTime.Now.AddMonths(-3),
-                ТипПеріоду.МинулийМісяць => DateTime.Now.AddMonths(-2),
-                ТипПеріоду.ЦейМісяць => DateTime.Now.AddMonths(-1),
-                ТипПеріоду.МинулийТиждень => DateTime.Now.AddDays(-13),
-                ТипПеріоду.ЦейТиждень => DateTime.Now.AddDays(-6),
+                ТипПеріоду.МинулийКвартал => ПочатокКварталу(DateTime.Now).AddMonths(-3),
+                ТипПеріоду.ЦейКвартал => ПочатокКварталу(DateTime.Now),
+                ТипПеріоду.МинулийМісяць => new DateTime(DateTime.Now.Year, DateTime.Now.AddMonths(-1).Month, 1),
+                ТипПеріоду.ЦейМісяць => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+                ТипПеріоду.МинулийТиждень => ПочатокТижня(DateTime.Now.AddDays(-7)),
+                ТипПеріоду.ЦейТиждень => ПочатокТижня(DateTime.Now),
                 ТипПеріоду.Вчора => DateTime.Now.AddDays(-1),
                 ТипПеріоду.Сьогодні => DateTime.Now,
                 _ => null
@@ -146,9 +197,31 @@ namespace InterfaceGtk
             return dateTime?.Date;
         }
 
+        public static DateTime? ДатаКінецьЗПеріоду(ТипПеріоду типПеріоду)
+        {
+            DateTime? dateTime = типПеріоду switch
+            {
+                ТипПеріоду.МинулийРік => new DateTime(DateTime.Now.Year, 1, 1).AddDays(-1),
+                ТипПеріоду.ЦейРік => null,
+                ТипПеріоду.МинулийКвартал => КінецьКварталу(DateTime.Now.AddMonths(-3)),
+                ТипПеріоду.ЦейКвартал => null,
+                ТипПеріоду.МинулийМісяць => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddDays(-1),
+                ТипПеріоду.ЦейМісяць => null,
+                ТипПеріоду.МинулийТиждень => КінецьТижня(DateTime.Now.AddDays(-7)),
+                ТипПеріоду.ЦейТиждень => null,
+                ТипПеріоду.Вчора => DateTime.Now.AddDays(-1),
+                ТипПеріоду.Сьогодні => null,
+                _ => null
+            };
+
+            return dateTime?.Date;
+        }
+
         public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду, DateTime? start = null, DateTime? stop = null)
         {
-            if (типПеріоду == ТипПеріоду.Особливий)
+            if (типПеріоду != ТипПеріоду.ВесьПеріод)
+                return null;
+            else if (типПеріоду == ТипПеріоду.Особливий)
             {
                 if (start != null && stop != null)
                 {
@@ -162,8 +235,13 @@ namespace InterfaceGtk
             }
             else
             {
-                DateTime? dateTime = ДатаПочатокЗПеріоду(типПеріоду);
-                return dateTime != null ? new Where(fieldWhere, Comparison.QT_EQ, dateTime.Value) : null;
+                DateTime dateStartTime = ДатаПочатокЗПеріоду(типПеріоду) ?? DateTime.MinValue;
+                DateTime dateStopTime = ДатаКінецьЗПеріоду(типПеріоду) ?? DateTime.Now;
+
+                string start_format = dateStartTime.ToString("yyyy-MM-dd 00:00:00");
+                string stop_format = dateStopTime.ToString("yyyy-MM-dd 23:59:59");
+
+                return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
             }
         }
     }
