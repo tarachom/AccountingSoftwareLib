@@ -85,22 +85,7 @@ namespace InterfaceGtk
         /// </summary>
         public bool CompositeMode { get; set; } = false;
 
-        /// <summary>
-        /// Функція повертає список UnigueID виділених рядків дерева
-        /// </summary>
-        public List<UnigueID> GetSelectedRows()
-        {
-            List<UnigueID> unigueIDList = [];
-
-            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
-                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
-                {
-                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    unigueIDList.Add(new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
-                }
-
-            return unigueIDList;
-        }
+        
 
         #region Virtual & Abstract Function
 
@@ -137,6 +122,23 @@ namespace InterfaceGtk
         #endregion
 
         #region  TreeView
+
+        /// <summary>
+        /// Функція повертає список UnigueID виділених рядків дерева
+        /// </summary>
+        public List<UnigueID> GetSelectedRows()
+        {
+            List<UnigueID> unigueIDList = [];
+
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+                foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+                {
+                    TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                    unigueIDList.Add(new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
+                }
+
+            return unigueIDList;
+        }
 
         /// <summary>
         /// Скидає налаштування сторінок для TreeViewGrid

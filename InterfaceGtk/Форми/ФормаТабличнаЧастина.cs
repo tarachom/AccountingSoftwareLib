@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk
 {
@@ -79,9 +80,9 @@ namespace InterfaceGtk
         {
             PackStart(ToolbarTop, false, false, 0);
 
-            ToolButton upButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
-            upButton.Clicked += OnAddClick;
-            ToolbarTop.Add(upButton);
+            ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
+            addButton.Clicked += OnAddClick;
+            ToolbarTop.Add(addButton);
 
             ToolButton copyButton = new ToolButton(new Image(Stock.Copy, IconSize.Menu), "Копіювати") { TooltipText = "Копіювати" };
             copyButton.Clicked += OnCopyClick;
@@ -289,6 +290,25 @@ namespace InterfaceGtk
         #endregion
 
         #region TreeView
+
+        /// <summary>
+        /// Функція повертає список індексів виділених рядків
+        /// </summary>
+        public int[] GetSelectedRows()
+        {
+            int countSelRows = TreeViewGrid.Selection.CountSelectedRows();
+            if (countSelRows != 0)
+            {
+                int[] index = new int[countSelRows];
+
+                for (int i = 0; i < countSelRows; i++)
+                    index[i] = int.Parse(TreeViewGrid.Selection.GetSelectedRows()[i].ToString());
+
+                return index;
+            }
+            else
+                return [];
+        }
 
         /// <summary>
         /// Функція позиціонує список на рядок який раніше був активований OnRowActivated
