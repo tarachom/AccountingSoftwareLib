@@ -85,8 +85,6 @@ namespace InterfaceGtk
         /// </summary>
         public bool CompositeMode { get; set; } = false;
 
-        
-
         #region Virtual & Abstract Function
 
         /// <summary>

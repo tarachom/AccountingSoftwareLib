@@ -292,25 +292,6 @@ namespace InterfaceGtk
         #region TreeView
 
         /// <summary>
-        /// Функція повертає список індексів виділених рядків
-        /// </summary>
-        public int[] GetSelectedRows()
-        {
-            int countSelRows = TreeViewGrid.Selection.CountSelectedRows();
-            if (countSelRows != 0)
-            {
-                int[] index = new int[countSelRows];
-
-                for (int i = 0; i < countSelRows; i++)
-                    index[i] = int.Parse(TreeViewGrid.Selection.GetSelectedRows()[i].ToString());
-
-                return index;
-            }
-            else
-                return [];
-        }
-
-        /// <summary>
         /// Функція позиціонує список на рядок який раніше був активований OnRowActivated
         /// </summary>
         protected void SelectRowActivated()

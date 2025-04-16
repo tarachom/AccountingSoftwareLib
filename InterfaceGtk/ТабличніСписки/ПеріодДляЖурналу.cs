@@ -219,7 +219,7 @@ namespace InterfaceGtk
 
         public static Where? ВідбірПоПеріоду(string fieldWhere, ТипПеріоду типПеріоду, DateTime? start = null, DateTime? stop = null)
         {
-            if (типПеріоду != ТипПеріоду.ВесьПеріод)
+            if (типПеріоду == ТипПеріоду.ВесьПеріод)
                 return null;
             else if (типПеріоду == ТипПеріоду.Особливий)
             {
