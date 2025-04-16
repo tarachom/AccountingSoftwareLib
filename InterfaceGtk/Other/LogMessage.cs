@@ -116,6 +116,38 @@ namespace InterfaceGtk
             CreateMessage("", TypeMessage.None);
         }
 
+        public TextView CreateTextTerminal(string message = "", TypeMessage typeMsg = TypeMessage.None)
+        {
+            CreateMessage(message, typeMsg);
+
+            Box hBox = new Box(Orientation.Horizontal, 0);
+            vBox.PackStart(hBox, false, false, 2);
+
+            AddImage(hBox, TypeMessage.None);
+
+            TextView textTerminal = new TextView() { };
+            textTerminal.StyleContext.AddClass("text_terminal");
+
+            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 500, WidthRequest = 1000 };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Add(textTerminal);
+
+            hBox.PackStart(scroll, false, false, 1);
+            hBox.ShowAll();
+
+            scrollMessage.Vadjustment.Value = scrollMessage.Vadjustment.Upper;
+
+            return textTerminal;
+        }
+
+        public void ApendLineTextTerminal(TextView textTerminal, string message = "")
+        {
+            textTerminal.Buffer.InsertAtCursor(message + "\n");
+
+            ScrolledWindow scroll = (ScrolledWindow)textTerminal.Parent;
+            scroll.Vadjustment.Value = scroll.Vadjustment.Upper;
+        }
+
         public Box CreateWidget(Widget? widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
         {
             TrimMessage();
@@ -126,6 +158,29 @@ namespace InterfaceGtk
             AddImage(hBoxInfo, typeMsg);
 
             hBoxInfo.PackStart(widget ?? new Label("Error: Widget null"), false, false, 0);
+            hBoxInfo.ShowAll();
+
+            if (appendEmpty)
+                CreateEmptyMsg();
+
+            scrollMessage.Vadjustment.Value = scrollMessage.Vadjustment.Upper;
+
+            return hBoxInfo;
+        }
+
+        public Box CreateWidget(Widget[]? widgets, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
+        {
+            TrimMessage();
+
+            Box hBoxInfo = new Box(Orientation.Horizontal, 0);
+            vBox.PackStart(hBoxInfo, false, false, 2);
+
+            AddImage(hBoxInfo, typeMsg);
+
+            if (widgets != null)
+                foreach (var widget in widgets)
+                    hBoxInfo.PackStart(widget, false, false, 1);
+
             hBoxInfo.ShowAll();
 
             if (appendEmpty)
