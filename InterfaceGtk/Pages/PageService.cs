@@ -320,7 +320,7 @@ namespace InterfaceGtk
                                 if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
                                 {
                                     await directoryObject.Delete();
-                                    Лог.CreateMessage(" --> Видалено: " + nameObj, LogMessage.TypeMessage.Ok);
+                                    Лог.AppendLine("Видалено: " + nameObj);
                                 }
                             }
                         }
@@ -359,7 +359,7 @@ namespace InterfaceGtk
                                 if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
                                 {
                                     await documentObject.Delete();
-                                    Лог.CreateMessage(" --> Видалено: " + nameObj, LogMessage.TypeMessage.Ok);
+                                    Лог.AppendLine("Видалено: " + nameObj);
                                 }
                             }
                         }

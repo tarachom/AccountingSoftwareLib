@@ -36,15 +36,37 @@ namespace InterfaceGtk
         ScrolledWindow scrollMessage;
         Box vBox;
 
+        TextView textTerminal;
+        ScrolledWindow scrollTextTerminal;
+
         public LogMessage() : base(Orientation.Vertical, 0)
         {
-            vBox = new Box(Orientation.Vertical, 0);
+            Paned vPaned = new Paned(Orientation.Vertical) { BorderWidth = 5 };
 
-            scrollMessage = new ScrolledWindow() { ShadowType = ShadowType.In };
-            scrollMessage.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollMessage.Add(vBox);
+            //Верх
+            {
+                vBox = new Box(Orientation.Vertical, 0);
 
-            PackStart(scrollMessage, true, true, 0);
+                scrollMessage = new ScrolledWindow() { ShadowType = ShadowType.In };
+                scrollMessage.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scrollMessage.Add(vBox);
+
+                vPaned.Pack1(scrollMessage, true, true);
+            }
+
+            //Низ
+            {
+                textTerminal = new TextView() { Editable = false, CursorVisible = true, BorderWidth = 5 };
+                textTerminal.StyleContext.AddClass("text_terminal");
+
+                scrollTextTerminal = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 100 };
+                scrollTextTerminal.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scrollTextTerminal.Add(textTerminal);
+
+                vPaned.Pack2(scrollTextTerminal, false, false);
+            }
+
+            PackStart(vPaned, true, true, 0);
         }
 
         void AddImage(Box hBoxInfo, TypeMessage typeMsg)
@@ -116,36 +138,19 @@ namespace InterfaceGtk
             CreateMessage("", TypeMessage.None);
         }
 
-        public TextView CreateTextTerminal(string message = "", TypeMessage typeMsg = TypeMessage.None)
+        public void AppendLine(string message = "")
         {
-            CreateMessage(message, typeMsg);
+            if (textTerminal.Buffer.LineCount > 500)
+            {
+                TextIter iterStart = textTerminal.Buffer.GetIterAtLine(0);
+                TextIter iterEnd = textTerminal.Buffer.GetIterAtLine(100);
 
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 2);
+                textTerminal.Buffer.Delete(ref iterStart, ref iterEnd);
+            }
 
-            AddImage(hBox, TypeMessage.None);
-
-            TextView textTerminal = new TextView() { };
-            textTerminal.StyleContext.AddClass("text_terminal");
-
-            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 500, WidthRequest = 1000 };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Add(textTerminal);
-
-            hBox.PackStart(scroll, false, false, 1);
-            hBox.ShowAll();
-
-            scrollMessage.Vadjustment.Value = scrollMessage.Vadjustment.Upper;
-
-            return textTerminal;
-        }
-
-        public void ApendLineTextTerminal(TextView textTerminal, string message = "")
-        {
+            textTerminal.Buffer.PlaceCursor(textTerminal.Buffer.EndIter);
             textTerminal.Buffer.InsertAtCursor(message + "\n");
-
-            ScrolledWindow scroll = (ScrolledWindow)textTerminal.Parent;
-            scroll.Vadjustment.Value = scroll.Vadjustment.Upper;
+            scrollTextTerminal.Vadjustment.Value = scrollTextTerminal.Vadjustment.Upper;
         }
 
         public Box CreateWidget(Widget? widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
@@ -207,6 +212,8 @@ namespace InterfaceGtk
         {
             foreach (Widget Child in vBox.Children)
                 vBox.Remove(Child);
+
+            textTerminal.Buffer.Text = "";
         }
 
         /// <summary>
