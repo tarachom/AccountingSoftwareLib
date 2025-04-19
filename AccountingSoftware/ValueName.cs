@@ -23,20 +23,15 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-    public class NameValue<T>
+    public class ValueName<T>
     {
-        public NameValue() { }
+        public ValueName() { }
 
-        public NameValue(string name, T value)
+        public ValueName(T value, string name)
         {
-            Name = name;
             Value = value;
+            Name = name;
         }
-
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
 
         /// <summary>
         /// Значення
@@ -44,17 +39,9 @@ namespace AccountingSoftware
         public T? Value { get; set; }
 
         /// <summary>
-        /// Порівняння у формі тексту
+        /// Назва
         /// </summary>
-        /// <param name="value">Значення</param>
-        /// <returns></returns>
-        public bool Equals(T value)
-        {
-            if (Value == null || value == null)
-                return false;
-            else
-                return Value.ToString() == value.ToString();
-        }
+        public string Name { get; set; } = "";
 
         public override string ToString()
         {

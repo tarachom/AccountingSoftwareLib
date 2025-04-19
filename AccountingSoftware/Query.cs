@@ -81,7 +81,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля із псевдонімами
         /// </summary>
-        public List<NameValue<string>> FieldAndAlias { get; set; } = [];
+        public List<ValueName<string>> FieldAndAlias { get; set; } = [];
 
         /// <summary>
         /// Таблиці які потрібно приєднати
@@ -140,8 +140,8 @@ namespace AccountingSoftware
                 query += "\n";
 
                 //Поля з псевдонімами
-                foreach (NameValue<string> field in FieldAndAlias)
-                    query += ", " + field.Name + " AS " + field.Value;
+                foreach (ValueName<string> field in FieldAndAlias)
+                    query += ", " + field.Value + " AS " + field.Name;
             }
 
             query += "\nFROM " + Table;
@@ -307,13 +307,13 @@ namespace AccountingSoftware
 
             //Додаткове поле Родич
             {
-                FieldAndAlias.RemoveAll((x) => x.Value == "parent");
+                FieldAndAlias.RemoveAll((x) => x.Name == "parent");
                 FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
             }
 
             //Додаткове поле Рівень
             {
-                FieldAndAlias.RemoveAll((x) => x.Value == "level");
+                FieldAndAlias.RemoveAll((x) => x.Name == "level");
                 FieldAndAlias.Add(new("1", "level"));
             }
 
@@ -337,13 +337,13 @@ namespace AccountingSoftware
 
             //Додаткове поле Родич
             {
-                FieldAndAlias.RemoveAll((x) => x.Value == "parent");
+                FieldAndAlias.RemoveAll((x) => x.Name == "parent");
                 FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
             }
 
             //Наступний рівень
             {
-                FieldAndAlias.RemoveAll((x) => x.Value == "level");
+                FieldAndAlias.RemoveAll((x) => x.Name == "level");
                 FieldAndAlias.Add(new("r.level + 1", "level"));
             }
 
@@ -356,8 +356,7 @@ namespace AccountingSoftware
             }
 
             //Очистка
-            FieldAndAlias.RemoveAll((x) => x.Value == "level");
-            FieldAndAlias.RemoveAll((x) => x.Value == "parent");
+            FieldAndAlias.RemoveAll((x) => x.Name == "parent" || x.Name == "level");
 
             string query = @$"
 WITH RECURSIVE r AS

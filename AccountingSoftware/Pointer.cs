@@ -48,9 +48,9 @@ namespace AccountingSoftware
         public UnigueID UnigueID { get; protected set; } = new UnigueID();
 
         /// <summary>
-        /// Поля які потрібно додатково зчитати з бази даних 
+        /// Поля які були додатково прочитані з бази даних
         /// </summary>
-        public Dictionary<string, object>? Fields { get; protected set; }
+        public Dictionary<string, object> Fields { get; protected set; } = [];
 
         /// <summary>
         /// Назва
@@ -65,7 +65,7 @@ namespace AccountingSoftware
         protected void Init(UnigueID uid, Dictionary<string, object>? fields = null)
         {
             UnigueID = uid;
-            Fields = fields;
+            Fields = fields ?? [];
             Name = "";
         }
 

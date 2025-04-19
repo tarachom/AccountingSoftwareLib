@@ -188,85 +188,41 @@ SELECT EXISTS
 
         async ValueTask StartScript()
         {
-            if (DataSource != null)
+            //Перевірка наявності композитного типу uuidtext
+            object? result = await ExecuteSQLScalar("SELECT 'exist' FROM pg_type WHERE typname = 'uuidtext'", null);
+            if (!(result != null && result.ToString() == "exist"))
             {
-                //
-                // uuidtext
-                //
+                //Створення композитного типу uuidtext, даний тип відповідає класу UuidAndText
+                await ExecuteSQL($@"CREATE TYPE uuidtext AS (uuid uuid, text text)");
 
-                //Перевірка наявності композитного типу uuidtext
-                string query = @"
-SELECT 
-    'exist' 
-FROM 
-    pg_type 
-WHERE 
-    typname = 'uuidtext'";
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                object? result = await command.ExecuteScalarAsync();
-
-                if (!(result != null && result.ToString() == "exist"))
+                if (DataSource != null)
                 {
-                    //Створення композитного типу uuidtext
-                    //Даний тип відповідає класу UuidAndText
-                    await ExecuteSQL($@"
-CREATE TYPE uuidtext AS 
-(
-    uuid uuid, 
-    text text
-)");
                     await using NpgsqlConnection conn = await DataSource.OpenConnectionAsync();
                     await conn.ReloadTypesAsync();
                 }
+            }
 
-                //
-                // Підключити Додаток_UUID_OSSP
-                //
+            //Підключити Додаток_UUID_OSSP
+            await ExecuteSQL(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
 
-                await ExecuteSQL(@"
-CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
+        }
 
-                //
-                // Системні таблиці
-                //
+        public async ValueTask CreateSpecialTables()
+        {
+            //Список системних таблиць
+            List<string> specialTable = await GetSpecialTableList();
 
+            //
+            // Системні таблиці
+            //
+
+            if (!specialTable.Contains(SpecialTables.RegAccumTriger))
+            {
                 /*
-                Таблиця для запису інформації про помилки
 
-                @users - Користувач
-                @datewrite - Дата запису
-                @processname - Проведення, запис, видалення і т.д
-                @objectuid - Об'єкт
-                @objecttype - Тип так як задано в конфігураторі
-                @objectname - Назва
-                @message - Повідомлення
-                @message_type - Тип повідомлення, задається одним символом (Помилка E, Інформація I і т.д)
-                */
-                await ExecuteSQL($@"
-CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError} 
-(
-    uid serial NOT NULL,
-    users uuid NOT NULL,
-    datewrite timestamp without time zone NOT NULL,
-    processname text NOT NULL,
-    objectuid uuid NOT NULL,
-    objecttype text NOT NULL,
-    objectname text NOT NULL,
-    message text NOT NULL,
-    message_type ""char"" NOT NULL DEFAULT '',
-    PRIMARY KEY(uid)
-)");
-                await ExecuteSQL($@"
-CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_users_idx ON {SpecialTables.MessageError}(users)");
-
-                await ExecuteSQL($@"
-CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_objectuid_idx ON {SpecialTables.MessageError}(objectuid)");
-
-                /*
                 Таблиця для запису інформації про зміни в регістрах накопичення.
                 На основі цієї інформації розраховуються віртуальні таблиці регістрів
-                
+
                 @datewrite - дата запису
                 @period - дата на яку потрібно зробити розрахунки регістру
                 @regname - назва регістру
@@ -275,6 +231,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_objectuid_idx ON {Specia
                 @info - додаткова інформація
 
                 */
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger} 
 (
@@ -287,8 +244,12 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
     info text,
     PRIMARY KEY(uid)
 )");
+            }
 
+            if (!specialTable.Contains(SpecialTables.RegAccumTrigerDocIgnore))
+            {
                 /*
+
                 Таблиця для запису інформації про документи які потрібно проігнорувати 
                 при обробці тригерів для розрахунку регістрів накопичення.
 
@@ -296,7 +257,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 щоб тимчасово проігнорувати розрахунки для певних документів 
                 допоки наприклад не будуть проведені документи за певну дату, а тоді
                 вже пачкою розрахувати 
-                
+
                 @datewrite - дата запису
                 @user - користувач
                 @session - сесія
@@ -304,6 +265,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTriger}
                 @info - додаткова інформація
 
                 */
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore} 
 (
@@ -315,8 +277,12 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore}
     info text,
     PRIMARY KEY(uid)
 )");
+            }
 
+            if (!specialTable.Contains(SpecialTables.LockedObject))
+            {
                 /*
+
                 Таблиця заблокованих обєктів
 
                 @uid - PRIMARY KEY
@@ -327,7 +293,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.RegAccumTrigerDocIgnore}
                 @obj - обєкт конфігурації (Довідники, Документи)
 
                 */
-                //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.LockedObject}");
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.LockedObject} 
 (
@@ -344,8 +310,12 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_session_idx ON {SpecialT
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_users_idx ON {SpecialTables.LockedObject}(users)");
+            }
 
+            if (!specialTable.Contains(SpecialTables.Users))
+            {
                 /*
+
                 Таблиця користувачів
 
                 @name - унікальна назва користувача у нижньому регістрі
@@ -355,8 +325,8 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.LockedObject}_users_idx ON {SpecialTab
                 @dateupdate - коли обновлена інформація
                 @info - додаткова інформація
 
-                ExecuteSQL($"DROP TABLE {SpecialTables.Users}");
                 */
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.Users} 
 (
@@ -370,8 +340,14 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
     PRIMARY KEY(uid),
     CONSTRAINT name_unique_idx UNIQUE (name)
 )");
+                /* Користувач Admin */
+                await SpetialTableUsersAddSuperUser();
+            }
 
+            if (!specialTable.Contains(SpecialTables.ActiveUsers))
+            {
                 /*
+
                 Таблиця активних користувачів
 
                 @usersuid - користувач ід
@@ -379,8 +355,8 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
                 @dateupdate - дата підтвердження активного стану
                 @master - головний. Він виконує обчислення
 
-                ExecuteSQL($"DROP IF EXISTS TABLE {SpecialTables.ActiveUsers}");
                 */
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers} 
 (
@@ -392,13 +368,12 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
     type_form integer NOT NULL DEFAULT 0,
     PRIMARY KEY(uid)
 )");
+            }
 
+            if (!specialTable.Contains(SpecialTables.FullTextSearch))
+            {
                 /*
-                Користувач Admin
-                */
-                await SpetialTableUsersAddSuperUser();
 
-                /*
                 Таблиця для повнотекстового пошуку
 
                 @uidobj - ід обєкту конфігурації
@@ -430,8 +405,50 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {Special
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
+            }
 
+            if (!specialTable.Contains(SpecialTables.MessageError))
+            {
                 /*
+
+                Таблиця для запису інформації про помилки
+
+                @users - Користувач
+                @datewrite - Дата запису
+                @processname - Проведення, запис, видалення і т.д
+                @objectuid - Об'єкт
+                @objecttype - Тип так як задано в конфігураторі
+                @objectname - Назва
+                @message - Повідомлення
+                @message_type - Тип повідомлення, задається одним символом (Помилка E, Інформація I і т.д)
+
+                */
+
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError} 
+(
+    uid serial NOT NULL,
+    users uuid NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    processname text NOT NULL,
+    objectuid uuid NOT NULL,
+    objecttype text NOT NULL,
+    objectname text NOT NULL,
+    message text NOT NULL,
+    message_type ""char"" NOT NULL DEFAULT '',
+    PRIMARY KEY(uid)
+)");
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_users_idx ON {SpecialTables.MessageError}(users)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_objectuid_idx ON {SpecialTables.MessageError}(objectuid)");
+            }
+
+            if (!specialTable.Contains(SpecialTables.ObjectUpdateTriger))
+            {
+                /*
+
                 Таблиця для тригерів оновлення об’єктів (Довідники, Документи)
 
                 @uid - PRIMARY KEY
@@ -439,6 +456,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
                 @obj - обєкт конфігурації
 
                 */
+
                 await ExecuteSQL($@"
 CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger} 
 (
@@ -450,7 +468,6 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {SpecialTables.ObjectUpdateTriger}(datewrite)");
-
             }
         }
 
@@ -1465,6 +1482,7 @@ WHERE (LockedObject.obj).uuid = @obj
         readonly Lock Loсked = new();
         readonly Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
         volatile byte TransactionCounter = 0;
+        private static readonly string[] sourceArray = new string[] { "row_number", "row_count" };
 
         public async ValueTask<byte> BeginTransaction()
         {
@@ -1605,8 +1623,8 @@ WHERE (LockedObject.obj).uuid = @obj
                         Dictionary<string, string> joinValue = [];
                         joinValueList.Add(reader["uid"].ToString()!, joinValue);
 
-                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                        foreach (ValueName<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Name, reader[fieldAndAlias.Name].ToString() ?? "");
                     }
                 }
                 await reader.CloseAsync();
@@ -1684,110 +1702,11 @@ WHERE (LockedObject.obj).uuid = @obj
         }
 
         /// <summary>
-        /// Обчислює розмір вибірки для запиту 
-        /// </summary>
-        /// <param name="QuerySelect">Запит SELECT</param>
-        // public async ValueTask<long> GetSelectCount(Query QuerySelect)
-        // {
-        //     //
-        //     // !!! ВИДАЛИТИ пізніше функція непотрібна
-        //     //
-
-        //     if (DataSource != null)
-        //     {
-        //         string query = $"SELECT count(*) FROM ({QuerySelect.Construct()})";
-        //         NpgsqlCommand command = DataSource.CreateCommand(query);
-
-        //         foreach (Where field in QuerySelect.Where)
-        //             command.Parameters.AddWithValue(field.Alias, field.Value);
-
-        //         object? count = await command.ExecuteScalarAsync();
-        //         return count != null ? (long)count : 0;
-        //     }
-        //     else
-        //         return 0;
-        // }
-
-        /// <summary>
-        /// Обчислює позицію unigueID у вибірці і розмір вибірки
-        /// </summary>
-        /// <param name="QuerySelect">Конструктор запиту</param>
-        /// <param name="unigueID">Елемент вибірки</param>
-        /// <returns>(long Position, long Count) - позиція і розмір вибірки</returns>
-        //         public async ValueTask<(long Position, long Count)> GetSelectPositionAndCount(Query QuerySelect, UnigueID unigueID)
-        //         {
-        //             if (DataSource != null)
-        //             {
-
-        //                 //
-        //                 // !!! ВИДАЛИТИ пізніше функція непотрібна
-        //                 //
-
-        //                 // !!! Доробити щоб для number і count задавались унікальні імена, 
-        //                 // для цього треба перевірити чи вже є такі імена і сформувати нові
-        //                 //
-
-        //                 string rowNumberOrder = "";
-
-        //                 if (QuerySelect.Order.Count > 0)
-        //                 {
-        //                     int len = 0;
-        //                     rowNumberOrder = "ORDER BY ";
-
-        //                     foreach (KeyValuePair<string, SelectOrder> field in QuerySelect.Order)
-        //                     {
-        //                         rowNumberOrder += (len > 0 ? ", " : "") + field.Key + " " + field.Value;
-        //                         len++;
-        //                     }
-        //                 }
-
-        //                 //Порядковий номер
-        //                 QuerySelect.FieldAndAlias.Add(new NameValue<string>($"row_number() OVER({rowNumberOrder})", "number"));
-
-        //                 //Розмір вибірки
-        //                 QuerySelect.FieldAndAlias.Add(new NameValue<string>($"count(*) OVER()", "count"));
-
-        //                 string query = $@"
-        // WITH S AS 
-        // (
-        //     {QuerySelect.Construct()}
-        // )
-        // Select * FROM S WHERE uid = '{unigueID.UGuid}'";
-
-        //                 Console.WriteLine(query);
-
-        //                 NpgsqlCommand command = DataSource.CreateCommand(query);
-
-        //                 foreach (Where field in QuerySelect.Where)
-        //                     command.Parameters.AddWithValue(field.Alias, field.Value);
-
-        //                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
-        //                 long position = 0;
-        //                 long count = 0;
-
-        //                 while (await reader.ReadAsync())
-        //                 {
-        //                     position = (long)reader["number"];
-        //                     count = (long)reader["count"];
-        //                 }
-        //                 await reader.CloseAsync();
-
-        //                 QuerySelect.FieldAndAlias.RemoveAll(x => new string[] { "number", "count" }.Contains(x.Value));
-
-        //                 return (position, count);
-        //             }
-        //             else
-        //                 return (0, 0);
-        //         }
-
-        /// <summary>
         /// Функція обчислює розмір вибірки і кількість сторінок на яку можна розбити вибірку
         /// </summary>
         /// <param name="QuerySelect">Запит</param>
         /// <param name="unigueID">Елемент на який треба спозиціонуватися</param>
         /// <param name="pageSize">Розмір сторінки</param>
-        /// <returns></returns>
         public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UnigueID? unigueID, int pageSize = 1000)
         {
             SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
@@ -1818,9 +1737,8 @@ WHERE (LockedObject.obj).uuid = @obj
                                     table = QuerySelect.Table;
                                 else
                                 {
-                                    NameValue<string>? nameValue = QuerySelect.FieldAndAlias.Find(x => x.Value == field.Key);
-                                    if (nameValue != null)
-                                        fieldKey = nameValue.Name;
+                                    ValueName<string>? valueName = QuerySelect.FieldAndAlias.Find(x => x.Name == field.Key);
+                                    if (valueName != null) fieldKey = valueName.Value ?? "";
                                 }
 
                             order += (len > 0 ? ", " : "") + (!string.IsNullOrEmpty(table) ? table + "." : "") + fieldKey + " " + field.Value;
@@ -1830,8 +1748,8 @@ WHERE (LockedObject.obj).uuid = @obj
 
                     //Порядковий номер та розмір вибірки
                     QuerySelect.FieldAndAlias.AddRange(
-                        new NameValue<string>($"row_number() OVER({order})", "row_number"),
-                        new NameValue<string>($"count(*) OVER()", "row_count")
+                        new ValueName<string>($"row_number() OVER({order})", "row_number"),
+                        new ValueName<string>($"count(*) OVER()", "row_count")
                     );
 
                     query = $@"
@@ -1856,8 +1774,6 @@ FROM
     {QuerySelect.Construct()}
 )";
                 }
-
-                //Console.WriteLine(query + "\n");
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
 
@@ -1895,7 +1811,7 @@ FROM
 
                 //Очищення
                 if (!unigueIDLocal.IsEmpty())
-                    QuerySelect.FieldAndAlias.RemoveAll(x => new string[] { "row_number", "row_count" }.Contains(x.Value));
+                    QuerySelect.FieldAndAlias.RemoveAll(x => sourceArray.Contains(x.Value));
             }
 
             return record;
@@ -2067,8 +1983,8 @@ FROM
                         foreach (string field in QuerySelect.Field)
                             fields.Add(field, reader[field]);
 
-                        foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                            fields.Add(field.Value!, reader[field.Value!]);
+                        foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
                     }
 
                     listPointers.Add((new UnigueID(reader["uid"]), fields));
@@ -2104,8 +2020,8 @@ FROM
                         foreach (string field in QuerySelect.Field)
                             fields.Add(field, reader[field]);
 
-                        foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                            fields.Add(field.Value!, reader[field.Value!]);
+                        foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
                     }
 
                     listPointers.Add((unigueID, parent, level, fields));
@@ -2214,8 +2130,8 @@ FROM
                         Dictionary<string, string> joinValue = [];
                         joinValueList.Add(reader["uid"].ToString()!, joinValue);
 
-                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                        foreach (ValueName<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Name, reader[fieldAndAlias.Name].ToString() ?? "");
                     }
                 }
                 await reader.CloseAsync();
@@ -2436,8 +2352,8 @@ FROM
                         foreach (string field in QuerySelect.Field)
                             fields.Add(field, reader[field]);
 
-                        foreach (NameValue<string> field in QuerySelect.FieldAndAlias)
-                            fields.Add(field.Value!, reader[field.Value!]);
+                        foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
                     }
 
                     listPointers.Add((new UnigueID(reader["uid"]), fields));
@@ -2526,8 +2442,8 @@ FROM
                         Dictionary<string, string> joinValue = [];
                         joinValueList.Add(reader["uid"].ToString()!, joinValue);
 
-                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                        foreach (ValueName<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Name, reader[fieldAndAlias.Name].ToString() ?? "");
                     }
                 }
                 await reader.CloseAsync();
@@ -2708,8 +2624,8 @@ FROM
                         Dictionary<string, string> joinValue = [];
                         joinValueList.Add(reader["uid"].ToString()!, joinValue);
 
-                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                        foreach (ValueName<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Name, reader[fieldAndAlias.Name].ToString() ?? "");
                     }
                 }
                 await reader.CloseAsync();
@@ -2913,8 +2829,8 @@ FROM
                         Dictionary<string, string> joinValue = [];
                         joinValueList.Add(reader["uid"].ToString()!, joinValue);
 
-                        foreach (NameValue<string> fieldAndAlias in QuerySelect.FieldAndAlias)
-                            joinValue.Add(fieldAndAlias.Value!, reader[fieldAndAlias.Value!].ToString() ?? "");
+                        foreach (ValueName<string> fieldAndAlias in QuerySelect.FieldAndAlias)
+                            joinValue.Add(fieldAndAlias.Name, reader[fieldAndAlias.Name].ToString() ?? "");
                     }
                 }
                 await reader.CloseAsync();
@@ -3207,6 +3123,29 @@ FROM
             return tables;
         }
 
+        public async ValueTask<List<string>> GetSpecialTableList()
+        {
+            List<string> tables = [];
+
+            if (DataSource != null)
+            {
+                string query = "SELECT table_name " +
+                               "FROM information_schema.tables " +
+                               "WHERE table_schema = 'public' AND table_type = 'BASE TABLE' AND substr(table_name, 0, 12) = 'tab_special' " +
+                               "ORDER BY table_name";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                    tables.Add(reader["table_name"].ToString()?.ToLower() ?? "");
+
+                await reader.CloseAsync();
+            }
+
+            return tables;
+        }
+
         #endregion
 
         #region SQL
@@ -3273,7 +3212,7 @@ FROM
                 return -1;
         }
 
-        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
+        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0)
         {
             if (DataSource != null)
             {

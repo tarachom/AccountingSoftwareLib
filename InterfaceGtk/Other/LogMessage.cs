@@ -41,7 +41,7 @@ namespace InterfaceGtk
 
         public LogMessage() : base(Orientation.Vertical, 0)
         {
-            Paned vPaned = new Paned(Orientation.Vertical) { BorderWidth = 5 };
+            Paned vPaned = new Paned(Orientation.Vertical) { BorderWidth = 2 };
 
             //Верх
             {
@@ -140,7 +140,7 @@ namespace InterfaceGtk
 
         public void AppendLine(string message = "")
         {
-            if (textTerminal.Buffer.LineCount > 500)
+            if (textTerminal.Buffer.LineCount > MaxLineTextTerminal)
             {
                 TextIter iterStart = textTerminal.Buffer.GetIterAtLine(0);
                 TextIter iterEnd = textTerminal.Buffer.GetIterAtLine(100);
@@ -220,6 +220,11 @@ namespace InterfaceGtk
         /// Максимальна кількість рядків в Лог
         /// </summary>
         public int MaxLine { get; set; } = 100;
+
+        /// <summary>
+        ///  Максимальна кількість рядків в текстовому терміналі
+        /// </summary>
+        public int MaxLineTextTerminal { get; set; } = 500;
 
         void TrimMessage()
         {

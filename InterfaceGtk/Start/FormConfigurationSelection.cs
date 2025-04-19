@@ -246,6 +246,13 @@ namespace InterfaceGtk
 
             if (result)
             {
+                //Перевірка наявності системних таблиць
+                if (!await CheckSystemTables(ProgramKernel))
+                {
+                    SensitiveWidgets(true);
+                    return;
+                }
+
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
@@ -320,6 +327,9 @@ namespace InterfaceGtk
 
             if (result)
             {
+                //Перевірка і створення системних таблиць
+                await ConfiguratorKernel.DataBase.CreateSpecialTables();
+
                 // Авторизація
                 ResponseType ModalResult = ResponseType.None;
 
@@ -357,6 +367,35 @@ namespace InterfaceGtk
                 Message.Error(this, "Error: " + ConfiguratorKernel.Exception?.Message);
 
             SensitiveWidgets(true);
+        }
+
+        /// <summary>
+        /// Перевірка наявності системних таблиць
+        /// </summary>
+        /// <param name="kernel">Ядро</param>
+        /// <returns>true якщо всі перевірки пройдено</returns>
+        async ValueTask<bool> CheckSystemTables(Kernel kernel)
+        {
+            string help = "\n\nПотрібно відкрити Конфігуратор і зберегти конфігурацію - " +
+            "(Меню: Конфігурація/Зберегти конфігурацію - дальше Збереження змін. Крок 1, Збереження змін. Крок 2)";
+
+            if (!await kernel.DataBase.IfExistsTable(SpecialTables.Constants))
+            {
+                Message.Error(this, $"Error: Відсутня таблиця tab_constants.{help}");
+                return false;
+            }
+
+            //Список системних таблиць
+            List<string> specialTable = await kernel.DataBase.GetSpecialTableList();
+
+            foreach (string table in SpecialTables.SpecialTablesList)
+                if (!specialTable.Contains(SpecialTables.Users))
+                {
+                    Message.Error(this, $"Error: Відсутня системна таблиця {table}.{help}");
+                    return false;
+                }
+
+            return true;
         }
 
         void SensitiveWidgets(bool value)

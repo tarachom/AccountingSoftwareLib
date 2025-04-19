@@ -67,7 +67,7 @@ namespace AccountingSoftware
         /// Помилки устарівша (!!! Не використовувати)
         /// </summary>
         public static readonly string MessageErrorOld = "tab_special_message_error";
-        
+
         /// <summary>
         /// Помилки та інформація
         /// </summary>
@@ -77,6 +77,20 @@ namespace AccountingSoftware
         /// Тригери оновлення об’єктів (Довідники, Документи)
         /// </summary>
         public static readonly string ObjectUpdateTriger = "tab_special_object_update_triger";
-        
+
+        /// <summary>
+        /// Список
+        /// </summary>
+        public static readonly string[] SpecialTablesList =
+        [
+            RegAccumTriger,
+            RegAccumTrigerDocIgnore,
+            LockedObject,
+            Users,
+            ActiveUsers,
+            FullTextSearch,
+            MessageError,
+            ObjectUpdateTriger,
+        ];
     }
 }

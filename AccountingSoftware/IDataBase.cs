@@ -34,6 +34,7 @@ namespace AccountingSoftware
         ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database);
         ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database);
         ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database);
+        ValueTask CreateSpecialTables();
         void Close();
 
         #endregion
@@ -221,6 +222,7 @@ namespace AccountingSoftware
         ValueTask<bool> IfExistsTable(string tableName);
         ValueTask<bool> IfExistsColumn(string tableName, string columnName);
         ValueTask<List<string>> GetTableList();
+        ValueTask<List<string>> GetSpecialTableList();
 
         #endregion
 
@@ -229,7 +231,7 @@ namespace AccountingSoftware
         ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
         ValueTask<int> ExecuteSQL(string query, byte transactionID = 0);
         ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
-        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
+        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0);
         ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null);
         ValueTask<DateTime> SelectCurrentTimestamp();
 
