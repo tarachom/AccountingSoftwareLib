@@ -1730,6 +1730,11 @@ WHERE (LockedObject.obj).uuid = @obj
 
                         foreach (KeyValuePair<string, SelectOrder> field in QuerySelect.Order)
                         {
+                            /* 
+                            так як для віконної фукнкції row_number() потрібно задавати сортування вибірки,
+                            щоб вона коректно працювала, витягую цю інформацію з QuerySelect
+                            */
+
                             string table = "";
                             string fieldKey = field.Key;
                             if (QuerySelect.FieldAndAlias.Count > 0)
@@ -1772,7 +1777,7 @@ SELECT
 FROM 
 (
     {QuerySelect.Construct()}
-)";
+) AS S";
                 }
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
@@ -1830,7 +1835,7 @@ FROM
 
             if (DataSource != null)
             {
-                NpgsqlCommand command = DataSource.CreateCommand($"SELECT count(*) FROM ({query})");
+                NpgsqlCommand command = DataSource.CreateCommand($"SELECT count(*) FROM ({query}) AS S");
 
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
