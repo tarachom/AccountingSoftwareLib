@@ -2488,13 +2488,6 @@ namespace AccountingSoftware
                     nodeSortNum.InnerText = elementField.Value.SortNum.ToString();
                     nodeElementField.AppendChild(nodeSortNum);
 
-                    if (elementField.Value.MultipleSelect)
-                    {
-                        XmlElement nodeMultipleSelect = xmlConfDocument.CreateElement("MultipleSelect");
-                        nodeMultipleSelect.InnerText = elementField.Value.MultipleSelect ? "1" : "0";
-                        nodeElementField.AppendChild(nodeMultipleSelect);
-                    }
-
                     #region Додаткова інформація для полегшення генерування коду
 
                     XmlElement nodeType = xmlConfDocument.CreateElement("Type");
@@ -2507,29 +2500,40 @@ namespace AccountingSoftware
                         nodePointer.InnerText = fieldsItem.Pointer;
                         nodeElementField.AppendChild(nodePointer);
 
-                        (bool Result, string PointerGroup, string PointerType) = Configuration.PointerParse(fieldsItem.Pointer, out Exception? _);
-                        if (Result)
+                        //Тільки для вказівника
+                        if (fieldsItem.Type == "pointer")
                         {
-                            List<ConfigurationField> presetntationFields = [];
-
-                            if (PointerGroup == "Довідники")
+                            if (elementField.Value.MultipleSelect)
                             {
-                                if (Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? configurationDirectories))
-                                    presetntationFields = configurationDirectories.GetPresentationFields();
+                                XmlElement nodeMultipleSelect = xmlConfDocument.CreateElement("MultipleSelect");
+                                nodeMultipleSelect.InnerText = elementField.Value.MultipleSelect ? "1" : "0";
+                                nodeElementField.AppendChild(nodeMultipleSelect);
                             }
-                            else if (PointerGroup == "Документи")
-                                if (Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? configurationDocuments))
-                                    presetntationFields = configurationDocuments.GetPresentationFields();
-
-                            XmlElement nodePresetntationFields = xmlConfDocument.CreateElement("PresetntationFields");
-                            nodePresetntationFields.SetAttribute("Count", presetntationFields.Count.ToString());
-                            nodeElementField.AppendChild(nodePresetntationFields);
-
-                            foreach (ConfigurationField field in presetntationFields)
+                            
+                            (bool Result, string PointerGroup, string PointerType) = Configuration.PointerParse(fieldsItem.Pointer, out Exception? _);
+                            if (Result)
                             {
-                                XmlElement nodePresetntationField = xmlConfDocument.CreateElement("Field");
-                                nodePresetntationField.InnerText = field.Name;
-                                nodePresetntationFields.AppendChild(nodePresetntationField);
+                                List<ConfigurationField> presetntationFields = [];
+
+                                if (PointerGroup == "Довідники")
+                                {
+                                    if (Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? configurationDirectories))
+                                        presetntationFields = configurationDirectories.GetPresentationFields();
+                                }
+                                else if (PointerGroup == "Документи")
+                                    if (Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? configurationDocuments))
+                                        presetntationFields = configurationDocuments.GetPresentationFields();
+
+                                XmlElement nodePresetntationFields = xmlConfDocument.CreateElement("PresetntationFields");
+                                nodePresetntationFields.SetAttribute("Count", presetntationFields.Count.ToString());
+                                nodeElementField.AppendChild(nodePresetntationFields);
+
+                                foreach (ConfigurationField field in presetntationFields)
+                                {
+                                    XmlElement nodePresetntationField = xmlConfDocument.CreateElement("Field");
+                                    nodePresetntationField.InnerText = field.Name;
+                                    nodePresetntationFields.AppendChild(nodePresetntationField);
+                                }
                             }
                         }
                     }
@@ -2538,6 +2542,12 @@ namespace AccountingSoftware
                         XmlElement nodeFieldMultiline = xmlConfDocument.CreateElement("Multiline");
                         nodeFieldMultiline.InnerText = fieldsItem.Multiline ? "1" : "0";
                         nodeElementField.AppendChild(nodeFieldMultiline);
+                    }
+                    else if (fieldsItem.Type == "integer")
+                    {
+                        XmlElement nodeFieldAutomaticNumbering = xmlConfDocument.CreateElement("AutomaticNumbering");
+                        nodeFieldAutomaticNumbering.InnerText = fieldsItem.AutomaticNumbering ? "1" : "0";
+                        nodeElementField.AppendChild(nodeFieldAutomaticNumbering);
                     }
 
                     #endregion

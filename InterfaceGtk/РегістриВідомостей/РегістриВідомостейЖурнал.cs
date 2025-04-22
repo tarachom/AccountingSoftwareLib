@@ -61,18 +61,9 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async x =>
-            {
-                ClearPages();
-                await LoadRecords_OnSearch(x);
-            };
-
-            Пошук.Clear = () =>
-            {
-                ClearPages();
-                PeriodChanged();
-            };
-            HBoxPeriod.PackStart(Пошук, false, false, 2);
+            Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await BeforeLoadRecords();
+            HBoxTop.PackStart(Пошук, false, false, 2);
 
             //Кнопки
             PackStart(HBoxTop, false, false, 0);
@@ -151,8 +142,7 @@ namespace InterfaceGtk
         protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
         }
 
         protected abstract void PeriodChanged();
@@ -259,8 +249,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }
@@ -283,7 +272,7 @@ namespace InterfaceGtk
                         SelectPointerItem = unigueID;
                     }
 
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -307,8 +296,7 @@ namespace InterfaceGtk
                             SelectPointerItem = newUnigueID;
                     }
 
-                    ClearPages();
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }

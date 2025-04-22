@@ -269,8 +269,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }
@@ -308,7 +307,8 @@ namespace InterfaceGtk
                         }
                     }
 
-                    await LoadRecords();
+                    await BeforeLoadRecords();
+
                     ToolButtonSensitive(sender, true);
                 }
             }
@@ -375,7 +375,7 @@ namespace InterfaceGtk
                     await SpendTheDocument(uid, typeDoc, spend);
                 }
 
-                await LoadRecords();
+                await BeforeLoadRecords();
             }
         }
 

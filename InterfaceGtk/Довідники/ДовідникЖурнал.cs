@@ -78,24 +78,30 @@ namespace InterfaceGtk
         /// </summary>
         protected SearchControl Пошук = new SearchControl();
 
+        /// <summary>
+        /// Фільтр
+        /// </summary>
+        protected ListFilterControl Фільтр = new ListFilterControl();
+
+        /// <summary>
+        /// Переключатель для довідника з деревом
+        /// </summary>
+        protected CheckButton IsHierarchy = new CheckButton("Ієрархія папок") { Active = true, Name = "IsHierarchy" };
+
         public ДовідникЖурнал()
         {
             //Кнопки
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            Пошук.Select = async x =>
-            {
-                ClearPages();
-                await LoadRecords_OnSearch(x);
-            };
-
-            Пошук.Clear = async () =>
-            {
-                ClearPages();
-                await LoadRecords();
-            };
+            Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await BeforeLoadRecords();
             HBoxTop.PackStart(Пошук, false, false, 2);
+
+            //Фільтр
+            Фільтр.Select = async () => await BeforeLoadRecords_OnFilter();
+            Фільтр.Clear = async () => await BeforeLoadRecords();
+            Фільтр.FillFilterList = FillFilterList;
 
             CreateToolbar();
 
@@ -119,6 +125,30 @@ namespace InterfaceGtk
         {
             await BeforeSetValue();
         }
+
+        #region Hierarchy
+
+        /// <summary>
+        /// Додати переключатель на форму
+        /// </summary>
+        public void AddIsHierarchy()
+        {
+            if (HBoxTop.Children.Where(x => x.Name == "IsHierarchy").Any())
+                return;
+
+            //Враховувати ієрархію папок
+            IsHierarchy.Clicked += async (sender, args) =>
+            {
+                if (IsHierarchy.Active)
+                    await BeforeLoadRecords();
+                else
+                    await BeforeLoadRecords_OnTree();
+            };
+
+            HBoxTop.PackStart(IsHierarchy, false, false, 10);
+        }
+
+        #endregion
 
         #region Toolbar & Menu
 
@@ -187,11 +217,12 @@ namespace InterfaceGtk
         protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
         }
 
-        protected abstract Widget? FilterRecords(Box hBox);
+        //protected virtual Widget? FilterRecords(Box hBox) { return null; } //!!!
+
+        protected virtual void FillFilterList(ListFilterControl filterControl) { }
 
         #endregion
 
@@ -306,8 +337,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }
@@ -331,7 +361,7 @@ namespace InterfaceGtk
                         }
                     }
 
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -356,8 +386,7 @@ namespace InterfaceGtk
                         }
                     }
 
-                    ClearPages();
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -365,22 +394,10 @@ namespace InterfaceGtk
 
         void OnFilterClick(object? sender, EventArgs args)
         {
-            Popover popover = new Popover((ToolButton)sender!)
-            {
-                Position = PositionType.Bottom,
-                BorderWidth = 2
-            };
+            if (!Фільтр.IsFilterCreated)
+                Фільтр.CreatePopover((ToolButton)sender!);
 
-            Box vBox = new Box(Orientation.Vertical, 0);
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 5);
-
-            Widget? widget = FilterRecords(hBox);
-            if (widget != null)
-                hBox.PackStart(widget, false, false, 5);
-
-            popover.Add(vBox);
-            popover.ShowAll();
+            Фільтр.PopoverParent?.ShowAll();
         }
 
         void OnMultipleSelectClick(object? sender, EventArgs args)

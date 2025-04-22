@@ -72,17 +72,8 @@ namespace InterfaceGtk
             if (visibleSearch)
             {
                 //Пошук
-                Пошук.Select = async x =>
-                {
-                    ClearPages();
-                    await LoadRecords_OnSearch(x);
-                };
-
-                Пошук.Clear = async () =>
-                {
-                    ClearPages();
-                    await LoadRecords();
-                };
+                Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+                Пошук.Clear = async () => await BeforeLoadRecords();
             }
 
             CreateToolbar(visibleSearch);
@@ -110,7 +101,7 @@ namespace InterfaceGtk
 
         protected override async ValueTask BeforeSetValue()
         {
-            await LoadRecords();
+            await BeforeLoadRecords();
         }
 
         #region Virtual & Abstract Function
@@ -264,7 +255,7 @@ namespace InterfaceGtk
                         }
                     }
 
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -274,8 +265,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }

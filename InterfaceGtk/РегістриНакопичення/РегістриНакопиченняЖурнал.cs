@@ -61,18 +61,9 @@ namespace InterfaceGtk
             HBoxPeriod.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async x =>
-            {
-                ClearPages();
-                await LoadRecords_OnSearch(x);
-            };
-
-            Пошук.Clear = () =>
-            {
-                ClearPages();
-                PeriodChanged();
-            };
-            HBoxPeriod.PackStart(Пошук, false, false, 2);
+            Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await BeforeLoadRecords();
+            HBoxTop.PackStart(Пошук, false, false, 2);
 
             //Кнопки
             PackStart(HBoxTop, false, false, 0);
@@ -156,8 +147,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }

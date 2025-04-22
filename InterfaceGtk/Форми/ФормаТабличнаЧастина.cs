@@ -215,6 +215,9 @@ namespace InterfaceGtk
 
         #region Редагування ячейки
 
+        bool IsEditingCell = false;
+        protected void EditingStarted(object? sender, EditingStartedArgs args) => IsEditingCell = true;
+
         /// <summary>
         /// Текст
         /// </summary>
@@ -226,6 +229,8 @@ namespace InterfaceGtk
                 var cellInfo = cellInfoObj.Value;
                 ChangeCell(cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber, args.NewText);
             }
+
+            IsEditingCell = false;
         }
 
         /// <summary>
@@ -285,7 +290,7 @@ namespace InterfaceGtk
         protected virtual void DeleteRecord(TreeIter iter, int rowNumber) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, string newText) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, bool newValue) { }
-        protected virtual bool IsEditingCell() { return false; }
+        //protected virtual bool IsEditingCell() { return false; }
 
         #endregion
 
@@ -358,7 +363,7 @@ namespace InterfaceGtk
                     }
                 case Gdk.Key.Delete:
                     {
-                        OnDeleteClick(TreeViewGrid, new EventArgs());
+                        if (!IsEditingCell) OnDeleteClick(TreeViewGrid, new EventArgs());
                         break;
                     }
             }
@@ -387,9 +392,6 @@ namespace InterfaceGtk
 
         void OnDeleteClick(object? sender, EventArgs args)
         {
-            if (IsEditingCell())
-                return;
-
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             {
                 TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();

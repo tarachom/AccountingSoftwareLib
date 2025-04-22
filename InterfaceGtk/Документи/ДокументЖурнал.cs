@@ -59,6 +59,11 @@ namespace InterfaceGtk
         SearchControl Пошук = new SearchControl();
 
         /// <summary>
+        /// Фільтр
+        /// </summary>
+        protected ListFilterControl Фільтр = new ListFilterControl();
+
+        /// <summary>
         /// Додатковий ключ форми журналу для налаштувань
         /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
         /// </summary>
@@ -74,18 +79,14 @@ namespace InterfaceGtk
             HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
-            Пошук.Select = async x =>
-            {
-                ClearPages();
-                await LoadRecords_OnSearch(x);
-            };
-
-            Пошук.Clear = () =>
-            {
-                ClearPages();
-                PeriodChanged();
-            };
+            Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+            Пошук.Clear = async () => await BeforeLoadRecords();
             HBoxTop.PackStart(Пошук, false, false, 2);
+
+            //Фільтр
+            Фільтр.Select = async () => await BeforeLoadRecords_OnFilter();
+            Фільтр.Clear = async () => await BeforeLoadRecords();
+            Фільтр.FillFilterList = FillFilterList;
 
             CreateToolbar();
 
@@ -255,11 +256,12 @@ namespace InterfaceGtk
         protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
         {
             SelectPointerItem = selectPointer;
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
         }
 
-        protected abstract Widget? FilterRecords(Box hBox);
+        //protected virtual Widget? FilterRecords(Box hBox) { return null; }
+
+        protected virtual void FillFilterList(ListFilterControl filterControl) { }
 
         protected abstract void PeriodChanged();
 
@@ -388,8 +390,7 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            ClearPages();
-            await LoadRecords();
+            await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }
@@ -412,7 +413,7 @@ namespace InterfaceGtk
                         SelectPointerItem = unigueID;
                     }
 
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -437,8 +438,7 @@ namespace InterfaceGtk
                             SelectPointerItem = newUnigueID;
                     }
 
-                    ClearPages();
-                    await LoadRecords();
+                    await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -446,22 +446,10 @@ namespace InterfaceGtk
 
         void OnFilterClick(object? sender, EventArgs args)
         {
-            Popover popover = new Popover((ToolButton)sender!)
-            {
-                Position = PositionType.Bottom,
-                BorderWidth = 2
-            };
+            if (!Фільтр.IsFilterCreated)
+                Фільтр.CreatePopover((ToolButton)sender!);
 
-            Box vBox = new Box(Orientation.Vertical, 0);
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 5);
-
-            Widget? widget = FilterRecords(hBox);
-            if (widget != null)
-                hBox.PackStart(widget, false, false, 5);
-
-            popover.Add(vBox);
-            popover.ShowAll();
+            Фільтр.PopoverParent?.ShowAll();
         }
 
         void OnReportSpendTheDocumentClick(object? sender, EventArgs args)
@@ -489,7 +477,7 @@ namespace InterfaceGtk
                     SelectPointerItem = unigueID;
                 }
 
-                await LoadRecords();
+                await BeforeLoadRecords();
             }
         }
 

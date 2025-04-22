@@ -194,7 +194,7 @@ namespace InterfaceGtk
         /// </summary>
         public void FillTreeView()
         {
-            List<string> columnsList = RecordResult.ColumnsName.ToList();
+            List<string> columnsList = [.. RecordResult.ColumnsName];
 
             //Model
             Type[] types = new Type[columnsList.Count];
@@ -246,6 +246,11 @@ namespace InterfaceGtk
 
                 listStore.AppendValues(values);
             }
+        }
+
+        public void FillTreeView2()
+        {
+            //У вигляді дерева. Групувати по колонках
         }
 
         /// <summary>

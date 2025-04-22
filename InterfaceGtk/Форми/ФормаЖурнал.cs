@@ -68,6 +68,12 @@ namespace InterfaceGtk
         /// </summary>
         protected Box HBoxPages = new Box(Orientation.Horizontal, 0);
 
+        /// <summary>
+        /// Режим який вказує що форма використовується як елемент в іншій формі 
+        /// (наприклад дерево використовується в ішому журналі)
+        /// </summary>
+        public bool CompositeMode { get; set; } = false;
+
         public ФормаЖурнал()
         {
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
@@ -78,12 +84,6 @@ namespace InterfaceGtk
             ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
             ScrollPages.Add(HBoxPages);
         }
-
-        /// <summary>
-        /// Режим який вказує що форма використовується як елемент в іншій формі 
-        /// (наприклад дерево використовується в ішому журналі)
-        /// </summary>
-        public bool CompositeMode { get; set; } = false;
 
         #region Virtual & Abstract Function
 
@@ -106,6 +106,17 @@ namespace InterfaceGtk
         /// Завантаження списку при пошуку
         /// </summary>
         public virtual async ValueTask LoadRecords_OnSearch(string searchText) { await ValueTask.FromResult(true); }
+
+        /// <summary>
+        /// Фільтер
+        /// </summary>
+        public virtual async ValueTask LoadRecords_OnFilter() { await ValueTask.FromResult(true); }
+
+        /// <summary>
+        /// Для дерева
+        /// </summary>
+        /// <returns></returns>
+        public virtual async ValueTask LoadRecords_OnTree() { await ValueTask.FromResult(true); } 
 
         #endregion
 
@@ -142,7 +153,7 @@ namespace InterfaceGtk
         /// Скидає налаштування сторінок для TreeViewGrid
         /// При наступному виводі даних в TreeViewGrid це призведе до повторного перерахунку кількості сторінок
         /// </summary>
-        protected void ClearPages()
+        void ClearPages()
         {
             ТабличнийСписок.ОчиститиСторінки(TreeViewGrid);
         }
@@ -152,7 +163,7 @@ namespace InterfaceGtk
         /// Інформація про кількість сторінок береться із самого TreeViewGrid
         /// </summary>
         /// <param name="funcLoadRecords">Функція яка спрацьовує при виборі сторінки</param>
-        protected void PagesShow(Func<ValueTask>? funcLoadRecords = null)
+        void PagesShow(Func<ValueTask>? funcLoadRecords = null)
         {
             const int offset = 5;
 
@@ -189,6 +200,58 @@ namespace InterfaceGtk
             }
 
             HBoxPages.ShowAll();
+        }
+
+        protected async ValueTask BeforeLoadRecords()
+        {
+            async ValueTask PageNavigation()
+            {
+                await LoadRecords();
+                PagesShow(PageNavigation);
+            }
+
+            ClearPages();
+            await LoadRecords();
+            PagesShow(PageNavigation);
+        }
+
+        protected async ValueTask BeforeLoadRecords_OnSearch(string searchText)
+        {
+            async ValueTask PageNavigation()
+            {
+                await LoadRecords_OnSearch(searchText);
+                PagesShow(PageNavigation);
+            }
+
+            ClearPages();
+            await LoadRecords_OnSearch(searchText);
+            PagesShow(PageNavigation);
+        }
+
+        protected async ValueTask BeforeLoadRecords_OnFilter()
+        {
+            async ValueTask PageNavigation()
+            {
+                await LoadRecords_OnFilter();
+                PagesShow(PageNavigation);
+            }
+
+            ClearPages();
+            await LoadRecords_OnFilter();
+            PagesShow(PageNavigation);
+        }
+
+        protected async ValueTask BeforeLoadRecords_OnTree()
+        {
+            async ValueTask PageNavigation()
+            {
+                await LoadRecords_OnTree();
+                PagesShow(PageNavigation);
+            }
+
+            ClearPages();
+            await LoadRecords_OnTree();
+            PagesShow(PageNavigation);
         }
 
         #endregion
