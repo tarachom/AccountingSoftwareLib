@@ -103,9 +103,27 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Пустий ідентифікатор
+        /// </summary>
+        public static readonly Guid Empty = Guid.Empty;
+
+        /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
         public Guid UGuid { get; private set; }
+
+        /// <summary>
+        /// Порівняння
+        /// </summary>
+        public override bool Equals(object? obj)
+        {
+            return obj != null && UGuid == ((UnigueID)obj).UGuid;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(UGuid);
+        }
 
         /// <summary>
         /// ToString
