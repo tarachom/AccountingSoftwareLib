@@ -39,11 +39,6 @@ namespace InterfaceGtk
         protected Toolbar ToolbarTop = new Toolbar();
 
         /// <summary>
-        /// Верхній бок для періоду
-        /// </summary>
-        protected Box HBoxPeriod = new Box(Orientation.Horizontal, 0);
-
-        /// <summary>
         /// Верхній бок для додаткових кнопок
         /// </summary>
         protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
@@ -55,18 +50,17 @@ namespace InterfaceGtk
 
         public РегістриНакопиченняЖурнал()
         {
+            //Кнопки
+            PackStart(HBoxTop, false, false, 10);
+
             //Період
-            PackStart(HBoxPeriod, false, false, 10);
             Період.Changed = PeriodChanged;
-            HBoxPeriod.PackStart(Період, false, false, 2);
+            HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
             Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
             Пошук.Clear = async () => await BeforeLoadRecords();
             HBoxTop.PackStart(Пошук, false, false, 2);
-
-            //Кнопки
-            PackStart(HBoxTop, false, false, 0);
 
             CreateToolbar();
 

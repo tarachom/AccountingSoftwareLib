@@ -61,7 +61,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Фільтр
         /// </summary>
-        protected ListFilterControl Фільтр = new ListFilterControl();
+        protected ListFilterControl Фільтр = new ListFilterControl(true);
 
         /// <summary>
         /// Додатковий ключ форми журналу для налаштувань
@@ -87,6 +87,7 @@ namespace InterfaceGtk
             Фільтр.Select = async () => await BeforeLoadRecords_OnFilter();
             Фільтр.Clear = async () => await BeforeLoadRecords();
             Фільтр.FillFilterList = FillFilterList;
+            Фільтр.Період = Період;
 
             CreateToolbar();
 

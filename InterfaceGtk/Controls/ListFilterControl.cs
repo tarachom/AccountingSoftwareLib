@@ -33,14 +33,56 @@ namespace InterfaceGtk
 {
     public class ListFilterControl : Box
     {
+        /// <summary>
+        /// Функція вибірки даних
+        /// </summary>
         public System.Action? Select { get; set; }
+
+        /// <summary>
+        /// Скидання фільтрів
+        /// </summary>
         public System.Action? Clear { get; set; }
+
+        public record FilterListItem(string Field, Func<object> GetValueFunc, Switch IsOn);
+
+        /// <summary>
+        /// Список для фільтрів
+        /// </summary>
         public System.Action<ListFilterControl>? FillFilterList { get; set; }
+
+        /// <summary>
+        /// Функція яка згенерована в коді
+        /// Вона формує набір відборів
+        /// </summary>
         public System.Action? GetWhere { get; set; }
+
+        /// <summary>
+        /// Список фільтрів
+        /// </summary>
         public ListBox FilterList { get; private set; } = new ListBox() { SelectionMode = SelectionMode.None };
 
-        public ListFilterControl() : base(Orientation.Vertical, 0)
+        /// <summary>
+        /// Період із журналу
+        /// </summary>
+        public PeriodControl? Період { get; set; } = null;
+
+        /// <summary>
+        /// Галочка яка вказує на те що потрібно враховувати період у фільтрі
+        /// </summary>
+        public CheckButton UsePeriod { get; private set; } = new CheckButton("В межах періоду");
+
+        public ListFilterControl(bool usePeriod = false) : base(Orientation.Vertical, 0)
         {
+            //В межах періоду
+            if (usePeriod)
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                PackStart(hBox, false, false, 5);
+
+                hBox.PackStart(UsePeriod, false, false, 5);
+                UsePeriod.Active = true;
+            }
+
             //Список
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
@@ -80,7 +122,7 @@ namespace InterfaceGtk
         public bool IsFilterCreated { get; private set; } = false;
 
         /// <summary>
-        /// Вспливаюче вікно власник в який поміщена ФормаЖурнал
+        /// Вспливаюче вікно власник
         /// </summary>
         public Popover? PopoverParent { get; private set; }
 
@@ -131,7 +173,5 @@ namespace InterfaceGtk
 
             FilterList.Add(new ListBoxRow() { vBox });
         }
-
-        public record FilterListItem(string Field, Func<object> GetValueFunc, Switch IsOn);
     }
 }
