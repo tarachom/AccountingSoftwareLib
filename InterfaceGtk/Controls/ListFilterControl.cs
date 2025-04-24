@@ -54,7 +54,7 @@ namespace InterfaceGtk
         /// Функція яка згенерована в коді
         /// Вона формує набір відборів
         /// </summary>
-        public System.Action? GetWhere { get; set; }
+        public System.Func<bool>? GetWhere { get; set; }
 
         /// <summary>
         /// Список фільтрів
@@ -101,8 +101,8 @@ namespace InterfaceGtk
                 {
                     if (FilterList.Children.Cast<ListBoxRow>().Any())
                     {
-                        GetWhere?.Invoke();
-                        Select?.Invoke();
+                        bool existFilter = GetWhere?.Invoke() ?? false;
+                        if (existFilter) Select?.Invoke();
                     }
                 };
                 hBox.PackStart(buttonFilter, false, false, 5);
