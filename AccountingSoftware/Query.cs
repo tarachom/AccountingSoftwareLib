@@ -99,6 +99,12 @@ namespace AccountingSoftware
         public List<Where> Where { get; set; } = [];
 
         /// <summary>
+        /// Функції які накладаються на поля. 
+        /// Функція привязується по назві поля
+        /// </summary>
+        public List<SqlFunc> SqlFunc { get; set; } = [];
+
+        /// <summary>
         /// Сортування. 
         /// Назва поля, тип сортування
         /// Name ASC, Code Desc
@@ -132,7 +138,21 @@ namespace AccountingSoftware
             {
                 //Оригінальні поля
                 foreach (string field in Field)
-                    query += ", " + (Joins.Count > 0 ? Table + "." : "") + field;
+                {
+                    string fullFieldName = (Joins.Count > 0 ? Table + "." : "") + field;
+
+                    if (SqlFunc.Count != 0)
+                    {
+                        var funcAll = SqlFunc.FindAll(x => x.ForField == field);
+                        foreach (SqlFunc func in funcAll)
+                            fullFieldName = func.Construct(fullFieldName);
+
+                        if (funcAll.Count > 0)
+                            fullFieldName += " AS " + field;
+                    }
+
+                    query += ", " + fullFieldName;
+                }
             }
 
             if (FieldAndAlias.Count > 0)
@@ -524,6 +544,32 @@ UNION ALL
         /// Тип приєднання
         /// </summary>
         public JoinType JoinType { get; set; } = JoinType.LEFT;
+    }
+
+    /// <summary>
+    /// Sql функція для полів
+    /// </summary>
+    public class SqlFunc(string forField, string funcName, List<string>? funcParams = null)
+    {
+        /// <summary>
+        /// Назва поля
+        /// </summary>
+        public string ForField { get; set; } = forField;
+
+        /// <summary>
+        /// Назва функції
+        /// </summary>
+        public string FuncName { get; set; } = funcName;
+
+        /// <summary>
+        /// Колекція параметрів
+        /// </summary>
+        public List<string>? FuncParams { get; private set; } = funcParams;
+
+        public string Construct(string field)
+        {
+            return FuncName + "(" + field + (FuncParams != null && FuncParams.Count > 0 ? ", " + string.Join(", ", FuncParams) : "") + ")";
+        }
     }
 
     /// <summary>
