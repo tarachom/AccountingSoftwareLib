@@ -56,6 +56,11 @@ namespace AccountingSoftware
         /// </summary>
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
+        /// <summary>
+        /// Тригери
+        /// </summary>
+        public ConfigurationTriggerTablePartFunctions TriggerFunctions { get; set; } = new();
+
         // <summary>
         /// Форми
         /// </summary>
@@ -77,6 +82,8 @@ namespace AccountingSoftware
 
             foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
                 confObjectTablePart.Forms.Add(forms.Key, forms.Value.Copy());
+
+            confObjectTablePart.TriggerFunctions = this.TriggerFunctions.Copy();
 
             return confObjectTablePart;
         }

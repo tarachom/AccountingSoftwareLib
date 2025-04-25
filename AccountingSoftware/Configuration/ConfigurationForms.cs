@@ -204,6 +204,11 @@ namespace AccountingSoftware
             Triggers,
 
             /// <summary>
+            /// Тригери для табличних частин
+            /// </summary>
+            TriggersTablePart,
+
+            /// <summary>
             /// Проведення документу
             /// </summary>
             SpendTheDocument,

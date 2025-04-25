@@ -1336,6 +1336,8 @@ namespace AccountingSoftware
                     {
                         LoadTabularList(ConfObjectTablePart.TabularList, tablePartNodes.Current);
 
+                        LoadTriggerTablePartFunctions(ConfObjectTablePart.TriggerFunctions, tablePartNodes.Current);
+
                         LoadForms(ConfObjectTablePart.Forms, tablePartNodes.Current);
                     }
                 }
@@ -1530,6 +1532,21 @@ namespace AccountingSoftware
                 var nodeBeforeDelete = nodeTriggerFunctions.SelectSingleNode("BeforeDelete");
                 triggerFunctions.BeforeDelete = nodeBeforeDelete?.Value ?? "";
                 triggerFunctions.BeforeDeleteAction = nodeBeforeDelete?.GetAttribute("Action", "") == "1";
+            }
+        }
+
+        private static void LoadTriggerTablePartFunctions(ConfigurationTriggerTablePartFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
+        {
+            XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
+            if (nodeTriggerFunctions != null)
+            {
+                var nodeBeforeSave = nodeTriggerFunctions.SelectSingleNode("BeforeSave");
+                triggerFunctions.BeforeSave = nodeBeforeSave?.Value ?? "";
+                triggerFunctions.BeforeSaveAction = nodeBeforeSave?.GetAttribute("Action", "") == "1";
+
+                var nodeAfterSave = nodeTriggerFunctions.SelectSingleNode("AfterSave");
+                triggerFunctions.AfterSave = nodeAfterSave?.Value ?? "";
+                triggerFunctions.AfterSaveAction = nodeAfterSave?.GetAttribute("Action", "") == "1";
             }
         }
 
@@ -2188,6 +2205,8 @@ namespace AccountingSoftware
 
                 SaveTabularList(tablePart.Value.Fields, tablePart.Value.TabularList, xmlConfDocument, nodeTablePart);
 
+                SaveTriggerTablePartFunctions(tablePart.Value.TriggerFunctions, xmlConfDocument, nodeTablePart);
+
                 SaveForms(Conf, tablePart.Value.Fields, null, tablePart.Value.Forms, xmlConfDocument, nodeTablePart);
             }
         }
@@ -2641,6 +2660,29 @@ namespace AccountingSoftware
             nodeBeforeDelete.InnerText = triggerFunctions.BeforeDelete;
             AddAttributeAction(nodeBeforeDelete, triggerFunctions.BeforeDeleteAction);
             nodeTriggerFunctions.AppendChild(nodeBeforeDelete);
+        }
+
+        public static void SaveTriggerTablePartFunctions(ConfigurationTriggerTablePartFunctions triggerFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
+        {
+            XmlElement nodeTriggerFunctions = xmlConfDocument.CreateElement("TriggerFunctions");
+            rootNode.AppendChild(nodeTriggerFunctions);
+
+            void AddAttributeAction(XmlElement node, bool value)
+            {
+                XmlAttribute actionAttr = xmlConfDocument.CreateAttribute("Action");
+                actionAttr.Value = value ? "1" : "0";
+                node.Attributes.Append(actionAttr);
+            }
+
+            XmlElement nodeBeforeSave = xmlConfDocument.CreateElement("BeforeSave");
+            nodeBeforeSave.InnerText = triggerFunctions.BeforeSave;
+            AddAttributeAction(nodeBeforeSave, triggerFunctions.BeforeSaveAction);
+            nodeTriggerFunctions.AppendChild(nodeBeforeSave);
+
+            XmlElement nodeAfterSave = xmlConfDocument.CreateElement("AfterSave");
+            nodeAfterSave.InnerText = triggerFunctions.AfterSave;
+            AddAttributeAction(nodeAfterSave, triggerFunctions.AfterSaveAction);
+            nodeTriggerFunctions.AppendChild(nodeAfterSave);
         }
 
         public static void SaveSpendFunctions(ConfigurationSpendFunctions spendFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
