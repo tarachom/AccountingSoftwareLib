@@ -153,6 +153,7 @@ namespace InterfaceGtk
             CreateItemLeftMenu(vbox, "Регістри", Регістри, "images/register.png");
             CreateItemLeftMenu(vbox, "Сервіс", Сервіс, "images/service.png");
             CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
+            CreateItemLeftMenu(vbox, "Обробки", Обробки, "images/working.png");
 
             hbox.PackStart(scrolLeftMenu, false, false, 0);
         }
@@ -414,6 +415,7 @@ namespace InterfaceGtk
 
         protected abstract void Налаштування(LinkButton lb);
         protected abstract void Сервіс(LinkButton lb);
+        protected abstract void Обробки(LinkButton lb);
 
         #endregion
     }
