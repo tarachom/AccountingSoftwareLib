@@ -361,6 +361,41 @@ namespace InterfaceGtk
             NotebookFunction.CreateNotebookPage(notebook, Caption, () => vBox, insertPage);
         }
 
+        /// <summary>
+        /// Відобразити звіт в боксі
+        /// </summary>
+        /// <param name="hBox">Бокс</param>
+        /// <param name="heightRequest">Висота</param>
+        /// <returns></returns>
+        public async ValueTask ViewToBox(Box hBox, int heightRequest = 100)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Назва
+            CreateField(vBox, Caption, null, Align.Start);
+
+            //Інформаційний бокс
+            if (GetInfo != null)
+            {
+                string infoText = await GetInfo.Invoke();
+                if (!string.IsNullOrEmpty(infoText))
+                {
+                    Box hBoxCaption = new Box(Orientation.Horizontal, 0);
+                    hBoxCaption.PackStart(new Label(infoText) { Wrap = true, UseMarkup = true, UseUnderline = false }, false, false, 2);
+                    CreateField(vBox, null, hBoxCaption, Align.Start);
+                }
+            }
+
+            //TreeView
+            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = heightRequest };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Add(TreeViewGrid);
+
+            vBox.PackStart(scroll, true, true, 0);
+            hBox.PackStart(vBox, true, true, 5);
+            hBox.ShowAll();
+        }
+
         void ВідкритиДовідникАбоДокумент(object sender, ButtonPressEventArgs args)
         {
             if (args.Event.Type == Gdk.EventType.DoubleButtonPress)
