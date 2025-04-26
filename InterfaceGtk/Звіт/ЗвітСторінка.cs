@@ -356,7 +356,7 @@ namespace InterfaceGtk
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Add(TreeViewGrid);
 
-            vBox.PackStart(scroll, true, true, 5);
+            vBox.PackStart(scroll, true, true, 0);
 
             NotebookFunction.CreateNotebookPage(notebook, Caption, () => vBox, insertPage);
         }
