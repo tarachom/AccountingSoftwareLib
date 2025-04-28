@@ -116,7 +116,7 @@ namespace InterfaceGtk
         /// Для дерева
         /// </summary>
         /// <returns></returns>
-        public virtual async ValueTask LoadRecords_OnTree() { await ValueTask.FromResult(true); } 
+        public virtual async ValueTask LoadRecords_OnTree() { await ValueTask.FromResult(true); }
 
         #endregion
 
@@ -147,6 +147,11 @@ namespace InterfaceGtk
                 }
 
             return unigueIDList;
+        }
+
+        protected void AddPages(Сторінки.Налаштування settings)
+        {
+            ТабличнийСписок.Сторінки(TreeViewGrid, settings);
         }
 
         /// <summary>

@@ -69,10 +69,12 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
 
+            //Сторінки
+            AddPages(new Сторінки.Налаштування() { Тип = Сторінки.ТипЖурналу.РегістриВідомостей });
+
             ScrollTree.Add(TreeViewGrid);
 
             PackStart(ScrollTree, true, true, 0);
-
             PackStart(ScrollPages, false, true, 0);
 
             ShowAll();

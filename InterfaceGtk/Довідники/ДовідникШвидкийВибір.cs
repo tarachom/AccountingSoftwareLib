@@ -65,7 +65,7 @@ namespace InterfaceGtk
         /// </summary>
         protected SearchControl Пошук = new SearchControl();
 
-        public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 600, int height = 300)
+        public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 750, int height = 300)
         {
             PackStart(HBoxTop, false, false, 0);
 
@@ -85,10 +85,12 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
 
+            //Сторінки
+            AddPages(new Сторінки.Налаштування() { Тип = Сторінки.ТипЖурналу.Довідники });
+
             ScrollTree.Add(TreeViewGrid);
 
             PackStart(ScrollTree, true, true, 0);
-
             PackStart(ScrollPages, false, true, 0);
 
             ShowAll();
