@@ -1444,7 +1444,6 @@ namespace AccountingSoftware
                         typeForms == ConfigurationForms.TypeForms.ListAndTree)
                     {
                         form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
-                        form.UsePages = (tableForm.Current?.SelectSingleNode("UsePages")?.Value ?? "") == "1";
                     }
                     else if (typeForms == ConfigurationForms.TypeForms.Element || typeForms == ConfigurationForms.TypeForms.TablePart)
                     {
@@ -2454,10 +2453,6 @@ namespace AccountingSoftware
                     XmlElement nodeTabularList = xmlConfDocument.CreateElement("TabularList");
                     nodeTabularList.InnerText = form.Value.TabularList.ToString();
                     nodeForm.AppendChild(nodeTabularList);
-
-                    XmlElement nodeUsePages = xmlConfDocument.CreateElement("UsePages");
-                    nodeUsePages.InnerText = form.Value.UsePages ? "1" : "0";
-                    nodeForm.AppendChild(nodeUsePages);
                 }
                 else if (form.Value.Type == ConfigurationForms.TypeForms.Element || form.Value.Type == ConfigurationForms.TypeForms.TablePart)
                 {

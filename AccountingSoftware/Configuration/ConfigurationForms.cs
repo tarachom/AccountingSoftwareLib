@@ -110,11 +110,6 @@ namespace AccountingSoftware
 
         public string TabularList { get; set; } = "";
 
-        /// <summary>
-        /// Розбивати на сторінки, використовувати сторінки
-        /// </summary>
-        public bool UsePages { get; set; } = false;
-
         #endregion
 
         #region Для форми списку (Type == TypeForms.TablePart)
