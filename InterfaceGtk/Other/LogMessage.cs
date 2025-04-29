@@ -36,10 +36,10 @@ namespace InterfaceGtk
         ScrolledWindow scrollMessage;
         Box vBox;
 
-        TextView textTerminal;
-        ScrolledWindow scrollTextTerminal;
+        TextView? textTerminal;
+        ScrolledWindow? scrollTextTerminal;
 
-        public LogMessage() : base(Orientation.Vertical, 0)
+        public LogMessage(bool visibleTextTerminal = true) : base(Orientation.Vertical, 0)
         {
             Paned vPaned = new Paned(Orientation.Vertical) { BorderWidth = 2 };
 
@@ -55,6 +55,7 @@ namespace InterfaceGtk
             }
 
             //Низ
+            if (visibleTextTerminal)
             {
                 textTerminal = new TextView() { Editable = false, CursorVisible = true, BorderWidth = 5 };
                 textTerminal.StyleContext.AddClass("text_terminal");
@@ -140,17 +141,20 @@ namespace InterfaceGtk
 
         public void AppendLine(string message = "")
         {
-            if (textTerminal.Buffer.LineCount > MaxLineTextTerminal)
+            if (textTerminal != null && scrollTextTerminal != null)
             {
-                TextIter iterStart = textTerminal.Buffer.GetIterAtLine(0);
-                TextIter iterEnd = textTerminal.Buffer.GetIterAtLine(100);
+                if (textTerminal.Buffer.LineCount > MaxLineTextTerminal)
+                {
+                    TextIter iterStart = textTerminal.Buffer.GetIterAtLine(0);
+                    TextIter iterEnd = textTerminal.Buffer.GetIterAtLine(100);
 
-                textTerminal.Buffer.Delete(ref iterStart, ref iterEnd);
+                    textTerminal.Buffer.Delete(ref iterStart, ref iterEnd);
+                }
+
+                textTerminal.Buffer.PlaceCursor(textTerminal.Buffer.EndIter);
+                textTerminal.Buffer.InsertAtCursor(message + "\n");
+                scrollTextTerminal.Vadjustment.Value = scrollTextTerminal.Vadjustment.Upper;
             }
-
-            textTerminal.Buffer.PlaceCursor(textTerminal.Buffer.EndIter);
-            textTerminal.Buffer.InsertAtCursor(message + "\n");
-            scrollTextTerminal.Vadjustment.Value = scrollTextTerminal.Vadjustment.Upper;
         }
 
         public Box CreateWidget(Widget? widget, TypeMessage typeMsg = TypeMessage.Ok, bool appendEmpty = false)
@@ -213,7 +217,8 @@ namespace InterfaceGtk
             foreach (Widget Child in vBox.Children)
                 vBox.Remove(Child);
 
-            textTerminal.Buffer.Text = "";
+            if (textTerminal != null)
+                textTerminal.Buffer.Text = "";
         }
 
         /// <summary>

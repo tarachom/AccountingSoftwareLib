@@ -42,7 +42,7 @@ namespace InterfaceGtk
         protected Box HBoxBody = new Box(Orientation.Horizontal, 0);
 
         //Лог
-        protected LogMessage Лог = new LogMessage();
+        protected virtual LogMessage Лог { get; set; } = new LogMessage();
 
         public ФормаОбробка()
         {
