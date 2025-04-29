@@ -272,7 +272,7 @@ namespace InterfaceGtk
 
                     ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
-                    button.Clicked += async (object? sender, EventArgs args) =>
+                    button.Clicked += async (sender, args) =>
                     {
                         await Select();
                         FillTreeView();
@@ -292,7 +292,7 @@ namespace InterfaceGtk
 
                     ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
-                    button.Clicked += async (object? sender, EventArgs args) =>
+                    button.Clicked += async (sender, args) =>
                     {
                         button.Sensitive = false;
 
@@ -307,7 +307,7 @@ namespace InterfaceGtk
 
                     ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
-                    button.Clicked += async (object? sender, EventArgs args) => await ВідкритиЗбереженіЗвіти();
+                    button.Clicked += async (sender, args) => await ВідкритиЗбереженіЗвіти();
                 }
 
                 //PDF
@@ -316,7 +316,7 @@ namespace InterfaceGtk
 
                     ToolButton button = new ToolButton(new Image(Stock.Print, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
-                    button.Clicked += async (object? sender, EventArgs args) =>
+                    button.Clicked += async (sender, args) =>
                     {
                         await Select();
                         await ВигрузитиВФайл_PDF(this, FillListForPDF());
@@ -329,7 +329,7 @@ namespace InterfaceGtk
 
                     ToolButton button = new ToolButton(new Image(Stock.Convert, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
-                    button.Clicked += async (object? sender, EventArgs args) =>
+                    button.Clicked += async (sender, args) =>
                     {
                         await Select();
                         await ВигрузитиВФайл_Excel(this, FillList());

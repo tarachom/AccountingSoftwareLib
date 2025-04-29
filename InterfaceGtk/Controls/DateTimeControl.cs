@@ -141,17 +141,11 @@ namespace InterfaceGtk
             //Calendar
             Calendar calendar = new Calendar() { Date = Value };
 
-            calendar.DaySelected += (object? sender, EventArgs args) =>
-            {
-                Value = new DateTime(
-                    calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
-                    Value.Hour, Value.Minute, Value.Second);
-            };
+            calendar.DaySelected += (sender, args) => Value = new DateTime(
+                calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
+                Value.Hour, Value.Minute, Value.Second);
 
-            calendar.DaySelectedDoubleClick += (object? sender, EventArgs args) =>
-            {
-                popoverCalendar.Hide();
-            };
+            calendar.DaySelectedDoubleClick += (sender, args) => popoverCalendar.Hide();
 
             vBox.PackStart(calendar, false, false, 0);
 
@@ -167,12 +161,9 @@ namespace InterfaceGtk
                 //Hour
                 {
                     hourSpin.Value = TimeOnly.FromDateTime(Value).Hour;
-                    hourSpin.ValueChanged += (object? sender, EventArgs args) =>
-                    {
-                        Value = new DateTime(
-                            calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
-                            (int)hourSpin.Value, Value.Minute, Value.Second);
-                    };
+                    hourSpin.ValueChanged += (sender, args) => Value = new DateTime(
+                        calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
+                        (int)hourSpin.Value, Value.Minute, Value.Second);
 
                     hBoxTime.PackStart(hourSpin, false, false, 0);
                 }
@@ -182,12 +173,9 @@ namespace InterfaceGtk
                 //Minute
                 {
                     minuteSpin.Value = TimeOnly.FromDateTime(Value).Minute;
-                    minuteSpin.ValueChanged += (object? sender, EventArgs args) =>
-                    {
-                        Value = new DateTime(
-                            calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
-                            Value.Hour, (int)minuteSpin.Value, Value.Second);
-                    };
+                    minuteSpin.ValueChanged += (sender, args) => Value = new DateTime(
+                        calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
+                        Value.Hour, (int)minuteSpin.Value, Value.Second);
 
                     hBoxTime.PackStart(minuteSpin, false, false, 0);
                 }
@@ -197,12 +185,9 @@ namespace InterfaceGtk
                 //Second
                 {
                     secondSpin.Value = TimeOnly.FromDateTime(Value).Second;
-                    secondSpin.ValueChanged += (object? sender, EventArgs args) =>
-                    {
-                        Value = new DateTime(
-                            calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
-                            Value.Hour, Value.Minute, (int)secondSpin.Value);
-                    };
+                    secondSpin.ValueChanged += (sender, args) => Value = new DateTime(
+                        calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
+                        Value.Hour, Value.Minute, (int)secondSpin.Value);
 
                     hBoxTime.PackStart(secondSpin, false, false, 0);
                 }
@@ -211,7 +196,7 @@ namespace InterfaceGtk
             //Поточна дата
             {
                 LinkButton lbCurrentDate = new LinkButton("", "Поточна дата");
-                lbCurrentDate.Clicked += (object? sender, EventArgs args) =>
+                lbCurrentDate.Clicked += (sender, args) =>
                 {
                     calendar.Date = Value = DateTime.Now;
 

@@ -221,8 +221,6 @@ namespace InterfaceGtk
             await BeforeLoadRecords();
         }
 
-        //protected virtual Widget? FilterRecords(Box hBox) { return null; } //!!!
-
         protected virtual void FillFilterList(ListFilterControl filterControl) { }
 
         #endregion

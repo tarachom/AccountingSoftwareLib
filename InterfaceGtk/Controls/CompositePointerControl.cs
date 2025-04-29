@@ -50,7 +50,7 @@ namespace InterfaceGtk
             Button bTypeInfo = new Button(new Image(Stock.GoDown, IconSize.Menu));
             PackStart(bTypeInfo, false, false, 1);
             bTypeInfo.Clicked += OnTypeInfo;
-        }        
+        }
 
         #region Virtual & Abstract Function
 
@@ -151,7 +151,7 @@ namespace InterfaceGtk
                             listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
                     }
 
-                    CreateNotebookPage(listName, () => { return (Widget)listPage; });
+                    CreateNotebookPage(listName, () => (Widget)listPage);
 
                     listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
                 }
@@ -208,7 +208,7 @@ namespace InterfaceGtk
                 vBoxContainer.PackStart(hBoxSelect, false, false, 10);
 
                 Button bSelectType = new Button("Вибрати") { Sensitive = TypeSelectSensetive };
-                bSelectType.Clicked += (object? sender, EventArgs args) =>
+                bSelectType.Clicked += (sender, args) =>
                 {
                     ВибірТипуДаних(bSelectType, Info);
                 };
@@ -216,7 +216,7 @@ namespace InterfaceGtk
                 hBoxSelect.PackStart(bSelectType, false, false, 5);
 
                 Button bClearType = new Button("Скинути") { Sensitive = TypeSelectSensetive };
-                bClearType.Clicked += (object? sender, EventArgs args) =>
+                bClearType.Clicked += (sender, args) =>
                 {
                     Pointer = new UuidAndText();
                     Info();

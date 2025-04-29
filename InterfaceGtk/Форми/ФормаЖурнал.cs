@@ -149,6 +149,10 @@ namespace InterfaceGtk
             return unigueIDList;
         }
 
+        /// <summary>
+        /// Додає сторінки для TreeViewGrid
+        /// </summary>
+        /// <param name="settings">Налаштування</param>
         protected void AddPages(Сторінки.Налаштування settings)
         {
             ТабличнийСписок.Сторінки(TreeViewGrid, settings);

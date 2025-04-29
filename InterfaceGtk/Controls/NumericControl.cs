@@ -38,9 +38,6 @@ namespace InterfaceGtk
             PackStart(entryNumeric, false, false, 2);
         }
 
-        [Obsolete("Не використовувати, буде видалено")]
-        public string Caption { get; set; } = "";
-
         decimal mValue;
         public decimal Value
         {

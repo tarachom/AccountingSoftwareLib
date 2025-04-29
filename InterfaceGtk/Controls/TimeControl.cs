@@ -103,10 +103,7 @@ namespace InterfaceGtk
             //Hour
             {
                 hourSpin.Value = Value.Hours;
-                hourSpin.ValueChanged += (object? sender, EventArgs args) =>
-                {
-                    Value = new TimeSpan((int)hourSpin.Value, Value.Minutes, Value.Seconds);
-                };
+                hourSpin.ValueChanged += (sender, args) => Value = new TimeSpan((int)hourSpin.Value, Value.Minutes, Value.Seconds);
 
                 hBoxTime.PackStart(hourSpin, false, false, 0);
             }
@@ -116,10 +113,7 @@ namespace InterfaceGtk
             //Minute
             {
                 minuteSpin.Value = Value.Minutes;
-                minuteSpin.ValueChanged += (object? sender, EventArgs args) =>
-                {
-                    Value = new TimeSpan(Value.Hours, (int)minuteSpin.Value, Value.Seconds);
-                };
+                minuteSpin.ValueChanged += (sender, args) => Value = new TimeSpan(Value.Hours, (int)minuteSpin.Value, Value.Seconds);
 
                 hBoxTime.PackStart(minuteSpin, false, false, 0);
             }
@@ -129,10 +123,7 @@ namespace InterfaceGtk
             //Second
             {
                 secondSpin.Value = Value.Seconds;
-                secondSpin.ValueChanged += (object? sender, EventArgs args) =>
-                {
-                    Value = new TimeSpan(Value.Hours, Value.Minutes, (int)secondSpin.Value);
-                };
+                secondSpin.ValueChanged += (sender, args) => Value = new TimeSpan(Value.Hours, Value.Minutes, (int)secondSpin.Value);
 
                 hBoxTime.PackStart(secondSpin, false, false, 0);
             }
@@ -140,7 +131,7 @@ namespace InterfaceGtk
             //Поточний час
             {
                 LinkButton lbCurrentDate = new LinkButton("", "Поточний час");
-                lbCurrentDate.Clicked += (object? sender, EventArgs args) =>
+                lbCurrentDate.Clicked += (sender, args) =>
                 {
                     Value = DateTime.Now.TimeOfDay;
 

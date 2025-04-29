@@ -138,7 +138,6 @@ namespace InterfaceGtk
                 PopoverParent.Add(this);
 
                 FillFilterList?.Invoke(this);
-
                 IsFilterCreated = true;
             }
         }
