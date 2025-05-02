@@ -152,8 +152,8 @@ namespace InterfaceGtk
             CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");
             CreateItemLeftMenu(vbox, "Регістри", Регістри, "images/register.png");
             CreateItemLeftMenu(vbox, "Сервіс", Сервіс, "images/service.png");
-            CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
             CreateItemLeftMenu(vbox, "Обробки", Обробки, "images/working.png");
+            CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
 
             hbox.PackStart(scrolLeftMenu, false, false, 0);
         }
