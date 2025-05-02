@@ -85,6 +85,11 @@ namespace AccountingSoftware
         public bool AutomaticNumeration { get; set; }
 
         /// <summary>
+        /// Записувати історію версій
+        /// </summary>
+        public bool VersionsHistory { get; set; }
+
+        /// <summary>
         /// Тип довідника
         /// </summary>
         public TypeDirectories TypeDirectory { get; set; } = TypeDirectories.Normal;

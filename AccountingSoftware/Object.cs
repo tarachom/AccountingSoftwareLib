@@ -33,11 +33,12 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class Object
     {
-        public Object(Kernel kernel, string table, string[] fieldsArray)
+        public Object(Kernel kernel, string table, string[] fieldsArray, bool versionsHistory = false)
         {
             Kernel = kernel;
             Table = table;
             FieldArray = fieldsArray;
+            VersionsHistory = versionsHistory;
 
             foreach (string field in FieldArray)
                 FieldValue.Add(field, new object());
@@ -67,6 +68,16 @@ namespace AccountingSoftware
         /// Унікальний ідентифікатор запису
         /// </summary>
         public UnigueID UnigueID { get; protected set; } = new UnigueID();
+
+        /// <summary>
+        /// Унікальний ідентифікатор для збереження версій
+        /// </summary>
+        public Guid VersionID { get; init; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Вести історію версій значень полів
+        /// </summary>
+        public bool VersionsHistory { get; protected set; }
 
         /// <summary>
         /// Чи вже записаний

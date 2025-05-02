@@ -62,7 +62,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Блокнот для табличних частин і додаткових реквізитів
         /// </summary>
-        protected Notebook NotebookTablePart = NotebookFunction.CreateNotebook(false);
+        protected Notebook NotebookTablePart = new Notebook() { Scrollable = true, EnablePopup = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
 
         /// <summary>
         /// Контейнер для додаткових реквізитів який вкладається у вкладку блокноту "Додаткові реквізити"

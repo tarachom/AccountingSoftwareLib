@@ -55,7 +55,7 @@ namespace InterfaceGtk
         /// <summary>
         /// Блокнот для виводу звітів
         /// </summary>
-        protected Notebook Notebook { get; }
+        protected Notebook Notebook { get; } = new Notebook() { Scrollable = true, EnablePopup = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
 
         public ФормаЗвіт()
         {
@@ -74,8 +74,6 @@ namespace InterfaceGtk
 
             //Блокнот
             PackStart(HBoxNotebook, true, true, 5);
-
-            Notebook = NotebookFunction.CreateNotebook();
             HBoxNotebook.PackStart(Notebook, true, true, 5);
         }
 

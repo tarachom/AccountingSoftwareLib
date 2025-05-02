@@ -113,6 +113,13 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region SpetialTable ObjectVersionsHistory
+
+        ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object> fieldValue);
+        ValueTask SpetialTableObjectVersionsHistoryDelete(UuidAndText obj, byte transactionID = 0);
+
+        #endregion
+
         #region Transaction
 
         ValueTask<byte> BeginTransaction();

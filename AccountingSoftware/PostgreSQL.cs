@@ -53,6 +53,7 @@ namespace AccountingSoftware
         {
             NpgsqlDataSourceBuilder dataBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataBuilder.MapComposite<UuidAndText>("uuidtext");
+            dataBuilder.MapComposite<NameAndText>("nametext");
 
             DataSource = dataBuilder.Build();
 
@@ -188,23 +189,39 @@ SELECT EXISTS
 
         async ValueTask StartScript()
         {
-            //Перевірка наявності композитного типу uuidtext
-            object? result = await ExecuteSQLScalar("SELECT 'exist' FROM pg_type WHERE typname = 'uuidtext'", null);
-            if (!(result != null && result.ToString() == "exist"))
-            {
-                //Створення композитного типу uuidtext, даний тип відповідає класу UuidAndText
-                await ExecuteSQL($@"CREATE TYPE uuidtext AS (uuid uuid, text text)");
+            bool reloadTypes = false;
 
-                if (DataSource != null)
+            //Перевірка наявності композитного типу uuidtext
+            {
+                object? result = await ExecuteSQLScalar("SELECT 'exist' FROM pg_type WHERE typname = 'uuidtext'", null);
+                if (!(result != null && result.ToString() == "exist"))
                 {
-                    await using NpgsqlConnection conn = await DataSource.OpenConnectionAsync();
-                    await conn.ReloadTypesAsync();
+                    //Створення композитного типу uuidtext, даний тип відповідає класу UuidAndText
+                    await ExecuteSQL($@"CREATE TYPE uuidtext AS (uuid uuid, text text)");
+                    reloadTypes = true;
                 }
+            }
+
+            //Перевірка наявності композитного типу nametext
+            {
+                object? result = await ExecuteSQLScalar("SELECT 'exist' FROM pg_type WHERE typname = 'nametext'", null);
+                if (!(result != null && result.ToString() == "exist"))
+                {
+                    //Створення композитного типу nametext, даний тип відповідає класу NameAndText
+                    await ExecuteSQL($@"CREATE TYPE nametext AS (name text, text text)");
+                    reloadTypes = true;
+                }
+            }
+
+            //Перезагрузка типів
+            if (reloadTypes && DataSource != null)
+            {
+                await using NpgsqlConnection conn = await DataSource.OpenConnectionAsync();
+                await conn.ReloadTypesAsync();
             }
 
             //Підключити Додаток_UUID_OSSP
             await ExecuteSQL(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
-
         }
 
         public async ValueTask CreateSpecialTables()
@@ -469,6 +486,48 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {SpecialTables.ObjectUpdateTriger}(datewrite)");
             }
+
+            if (!specialTable.Contains(SpecialTables.ObjectVersionsHistory))
+            {
+                /*
+
+                Таблиця для запису історії версій для обєктів довідників та документів
+
+                @uid - PRIMARY KEY
+                @datewrite - дата запису
+                @users - користувач
+                @obj - обєкт
+                @fields - масив полів
+
+                */
+
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectVersionsHistory} 
+(
+    uid uuid NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    users uuid NOT NULL,
+    obj uuidtext NOT NULL,
+    fields nametext[] NOT NULL,
+    PRIMARY KEY(uid)
+)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_datewrite_idx ON {SpecialTables.ObjectVersionsHistory}(datewrite)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_users_idx ON {SpecialTables.ObjectVersionsHistory}(users)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objuuid_idx ON {SpecialTables.ObjectVersionsHistory}(((obj).uuid))");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objtext_idx ON {SpecialTables.ObjectVersionsHistory}(((obj).text))");
+
+            }
+
+
+
         }
 
         #endregion
@@ -1473,6 +1532,75 @@ WHERE (LockedObject.obj).uuid = @obj
             {
                 Dictionary<string, object> paramQuery = new() { { "uid", lockKey.UGuid } };
                 await ExecuteSQL($@"DELETE FROM {SpecialTables.LockedObject} WHERE uid = @uid", paramQuery);
+            }
+        }
+
+        #endregion
+
+        #region SpetialTable ObjectVersionsHistory
+
+        public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object> fieldValue)
+        {
+            NameAndText[] nameAndText = new NameAndText[fieldValue.Count];
+
+            List<KeyValuePair<string, object>> fieldValueList = [.. fieldValue];
+            for (int i = 0; i < fieldValueList.Count; i++)
+            {
+                KeyValuePair<string, object> fieldValueItem = fieldValueList[i];
+                nameAndText[i] = new NameAndText(fieldValueItem.Key, fieldValueItem.Value?.ToString() ?? "");
+            }
+
+            Dictionary<string, object> paramQuery = new()
+            {
+                { "uid", version_id },
+                { "user", user_uid },
+                { "obj", obj },
+                { "fields", nameAndText }
+            };
+
+            await ExecuteSQL($@"
+INSERT INTO {SpecialTables.ObjectVersionsHistory} 
+(
+    uid,
+    datewrite,
+    users,
+    obj,
+    fields
+)
+VALUES
+(
+    @uid,
+    CURRENT_TIMESTAMP::timestamp,
+    @user,
+    @obj,
+    @fields
+)
+ON CONFLICT (uid) DO UPDATE SET
+    datewrite = CURRENT_TIMESTAMP::timestamp,
+    users = @user,
+    obj = @obj,
+    fields = @fields
+", paramQuery);
+
+        }
+
+        public async ValueTask SpetialTableObjectVersionsHistoryDelete(UuidAndText obj, byte transactionID = 0)
+        {
+            if (!obj.IsEmpty())
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uuid", obj.Uuid },
+                    { "text", obj.Text },
+                };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.ObjectVersionsHistory} 
+WHERE 
+    (obj).uuid = @uuid AND
+    (obj).text = @text
+",
+paramQuery, transactionID);
             }
         }
 

@@ -1196,6 +1196,7 @@ namespace AccountingSoftware
                 string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                 bool autoNum = (directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1";
+                bool versionsHistory = (directoryNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
                 string directoryOwner = directoryNodes.Current?.SelectSingleNode("DirectoryOwner")?.Value ?? ""; //Власник довідника
                 string pointerFieldOwner = directoryNodes.Current?.SelectSingleNode("PointerFieldOwner")?.Value ?? ""; //Поле яке відповідає за підпорядкування власнику
 
@@ -1222,6 +1223,9 @@ namespace AccountingSoftware
 
                 ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum, typeDirectory)
                 {
+                    //Записувати історію версій
+                    VersionsHistory = versionsHistory,
+
                     //Hierarchical
                     ParentField_Hierarchical = parentField_Hierarchical,
                     IconTree_Hierarchical = iconTree_Hierarchical,
@@ -1648,11 +1652,11 @@ namespace AccountingSoftware
                     string fullName = documentsNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                    string autoNum = documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "";
-                    string exportXml = documentsNode.Current?.SelectSingleNode("ExportXml")?.Value ?? "";
+                    bool autoNum = (documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1";
+                    bool versionsHistory = (documentsNode.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
+                    bool exportXml = (documentsNode.Current?.SelectSingleNode("ExportXml")?.Value ?? "") == "1";
 
-                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc,
-                        autoNum == "1", exportXml == "1");
+                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum, exportXml) { VersionsHistory = versionsHistory };
 
                     Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
@@ -1972,6 +1976,10 @@ namespace AccountingSoftware
                 XmlElement nodeDirectoryAutoNum = xmlConfDocument.CreateElement("AutoNum");
                 nodeDirectoryAutoNum.InnerText = ConfDirectory.Value.AutomaticNumeration ? "1" : "0";
                 nodeDirectory.AppendChild(nodeDirectoryAutoNum);
+
+                XmlElement nodeDirectoryVersionsHistory = xmlConfDocument.CreateElement("VersionsHistory");
+                nodeDirectoryVersionsHistory.InnerText = ConfDirectory.Value.VersionsHistory ? "1" : "0";
+                nodeDirectory.AppendChild(nodeDirectoryVersionsHistory);
 
                 XmlElement nodeDirectoryType = xmlConfDocument.CreateElement("Type");
                 nodeDirectoryType.InnerText = ConfDirectory.Value.TypeDirectory.ToString();
@@ -2523,7 +2531,7 @@ namespace AccountingSoftware
                                 nodeMultipleSelect.InnerText = elementField.Value.MultipleSelect ? "1" : "0";
                                 nodeElementField.AppendChild(nodeMultipleSelect);
                             }
-                            
+
                             (bool Result, string PointerGroup, string PointerType) = Configuration.PointerParse(fieldsItem.Pointer, out Exception? _);
                             if (Result)
                             {
@@ -2862,6 +2870,10 @@ namespace AccountingSoftware
                 XmlElement nodeDocumentAutoNum = xmlConfDocument.CreateElement("AutoNum");
                 nodeDocumentAutoNum.InnerText = ConfDocument.Value.AutomaticNumeration ? "1" : "0";
                 nodeDocument.AppendChild(nodeDocumentAutoNum);
+
+                XmlElement nodeDocumentVersionsHistory = xmlConfDocument.CreateElement("VersionsHistory");
+                nodeDocumentVersionsHistory.InnerText = ConfDocument.Value.VersionsHistory ? "1" : "0";
+                nodeDocument.AppendChild(nodeDocumentVersionsHistory);
 
                 XmlElement nodeDocumentExportXml = xmlConfDocument.CreateElement("ExportXml");
                 nodeDocumentExportXml.InnerText = ConfDocument.Value.ExportXml ? "1" : "0";

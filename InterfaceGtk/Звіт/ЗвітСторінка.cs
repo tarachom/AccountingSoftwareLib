@@ -53,6 +53,11 @@ namespace InterfaceGtk
         public string Query { get; set; } = "";
 
         /// <summary>
+        /// Стиль для TreeViewGrid
+        /// </summary>
+        public string TreeStyleClass { get; set; } = "report";
+
+        /// <summary>
         /// Параметри запиту
         /// </summary>
         public Dictionary<string, object>? ParamQuery { get; set; } = null;
@@ -206,7 +211,9 @@ namespace InterfaceGtk
             TreeViewGrid = new TreeView(listStore);
             TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
             TreeViewGrid.ButtonPressEvent += ВідкритиДовідникАбоДокумент;
-            TreeViewGrid.StyleContext.AddClass("report");
+
+            if (!string.IsNullOrEmpty(TreeStyleClass))
+                TreeViewGrid.StyleContext.AddClass(TreeStyleClass);
 
             for (int i = 0; i < columnsList.Count; i++)
             {

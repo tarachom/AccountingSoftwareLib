@@ -79,6 +79,11 @@ namespace AccountingSoftware
         public static readonly string ObjectUpdateTriger = "tab_special_object_update_triger";
 
         /// <summary>
+        /// Історія змін обєктів
+        /// </summary>
+        public static readonly string ObjectVersionsHistory = "tab_special_object_versions_history";
+
+        /// <summary>
         /// Список
         /// </summary>
         public static readonly string[] SpecialTablesList =
@@ -91,6 +96,7 @@ namespace AccountingSoftware
             FullTextSearch,
             MessageError,
             ObjectUpdateTriger,
+            ObjectVersionsHistory
         ];
     }
 }

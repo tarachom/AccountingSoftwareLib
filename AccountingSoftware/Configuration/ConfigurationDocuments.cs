@@ -92,6 +92,11 @@ namespace AccountingSoftware
         public bool AutomaticNumeration { get; set; }
 
         /// <summary>
+        /// Записувати історію версій
+        /// </summary>
+        public bool VersionsHistory { get; set; }
+
+        /// <summary>
         /// Експорт у форматі Xml
         /// </summary>
         public bool ExportXml { get; set; }

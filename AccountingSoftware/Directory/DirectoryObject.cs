@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Об'єкт
     /// </summary>
-    public abstract class DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray) : Object(kernel, table, fieldsArray)
+    public abstract class DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray, bool versionsHistory = false) : Object(kernel, table, fieldsArray, versionsHistory)
     {
         /// <summary>
         /// Назва типу як задано в конфігураторі
@@ -83,9 +83,15 @@ namespace AccountingSoftware
 
             IsSave = result;
 
-            //Тригер оновлення обєкту
             if (result)
+            {
+                //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+
+                //Записати в історію поточну версію значень полів
+                if (VersionsHistory)
+                    await Kernel.DataBase.SpetialTableObjectVersionsHistoryAdd(VersionID, Kernel.User, GetBasis(), FieldValue);
+            }
 
             BaseClear();
 
@@ -140,6 +146,10 @@ namespace AccountingSoftware
 
             //Видалення з повнотекстового пошуку
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
+
+            //Видалення з історії версій
+            if (VersionsHistory)
+                await Kernel.DataBase.SpetialTableObjectVersionsHistoryDelete(GetBasis(), TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 

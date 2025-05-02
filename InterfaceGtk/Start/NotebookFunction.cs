@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System.Threading.Tasks;
 using AccountingSoftware;
 using Gtk;
 
@@ -50,6 +49,8 @@ namespace InterfaceGtk
                 ShowBorder = false,
                 TabPos = PositionType.Top,
             };
+
+            notebook.KeyReleaseEvent += OnNotebookKeyReleaseEvent;
 
             if (history_switch_list)
             {
@@ -81,9 +82,7 @@ namespace InterfaceGtk
             );
 
             //Структура для функцій розблокування об'єктів
-            notebook.Data.Add(DataKey_LockObjectPageFunc,
-                new Dictionary<string, Func<ValueTask>>()
-            );
+            notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<ValueTask>>());
 
             return notebook;
         }
@@ -164,7 +163,7 @@ namespace InterfaceGtk
         /// <param name="notebook">Блокнот</param>
         /// <param name="notClosePage">Забрати можливість закривати сторінку</param>
         /// <returns>НBox</returns>
-        public static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage, bool notClosePage = false) //Зробити private пізніше !!!
+        static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage, bool notClosePage = false)
         {
             Box hBoxLabel = new Box(Orientation.Horizontal, 0);
 
@@ -178,7 +177,7 @@ namespace InterfaceGtk
             if (!notClosePage)
             {
                 //Лінк закриття сторінки
-                LinkButton lbClose = new LinkButton("", "")
+                LinkButton lbClose = new LinkButton("Close", "")
                 {
                     Image = new Image(Іконки.ДляКнопок.Clean),
                     AlwaysShowImage = true,
@@ -315,6 +314,28 @@ namespace InterfaceGtk
         static string SubstringPageName(string pageName)
         {
             return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
+        }
+
+        static void OnNotebookKeyReleaseEvent(object sender, KeyReleaseEventArgs args)
+        {
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Escape:
+                    {
+                        Notebook notebook = (Notebook)sender;
+                        Widget widget = notebook.CurrentPageWidget;
+                        if (widget != null)
+                            //Пошук в назві вкладки LinkButton для закриття сторінки
+                            foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
+                                if (children is LinkButton lbClose && lbClose.Uri == "Close")
+                                {
+                                    CloseNotebookPageToCode(notebook, lbClose.Name);
+                                    break;
+                                }
+
+                        break;
+                    }
+            }
         }
 
         #region ObjectChangeEvents
