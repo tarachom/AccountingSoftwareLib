@@ -44,7 +44,7 @@ namespace InterfaceGtk
             Notebook notebook = new Notebook()
             {
                 Scrollable = true,
-                EnablePopup = true,
+                //EnablePopup = true,
                 BorderWidth = 0,
                 ShowBorder = false,
                 TabPos = PositionType.Top,
