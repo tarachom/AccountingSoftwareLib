@@ -43,21 +43,6 @@ namespace InterfaceGtk
             PackStart(bToggle, false, false, 1);
         }
 
-        Menu PopUpContextMenu()
-        {
-            Menu menu = new Menu();
-
-            {
-                MenuItem item = new MenuItem("Очистити");
-                item.Activated += (sender, arrg) => comboBox.Active = -1;
-                menu.Append(item);
-            }
-
-            menu.ShowAll();
-
-            return menu;
-        }
-
         public void Append(string id, string text)
         {
             comboBox.Append(id, text);
@@ -73,6 +58,21 @@ namespace InterfaceGtk
             {
                 comboBox.ActiveId = value;
             }
+        }
+
+        Menu PopUpContextMenu()
+        {
+            Menu menu = new Menu();
+
+            {
+                MenuItem item = new MenuItem("Очистити");
+                item.Activated += (sender, arrg) => comboBox.Active = -1;
+                menu.Append(item);
+            }
+
+            menu.ShowAll();
+
+            return menu;
         }
     }
 }
