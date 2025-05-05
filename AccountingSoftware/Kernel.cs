@@ -216,7 +216,7 @@ namespace AccountingSoftware
             //Очищення устарівших тригерів оновлення об’єктів
             await DataBase.SpetialTableObjectUpdateTrigerClearOld();
             AfterUpdateSession = await DataBase.SelectCurrentTimestamp();
-            
+
             while (true)
             {
                 await DataBase.SpetialTableActiveUsersUpdateSession(Session);
@@ -226,31 +226,32 @@ namespace AccountingSoftware
                 if (DirectoryObjectChanged != null || DocumentObjectChanged != null)
                 {
                     SelectRequest_Record resultRecords = await DataBase.SpetialTableObjectUpdateTrigerSelect(AfterUpdateSession);
-                    AfterUpdateSession = await DataBase.SelectCurrentTimestamp();
-
                     if (resultRecords.Result)
                     {
-                        Dictionary<string, List<Guid>> directory = [];
-                        Dictionary<string, List<Guid>> document = [];
+                        AfterUpdateSession = (DateTime)resultRecords.ListRow[0]["after"];
+
+                        Dictionary<string, List<ObjectChanged>> directory = [];
+                        Dictionary<string, List<ObjectChanged>> document = [];
 
                         foreach (var record in resultRecords.ListRow)
                         {
                             UuidAndText obj = (UuidAndText)record["obj"];
+                            TypeObjectChanged operation = (char)record["operation"] switch { 'A' => TypeObjectChanged.Add, 'U' => TypeObjectChanged.Update, 'D' => TypeObjectChanged.Delete, _ => TypeObjectChanged.Update };
                             var (_, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
 
                             if (pointerGroup == "Довідники")
                             {
-                                if (directory.TryGetValue(pointerType, out List<Guid>? list))
-                                    list.Add(obj.Uuid);
+                                if (directory.TryGetValue(pointerType, out List<ObjectChanged>? list))
+                                    list.Add(new(obj.Uuid, operation));
                                 else
-                                    directory.Add(pointerType, [obj.Uuid]);
+                                    directory.Add(pointerType, [new(obj.Uuid, operation)]);
                             }
                             else if (pointerGroup == "Документи")
                             {
-                                if (document.TryGetValue(pointerType, out List<Guid>? list))
-                                    list.Add(obj.Uuid);
+                                if (document.TryGetValue(pointerType, out List<ObjectChanged>? list))
+                                    list.Add(new(obj.Uuid, operation));
                                 else
-                                    document.Add(pointerType, [obj.Uuid]);
+                                    document.Add(pointerType, [new(obj.Uuid, operation)]);
                             }
                         }
 
@@ -365,15 +366,14 @@ namespace AccountingSoftware
         /// <summary>
         /// Зміни в довідниках
         /// </summary>
-        public event EventHandler<Dictionary<string, List<Guid>>>? DirectoryObjectChanged;
+        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DirectoryObjectChanged;
 
         /// <summary>
         /// Зміни в документах
         /// </summary>
-        public event EventHandler<Dictionary<string, List<Guid>>>? DocumentObjectChanged;
+        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DocumentObjectChanged;
 
         #endregion
-
     }
 
     /// <summary>
@@ -401,4 +401,16 @@ namespace AccountingSoftware
         /// </summary>
         WorkingBot,
     }
+
+    /// <summary>
+    /// Тип оновлення об'єктів
+    /// </summary>
+    public enum TypeObjectChanged
+    {
+        Add,
+        Update,
+        Delete
+    }
+
+    public record ObjectChanged(Guid Uid, TypeObjectChanged Type);
 }

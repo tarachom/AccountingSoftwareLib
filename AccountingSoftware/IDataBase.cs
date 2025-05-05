@@ -96,8 +96,8 @@ namespace AccountingSoftware
 
         #region SpetialTable ObjectUpdateTriger
 
-        ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj);
-        ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime afterPosition);
+        ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation);
+        ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after);
         ValueTask SpetialTableObjectUpdateTrigerClear();
         ValueTask SpetialTableObjectUpdateTrigerClearOld();
 

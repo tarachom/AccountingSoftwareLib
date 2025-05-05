@@ -71,12 +71,23 @@ namespace AccountingSoftware
             if (IsNew)
             {
                 result = await Kernel.DataBase.InsertDirectoryObject(UnigueID, Table, FieldArray, FieldValue);
-                if (result) IsNew = false;
+                if (result)
+                {
+                    IsNew = false;
+
+                    //Тригер оновлення обєкту
+                    await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'A');
+                }
             }
             else
             {
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                {
                     result = await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
+                    if (result)
+                        //Тригер оновлення обєкту
+                        await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
+                }
                 else
                     throw new Exception("Спроба оновити неіснуючий елемент довідника");
             }
@@ -85,9 +96,6 @@ namespace AccountingSoftware
 
             if (result)
             {
-                //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
-
                 //Записати в історію поточну версію значень полів
                 if (VersionsHistory)
                     await Kernel.DataBase.SpetialTableObjectVersionsHistoryAdd(VersionID, Kernel.User, GetBasis(), FieldValue);
@@ -124,7 +132,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
             else
                 throw new Exception("Елемент спочатку треба записати, а потім вже встановлювати мітку видалення");
@@ -154,7 +162,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.CommitTransaction(TransactionID);
 
             //Тригер оновлення обєкту
-            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'D');
 
             BaseClear();
         }

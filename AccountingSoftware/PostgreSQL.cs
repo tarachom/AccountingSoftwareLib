@@ -471,6 +471,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_objectuid_idx ON {Specia
                 @uid - PRIMARY KEY
                 @datewrite - час запису
                 @obj - обєкт конфігурації
+                @operation - тип операції (A, D, U) - Add, Delete, Update
 
                 */
 
@@ -480,9 +481,9 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}
     uid serial NOT NULL,
     datewrite timestamp without time zone NOT NULL,
     obj uuidtext NOT NULL,
+    operation ""char"" NOT NULL DEFAULT '',
     PRIMARY KEY(uid)
 )");
-
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {SpecialTables.ObjectUpdateTriger}(datewrite)");
             }
@@ -527,6 +528,10 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objtext_idx ON 
             }
 
 
+
+            //Прибрати пізніше
+            await ExecuteSQL($@"
+ALTER TABLE {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
 
         }
 
@@ -1370,31 +1375,54 @@ WHERE
 
         #region SpetialTable ObjectUpdateTriger
 
-        public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj)
+        public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation)
         {
-            Dictionary<string, object> paramQuery = new() { { "obj", obj } };
+            Dictionary<string, object> paramQuery = new()
+            {
+                { "obj", obj },
+                { "operation", operation }
+            };
 
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.ObjectUpdateTriger} 
 (
     datewrite,
-    obj
+    obj,
+    operation
 )
 VALUES
 (
     CURRENT_TIMESTAMP::timestamp,
-    @obj
+    @obj,
+    @operation
 )", paramQuery);
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime afterUpdate)
+        public async ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after)
         {
-            Dictionary<string, object> queryParam = new() { { "afterUpdate", afterUpdate } };
+            Dictionary<string, object> queryParam = new() { { "after", after } };
 
             string query = $@"
-SELECT DISTINCT obj
-FROM {SpecialTables.ObjectUpdateTriger}
-WHERE datewrite >= @afterUpdate
+WITH S AS 
+(
+    SELECT
+        datewrite,
+        obj,
+        operation
+    FROM 
+        {SpecialTables.ObjectUpdateTriger}
+    WHERE 
+        datewrite > @after
+    ORDER BY
+        datewrite
+)
+SELECT 
+    obj,
+    operation,
+    MAX(datewrite) AS after
+FROM S
+GROUP BY
+    obj, operation
 ";
             return await SelectRequest(query, queryParam);
         }
@@ -1844,7 +1872,8 @@ paramQuery, transactionID);
                 string query = "";
                 UnigueID unigueIDLocal = unigueID ?? new UnigueID();
 
-                if (!unigueIDLocal.IsEmpty())
+                bool existUnigueID = !unigueIDLocal.IsEmpty() && await IsExistUniqueID(unigueIDLocal, QuerySelect.Table);
+                if (existUnigueID)
                 {
                     /*
                     Обчислюється позиція вибраного елементу у вибірці і розмір вибірки
@@ -1918,7 +1947,7 @@ FROM
 
                 while (await reader.ReadAsync())
                 {
-                    record.Position = !unigueIDLocal.IsEmpty() ? (long)reader["row_number"] : 0;
+                    record.Position = existUnigueID ? (long)reader["row_number"] : 0;
                     record.Count = (long)reader["row_count"];
                 }
                 await reader.CloseAsync();
@@ -1943,7 +1972,7 @@ FROM
                 }
 
                 //Очищення
-                if (!unigueIDLocal.IsEmpty())
+                if (existUnigueID)
                     QuerySelect.FieldAndAlias.RemoveAll(x => sourceArray.Contains(x.Value));
             }
 

@@ -74,7 +74,7 @@ namespace InterfaceGtk
 
             //Структура для функцій реакцій на зміни об'єктів
             notebook.Data.Add(DataKey_ObjectChangeEvents,
-                new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>
+                new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] pointersType)>>
                 {
                     { GroupObjectChangeEvents.Directory, [] },
                     { GroupObjectChangeEvents.Document, [] }
@@ -361,15 +361,22 @@ namespace InterfaceGtk
         public static void ConnectingToKernelObjectChangeEvents(Notebook notebook, Kernel kernel)
         {
             //Внутрішня функція для виклику функцій реакції на зміни об'єктів
-            async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<Guid>> directoryOrDocument)
+            async void InvokeObjectChangeEvents(Notebook notebook, GroupObjectChangeEvents group, Dictionary<string, List<ObjectChanged>> directoryOrDocument)
             {
                 var objectChangeEvents = GetDataObjectChangeEvents(notebook);
                 if (objectChangeEvents != null && objectChangeEvents[group].Count > 0)
                     try
                     {
-                        foreach (var (codePage, func, pointersType) in objectChangeEvents[group])
-                            if (directoryOrDocument.Any((x) => pointersType.Contains(x.Key)))
-                                await func.Invoke();
+                        foreach (var (_, func, pointersType) in objectChangeEvents[group])
+                        {
+                            List<ObjectChanged> listChanged = [];
+                            foreach (string pointerType in pointersType)
+                                if (directoryOrDocument.TryGetValue(pointerType, out var value))
+                                    listChanged.AddRange(value);
+
+                            if (listChanged.Count > 0)
+                                await func.Invoke(listChanged);
+                        }
                     }
                     catch (Exception) { }
             }
@@ -384,10 +391,10 @@ namespace InterfaceGtk
         /// <summary>
         /// Функція повертає колекцію функцій реакції на зміни об'єктів
         /// </summary>
-        static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<ValueTask> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
+        static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
         {
             var object_change_events = notebook?.Data[DataKey_ObjectChangeEvents];
-            return object_change_events != null ? (Dictionary<GroupObjectChangeEvents, List<(string, Func<ValueTask>, string[])>>)object_change_events : null;
+            return object_change_events != null ? (Dictionary<GroupObjectChangeEvents, List<(string, Func<List<ObjectChanged>, ValueTask>, string[])>>)object_change_events : null;
         }
 
         /// <summary>
@@ -397,7 +404,7 @@ namespace InterfaceGtk
         /// <param name="codePage">Код сторінки</param>
         /// <param name="func">Функція</param>
         /// <param name="pointerPattern">Фільтр по типу даних</param>
-        public static void AddChangeFunc(Notebook? notebook, string codePage, Func<ValueTask> func, string pointerPattern)
+        public static void AddChangeFunc(Notebook? notebook, string codePage, Func<List<ObjectChanged>, ValueTask> func, string pointerPattern)
         {
             var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
 
@@ -419,7 +426,7 @@ namespace InterfaceGtk
         /// <param name="codePage">Код сторінки</param>
         /// <param name="func">Функція</param>
         /// <param name="typeDocs">Типи документів які належать журналу</param>
-        public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Func<ValueTask> func, string[] allowDocument)
+        public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] allowDocument)
         {
             var objectChangeEvents = GetDataObjectChangeEvents(notebook);
             objectChangeEvents?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));

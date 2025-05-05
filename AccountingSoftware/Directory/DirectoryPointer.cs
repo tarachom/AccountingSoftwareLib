@@ -78,7 +78,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
         }
 

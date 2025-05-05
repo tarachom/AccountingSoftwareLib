@@ -92,7 +92,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, spend ? false : null, spend, spend_date, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
         }
 
@@ -123,7 +123,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
         }
 

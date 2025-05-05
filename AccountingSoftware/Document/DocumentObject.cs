@@ -83,12 +83,23 @@ namespace AccountingSoftware
             if (IsNew)
             {
                 result = await Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
-                if (result) IsNew = false;
+                if (result)
+                {
+                    IsNew = false;
+
+                    //Тригер оновлення обєкту
+                    await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'A');
+                }
             }
             else
             {
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                {
                     result = await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
+                    if (result)
+                        //Тригер оновлення обєкту
+                        await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
+                }
                 else
                     throw new Exception("Спроба записати неіснуючий документ");
             }
@@ -97,9 +108,6 @@ namespace AccountingSoftware
 
             if (result)
             {
-                //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
-
                 //Записати в історію поточну версію значень полів
                 if (VersionsHistory)
                     await Kernel.DataBase.SpetialTableObjectVersionsHistoryAdd(VersionID, Kernel.User, GetBasis(), FieldValue);
@@ -141,7 +149,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже проводити!");
@@ -162,7 +170,7 @@ namespace AccountingSoftware
                 await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
 
                 //Тригер оновлення обєкту
-                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
             else
                 throw new Exception("Документ спочатку треба записати, а потім вже встановлювати мітку видалення");
@@ -193,7 +201,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.CommitTransaction(TransactionID);
 
             //Тригер оновлення обєкту
-            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis());
+            await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'D');
 
             BaseClear();
         }
