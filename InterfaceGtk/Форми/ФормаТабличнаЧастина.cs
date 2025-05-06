@@ -191,19 +191,19 @@ namespace InterfaceGtk
             menu.Append(caption);
 
             MenuItem select = new MenuItem("Вибрати");
-            select.Activated += (object? sender, EventArgs args) => Select(path, column, iter, rowNumber, colNumber);
+            select.Activated += (sender, args) => Select(path, column, iter, rowNumber, colNumber);
             menu.Append(select);
 
             MenuItem copy = new MenuItem("Копіювати");
-            copy.Activated += (object? sender, EventArgs args) => CopyRecord(rowNumber);
+            copy.Activated += (sender, args) => CopyRecord(rowNumber);
             menu.Append(copy);
 
             MenuItem clear = new MenuItem("Очистити");
-            clear.Activated += (object? sender, EventArgs args) => ClearCell(iter, rowNumber, colNumber);
+            clear.Activated += (sender, args) => ClearCell(iter, rowNumber, colNumber);
             menu.Append(clear);
 
             MenuItem delete = new MenuItem("Видалити");
-            delete.Activated += (object? sender, EventArgs args) => DeleteRecord(iter, rowNumber);
+            delete.Activated += (sender, args) => DeleteRecord(iter, rowNumber);
             menu.Append(delete);
 
             menu.ShowAll();
@@ -289,7 +289,6 @@ namespace InterfaceGtk
         protected virtual void DeleteRecord(TreeIter iter, int rowNumber) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, string newText) { }
         protected virtual void ChangeCell(TreeIter iter, int rowNumber, int colNumber, bool newValue) { }
-        //protected virtual bool IsEditingCell() { return false; }
 
         #endregion
 

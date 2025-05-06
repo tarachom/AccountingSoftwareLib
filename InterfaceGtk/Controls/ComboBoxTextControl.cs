@@ -28,7 +28,7 @@ namespace InterfaceGtk
     public class ComboBoxTextControl : Box
     {
         ComboBoxText comboBox = new ComboBoxText() { Sensitive = false };
-        ToggleButton bToggle = new ToggleButton() { Image = new Image(Stock.GoBack, IconSize.Menu) };
+        ToggleButton bToggle = new ToggleButton() { Image = new Image(Іконки.ДляІнформування.Key) };
 
         public ComboBoxTextControl() : base(Orientation.Horizontal, 0)
         {

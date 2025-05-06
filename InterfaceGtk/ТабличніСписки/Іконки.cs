@@ -20,8 +20,11 @@ namespace InterfaceGtk.Іконки
     {
         public static Pixbuf Ok = new Pixbuf($"{AppContext.BaseDirectory}images/16/ok.png");
         public static Pixbuf Error = new Pixbuf($"{AppContext.BaseDirectory}images/16/error.png");
-        
+
         public static Pixbuf Info = new Pixbuf($"{AppContext.BaseDirectory}images/16/info.png");
+        public static Pixbuf Lock = new Pixbuf($"{AppContext.BaseDirectory}images/16/lock.png");
+        public static Pixbuf Key = new Pixbuf($"{AppContext.BaseDirectory}images/16/key.png");
+        public static Pixbuf Synchronizing = new Pixbuf($"{AppContext.BaseDirectory}images/16/synchronizing.png");
     }
 
     public static class ДляІнформуванняВеликі
