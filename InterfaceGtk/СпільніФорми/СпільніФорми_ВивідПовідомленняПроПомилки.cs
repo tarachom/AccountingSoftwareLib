@@ -62,6 +62,8 @@ namespace InterfaceGtk
 
         #region Функції
 
+        //!!! переробити на -> protected abstract CompositePointerControl CreateCompositControl();
+
         Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
         {
             object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");

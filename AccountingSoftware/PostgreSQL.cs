@@ -1569,21 +1569,16 @@ WHERE (LockedObject.obj).uuid = @obj
 
         public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object> fieldValue)
         {
-            NameAndText[] nameAndText = new NameAndText[fieldValue.Count];
-
-            List<KeyValuePair<string, object>> fieldValueList = [.. fieldValue];
-            for (int i = 0; i < fieldValueList.Count; i++)
-            {
-                KeyValuePair<string, object> fieldValueItem = fieldValueList[i];
-                nameAndText[i] = new NameAndText(fieldValueItem.Key, fieldValueItem.Value?.ToString() ?? "");
-            }
+            List<NameAndText> nameAndText = new(fieldValue.Count);
+            foreach (var field in fieldValue)
+                nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
 
             Dictionary<string, object> paramQuery = new()
             {
                 { "uid", version_id },
                 { "user", user_uid },
                 { "obj", obj },
-                { "fields", nameAndText }
+                { "fields", nameAndText.ToArray() }
             };
 
             await ExecuteSQL($@"
@@ -1610,6 +1605,89 @@ ON CONFLICT (uid) DO UPDATE SET
     fields = @fields
 ", paramQuery);
 
+        }
+
+        public async ValueTask<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj)
+        {
+            SelectVersionsHistoryList_Record record = new();
+
+            if (DataSource != null)
+            {
+                string query = $@"
+SELECT
+    VersionsHistory.uid,
+    VersionsHistory.datewrite,
+    VersionsHistory.users,
+    Users.fullname AS username
+FROM {SpecialTables.ObjectVersionsHistory} AS VersionsHistory
+    JOIN {SpecialTables.Users} AS Users ON Users.uid = VersionsHistory.users
+WHERE 
+    (VersionsHistory.obj).uuid = @uuid AND
+    (VersionsHistory.obj).text = @text
+ORDER BY
+    VersionsHistory.datewrite DESC
+";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("uuid", obj.Uuid);
+                command.Parameters.AddWithValue("text", obj.Text);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
+                record.Obj = obj;
+                while (await reader.ReadAsync())
+                    record.ListRow.Add(new()
+                    {
+                        VersionID = (Guid)reader["uid"],
+                        DateWrite = (DateTime)reader["datewrite"],
+                        UserID = (Guid)reader["users"],
+                        UserName = reader["username"]?.ToString() ?? ""
+                    });
+                await reader.CloseAsync();
+            }
+
+            return record;
+        }
+
+        public async ValueTask<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj)
+        {
+            SelectVersionsHistoryItem_Record record = new();
+
+            if (DataSource != null)
+            {
+                string query = $@"
+SELECT
+    datewrite,
+    users,
+    obj,
+    fields
+FROM
+    {SpecialTables.ObjectVersionsHistory}
+WHERE
+    uid = @version_id AND
+    (obj).uuid = @uuid AND
+    (obj).text = @text
+";
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.Parameters.AddWithValue("version_id", version_id);
+                command.Parameters.AddWithValue("uuid", obj.Uuid);
+                command.Parameters.AddWithValue("text", obj.Text);
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                record.Result = reader.HasRows;
+                while (await reader.ReadAsync())
+                {
+                    record.VersionID = version_id;
+                    record.DateWrite = (DateTime)reader["datewrite"];
+                    record.UserID = (Guid)reader["users"];
+                    record.Obj = (UuidAndText)reader["obj"];
+                    record.Fields = (NameAndText[])reader["fields"];
+                }
+                await reader.CloseAsync();
+            }
+
+            return record;
         }
 
         public async ValueTask SpetialTableObjectVersionsHistoryDelete(UuidAndText obj, byte transactionID = 0)

@@ -88,7 +88,7 @@ namespace AccountingSoftware
 
         public override string ToString()
         {
-            return $"('{Uuid}', '{Text}')";
+            return $"{Uuid}:{Text}";
         }
     }
 }

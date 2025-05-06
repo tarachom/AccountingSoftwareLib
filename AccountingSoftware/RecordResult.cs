@@ -94,6 +94,60 @@ namespace AccountingSoftware
 
     #endregion
 
+    #region VersionsHistory
+
+    public record SelectVersionsHistoryList_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        public UuidAndText Obj = new UuidAndText();
+
+        public List<Row> ListRow = [];
+
+        public record Row()
+        {
+            public Guid VersionID = Guid.Empty;
+            public DateTime DateWrite = DateTime.MinValue;
+            public Guid UserID = Guid.Empty;
+            public string UserName = "";
+        }
+    }
+
+    /// <summary>
+    /// Структура для повернення результату з ...
+    /// </summary>
+    public record SelectVersionsHistoryItem_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        public Guid VersionID = Guid.Empty;
+
+        public DateTime DateWrite = DateTime.MinValue;
+
+        public Guid UserID = Guid.Empty;
+
+        public UuidAndText Obj = new UuidAndText();
+
+        public NameAndText[] Fields = [];
+
+        public Dictionary<string, string> GetDictionaryFields()
+        {
+            Dictionary<string, string> dictionaryFields = [];
+            foreach (var field in Fields)
+                dictionaryFields.Add(field.Name, field.Text);
+
+            return dictionaryFields;
+        }
+    }
+
+    #endregion
+
     #region CompositePointer
 
     /// <summary>

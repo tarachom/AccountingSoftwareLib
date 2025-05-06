@@ -170,6 +170,10 @@ namespace InterfaceGtk
             exportButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             exportButton.Menu = ToolbarExportSubMenu();
             ToolbarTop.Add(exportButton);
+
+            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія версій") { TooltipText = "Історія версій" };
+            versionshistoryButton.Clicked += OnVersionsHistoryClick;
+            ToolbarTop.Add(versionshistoryButton);
         }
 
         Menu ToolbarProvodkySubMenu()
@@ -280,6 +284,8 @@ namespace InterfaceGtk
 
         protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
+        protected virtual async ValueTask VersionsHistory(UnigueID unigueID) { await ValueTask.FromResult(true); }
+        
         #endregion
 
         #region TreeView
@@ -544,6 +550,21 @@ namespace InterfaceGtk
 
                     await PrintingDoc(unigueID);
                 }
+        }
+
+        async void OnVersionsHistoryClick(object? sender, EventArgs args)
+        {
+            ToolButtonSensitive(sender, false);
+
+            foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+            {
+                TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+
+                await VersionsHistory(unigueID);
+            }
+
+            ToolButtonSensitive(sender, true);
         }
 
         #endregion

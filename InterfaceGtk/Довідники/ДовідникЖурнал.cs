@@ -188,6 +188,10 @@ namespace InterfaceGtk
             ToolButton multipleSelectButton = new ToolButton(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
             multipleSelectButton.Clicked += OnMultipleSelectClick;
             ToolbarTop.Add(multipleSelectButton);
+
+            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія версій") { TooltipText = "Історія версій" };
+            versionshistoryButton.Clicked += OnVersionsHistoryClick;
+            ToolbarTop.Add(versionshistoryButton);
         }
 
         Menu PopUpContextMenu()
@@ -222,6 +226,8 @@ namespace InterfaceGtk
         }
 
         protected virtual void FillFilterList(ListFilterControl filterControl) { }
+
+        protected virtual async ValueTask VersionsHistory(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
         #endregion
 
@@ -413,6 +419,21 @@ namespace InterfaceGtk
 
                 CallBack_OnMultipleSelectPointer.Invoke(unigueIDs);
             }
+        }
+
+        async void OnVersionsHistoryClick(object? sender, EventArgs args)
+        {
+            ToolButtonSensitive(sender, false);
+
+            foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
+            {
+                TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
+                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+
+                await VersionsHistory(unigueID);
+            }
+
+            ToolButtonSensitive(sender, true);
         }
 
         #endregion
