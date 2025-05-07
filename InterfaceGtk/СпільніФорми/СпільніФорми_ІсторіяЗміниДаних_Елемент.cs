@@ -26,105 +26,12 @@ using AccountingSoftware;
 
 namespace InterfaceGtk
 {
-    public abstract class СпільніФорми_ВивідІсторіїВерсій_Список : Форма
-    {
-        enum Columns
-        {
-            VersionID,
-            UserID,
-            DateWrite,
-            UserName
-        }
-
-        ListStore Store = new ListStore(
-            typeof(string), //VersionID
-            typeof(string), //UserID
-            typeof(string), //DateWrite
-            typeof(string)  //UserName
-        );
-
-        TreeView TreeViewGrid;
-
-        Kernel Kernel { get; set; }
-
-        public СпільніФорми_ВивідІсторіїВерсій_Список(Kernel kernel) : base()
-        {
-            Kernel = kernel;
-
-            TreeViewGrid = new TreeView(Store) { ActivateOnSingleClick = true };
-            TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
-            TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
-
-            ScrolledWindow scrollTree = new ScrolledWindow() { ShadowType = ShadowType.In };
-            scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollTree.Add(TreeViewGrid);
-
-            AddColumn();
-
-            PackStart(scrollTree, true, true, 5);
-            ShowAll();
-        }
-
-        public async ValueTask Load(UuidAndText obj)
-        {
-            Obj = obj;
-
-            SelectVersionsHistoryList_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistoryList(obj);
-            if (recordResult.Result)
-            {
-                Store.Clear();
-                foreach (var row in recordResult.ListRow)
-                {
-                    Store.AppendValues(
-                       row.VersionID.ToString(),
-                       row.UserID.ToString(),
-                       row.DateWrite.ToString(),
-                       row.UserName
-                    );
-                }
-            }
-        }
-
-        public UuidAndText Obj { get; private set; } = new UuidAndText();
-
-        #region Virtual & Abstract Function
-
-        protected abstract ValueTask OpenElement(Guid versionID);
-
-        #endregion
-
-        #region TreeView
-
-        void AddColumn()
-        {
-            TreeViewGrid.AppendColumn(new TreeViewColumn("VersionID", new CellRendererText(), "text", (int)Columns.VersionID) { Visible = false });
-            TreeViewGrid.AppendColumn(new TreeViewColumn("UserID", new CellRendererText(), "text", (int)Columns.UserID) { Visible = false });
-            TreeViewGrid.AppendColumn(new TreeViewColumn("Дата", new CellRendererText(), "text", (int)Columns.DateWrite));
-            TreeViewGrid.AppendColumn(new TreeViewColumn("Користувач", new CellRendererText(), "text", (int)Columns.UserName));
-
-            //Пустишка
-            TreeViewGrid.AppendColumn(new TreeViewColumn());
-        }
-
-        async void OnButtonPressEvent(object? sender, ButtonPressEventArgs args)
-        {
-            if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
-                if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
-                {
-                    Guid versionID = Guid.Parse((string)TreeViewGrid.Model.GetValue(iter, (int)Columns.VersionID));
-                    await OpenElement(versionID);
-                }
-        }
-
-        #endregion
-    }
-
-    public abstract class СпільніФорми_ВивідІсторіїВерсій_Елемент : Форма
+    public abstract class СпільніФорми_ІсторіяЗміниДаних_Елемент : Форма
     {
         Kernel Kernel { get; set; }
         ListBox listBox = new ListBox();
 
-        public СпільніФорми_ВивідІсторіїВерсій_Елемент(Kernel kernel) : base()
+        public СпільніФорми_ІсторіяЗміниДаних_Елемент(Kernel kernel) : base()
         {
             Kernel = kernel;
 
@@ -180,7 +87,7 @@ namespace InterfaceGtk
                                     if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                         text.Buffer.Text = value;
 
-                                    Append(Field.Name, scroll);
+                                    Append(Field.FullName, scroll);
                                 }
                                 else
                                 {
@@ -188,7 +95,7 @@ namespace InterfaceGtk
                                     if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                         entry.Text = value;
 
-                                    Append(Field.Name, entry);
+                                    Append(Field.FullName, entry);
                                 }
                                 break;
                             }
@@ -199,7 +106,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     dateTime.Value = DateTime.Parse(value);
 
-                                Append(Field.Name, dateTime);
+                                Append(Field.FullName, dateTime);
                                 break;
                             }
                         case "time":
@@ -208,7 +115,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     time.Value = TimeSpan.Parse(value);
 
-                                Append(Field.Name, time);
+                                Append(Field.FullName, time);
                                 break;
                             }
                         case "integer":
@@ -217,7 +124,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     numeric.Value = int.Parse(value);
 
-                                Append(Field.Name, numeric);
+                                Append(Field.FullName, numeric);
                                 break;
                             }
                         case "numeric":
@@ -226,7 +133,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     numeric.Value = int.Parse(value);
 
-                                Append(Field.Name, numeric);
+                                Append(Field.FullName, numeric);
                                 break;
                             }
                         case "boolean":
@@ -235,7 +142,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     check.Active = bool.Parse(value);
 
-                                Append(Field.Name, check);
+                                Append(Field.FullName, check);
                                 break;
                             }
                         case "enum":
@@ -249,7 +156,7 @@ namespace InterfaceGtk
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     comboBox.ActiveId = value;
 
-                                Append(Field.Name, comboBox);
+                                Append(Field.FullName, comboBox);
                                 break;
                             }
                         case "pointer":
@@ -266,7 +173,7 @@ namespace InterfaceGtk
                                             pointer.Pointer = new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]);
                                     }
 
-                                Append(Field.Name, pointer);
+                                Append(Field.FullName, pointer);
                                 break;
                             }
                     }

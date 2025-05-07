@@ -189,7 +189,7 @@ namespace InterfaceGtk
             multipleSelectButton.Clicked += OnMultipleSelectClick;
             ToolbarTop.Add(multipleSelectButton);
 
-            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія версій") { TooltipText = "Історія версій" };
+            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
             versionshistoryButton.Clicked += OnVersionsHistoryClick;
             ToolbarTop.Add(versionshistoryButton);
         }

@@ -80,15 +80,15 @@ namespace AccountingSoftware
         {
             bool result;
 
+            char? operation = null;
+
             if (IsNew)
             {
                 result = await Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
                 if (result)
                 {
                     IsNew = false;
-
-                    //Тригер оновлення обєкту
-                    await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'A');
+                    operation = 'A';
                 }
             }
             else
@@ -97,8 +97,7 @@ namespace AccountingSoftware
                 {
                     result = await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
                     if (result)
-                        //Тригер оновлення обєкту
-                        await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
+                        operation = 'U';
                 }
                 else
                     throw new Exception("Спроба записати неіснуючий документ");
@@ -108,9 +107,12 @@ namespace AccountingSoftware
 
             if (result)
             {
+                //Тригер оновлення обєкту
+                await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), operation ?? 'U');
+
                 //Записати в історію поточну версію значень полів
                 if (VersionsHistory)
-                    await Kernel.DataBase.SpetialTableObjectVersionsHistoryAdd(VersionID, Kernel.User, GetBasis(), FieldValue);
+                    await Kernel.DataBase.SpetialTableObjectVersionsHistoryAdd(VersionID, Kernel.User, GetBasis(), FieldValue, operation ?? 'U');
             }
 
             BaseClear();
@@ -194,9 +196,9 @@ namespace AccountingSoftware
             //Видалення з повнотекстового пошуку
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
-            //Видалення з історії версій
+            //Видалення з історії зміни даних
             if (VersionsHistory)
-                await Kernel.DataBase.SpetialTableObjectVersionsHistoryDelete(GetBasis(), TransactionID);
+                await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 

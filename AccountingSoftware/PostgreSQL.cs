@@ -492,13 +492,15 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {
             {
                 /*
 
-                Таблиця для запису історії версій для обєктів довідників та документів
+                Таблиця для запису історії зміни даних для обєктів довідників та документів
 
                 @uid - PRIMARY KEY
                 @datewrite - дата запису
                 @users - користувач
                 @obj - обєкт
                 @fields - масив полів
+                @operation - тип операції (A, U) - Add, Update
+                @info - додаткова інформація
 
                 */
 
@@ -510,6 +512,8 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}
     users uuid NOT NULL,
     obj uuidtext NOT NULL,
     fields nametext[] NOT NULL,
+    operation ""char"" NOT NULL DEFAULT '',
+    info text NOT NULL DEFAULT '',
     PRIMARY KEY(uid)
 )");
 
@@ -527,11 +531,50 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objtext_idx ON 
 
             }
 
+            if (!specialTable.Contains(SpecialTables.TablePartVersionsHistory))
+            {
+                /*
 
+                Таблиця для запису історії зміни в табличних частинах для довідників та документів
 
-            //Прибрати пізніше
+                @uid - PRIMARY KEY
+                @objversionid - uid з таб {SpecialTables.ObjectVersionsHistory} 
+                @datewrite - дата запису
+                @users - користувач
+                @fields - масив полів
+
+                */
+
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.TablePartVersionsHistory} 
+(
+    uid uuid NOT NULL,
+    objversionid uuid NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    users uuid NOT NULL,
+    fields nametext[] NOT NULL,
+    PRIMARY KEY(uid)
+)");
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHistory}_objversionid_idx ON {SpecialTables.TablePartVersionsHistory}(objversionid)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHistory}_datewrite_idx ON {SpecialTables.TablePartVersionsHistory}(datewrite)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHistory}_users_idx ON {SpecialTables.TablePartVersionsHistory}(users)");
+
+            }
+
+            //Прибрати пізніше !!!
             await ExecuteSQL($@"
 ALTER TABLE {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
+
+            await ExecuteSQL($@"
+ALTER TABLE {SpecialTables.ObjectVersionsHistory} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
+
+            await ExecuteSQL($@"
+ALTER TABLE {SpecialTables.ObjectVersionsHistory} ADD COLUMN IF NOT EXISTS info text NOT NULL DEFAULT ''");
 
         }
 
@@ -1567,7 +1610,7 @@ WHERE (LockedObject.obj).uuid = @obj
 
         #region SpetialTable ObjectVersionsHistory
 
-        public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object> fieldValue)
+        public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object> fieldValue, char operation, string info = "")
         {
             List<NameAndText> nameAndText = new(fieldValue.Count);
             foreach (var field in fieldValue)
@@ -1578,7 +1621,9 @@ WHERE (LockedObject.obj).uuid = @obj
                 { "uid", version_id },
                 { "user", user_uid },
                 { "obj", obj },
-                { "fields", nameAndText.ToArray() }
+                { "fields", nameAndText.ToArray() },
+                { "operation", operation },
+                { "info", info }
             };
 
             await ExecuteSQL($@"
@@ -1588,7 +1633,9 @@ INSERT INTO {SpecialTables.ObjectVersionsHistory}
     datewrite,
     users,
     obj,
-    fields
+    fields,
+    operation,
+    info
 )
 VALUES
 (
@@ -1596,13 +1643,17 @@ VALUES
     CURRENT_TIMESTAMP::timestamp,
     @user,
     @obj,
-    @fields
+    @fields,
+    @operation,
+    @info
 )
 ON CONFLICT (uid) DO UPDATE SET
     datewrite = CURRENT_TIMESTAMP::timestamp,
     users = @user,
     obj = @obj,
-    fields = @fields
+    fields = @fields,
+    operation = @operation,
+    info = @info
 ", paramQuery);
 
         }
@@ -1618,6 +1669,8 @@ SELECT
     VersionsHistory.uid,
     VersionsHistory.datewrite,
     VersionsHistory.users,
+    VersionsHistory.operation,
+    VersionsHistory.info,
     Users.fullname AS username
 FROM {SpecialTables.ObjectVersionsHistory} AS VersionsHistory
     JOIN {SpecialTables.Users} AS Users ON Users.uid = VersionsHistory.users
@@ -1641,6 +1694,8 @@ ORDER BY
                         VersionID = (Guid)reader["uid"],
                         DateWrite = (DateTime)reader["datewrite"],
                         UserID = (Guid)reader["users"],
+                        Operation = (char)reader["operation"],
+                        Info = reader["info"]?.ToString() ?? "",
                         UserName = reader["username"]?.ToString() ?? ""
                     });
                 await reader.CloseAsync();
@@ -1690,7 +1745,29 @@ WHERE
             return record;
         }
 
-        public async ValueTask SpetialTableObjectVersionsHistoryDelete(UuidAndText obj, byte transactionID = 0)
+        public async ValueTask SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0)
+        {
+            if (!obj.IsEmpty())
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uuid", obj.Uuid },
+                    { "text", obj.Text },
+                    { "version_id", version_id }
+                };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.ObjectVersionsHistory} 
+WHERE 
+    uid = @version_id AND
+    (obj).uuid = @uuid AND
+    (obj).text = @text
+",
+paramQuery, transactionID);
+            }
+        }
+
+        public async ValueTask SpetialTableObjectVersionsHistoryClear(UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
             {
@@ -1708,6 +1785,48 @@ WHERE
 ",
 paramQuery, transactionID);
             }
+        }
+
+        //
+
+        public async ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, Dictionary<string, object> fieldValue)
+        {
+            List<NameAndText> nameAndText = new(fieldValue.Count);
+            foreach (var field in fieldValue)
+                nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
+
+            Dictionary<string, object> paramQuery = new()
+            {
+                { "uid", Guid.NewGuid() },
+                { "objversionid", version_id },
+                { "user", user_uid },
+                { "fields", nameAndText.ToArray() }
+            };
+
+            await ExecuteSQL($@"
+INSERT INTO {SpecialTables.TablePartVersionsHistory} 
+(
+    uid,
+    objversionid,
+    datewrite,
+    users,
+    fields
+)
+VALUES
+(
+    @uid,
+    @objversionid,
+    CURRENT_TIMESTAMP::timestamp,
+    @user,
+    @fields
+)
+ON CONFLICT (uid) DO UPDATE SET
+    objversionid = @objversionid,
+    datewrite = CURRENT_TIMESTAMP::timestamp,
+    users = @user,
+    fields = @fields
+", paramQuery);
+
         }
 
         #endregion

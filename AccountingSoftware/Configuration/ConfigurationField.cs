@@ -42,11 +42,12 @@ namespace AccountingSoftware
         /// <param name="isPresentation">Признак того що поле презентаційне</param>
         /// <param name="isIndex">Індексування</param>
         /// <param name="isFullTextSearch">Повнотекстовий пошук по полю</param>
-        public ConfigurationField(string name, string nameInTable, string type, string pointer,
+        public ConfigurationField(string name, string fullname, string nameInTable, string type, string pointer,
             string desc = "", bool isPresentation = false, bool isIndex = false,
             bool isFullTextSearch = false, bool isSearch = false, bool isExport = false)
         {
             Name = name;
+            FullName = fullname;
             NameInTable = nameInTable;
             Type = type;
             Pointer = pointer;
@@ -62,6 +63,11 @@ namespace AccountingSoftware
         /// Назва поля в конфігурації
         /// </summary>
         public string Name { get; set; } = "";
+
+        /// <summary>
+		/// Повна назва
+		/// </summary>
+		public string FullName { get; set; } = "";
 
         /// <summary>
         /// Назва поля в базі даних
@@ -155,7 +161,7 @@ namespace AccountingSoftware
         /// </summary>
         public ConfigurationField Copy()
         {
-            return new ConfigurationField(Name, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
+            return new ConfigurationField(Name, FullName, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
         }
     }
 }

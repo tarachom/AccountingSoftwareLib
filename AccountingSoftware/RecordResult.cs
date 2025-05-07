@@ -113,6 +113,8 @@ namespace AccountingSoftware
             public DateTime DateWrite = DateTime.MinValue;
             public Guid UserID = Guid.Empty;
             public string UserName = "";
+            public char Operation = 'U';
+            public string Info = "";
         }
     }
 

@@ -92,7 +92,7 @@ namespace AccountingSoftware
         public bool AutomaticNumeration { get; set; }
 
         /// <summary>
-        /// Записувати історію версій
+        /// Записувати історію змін даних
         /// </summary>
         public bool VersionsHistory { get; set; }
 

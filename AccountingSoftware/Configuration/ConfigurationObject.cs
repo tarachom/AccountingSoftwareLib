@@ -46,6 +46,6 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Таблиця в базі даних
 		/// </summary>
-		public string Table { get; set; } = "";		
+		public string Table { get; set; } = "";
 	}
 }

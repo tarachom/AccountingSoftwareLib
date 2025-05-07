@@ -1095,6 +1095,26 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Перетворює ім'я типу НавзваПоляТаОпис в Назва поля та опис
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <returns>Модифікована назва</returns>
+        public static string CreateFullName(string name)
+        {
+            string fullName = "";
+
+            foreach (char letter in name)
+            {
+                if (char.IsUpper(letter) && fullName.Length > 0)
+                    fullName += " " + letter.ToString().ToLower();
+                else
+                    fullName += letter;
+            }
+
+            return fullName;
+        }
+
         #endregion
 
         #region Load (завантаження конфігурації з ХМЛ файлу)
@@ -1262,6 +1282,7 @@ namespace AccountingSoftware
                 while (fieldNodes.MoveNext())
                 {
                     string? name = fieldNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва поля");
+                    string fullName = fieldNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string nameInTable = fieldNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
                     string type = fieldNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string desc = fieldNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1273,7 +1294,7 @@ namespace AccountingSoftware
                     bool isExport = (fieldNodes.Current?.SelectSingleNode("IsExport")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationField ConfObjectField = new ConfigurationField(name, nameInTable, type, pointer, desc, isPresentation, isIndex,
+                    ConfigurationField ConfObjectField = new ConfigurationField(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex,
                         isFullTextSearch, isSearch, isExport);
 
                     //
@@ -1329,8 +1350,13 @@ namespace AccountingSoftware
                     string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличної частини");
                     string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
+                    bool versionsHistory = (tablePartNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
 
-                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc);
+                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc)
+                    {
+                        //Записувати історію версій
+                        VersionsHistory = versionsHistory
+                    };
 
                     tabularParts.Add(ConfObjectTablePart.Name, ConfObjectTablePart);
 
@@ -2081,6 +2107,10 @@ namespace AccountingSoftware
                 nodeFieldName.InnerText = field.Key;
                 nodeField.AppendChild(nodeFieldName);
 
+                XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                nodeFullName.InnerText = string.IsNullOrEmpty(field.Value.FullName) ? CreateFullName(field.Key) : field.Value.FullName;
+                nodeField.AppendChild(nodeFullName);
+
                 XmlElement nodeFieldNameInTable = xmlConfDocument.CreateElement("NameInTable");
                 nodeFieldNameInTable.InnerText = field.Value.NameInTable;
                 nodeField.AppendChild(nodeFieldNameInTable);
@@ -2205,6 +2235,10 @@ namespace AccountingSoftware
                     nodeTablePartDesc.InnerText = tablePart.Value.Desc;
                     nodeTablePart.AppendChild(nodeTablePartDesc);
                 }
+
+                XmlElement nodeVersionsHistory = xmlConfDocument.CreateElement("VersionsHistory");
+                nodeVersionsHistory.InnerText = tablePart.Value.VersionsHistory ? "1" : "0";
+                nodeTablePart.AppendChild(nodeVersionsHistory);
 
                 SavePredefinedFields(ConfigurationTablePart.GetPredefinedFields(), xmlConfDocument, nodeTablePart);
 

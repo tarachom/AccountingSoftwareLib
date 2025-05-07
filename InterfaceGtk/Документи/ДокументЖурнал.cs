@@ -171,7 +171,7 @@ namespace InterfaceGtk
             exportButton.Menu = ToolbarExportSubMenu();
             ToolbarTop.Add(exportButton);
 
-            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія версій") { TooltipText = "Історія версій" };
+            ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
             versionshistoryButton.Clicked += OnVersionsHistoryClick;
             ToolbarTop.Add(versionshistoryButton);
         }

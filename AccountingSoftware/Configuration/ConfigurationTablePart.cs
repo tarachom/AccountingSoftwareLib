@@ -47,6 +47,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Записувати історію змін даних
+        /// </summary>
+        public bool VersionsHistory { get; set; }
+
+        /// <summary>
         /// Поля
         /// </summary>
         public Dictionary<string, ConfigurationField> Fields { get; } = [];
