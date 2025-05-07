@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Документ Об'єкт
     /// </summary>
-    public abstract class DocumentObject(Kernel kernel, string table, string typeDocument, string[] fieldsArray, bool versionsHistory = false) : Object(kernel, table, fieldsArray, versionsHistory)
+    public abstract class DocumentObject(Kernel kernel, string table, string typeDocument, string[] fieldsArray, bool versionsHistory = false) : Object(kernel, table, fieldsArray)
     {
         /// <summary>
         /// Назва типу як задано в конфігураторі
@@ -47,6 +47,16 @@ namespace AccountingSoftware
         /// Дата проведення документу
         /// </summary>
         public DateTime SpendDate { get; private set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Унікальний ідентифікатор для збереження версій
+        /// </summary>
+        public Guid VersionID { get; init; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Вести історію версій значень полів
+        /// </summary>
+        private bool VersionsHistory { get; set; } = versionsHistory;
 
         /// <summary>
         /// Зчитати дані
@@ -197,8 +207,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             //Видалення з історії зміни даних
-            if (VersionsHistory)
-                await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
+            await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 

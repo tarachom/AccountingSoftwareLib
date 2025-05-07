@@ -110,7 +110,7 @@ namespace InterfaceGtk
                            row.UserID.ToString(),
                            row.DateWrite.ToString(),
                            row.UserName,
-                           row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", _ => "" },
+                           row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", 'E' => "Зміни в табличних частинах", _ => "" },
                            row.Info
                         );
                     }

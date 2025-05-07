@@ -28,11 +28,12 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class DocumentTablePart
     {
-        public DocumentTablePart(Kernel kernel, string table, string[] fieldsArray)
+        public DocumentTablePart(Kernel kernel, string table, string[] fieldsArray, bool versionsHistory = false)
         {
             Kernel = kernel;
             Table = table;
             FieldArray = fieldsArray;
+            VersionsHistory = versionsHistory;
 
             QuerySelect = new Query(Table);
             QuerySelect.Field.AddRange(fieldsArray);
@@ -57,6 +58,25 @@ namespace AccountingSoftware
         /// Масив назв полів
         /// </summary>
         private string[] FieldArray { get; set; }
+
+        #region Version
+
+        /// <summary>
+        /// Унікальний ідентифікатор версії даних з власника таб. частини
+        /// </summary>
+        protected Guid OwnerVersionID { get; set; } = Guid.Empty;
+
+        /// <summary>
+        /// Базис із власника
+        /// </summary>
+        protected UuidAndText OwnerBasis { get; set; } = new UuidAndText();
+
+        /// <summary>
+        /// Вести історію версій значень полів
+        /// </summary>
+        private bool VersionsHistory { get; set; }
+
+        #endregion
 
         /// <summary>
         /// Значення полів
@@ -95,7 +115,7 @@ namespace AccountingSoftware
                 QuerySelect.Where.RemoveAll(w => w.Name == "owner");
                 QuerySelect.Where.Add(new Where("owner", Comparison.EQ, ownerUnigueID.UGuid));
             }
-            
+
             await Kernel.DataBase.SelectDocumentTablePartRecords(QuerySelect, FieldValueList, JoinValue);
 
             IsRead = true;
@@ -125,12 +145,14 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID">Ключ</param>
         /// <param name="ownerUnigueID">Вкласник</param>
+        /*
         protected async ValueTask BaseRemove(Guid UID, UnigueID ownerUnigueID)
         {
             UnigueID unigueID = new(UID);
             if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
                 await Kernel.DataBase.RemoveDocumentTablePartRecords(UID, ownerUnigueID, Table, TransactionID);
         }
+        */
 
         /// <summary>
         /// Видалити всі дані з таб. частини
@@ -151,6 +173,11 @@ namespace AccountingSoftware
             return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
         }
 
+        protected async ValueTask IsExistOwnerVersion()
+        {
+            await Kernel.DataBase.SpetialTableObjectVersionsHistoryAddIfNotExist(OwnerVersionID, Kernel.User, OwnerBasis, TransactionID);
+        }
+
         /// <summary>
         /// Зберегти один запис таб частини
         /// </summary>
@@ -161,6 +188,11 @@ namespace AccountingSoftware
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertDocumentTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
+
+            //Записати в історію поточну версію значень полів
+            if (VersionsHistory && OwnerVersionID != Guid.Empty && !OwnerBasis.IsEmpty())
+                await Kernel.DataBase.SpetialTableTablePartVersionsHistoryAdd(OwnerVersionID, Kernel.User, OwnerBasis, Table, fieldValue);
+
             return recordUnigueID;
         }
     }

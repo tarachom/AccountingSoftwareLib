@@ -118,9 +118,6 @@ namespace AccountingSoftware
         }
     }
 
-    /// <summary>
-    /// Структура для повернення результату з ...
-    /// </summary>
     public record SelectVersionsHistoryItem_Record
     {
         /// <summary>
@@ -145,6 +142,40 @@ namespace AccountingSoftware
                 dictionaryFields.Add(field.Name, field.Text);
 
             return dictionaryFields;
+        }
+    }
+
+    public record SelectVersionsHistoryTablePart_Record
+    {
+        /// <summary>
+        /// Результат функції
+        /// </summary>
+        public bool Result;
+
+        public Guid VersionID = Guid.Empty;
+
+        public UuidAndText Obj = new UuidAndText();
+
+        public List<Row> ListRow = [];
+
+        public record Row()
+        {
+            public DateTime DateWrite = DateTime.MinValue;
+
+            public Guid UserID = Guid.Empty;
+
+            public string TablePart = "";
+
+            public NameAndText[] Fields = [];
+
+            public Dictionary<string, string> GetDictionaryFields()
+            {
+                Dictionary<string, string> dictionaryFields = [];
+                foreach (var field in Fields)
+                    dictionaryFields.Add(field.Name, field.Text);
+
+                return dictionaryFields;
+            }
         }
     }
 

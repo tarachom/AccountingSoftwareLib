@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Об'єкт
     /// </summary>
-    public abstract class DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray, bool versionsHistory = false) : Object(kernel, table, fieldsArray, versionsHistory)
+    public abstract class DirectoryObject(Kernel kernel, string table, string typeDirectory, string[] fieldsArray, bool versionsHistory = false) : Object(kernel, table, fieldsArray)
     {
         /// <summary>
         /// Назва типу як задано в конфігураторі
@@ -37,6 +37,16 @@ namespace AccountingSoftware
         /// Мітка видалення
         /// </summary>
         public bool DeletionLabel { get; private set; }
+
+        /// <summary>
+        /// Унікальний ідентифікатор для збереження версій
+        /// </summary>
+        public Guid VersionID { get; init; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Вести історію версій значень полів
+        /// </summary>
+        private bool VersionsHistory { get; set; } = versionsHistory;
 
         /// <summary>
         /// Зчитування полів обєкту з бази даних
@@ -84,8 +94,7 @@ namespace AccountingSoftware
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
                 {
                     result = await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
-                    if (result)
-                        operation = 'U';
+                    if (result) operation = 'U';
                 }
                 else
                     throw new Exception("Спроба оновити неіснуючий елемент довідника");
@@ -158,8 +167,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             //Видалення з історії зміни даних
-            if (VersionsHistory)
-                await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
+            await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 

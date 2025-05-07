@@ -29,7 +29,8 @@ namespace InterfaceGtk
     public abstract class СпільніФорми_ІсторіяЗміниДаних_Елемент : Форма
     {
         Kernel Kernel { get; set; }
-        ListBox listBox = new ListBox();
+        ListBox listBoxField = new ListBox();
+        ListBox listBoxTablePart = new ListBox();
 
         public СпільніФорми_ІсторіяЗміниДаних_Елемент(Kernel kernel) : base()
         {
@@ -40,7 +41,8 @@ namespace InterfaceGtk
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 PackStart(hBox, false, false, 5);
 
-                hBox.PackStart(listBox, false, false, 5);
+                hBox.PackStart(listBoxField, false, false, 5);
+                hBox.PackStart(listBoxTablePart, true, true, 5);
             }
 
             ShowAll();
@@ -48,6 +50,7 @@ namespace InterfaceGtk
 
         #region Virtual & Abstract Function
 
+        protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
         protected abstract CompositePointerControl CreateCompositControl();
 
         #endregion
@@ -64,137 +67,241 @@ namespace InterfaceGtk
                 _ => throw new Exception("")
             };
 
-            SelectVersionsHistoryItem_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistorySelect(versionID, obj);
-            if (recordResult.Result)
+            //Поля
             {
-                Dictionary<string, string> dictionaryFields = recordResult.GetDictionaryFields();
-
-                foreach (var Field in Fields.Values)
+                SelectVersionsHistoryItem_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistorySelect(versionID, obj);
+                if (recordResult.Result)
                 {
-                    switch (Field.Type)
-                    {
-                        case "string":
-                        case "any_pointer":
+                    Dictionary<string, string> dictionaryFields = recordResult.GetDictionaryFields();
+
+                    if (dictionaryFields.Count > 0)
+                        foreach (var Field in Fields.Values)
+                        {
+                            switch (Field.Type)
                             {
-                                if (Field.Multiline)
-                                {
-                                    TextView text = new TextView();
-
-                                    ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = 500, HeightRequest = 300 };
-                                    scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                                    scroll.Add(text);
-
-                                    if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                        text.Buffer.Text = value;
-
-                                    Append(Field.FullName, scroll);
-                                }
-                                else
-                                {
-                                    Entry entry = new Entry() { WidthRequest = 500 };
-                                    if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                        entry.Text = value;
-
-                                    Append(Field.FullName, entry);
-                                }
-                                break;
-                            }
-                        case "date":
-                        case "datetime":
-                            {
-                                DateTimeControl dateTime = new DateTimeControl() { OnlyDate = Field.Type == "date" };
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    dateTime.Value = DateTime.Parse(value);
-
-                                Append(Field.FullName, dateTime);
-                                break;
-                            }
-                        case "time":
-                            {
-                                TimeControl time = new TimeControl();
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    time.Value = TimeSpan.Parse(value);
-
-                                Append(Field.FullName, time);
-                                break;
-                            }
-                        case "integer":
-                            {
-                                IntegerControl numeric = new IntegerControl();
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    numeric.Value = int.Parse(value);
-
-                                Append(Field.FullName, numeric);
-                                break;
-                            }
-                        case "numeric":
-                            {
-                                NumericControl numeric = new NumericControl();
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    numeric.Value = decimal.Parse(value);
-
-                                Append(Field.FullName, numeric);
-                                break;
-                            }
-                        case "boolean":
-                            {
-                                CheckButton check = new CheckButton(Field.FullName);
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    check.Active = bool.Parse(value);
-
-                                Append("", check);
-                                break;
-                            }
-                        case "enum":
-                            {
-                                ComboBoxTextControl comboBox = new ComboBoxTextControl();
-
-                                string[] searchNameSplit = Field.Pointer.Split(["."], StringSplitOptions.None);
-                                foreach (ConfigurationEnumField enumField in Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values)
-                                    comboBox.Append(enumField.Value.ToString(), enumField.Desc);
-
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    comboBox.ActiveId = value;
-
-                                Append(Field.FullName, comboBox);
-                                break;
-                            }
-                        case "pointer":
-                        case "composite_pointer":
-                            {
-                                CompositePointerControl pointer = CreateCompositControl();
-                                if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    if (Field.Type == "pointer")
-                                        pointer.Pointer = new UuidAndText(Guid.Parse(value), Field.Pointer);
-                                    else
+                                case "string":
+                                case "any_pointer":
                                     {
-                                        string[] UuidNameSplit = value.Split([":"], StringSplitOptions.None);
-                                        if (UuidNameSplit.Length == 2)
-                                            pointer.Pointer = new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]);
-                                    }
+                                        if (Field.Multiline)
+                                        {
+                                            TextView text = new TextView();
 
-                                Append(Field.FullName, pointer);
-                                break;
+                                            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = 500, HeightRequest = 300 };
+                                            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                                            scroll.Add(text);
+
+                                            if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                                text.Buffer.Text = value;
+
+                                            AppendField(Field.FullName, scroll);
+                                        }
+                                        else
+                                        {
+                                            Entry entry = new Entry() { WidthRequest = 500 };
+                                            if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                                entry.Text = value;
+
+                                            AppendField(Field.FullName, entry);
+                                        }
+                                        break;
+                                    }
+                                case "date":
+                                case "datetime":
+                                    {
+                                        DateTimeControl dateTime = new DateTimeControl() { OnlyDate = Field.Type == "date" };
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            dateTime.Value = DateTime.Parse(value);
+
+                                        AppendField(Field.FullName, dateTime);
+                                        break;
+                                    }
+                                case "time":
+                                    {
+                                        TimeControl time = new TimeControl();
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            time.Value = TimeSpan.Parse(value);
+
+                                        AppendField(Field.FullName, time);
+                                        break;
+                                    }
+                                case "integer":
+                                    {
+                                        IntegerControl numeric = new IntegerControl();
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            numeric.Value = int.Parse(value);
+
+                                        AppendField(Field.FullName, numeric);
+                                        break;
+                                    }
+                                case "numeric":
+                                    {
+                                        NumericControl numeric = new NumericControl();
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            numeric.Value = decimal.Parse(value);
+
+                                        AppendField(Field.FullName, numeric);
+                                        break;
+                                    }
+                                case "boolean":
+                                    {
+                                        CheckButton check = new CheckButton(Field.FullName);
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            check.Active = bool.Parse(value);
+
+                                        AppendField("", check);
+                                        break;
+                                    }
+                                case "enum":
+                                    {
+                                        ComboBoxTextControl comboBox = new ComboBoxTextControl();
+
+                                        string[] searchNameSplit = Field.Pointer.Split(["."], StringSplitOptions.None);
+                                        foreach (ConfigurationEnumField enumField in Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values)
+                                            comboBox.Append(enumField.Value.ToString(), enumField.Desc);
+
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            comboBox.ActiveId = value;
+
+                                        AppendField(Field.FullName, comboBox);
+                                        break;
+                                    }
+                                case "pointer":
+                                case "composite_pointer":
+                                    {
+                                        CompositePointerControl pointer = CreateCompositControl();
+                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                            if (Field.Type == "pointer")
+                                                pointer.Pointer = new UuidAndText(Guid.Parse(value), Field.Pointer);
+                                            else
+                                            {
+                                                string[] UuidNameSplit = value.Split([":"], StringSplitOptions.None);
+                                                if (UuidNameSplit.Length == 2)
+                                                    pointer.Pointer = new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]);
+                                            }
+
+                                        AppendField(Field.FullName, pointer);
+                                        break;
+                                    }
                             }
+                        }
+                }
+            }
+
+            //Табличні частини
+            {
+                SelectVersionsHistoryTablePart_Record recordResult = await Kernel.DataBase.SpetialTableTablePartVersionsHistorySelect(versionID, obj);
+                if (recordResult.Result)
+                {
+                    List<ConfigurationTablePart> tablePartList = [.. TabularParts.Values];
+
+                    var tables = recordResult.ListRow.Select(x => x.TablePart).Distinct();
+                    foreach (string table in tables)
+                    {
+                        //Пошук по назві таблиці
+                        ConfigurationTablePart? tablePart = tablePartList.Find(x => x.Table == table);
+                        if (tablePart != null)
+                        {
+                            List<ConfigurationField> fieldList = [.. tablePart.Fields.Values];
+
+                            //Model
+                            Type[] types = new Type[fieldList.Count];
+                            for (int i = 0; i < fieldList.Count; i++)
+                                types[i] = typeof(string);
+
+                            ListStore Store = new ListStore(types);
+                            TreeView TreeViewGrid = new TreeView(Store);
+                            TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
+
+                            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 400 };
+                            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                            scroll.Add(TreeViewGrid);
+
+                            for (int i = 0; i < fieldList.Count; i++)
+                            {
+                                CellRendererText cell = new CellRendererText();
+                                TreeViewColumn treeColumn = new TreeViewColumn(fieldList[i].FullName, cell, "text", i) { Resizable = true, MinWidth = 20 };
+                                TreeViewGrid.AppendColumn(treeColumn);
+                            }
+
+                            //Дані
+                            foreach (var row in recordResult.ListRow.Where(x => x.TablePart == table))
+                            {
+                                TreeIter iter = Store.Append();
+                                Dictionary<string, string> dictionaryFields = row.GetDictionaryFields();
+                                for (int i = 0; i < fieldList.Count; i++)
+                                {
+                                    var field = fieldList[i];
+                                    if (dictionaryFields.TryGetValue(field.NameInTable, out string? value))
+                                    {
+                                        switch (field.Type)
+                                        {
+                                            case "string":
+                                                {
+                                                    value = value.Replace("\n", " ").Replace("\r", "");
+                                                    value = value.Length > 100 ? value[..100] + " ..." : value;
+                                                    break;
+                                                }
+                                            case "enum":
+                                                {
+                                                    string[] searchNameSplit = field.Pointer.Split(["."], StringSplitOptions.None);
+                                                    var e = Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values.Single(x => x.Value == int.Parse(value));
+                                                    if (e != null) value = e.Desc;
+                                                    break;
+                                                }
+                                            case "pointer":
+                                                {
+                                                    var record = await CompositePointerPresentation(new UuidAndText(Guid.Parse(value), field.Pointer));
+                                                    value = record.result;
+                                                    break;
+                                                }
+                                        }
+                                    }
+                                    Store.SetValue(iter, i, value ?? "");
+                                }
+                            }
+
+                            AppendTablePart(tablePart.Name, scroll);
+                        }
                     }
                 }
             }
         }
 
-        public void Append(string caption, Widget widget)
+        void AppendField(string caption, Widget widget)
         {
             Box hBox = new Box(Orientation.Horizontal, 0) { Halign = Align.End };
             Box vBox = new Box(Orientation.Vertical, 0);
             vBox.PackStart(hBox, false, false, 5);
 
             //Заголовок
-            hBox.PackStart(new Label(caption) , false, false, 2);
+            hBox.PackStart(new Label(caption), false, false, 2);
 
             //Віджет
             hBox.PackStart(widget, false, false, 2);
 
-            listBox.Add(new ListBoxRow() { vBox });
-            listBox.ShowAll();
+            listBoxField.Add(new ListBoxRow() { vBox });
+            listBoxField.ShowAll();
+        }
+
+        void AppendTablePart(string caption, Widget widget)
+        {
+            Box vBox = new Box(Orientation.Vertical, 0);
+
+            //Заголовок
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                hBox.PackStart(new Label(caption), false, false, 2);
+                vBox.PackStart(hBox, false, false, 2);
+            }
+
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                hBox.PackStart(widget, true, true, 2);
+                vBox.PackStart(hBox, true, true, 2);
+            }
+
+            listBoxTablePart.Add(new ListBoxRow() { vBox });
+            listBoxTablePart.ShowAll();
         }
     }
 }
