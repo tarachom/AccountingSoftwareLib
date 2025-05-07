@@ -138,11 +138,11 @@ namespace InterfaceGtk
                             }
                         case "boolean":
                             {
-                                CheckButton check = new CheckButton();
+                                CheckButton check = new CheckButton(Field.FullName);
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
                                     check.Active = bool.Parse(value);
 
-                                Append(Field.FullName, check);
+                                Append("", check);
                                 break;
                             }
                         case "enum":
@@ -183,15 +183,15 @@ namespace InterfaceGtk
 
         public void Append(string caption, Widget widget)
         {
-            Box hBox = new Box(Orientation.Horizontal, 0);
+            Box hBox = new Box(Orientation.Horizontal, 0) { Halign = Align.End };
             Box vBox = new Box(Orientation.Vertical, 0);
             vBox.PackStart(hBox, false, false, 5);
 
             //Заголовок
-            hBox.PackStart(new Label(caption), false, false, 5);
+            hBox.PackStart(new Label(caption) , false, false, 2);
 
             //Віджет
-            hBox.PackEnd(widget, false, false, 5);
+            hBox.PackStart(widget, false, false, 2);
 
             listBox.Add(new ListBoxRow() { vBox });
             listBox.ShowAll();
