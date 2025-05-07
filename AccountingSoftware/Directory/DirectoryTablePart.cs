@@ -28,11 +28,12 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class DirectoryTablePart
     {
-        public DirectoryTablePart(Kernel kernel, string table, string[] fieldsArray)
+        public DirectoryTablePart(Kernel kernel, string table, string[] fieldsArray, bool versionsHistory = false)
         {
             Kernel = kernel;
             Table = table;
             FieldArray = fieldsArray;
+            VersionsHistory = versionsHistory;
 
             QuerySelect = new Query(Table);
             QuerySelect.Field.AddRange(fieldsArray);
@@ -57,6 +58,16 @@ namespace AccountingSoftware
         /// Масив назв полів
         /// </summary>
         private string[] FieldArray { get; set; }
+
+        /// <summary>
+        /// Унікальний ідентифікатор для збереження версій
+        /// </summary>
+        public Guid VersionID { get; init; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Вести історію версій значень полів
+        /// </summary>
+        public bool VersionsHistory { get; protected set; }
 
         /// <summary>
         /// Список даних
@@ -162,6 +173,10 @@ namespace AccountingSoftware
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertDirectoryTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
+
+            // if (VersionsHistory)
+            //     await Kernel.DataBase.SpetialTableTablePartVersionsHistoryAdd(VersionID, Kernel.User, fieldValue);
+
             return recordUnigueID;
         }
     }

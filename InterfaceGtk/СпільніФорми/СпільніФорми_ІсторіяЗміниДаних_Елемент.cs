@@ -131,7 +131,7 @@ namespace InterfaceGtk
                             {
                                 NumericControl numeric = new NumericControl();
                                 if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                    numeric.Value = int.Parse(value);
+                                    numeric.Value = decimal.Parse(value);
 
                                 Append(Field.FullName, numeric);
                                 break;
