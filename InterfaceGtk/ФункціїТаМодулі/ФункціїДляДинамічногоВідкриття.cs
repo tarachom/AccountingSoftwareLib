@@ -80,36 +80,50 @@ namespace InterfaceGtk
         /// </summary>
         /// <param name="typeDir">Тип</param>
         /// <param name="unigueID">Елемент для позиціонування</param>
-        public void ВідкритиДовідникВідповідноДоВиду(string typeDir, UnigueID? unigueID)
+        public void ВідкритиДовідникВідповідноДоВиду(string typeDir, UnigueID? unigueID, TypeForm typeForm = TypeForm.Journal)
         {
             object? directoryInstance;
 
-            try
+            switch (typeForm)
             {
-                directoryInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeDir}");
-            }
-            catch (Exception ex)
-            {
-                Message.Error(null, ex.Message);
-                return;
-            }
+                case TypeForm.Journal:
+                    {
+                        try
+                        {
+                            directoryInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeDir}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Message.Error(null, ex.Message);
+                            return;
+                        }
 
-            if (directoryInstance != null)
-            {
-                dynamic directory = directoryInstance;
+                        if (directoryInstance != null)
+                        {
+                            dynamic directory = directoryInstance;
 
-                //Елемент який потрібно виділити в списку
-                directory.SelectPointerItem = unigueID;
+                            //Елемент який потрібно виділити в списку
+                            directory.SelectPointerItem = unigueID;
 
-                //Заголовок журналу
-                string listName = "Список";
+                            //Заголовок журналу
+                            string listName = "Список";
 
-                Type? documentConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.Довідники.{typeDir}_Const");
-                if (documentConst != null)
-                    listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
+                            Type? directoryConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.Довідники.{typeDir}_Const");
+                            if (directoryConst != null)
+                                listName = directoryConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-                CreateNotebookPage(listName, () => directory);
-                directory.SetValue();
+                            CreateNotebookPage(listName, () => directory);
+                            directory.SetValue();
+                        }
+                        break;
+                    }
+                case TypeForm.Element:
+                    {
+                        Type? directoryFunction = ExecutingAssembly.GetType($"{NameSpageProgram}.{typeDir}_Функції");
+                        directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, unigueID, null, null]);
+
+                        break;
+                    }
             }
         }
 
@@ -119,40 +133,54 @@ namespace InterfaceGtk
         /// <param name="typeDoc">Тип документу</param>
         /// <param name="unigueID">Елемент для позиціювання</param>
         /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
-        public void ВідкритиДокументВідповідноДоВиду(string typeDoc, UnigueID? unigueID, string keyForSetting = "")
+        public void ВідкритиДокументВідповідноДоВиду(string typeDoc, UnigueID? unigueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
         {
             object? documentInstance;
 
-            try
+            switch (typeForm)
             {
-                documentInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeDoc}");
-            }
-            catch (Exception ex)
-            {
-                Message.Error(null, ex.Message);
-                return;
-            }
+                case TypeForm.Journal:
+                    {
+                        try
+                        {
+                            documentInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.{typeDoc}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Message.Error(null, ex.Message);
+                            return;
+                        }
 
-            if (documentInstance != null)
-            {
-                dynamic document = documentInstance;
+                        if (documentInstance != null)
+                        {
+                            dynamic document = documentInstance;
 
-                //Елемент який потрібно виділити в списку
-                document.SelectPointerItem = unigueID;
+                            //Елемент який потрібно виділити в списку
+                            document.SelectPointerItem = unigueID;
 
-                //Заголовок журналу
-                string listName = "Список";
-                Type? documentConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Const");
-                if (documentConst != null)
-                    listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
+                            //Заголовок журналу
+                            string listName = "Список";
+                            Type? documentConst = ExecutingAssembly.GetType($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Const");
+                            if (documentConst != null)
+                                listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-                //Додатковий ключ для налаштувань
-                if (!string.IsNullOrEmpty(keyForSetting))
-                    document.KeyForSetting = keyForSetting;
+                            //Додатковий ключ для налаштувань
+                            if (!string.IsNullOrEmpty(keyForSetting))
+                                document.KeyForSetting = keyForSetting;
 
-                CreateNotebookPage(listName, () => document);
+                            CreateNotebookPage(listName, () => document);
 
-                document.SetValue();
+                            document.SetValue();
+                        }
+                        break;
+                    }
+                case TypeForm.Element:
+                    {
+                        Type? documentFunction = ExecutingAssembly.GetType($"{NameSpageProgram}.{typeDoc}_Функції");
+                        documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, unigueID, null]);
+
+                        break;
+                    }
             }
         }
 
@@ -242,6 +270,15 @@ namespace InterfaceGtk
 
             popover.Add(vBox);
             popover.ShowAll();
+        }
+
+        /// <summary>
+        /// Тип форми яка відкривається
+        /// </summary>
+        public enum TypeForm
+        {
+            Journal,
+            Element
         }
     }
 }

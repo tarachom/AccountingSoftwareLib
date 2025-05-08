@@ -77,13 +77,19 @@ namespace InterfaceGtk
         /// </summary>
         public Func<ValueTask<string>>? GetInfo { get; set; } = null;
 
-        public record ColumnsSettings(string Caption = "", string DataColumn = "", string Type = "", float Xalign = 0, TreeCellDataFunc? Func = null)
+        public record ColumnsSettings(string Caption = "", string DataColumn = "", string Type = "", float Xalign = 0, TreeCellDataFunc? Func = null,
+            ФункціїДляДинамічногоВідкриття.TypeForm TypeOpenForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal)
         {
             public string Caption { get; set; } = Caption;
             public string DataColumn { get; set; } = DataColumn;
             public string Type { get; set; } = Type;
             public float Xalign { get; set; } = Xalign;
             public TreeCellDataFunc? Func { get; set; } = Func;
+
+            /// <summary>
+            /// Тип форми який буде відкриватися коли заданий тип
+            /// </summary>
+            public ФункціїДляДинамічногоВідкриття.TypeForm TypeForm { get; set; } = TypeOpenForm;
         }
 
         #region PDF
@@ -238,6 +244,10 @@ namespace InterfaceGtk
                         treeColumn.Data.Add("CellDataFunc", сolumnName);
                         treeColumn.SetCellDataFunc(cell, columnSettings.Func);
                     }
+
+                    //Тип форми
+                    if (columnSettings.TypeForm != ФункціїДляДинамічногоВідкриття.TypeForm.Journal)
+                        treeColumn.Data.Add("CellTypeOpenForm", columnSettings.TypeForm.ToString());
                 }
             }
 
@@ -467,18 +477,27 @@ namespace InterfaceGtk
                     if ((type == "" || type == "*") && vyd != "")
                         type = vyd;
 
+                    //
+                    //Тип форми
+                    //
+
+                    ФункціїДляДинамічногоВідкриття.TypeForm typeOpenForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal;
+                    string typeForm = treeColumn.Data["CellTypeOpenForm"]?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(typeForm))
+                        typeOpenForm = Enum.Parse<ФункціїДляДинамічногоВідкриття.TypeForm>(typeForm);
+
                     if (pointer == "Документи")
-                        ВідкритиДокументВідповідноДоВиду(type, unigueID, ".Report");
+                        ВідкритиДокументВідповідноДоВиду(type, unigueID, ".Report", typeOpenForm);
                     else if (pointer == "Довідники")
-                        ВідкритиДовідникВідповідноДоВиду(type, unigueID);
+                        ВідкритиДовідникВідповідноДоВиду(type, unigueID, typeOpenForm);
                 }
             }
         }
 
         #region Virtual & Abstract Function
 
-        protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "");
-        protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID);
+        protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
+        protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
         protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
