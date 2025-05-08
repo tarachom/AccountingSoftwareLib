@@ -239,20 +239,18 @@ namespace InterfaceGtk
                             DocumentObject? doc = await journalSelect.GetDocumentObject(true);
                             if (doc != null)
                             {
-                                Box hBox = Лог.CreateMessage($"Проведення <b>{journalSelect.Current.DocName}</b>", LogMessage.TypeMessage.Info);
-
                                 //Для документу викликається функція проведення
                                 if (await ((dynamic)doc).SpendTheDocument(journalSelect.Current.SpendDate))
                                 {
                                     //Документ проведений ОК
-                                    Лог.AppendMessage(hBox, "Проведено");
+                                    Лог.AppendLine($"Проведено {journalSelect.Current.DocName}");
 
                                     counterDocs++;
                                 }
                                 else
                                 {
                                     //Документ НЕ проведений Error
-                                    Лог.AppendMessage(hBox, "Помилка", LogMessage.TypeMessage.Error);
+                                    Лог.CreateMessage($"Помилка! {journalSelect.Current.DocName}", LogMessage.TypeMessage.Error);
 
                                     //Додатково вивід помилок у це вікно
                                     SelectRequest_Record record = await Kernel.SelectMessages(doc.UnigueID, 1);
