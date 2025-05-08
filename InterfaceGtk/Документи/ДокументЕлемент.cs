@@ -106,6 +106,14 @@ namespace InterfaceGtk
                 HBoxTop.PackStart(linkNew, false, false, 0);
             }
 
+            //В журналі
+            {
+                LinkButton linkInJournal = new LinkButton("В журналі") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
+                linkInJournal.Clicked += async (sender, args) => { if (UnigueID != null) await InJournal(UnigueID); };
+
+                HBoxTop.PackStart(linkInJournal, false, false, 0);
+            }
+
             //Інформація про блокування
             {
                 Button bLock = new Button
@@ -300,9 +308,12 @@ namespace InterfaceGtk
         /// <summary>
         /// Для звіту Проводки
         /// </summary>
-        /// <param name="unigueID"></param>
-        /// <returns></returns>
         protected abstract void ReportSpendTheDocument(UnigueID unigueID);
+
+        /// <summary>
+        /// Знайти в журналі
+        /// </summary>
+        protected virtual async ValueTask InJournal(UnigueID unigueID) { await ValueTask.FromResult(true); }
 
         #endregion
     }
