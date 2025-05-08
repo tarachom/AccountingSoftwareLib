@@ -30,19 +30,45 @@ namespace InterfaceGtk
     {
         Kernel Kernel { get; set; }
         ListBox listBoxField = new ListBox();
-        ListBox listBoxTablePart = new ListBox();
+        Notebook notebookTablePart = new Notebook() { Scrollable = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
+        CompositePointerControl pointerObj;
+        Box hBoxInfo = new Box(Orientation.Horizontal, 5);
 
         public СпільніФорми_ІсторіяЗміниДаних_Елемент(Kernel kernel) : base()
         {
             Kernel = kernel;
+
+            //Обєкт
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                PackStart(hBox, false, false, 10);
+
+                hBox.PackStart(pointerObj = CreateCompositControl(), false, false, 2);
+
+                //Додаткова інформація
+                hBox.PackStart(hBoxInfo, false, false, 2);
+            }
 
             //Список
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 PackStart(hBox, false, false, 5);
 
-                hBox.PackStart(listBoxField, false, false, 5);
-                hBox.PackStart(listBoxTablePart, true, true, 5);
+                Box vBoxExpander = new Box(Orientation.Vertical, 5);
+                vBoxExpander.PackStart(listBoxField, false, false, 5);
+
+                Expander expander = new Expander("Поля") { Expanded = true };
+                expander.Add(vBoxExpander);
+
+                hBox.PackStart(expander, false, false, 5);
+            }
+
+            //Табличні частини
+            {
+                Box hBox = new Box(Orientation.Horizontal, 0);
+                PackStart(hBox, false, false, 5);
+
+                hBox.PackStart(notebookTablePart, true, true, 5);
             }
 
             ShowAll();
@@ -60,18 +86,28 @@ namespace InterfaceGtk
             var (result, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
             if (!result) return;
 
-            (Dictionary<string, ConfigurationField> Fields, Dictionary<string, ConfigurationTablePart> TabularParts) = pointerGroup switch
+            (Dictionary<string, ConfigurationField> Fields, Dictionary<string, ConfigurationTablePart> TabularParts, string pointerFullName) = pointerGroup switch
             {
-                "Довідники" => (Kernel.Conf.Directories[pointerType].Fields, Kernel.Conf.Directories[pointerType].TabularParts),
-                "Документи" => (Kernel.Conf.Documents[pointerType].Fields, Kernel.Conf.Documents[pointerType].TabularParts),
+                "Довідники" => (Kernel.Conf.Directories[pointerType].Fields, Kernel.Conf.Directories[pointerType].TabularParts, Kernel.Conf.Directories[pointerType].FullName),
+                "Документи" => (Kernel.Conf.Documents[pointerType].Fields, Kernel.Conf.Documents[pointerType].TabularParts, Kernel.Conf.Documents[pointerType].FullName),
                 _ => throw new Exception("")
             };
+
+            pointerObj.Pointer = obj;
+            pointerObj.Caption = pointerGroup switch { "Довідники" => "Довідник", "Документи" => "Документ", _ => "Об'єкт" } + " " + pointerFullName;
 
             //Поля
             {
                 SelectVersionsHistoryItem_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistorySelect(versionID, obj);
                 if (recordResult.Result)
                 {
+                    //Додаткова інформація
+                    {
+                        hBoxInfo.PackStart(new Label($"<b>Дата запису:</b> {recordResult.DateWrite}") { UseMarkup = true, UseUnderline = false }, false, false, 5);
+                        hBoxInfo.PackStart(new Label($"<b>Користувач:</b> {recordResult.UserName}") { UseMarkup = true, UseUnderline = false }, false, false, 5);
+                        hBoxInfo.ShowAll();
+                    }
+
                     Dictionary<string, string> dictionaryFields = recordResult.GetDictionaryFields();
 
                     if (dictionaryFields.Count > 0)
@@ -192,76 +228,79 @@ namespace InterfaceGtk
                 SelectVersionsHistoryTablePart_Record recordResult = await Kernel.DataBase.SpetialTableTablePartVersionsHistorySelect(versionID, obj);
                 if (recordResult.Result)
                 {
-                    List<ConfigurationTablePart> tablePartList = [.. TabularParts.Values];
-
-                    var tables = recordResult.ListRow.Select(x => x.TablePart).Distinct();
-                    foreach (string table in tables)
+                    foreach (ConfigurationTablePart tablePart in TabularParts.Values)
                     {
-                        //Пошук по назві таблиці
-                        ConfigurationTablePart? tablePart = tablePartList.Find(x => x.Table == table);
-                        if (tablePart != null)
+                        //Таблична частина в якій немає даних пропускається
+                        if (!recordResult.ListRow.Where(x => x.TablePart == tablePart.Table).Any())
+                            continue;
+
+                        //Поля табличної частини
+                        List<ConfigurationField> fieldList = [.. tablePart.Fields.Values];
+
+                        //Model
+                        Type[] types = new Type[fieldList.Count];
+                        for (int i = 0; i < fieldList.Count; i++)
+                            types[i] = typeof(string);
+
+                        ListStore Store = new ListStore(types);
+                        TreeView TreeViewGrid = new TreeView(Store);
+                        TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
+
+                        ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 600 };
+                        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                        scroll.Add(TreeViewGrid);
+
+                        //Колонки
+                        for (int i = 0; i < fieldList.Count; i++)
                         {
-                            List<ConfigurationField> fieldList = [.. tablePart.Fields.Values];
-
-                            //Model
-                            Type[] types = new Type[fieldList.Count];
-                            for (int i = 0; i < fieldList.Count; i++)
-                                types[i] = typeof(string);
-
-                            ListStore Store = new ListStore(types);
-                            TreeView TreeViewGrid = new TreeView(Store);
-                            TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
-
-                            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 400 };
-                            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                            scroll.Add(TreeViewGrid);
-
-                            for (int i = 0; i < fieldList.Count; i++)
-                            {
-                                CellRendererText cell = new CellRendererText();
-                                TreeViewColumn treeColumn = new TreeViewColumn(fieldList[i].FullName, cell, "text", i) { Resizable = true, MinWidth = 20 };
-                                TreeViewGrid.AppendColumn(treeColumn);
-                            }
-
-                            //Дані
-                            foreach (var row in recordResult.ListRow.Where(x => x.TablePart == table))
-                            {
-                                TreeIter iter = Store.Append();
-                                Dictionary<string, string> dictionaryFields = row.GetDictionaryFields();
-                                for (int i = 0; i < fieldList.Count; i++)
-                                {
-                                    var field = fieldList[i];
-                                    if (dictionaryFields.TryGetValue(field.NameInTable, out string? value))
-                                    {
-                                        switch (field.Type)
-                                        {
-                                            case "string":
-                                                {
-                                                    value = value.Replace("\n", " ").Replace("\r", "");
-                                                    value = value.Length > 100 ? value[..100] + " ..." : value;
-                                                    break;
-                                                }
-                                            case "enum":
-                                                {
-                                                    string[] searchNameSplit = field.Pointer.Split(["."], StringSplitOptions.None);
-                                                    var e = Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values.Single(x => x.Value == int.Parse(value));
-                                                    if (e != null) value = e.Desc;
-                                                    break;
-                                                }
-                                            case "pointer":
-                                                {
-                                                    var record = await CompositePointerPresentation(new UuidAndText(Guid.Parse(value), field.Pointer));
-                                                    value = record.result;
-                                                    break;
-                                                }
-                                        }
-                                    }
-                                    Store.SetValue(iter, i, value ?? "");
-                                }
-                            }
-
-                            AppendTablePart(tablePart.Name, scroll);
+                            CellRendererText cell = new CellRendererText();
+                            TreeViewColumn treeColumn = new TreeViewColumn(fieldList[i].FullName, cell, "text", i) { Resizable = true, MinWidth = 20 };
+                            TreeViewGrid.AppendColumn(treeColumn);
                         }
+
+                        notebookTablePart.AppendPage(scroll, new Label(NotebookFunction.SubstringPageName(tablePart.FullName)) { TooltipText = tablePart.FullName });
+                        notebookTablePart.ShowAll();
+
+                        //Дані
+                        foreach (var row in recordResult.ListRow.Where(x => x.TablePart == tablePart.Table).OrderBy(x => x.DateWrite))
+                        {
+                            //Рядок
+                            TreeIter iter = Store.Append();
+
+                            //Поля
+                            Dictionary<string, string> dictionaryFields = row.GetDictionaryFields();
+                            for (int i = 0; i < fieldList.Count; i++)
+                            {
+                                var field = fieldList[i];
+                                if (dictionaryFields.TryGetValue(field.NameInTable, out string? value))
+                                {
+                                    switch (field.Type)
+                                    {
+                                        case "string":
+                                            {
+                                                value = value.Replace("\n", " ");
+                                                value = value.Length > 100 ? value[..100] + " ..." : value;
+                                                break;
+                                            }
+                                        case "enum":
+                                            {
+                                                string[] searchNameSplit = field.Pointer.Split(["."], StringSplitOptions.None);
+                                                var enumItem = Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values.Single(x => x.Value == int.Parse(value));
+                                                if (enumItem != null) value = enumItem.Desc;
+                                                break;
+                                            }
+                                        case "pointer":
+                                            {
+                                                var record = await CompositePointerPresentation(new UuidAndText(Guid.Parse(value), field.Pointer));
+                                                value = record.result;
+                                                break;
+                                            }
+                                    }
+                                }
+                                Store.SetValue(iter, i, value ?? "");
+                            }
+                        }
+
                     }
                 }
             }
@@ -283,7 +322,7 @@ namespace InterfaceGtk
             listBoxField.ShowAll();
         }
 
-        void AppendTablePart(string caption, Widget widget)
+        /*void AppendTablePart(string caption, Widget widget)
         {
             Box vBox = new Box(Orientation.Vertical, 0);
 
@@ -294,6 +333,7 @@ namespace InterfaceGtk
                 vBox.PackStart(hBox, false, false, 2);
             }
 
+            //Віджет
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 hBox.PackStart(widget, true, true, 2);
@@ -302,6 +342,6 @@ namespace InterfaceGtk
 
             listBoxTablePart.Add(new ListBoxRow() { vBox });
             listBoxTablePart.ShowAll();
-        }
+        }*/
     }
 }

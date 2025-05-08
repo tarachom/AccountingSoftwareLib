@@ -39,9 +39,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="table">Таблиця в базі даних</param>
         /// <param name="desc">Опис</param>
-        public ConfigurationTablePart(string name, string table, string desc = "")
+        public ConfigurationTablePart(string name, string fullname, string table, string desc = "")
         {
             Name = name;
+            FullName = fullname;
             Table = table;
             Desc = desc;
         }
@@ -77,7 +78,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationTablePart Copy()
         {
-            ConfigurationTablePart confObjectTablePart = new ConfigurationTablePart(this.Name, this.Table, this.Desc);
+            ConfigurationTablePart confObjectTablePart = new ConfigurationTablePart(this.Name, this.FullName, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());

@@ -1348,11 +1348,12 @@ namespace AccountingSoftware
                 while (tablePartNodes.MoveNext())
                 {
                     string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличної частини");
+                    string fullName = tablePartNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     bool versionsHistory = (tablePartNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
 
-                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, table, desc)
+                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, fullName, table, desc)
                     {
                         //Записувати історію версій
                         VersionsHistory = versionsHistory
@@ -2224,6 +2225,10 @@ namespace AccountingSoftware
                 XmlElement nodeTablePartName = xmlConfDocument.CreateElement("Name");
                 nodeTablePartName.InnerText = tablePart.Key;
                 nodeTablePart.AppendChild(nodeTablePartName);
+
+                XmlElement nodeTablePartFullName = xmlConfDocument.CreateElement("FullName");
+                nodeTablePartFullName.InnerText = string.IsNullOrEmpty(tablePart.Value.FullName) ? CreateFullName(tablePart.Key) : tablePart.Value.FullName;
+                nodeTablePart.AppendChild(nodeTablePartFullName);
 
                 XmlElement nodeTablePartTable = xmlConfDocument.CreateElement("Table");
                 nodeTablePartTable.InnerText = tablePart.Value.Table;

@@ -130,6 +130,8 @@ namespace AccountingSoftware
         public DateTime DateWrite = DateTime.MinValue;
 
         public Guid UserID = Guid.Empty;
+        
+        public string UserName = "";
 
         public UuidAndText Obj = new UuidAndText();
 
@@ -154,7 +156,7 @@ namespace AccountingSoftware
 
         public Guid VersionID = Guid.Empty;
 
-        public UuidAndText Obj = new UuidAndText();
+        public UuidAndText ObjOwner = new UuidAndText();
 
         public List<Row> ListRow = [];
 

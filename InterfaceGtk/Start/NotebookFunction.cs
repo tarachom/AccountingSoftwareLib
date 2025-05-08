@@ -311,7 +311,7 @@ namespace InterfaceGtk
         /// </summary>
         /// <param name="pageName"></param>
         /// <returns></returns>
-        static string SubstringPageName(string pageName)
+        public static string SubstringPageName(string pageName)
         {
             return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
         }

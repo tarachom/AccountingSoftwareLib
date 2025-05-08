@@ -93,18 +93,15 @@ namespace InterfaceGtk
 
         #endregion
 
-        public async ValueTask Load(UuidAndText obj)
+        public async ValueTask Load()
         {
-            if (!obj.IsEmpty())
-            {
-                Obj = obj;
-
-                SelectVersionsHistoryList_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistoryList(obj);
+            if (!Obj.IsEmpty())
+            {                
+                SelectVersionsHistoryList_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistoryList(Obj);
+                Store.Clear();
+                
                 if (recordResult.Result)
-                {
-                    Store.Clear();
                     foreach (var row in recordResult.ListRow)
-                    {
                         Store.AppendValues(
                            row.VersionID.ToString(),
                            row.UserID.ToString(),
@@ -113,12 +110,10 @@ namespace InterfaceGtk
                            row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", 'E' => "Зміни в табличних частинах", _ => "" },
                            row.Info
                         );
-                    }
-                }
             }
         }
 
-        public UuidAndText Obj { get; private set; } = new UuidAndText();
+        public UuidAndText Obj { get; set; } = new UuidAndText();
 
         #region Virtual & Abstract Function
 
@@ -157,7 +152,7 @@ namespace InterfaceGtk
 
         async void OnRefreshClick(object? sender, EventArgs args)
         {
-            await Load(Obj);
+            await Load();
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
@@ -173,7 +168,7 @@ namespace InterfaceGtk
                         await Kernel.DataBase.SpetialTableObjectVersionsHistoryRemove(versionID.UGuid, Obj);
                     }
 
-                    await Load(Obj);
+                    await Load();
                 }
         }
 

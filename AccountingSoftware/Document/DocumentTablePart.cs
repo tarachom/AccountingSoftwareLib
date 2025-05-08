@@ -176,6 +176,9 @@ namespace AccountingSoftware
         protected async ValueTask IsExistOwnerVersion()
         {
             await Kernel.DataBase.SpetialTableObjectVersionsHistoryAddIfNotExist(OwnerVersionID, Kernel.User, OwnerBasis, TransactionID);
+
+            //Очистка попередніх записів
+            await Kernel.DataBase.SpetialTableTablePartVersionsHistoryRemoveBeforeSave(OwnerVersionID, OwnerBasis, Table, TransactionID);
         }
 
         /// <summary>

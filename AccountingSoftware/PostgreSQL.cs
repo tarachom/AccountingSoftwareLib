@@ -1730,16 +1730,18 @@ ORDER BY
             {
                 string query = $@"
 SELECT
-    datewrite,
-    users,
-    obj,
-    fields
+    VersionsHistory.datewrite,
+    VersionsHistory.users,
+    Users.fullname AS username,
+    VersionsHistory.obj,
+    VersionsHistory.fields
 FROM
-    {SpecialTables.ObjectVersionsHistory}
+    {SpecialTables.ObjectVersionsHistory} AS VersionsHistory
+    JOIN {SpecialTables.Users} AS Users ON Users.uid = VersionsHistory.users
 WHERE
-    uid = @version_id AND
-    (obj).uuid = @uuid AND
-    (obj).text = @text
+    VersionsHistory.uid = @version_id AND
+    (VersionsHistory.obj).uuid = @uuid AND
+    (VersionsHistory.obj).text = @text
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
@@ -1754,6 +1756,7 @@ WHERE
                     record.VersionID = version_id;
                     record.DateWrite = (DateTime)reader["datewrite"];
                     record.UserID = (Guid)reader["users"];
+                    record.UserName = reader["username"]?.ToString() ?? "";
                     record.Obj = (UuidAndText)reader["obj"];
                     record.Fields = (NameAndText[])reader["fields"];
                 }
@@ -1850,18 +1853,11 @@ VALUES
     @tablepart,
     @fields
 )
-ON CONFLICT (uid) DO UPDATE SET
-    objversionid = @objversionid,
-    datewrite = CURRENT_TIMESTAMP::timestamp,
-    users = @user,
-    objowner = @objowner,
-    tablepart = @tablepart,
-    fields = @fields
 ", paramQuery, transactionID);
 
         }
 
-        public async ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText obj)
+        public async ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText objowner)
         {
             SelectVersionsHistoryTablePart_Record record = new();
 
@@ -1883,13 +1879,13 @@ WHERE
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.Parameters.AddWithValue("version_id", version_id);
-                command.Parameters.AddWithValue("uuid", obj.Uuid);
-                command.Parameters.AddWithValue("text", obj.Text);
+                command.Parameters.AddWithValue("uuid", objowner.Uuid);
+                command.Parameters.AddWithValue("text", objowner.Text);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 record.Result = reader.HasRows;
                 record.VersionID = version_id;
-                record.Obj = obj;
+                record.ObjOwner = objowner;
                 while (await reader.ReadAsync())
                 {
                     record.ListRow.Add(new()
@@ -1906,14 +1902,14 @@ WHERE
             return record;
         }
 
-        async ValueTask SpetialTableTablePartVersionsHistoryClear(UuidAndText obj, byte transactionID = 0)
+        async ValueTask SpetialTableTablePartVersionsHistoryClear(UuidAndText objowner, byte transactionID = 0)
         {
-            if (!obj.IsEmpty())
+            if (!objowner.IsEmpty())
             {
                 Dictionary<string, object> paramQuery = new()
                 {
-                    { "uuid", obj.Uuid },
-                    { "text", obj.Text },
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
                 };
 
                 await ExecuteSQL($@"
@@ -1926,14 +1922,14 @@ paramQuery, transactionID);
             }
         }
 
-        async ValueTask SpetialTableTablePartVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0)
+        async ValueTask SpetialTableTablePartVersionsHistoryRemove(Guid version_id, UuidAndText objowner, byte transactionID = 0)
         {
-            if (!obj.IsEmpty())
+            if (!objowner.IsEmpty())
             {
                 Dictionary<string, object> paramQuery = new()
                 {
-                    { "uuid", obj.Uuid },
-                    { "text", obj.Text },
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
                     { "version_id", version_id }
                 };
 
@@ -1941,6 +1937,30 @@ paramQuery, transactionID);
 DELETE FROM {SpecialTables.TablePartVersionsHistory} 
 WHERE 
     objversionid = @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text
+",
+paramQuery, transactionID);
+            }
+        }
+
+        public async ValueTask SpetialTableTablePartVersionsHistoryRemoveBeforeSave(Guid version_id, UuidAndText obj, string tablepart, byte transactionID = 0)
+        {
+            if (!obj.IsEmpty())
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uuid", obj.Uuid },
+                    { "text", obj.Text },
+                    { "version_id", version_id },
+                    { "tablepart", tablepart }
+                };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHistory} 
+WHERE 
+    objversionid = @version_id AND
+    tablepart = @tablepart AND
     (objowner).uuid = @uuid AND
     (objowner).text = @text
 ",
