@@ -22,16 +22,21 @@ limitations under the License.
 */
 
 using Gtk;
+using System.Globalization;
 
 namespace InterfaceGtk
 {
     public class NumericControl : Box
     {
-        Entry entryNumeric = new Entry() { WidthChars = 10 };
+        Entry entryNumeric = new Entry() { WidthChars = 16 };
         Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
+        NumberFormatInfo numberFormatUA = new CultureInfo("uk-UA", false).NumberFormat;
 
         public NumericControl() : base(Orientation.Horizontal, 0)
         {
+            numberFormatUA.NumberGroupSeparator = " ";
+            numberFormatUA.NumberDecimalDigits = 2;
+
             PackStart(hBoxInfoValid, false, false, 1);
 
             entryNumeric.Changed += OnEntryNumericChanged;
@@ -48,7 +53,7 @@ namespace InterfaceGtk
             set
             {
                 mValue = value;
-                entryNumeric.Text = mValue.ToString();
+                entryNumeric.Text = mValue.ToString("N", numberFormatUA);
             }
         }
 
