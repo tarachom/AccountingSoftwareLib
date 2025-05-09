@@ -238,6 +238,10 @@ namespace InterfaceGtk
                         treeColumn.Data.Add("ColumnDataNum", columnsList.FindIndex((x) => x == columnSettings.DataColumn));
                     }
 
+                    //Вказується тільки тип даних якщо немає привязки до колонки з даними
+                    if (!string.IsNullOrEmpty(columnSettings.Type) && string.IsNullOrEmpty(columnSettings.DataColumn))
+                        treeColumn.Data.Add("ColumnDataType", columnSettings.Type);
+
                     //Функція обробки ячейки
                     if (columnSettings.Func != null)
                     {
