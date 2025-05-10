@@ -53,7 +53,7 @@ namespace InterfaceGtk
 
             ListBox listBox = new() { SelectionMode = SelectionMode.None };
 
-            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 300, WidthRequest = 500 };
+            ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 300, WidthRequest = 750 };
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Add(listBox);
 
