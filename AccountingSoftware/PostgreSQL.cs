@@ -3019,27 +3019,30 @@ FROM
                 string query = "";
                 int counter = 0;
 
+                /*
+                   масив typeDocSelect має складатися із елементів ВидДокументу:Таблиця
+                */
+
+                //Масив таблиць для фільтрування
+                List<string> typeAllowDoc = [];
+
+                if (typeDocSelect != null)
+                    foreach (string typeDocItem in typeDocSelect)
+                        if (typeDocItem.Contains(':'))
+                        {
+                            string[] typeAndTable = typeDocItem.Split(":");
+
+                            //Додаю таблицю у фільтр
+                            typeAllowDoc.Add(typeAndTable[1]);
+                        }
+
                 if (tables.Length > 0)
                 {
                     foreach (string table in tables)
                     {
-                        //if (typeDocSelect != null)
-                        //{
-                        //	bool existTypeDoc = false;
-
-                        //	foreach (string typeDoc in typeDocSelect)
-                        //		if (typeDocument[counter] == typeDoc)
-                        //		{
-                        //			existTypeDoc = true;
-                        //			break;
-                        //		}
-
-                        //	if (!existTypeDoc)
-                        //	{
-                        //		counter++;
-                        //		continue;
-                        //	}
-                        //}
+                        //Фільтрування у випадку якщо є задані фільтри
+                        if (typeAllowDoc.Count > 0 && !typeAllowDoc.Contains(table))
+                            continue;
 
                         string whereSpendDoc = "";
 

@@ -208,10 +208,7 @@ namespace InterfaceGtk
                 vBoxContainer.PackStart(hBoxSelect, false, false, 10);
 
                 Button bSelectType = new Button("Вибрати") { Sensitive = TypeSelectSensetive };
-                bSelectType.Clicked += (sender, args) =>
-                {
-                    ВибірТипуДаних(bSelectType, Info);
-                };
+                bSelectType.Clicked += (sender, args) => ВибірТипуДаних(bSelectType, Info);
 
                 hBoxSelect.PackStart(bSelectType, false, false, 5);
 

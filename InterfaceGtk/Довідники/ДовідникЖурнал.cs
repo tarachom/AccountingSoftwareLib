@@ -430,7 +430,8 @@ namespace InterfaceGtk
                 TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
                 UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                await VersionsHistory(unigueID);
+                if (!unigueID.IsEmpty())
+                    await VersionsHistory(unigueID);
             }
 
             ToolButtonSensitive(sender, true);

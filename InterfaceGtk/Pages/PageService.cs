@@ -92,6 +92,10 @@ namespace InterfaceGtk
         {
             Box vBox = new Box(Orientation.Vertical, 0);
 
+            ListBox listBoxAllowDoc = new ListBox() { SelectionMode = SelectionMode.None };
+            Popover? popoverAllowDoc = null;
+            Button bFilterAllowDoc = new Button(new Image(Stock.SortAscending, IconSize.Button));
+
             Button bSpendTheDocument = new Button("Перепровести документи");
             Button bStop = new Button("Зупинити") { Sensitive = false };
             Button bClear = new Button("Очистити");
@@ -102,6 +106,9 @@ namespace InterfaceGtk
 
                 Період.Changed = PeriodChanged;
                 hBox.PackStart(Період, false, false, 5);
+
+                //Фільтер типів документів
+                hBox.PackStart(bFilterAllowDoc, false, false, 5);
 
                 //Кнопки
                 hBox.PackStart(bSpendTheDocument, false, false, 5);
@@ -115,15 +122,51 @@ namespace InterfaceGtk
             {
                 bSpendTheDocument.Sensitive = sensitive;
                 bStop.Sensitive = !sensitive;
-                //bClear.Sensitive = sensitive;
             }
+
+            (string[] Filter, string[] Info)? CreateFilterAllowDoc()
+            {
+                List<string> filter = [];
+                List<string> info = [];
+
+                foreach (ListBoxRow item in listBoxAllowDoc.Children.Cast<ListBoxRow>())
+                {
+                    CheckButton cb = (CheckButton)item.Child;
+                    if (cb.Active)
+                    {
+                        filter.Add(cb.Name);
+                        info.Add(cb.Label);
+                    }
+                }
+
+                return filter.Count != 0 ? ([.. filter], [.. info]) : null;
+            }
+
+            bFilterAllowDoc.Clicked += (sender, args) =>
+            {
+                if (popoverAllowDoc == null)
+                {
+                    //Список видів документів
+                    foreach (ConfigurationDocuments Document in Kernel.Conf.Documents.Values)
+                        listBoxAllowDoc.Add(new CheckButton(Document.FullName) { Name = $"{Document.Name}:{Document.Table}" });
+
+                    ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 500 };
+                    scroll.SetPolicy(PolicyType.Never, PolicyType.Automatic);
+                    scroll.Add(listBoxAllowDoc);
+
+                    popoverAllowDoc = new Popover(bFilterAllowDoc) { Position = PositionType.Bottom, BorderWidth = 5 };
+                    popoverAllowDoc.Add(scroll);
+                }
+
+                popoverAllowDoc.ShowAll();
+            };
 
             CancellationTokenSource? CancellationToken = null;
 
-            bSpendTheDocument.Clicked += async (object? sender, EventArgs args) =>
+            bSpendTheDocument.Clicked += async (sender, args) =>
             {
                 ButtonSensitive(false);
-                await SpendTheDocument(CancellationToken = new CancellationTokenSource(), () => ButtonSensitive(true));
+                await SpendTheDocument(CancellationToken = new CancellationTokenSource(), CreateFilterAllowDoc(), () => ButtonSensitive(true));
             };
 
             bStop.Clicked += (sender, args) => CancellationToken?.Cancel();
@@ -154,7 +197,6 @@ namespace InterfaceGtk
             {
                 bClearDeletionLabel.Sensitive = sensitive;
                 bStop.Sensitive = !sensitive;
-                //bClear.Sensitive = sensitive;
             }
 
             CancellationTokenSource? CancellationToken = null;
@@ -205,7 +247,7 @@ namespace InterfaceGtk
 
         #region ПроведенняДокументів
 
-        async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, System.Action CallBack)
+        async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
         {
             object? journalSelectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Журнали.JournalSelect");
             if (journalSelectInstance != null)
@@ -217,8 +259,12 @@ namespace InterfaceGtk
 
                 Лог.CreateMessage($"Період з <b>{Період.DateStartControl.ПочатокДня()}</b> по <b>{Період.DateStopControl.КінецьДня()}</b>", LogMessage.TypeMessage.Info);
 
+                //Вивід інформації про фільтр
+                if (filterAllowDoc.HasValue)
+                    Лог.CreateMessage($"Відбір документів наступних видів: <b>" + string.Join(", ", filterAllowDoc.Value.Info) + "</b>", LogMessage.TypeMessage.None, true);
+
                 Box hBoxFindDoc = Лог.CreateMessage($"Пошук проведених документів:", LogMessage.TypeMessage.Info, true);
-                if (await journalSelect.Select(Період.DateStartControl.ПочатокДня(), Період.DateStopControl.КінецьДня(), null, true))
+                if (await journalSelect.Select(Період.DateStartControl.ПочатокДня(), Період.DateStopControl.КінецьДня(), filterAllowDoc.HasValue ? filterAllowDoc.Value.Filter : null, true))
                 {
                     Лог.AppendMessage(hBoxFindDoc, $"знайдено {journalSelect.Count()} документів");
                     while (journalSelect.MoveNext())
@@ -298,7 +344,7 @@ namespace InterfaceGtk
             {
                 if (cancellationToken!.IsCancellationRequested) break;
 
-                Box hBoxInfo = Лог.CreateMessage($"Довідник <b>{confDirectories.Name}</b>", LogMessage.TypeMessage.Info);
+                Box hBoxInfo = Лог.CreateMessage($"Довідник <b>{confDirectories.FullName}</b>", LogMessage.TypeMessage.Info);
                 var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDirectories.Table));
                 if (recordResult.ListRow.Count > 0)
                 {
@@ -335,7 +381,7 @@ namespace InterfaceGtk
             {
                 if (cancellationToken!.IsCancellationRequested) break;
 
-                Box hBoxInfo = Лог.CreateMessage($"Документ <b>{confDocuments.Name}</b>", LogMessage.TypeMessage.Info);
+                Box hBoxInfo = Лог.CreateMessage($"Документ <b>{confDocuments.FullName}</b>", LogMessage.TypeMessage.Info);
                 var recordResult = await Kernel.DataBase.SelectRequest(querySelectDeletion.Replace("@TABLE", confDocuments.Table));
                 if (recordResult.ListRow.Count > 0)
                 {
