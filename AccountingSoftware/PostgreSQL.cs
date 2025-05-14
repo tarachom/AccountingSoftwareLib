@@ -2257,7 +2257,7 @@ WITH S AS
 ),
 all_count AS
 (
-    SELECT count(*) FROM S
+    SELECT count(*) AS row_count FROM S
 ),
 uid_exist AS
 (
@@ -2265,7 +2265,7 @@ uid_exist AS
 )
 SELECT 
     (CASE WHEN (SELECT row_number FROM uid_exist) IS NOT NULL THEN (SELECT row_number FROM uid_exist) ELSE 0 END) AS row_number,
-    all_count AS row_count
+    all_count.row_count AS row_count
 FROM
     all_count
 ";
