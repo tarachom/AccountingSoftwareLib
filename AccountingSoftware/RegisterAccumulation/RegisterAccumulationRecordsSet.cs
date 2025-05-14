@@ -36,7 +36,7 @@ namespace AccountingSoftware
             FieldArray = fieldsArray;
 
             QuerySelect = new Query(Table);
-            QuerySelect.Field.AddRange(["period", "income", "owner"]);
+            QuerySelect.Field.AddRange(["period", "income", "owner", "ownertype"]);
             QuerySelect.Field.AddRange(fieldsArray);
         }
 
@@ -149,10 +149,10 @@ namespace AccountingSoftware
         /// <param name="income">Тип запису - прибуток чи зменшення</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, bool income, Guid owner, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, bool income, Guid owner, NameAndText ownertype, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
-            await Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, FieldArray, fieldValue, TransactionID);
+            await Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, ownertype, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }
 

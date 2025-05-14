@@ -28,16 +28,22 @@ namespace AccountingSoftware
     /// </summary>
     public abstract class RegisterInformationRecordsSet
     {
-        public RegisterInformationRecordsSet(Kernel kernel, string table, string[] fieldsArray)
+        public RegisterInformationRecordsSet(Kernel kernel, string table, string typeRegInfo, string[] fieldsArray)
         {
             Kernel = kernel;
             Table = table;
+            TypeRegInfo = typeRegInfo;
             FieldArray = fieldsArray;
 
             QuerySelect = new Query(Table);
-            QuerySelect.Field.AddRange(["period", "owner"]);
+            QuerySelect.Field.AddRange(["period", "owner", "ownertype"]);
             QuerySelect.Field.AddRange(fieldsArray);
         }
+
+        /// <summary>
+        /// Назва як задано в конфігураторі
+        /// </summary>
+        public string TypeRegInfo { get; private set; }
 
         /// <summary>
         /// Запит SELECT
@@ -152,10 +158,10 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, Guid owner, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, Guid owner, NameAndText ownertype, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
-            await Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, FieldArray, fieldValue, TransactionID);
+            await Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, ownertype, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }
     }

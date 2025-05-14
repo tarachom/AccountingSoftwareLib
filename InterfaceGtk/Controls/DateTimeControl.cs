@@ -141,9 +141,18 @@ namespace InterfaceGtk
             //Calendar
             Calendar calendar = new Calendar() { Date = Value };
 
-            calendar.DaySelected += (sender, args) => Value = new DateTime(
-                calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
-                Value.Hour, Value.Minute, Value.Second);
+            calendar.DaySelected += (sender, args) =>
+            {
+                try
+                {
+                    Value = new DateTime(calendar.Date.Year, calendar.Date.Month, calendar.Date.Day,
+                        Value.Hour, Value.Minute, Value.Second);
+                }
+                catch
+                {
+                    Value = DateTime.MinValue;
+                }
+            };
 
             calendar.DaySelectedDoubleClick += (sender, args) => popoverCalendar.Hide();
 

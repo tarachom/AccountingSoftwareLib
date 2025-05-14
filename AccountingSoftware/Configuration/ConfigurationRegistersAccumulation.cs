@@ -139,7 +139,8 @@ namespace AccountingSoftware
                 new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
                 new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
                 new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
-                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник")
+                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
+                new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника")
             ];
         }
 

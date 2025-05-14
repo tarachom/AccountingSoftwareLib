@@ -55,9 +55,18 @@ namespace AccountingSoftware
         [PgName("text")]
         public string Text { get; set; } = "";
 
+        /// <summary>
+        /// Дані у XML форматі
+        /// </summary>
+        /// <returns></returns>
+        public string ToXml()
+        {
+            return $"<name>{Name}</name><text>{Text}</text>";
+        }
+
         public override string ToString()
         {
-            return $"('{Name}', '{Text}')";
+            return $"{Name}:{Text}";
         }
     }
 }

@@ -67,8 +67,8 @@ namespace AccountingSoftware
 			List<FieldType> fieldTypes =
             [
                 new ("string", "[ string ] - Текст"),
-				new ("integer", "[ integer ] - Ціле число"), //От -2 147 483 648 до 2 147 483 647
-				new ("numeric", "[ numeric ] - Число з комою"), //от ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
+				new ("integer", "[ integer ] - Ціле число"),    // -2 147 483 648 до 2 147 483 647
+				new ("numeric", "[ numeric ] - Число з комою"), // ±1,0 x 10^-28 до ±7,92^28 x 1028 16 байт
 				new ("boolean", "[ boolean ] - Логічне значення"),
 				new ("date", "[ date ] - Дата"),
 				new ("datetime", "[ datetime ] - Дата та час"),
@@ -77,6 +77,7 @@ namespace AccountingSoftware
 				new ("pointer", "[ pointer ] - Вказівник"),
 				new ("composite_pointer", "[ composite_pointer ] - Вказівник з вибором типу"),
 				new ("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор Guid"),
+				new ("composite_text", "[ composite_text ] - Кортеж - два текстові поля"),
 				new ("bytea", "[ bytea ] - Бінарні дані"),
 				new ("string[]", "[ a, b, ... ] - Масив текст"),
 				new ("integer[]", "[ 1, 2, ... ] - Масив ціле число"),
@@ -84,7 +85,7 @@ namespace AccountingSoftware
 				new ("uuid[]", "[ uuid, ... ] - Масив унікальних ідентифікаторів")
 			];
 
-			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); //От -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
+			//fieldTypes.Add(new FieldType("long", "[ long ] - Велике ціле число")); // -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807
 
 			//character [ (n) ] - char [ (n) ] - fixed-length character string
 			//character varying [ (n) ] - varchar [ (n) ] - variable-length character string

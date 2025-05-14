@@ -86,6 +86,15 @@ namespace AccountingSoftware
             return new UnigueID(Uuid);
         }
 
+        /// <summary>
+        /// Функція повертає тип у форматі NameAndText, де Назва це група а Текст це тип даних
+        /// </summary>
+        public NameAndText GetNameAndText()
+        {
+            var (result, pointerGroup, pointerType) = Configuration.PointerParse(Text, out Exception? _);
+            return result ? new NameAndText(pointerGroup, pointerType) : new NameAndText();
+        }
+
         public override string ToString()
         {
             return $"{Uuid}:{Text}";

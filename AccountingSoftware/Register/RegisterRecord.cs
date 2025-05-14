@@ -46,7 +46,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Тип власника запису
 		/// </summary>
-		public string OwnerType { get; set; } = "";
+		public NameAndText? OwnerType { get; set; } = null;
 
 		/// <summary>
 		/// Назва власника запису

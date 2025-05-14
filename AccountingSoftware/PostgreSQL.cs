@@ -2254,9 +2254,21 @@ paramQuery, transactionID);
 WITH S AS 
 (
     {QuerySelect.Construct()}
+),
+all_count AS
+(
+    SELECT count(*) FROM S
+),
+uid_exist AS
+(
+    SELECT row_number FROM S WHERE uid = '{unigueIDLocal.UGuid}'
 )
-Select row_number, row_count 
-FROM S WHERE uid = '{unigueIDLocal.UGuid}'";
+SELECT 
+    (CASE WHEN (SELECT row_number FROM uid_exist) IS NOT NULL THEN (SELECT row_number FROM uid_exist) ELSE 0 END) AS row_number,
+    all_count AS row_count
+FROM
+    all_count
+";
                 }
                 else
                 {
@@ -3133,12 +3145,12 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
-                string query_field = "uid, period, owner";
-                string query_values = "@uid, @period, @owner";
+                string query_field = "uid, period, owner, ownertype";
+                string query_values = "@uid, @period, @owner, @ownertype";
 
                 if (fieldArray.Length != 0)
                 {
@@ -3154,6 +3166,7 @@ FROM
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
+                command.Parameters.AddWithValue("ownertype", ownertype);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
@@ -3338,12 +3351,12 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
-                string query_field = "uid, period, income, owner";
-                string query_values = "@uid, @period, @income, @owner";
+                string query_field = "uid, period, income, owner, ownertype";
+                string query_values = "@uid, @period, @income, @owner, @ownertype";
 
                 if (fieldArray.Length != 0)
                 {
@@ -3360,6 +3373,7 @@ FROM
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("income", income);
                 command.Parameters.AddWithValue("owner", owner);
+                command.Parameters.AddWithValue("ownertype", ownertype);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);

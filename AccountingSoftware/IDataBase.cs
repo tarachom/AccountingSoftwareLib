@@ -210,7 +210,7 @@ namespace AccountingSoftware
         #region RegisterInformation
 
         ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
         ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
@@ -224,7 +224,7 @@ namespace AccountingSoftware
         #region RegisterAccumulation
 
         ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
         ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
