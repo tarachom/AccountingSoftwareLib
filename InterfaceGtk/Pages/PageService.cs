@@ -147,7 +147,7 @@ namespace InterfaceGtk
                 if (popoverAllowDoc == null)
                 {
                     //Список видів документів
-                    foreach (ConfigurationDocuments Document in Kernel.Conf.Documents.Values)
+                    foreach (ConfigurationDocuments Document in Kernel.Conf.Documents.Values.OrderBy(x => x.Name))
                         listBoxAllowDoc.Add(new CheckButton(Document.FullName) { Name = $"{Document.Name}:{Document.Table}" });
 
                     ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, HeightRequest = 500 };
