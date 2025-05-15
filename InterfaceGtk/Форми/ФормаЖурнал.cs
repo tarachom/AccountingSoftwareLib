@@ -85,14 +85,6 @@ namespace InterfaceGtk
             ScrollPages.Add(HBoxPages);
         }
 
-        /// <summary>
-        /// Фокус за стандартом
-        /// </summary>
-        public void DefaultGrabFocus()
-        {
-            TreeViewGrid.GrabFocus();
-        }
-
         #region Virtual & Abstract Function
 
         /// <summary>
@@ -104,6 +96,11 @@ namespace InterfaceGtk
         /// Додаткова функція яка викликається із SetValue
         /// </summary>
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+
+        /// <summary>
+        /// Фокус за стандартом
+        /// </summary>
+        public virtual void DefaultGrabFocus() { TreeViewGrid.GrabFocus(); }
 
         /// <summary>
         /// Завантаження списку
