@@ -226,6 +226,9 @@ SELECT EXISTS
 
         public async ValueTask CreateSpecialTables()
         {
+            //Прибрати пізніше
+            await ExecuteSQL($@"ALTER TABLE {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
+
             await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory}");
             await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.TablePartVersionsHistory}");
 

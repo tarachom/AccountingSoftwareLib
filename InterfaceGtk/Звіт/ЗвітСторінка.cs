@@ -80,10 +80,29 @@ namespace InterfaceGtk
         public record ColumnsSettings(string Caption = "", string DataColumn = "", string Type = "", float Xalign = 0, TreeCellDataFunc? Func = null,
             ФункціїДляДинамічногоВідкриття.TypeForm TypeOpenForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal)
         {
+            /// <summary>
+            /// Заголовок колонки
+            /// </summary>
             public string Caption { get; set; } = Caption;
+
+            /// <summary>
+            /// Колонка з даними для даної колонки
+            /// </summary>
             public string DataColumn { get; set; } = DataColumn;
+
+            /// <summary>
+            /// Тип даних клітинки
+            /// </summary>
             public string Type { get; set; } = Type;
+
+            /// <summary>
+            /// Позиція тексту в клітинці (0 зліва, 0.5 середина 1 зправа)
+            /// </summary>
             public float Xalign { get; set; } = Xalign;
+
+            /// <summary>
+            /// Функція для клітинки
+            /// </summary>
             public TreeCellDataFunc? Func { get; set; } = Func;
 
             /// <summary>

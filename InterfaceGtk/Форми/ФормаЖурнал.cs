@@ -85,6 +85,14 @@ namespace InterfaceGtk
             ScrollPages.Add(HBoxPages);
         }
 
+        /// <summary>
+        /// Фокус за стандартом
+        /// </summary>
+        public void DefaultGrabFocus()
+        {
+            TreeViewGrid.GrabFocus();
+        }
+
         #region Virtual & Abstract Function
 
         /// <summary>

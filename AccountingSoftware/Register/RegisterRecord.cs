@@ -44,7 +44,7 @@ namespace AccountingSoftware
 		public Guid Owner { get; set; }
 
 		/// <summary>
-		/// Тип власника запису
+		/// Тип власника запису (Назва = Довідники або Документи, Текст = Тип як задано в конфігураторі)
 		/// </summary>
 		public NameAndText? OwnerType { get; set; } = null;
 

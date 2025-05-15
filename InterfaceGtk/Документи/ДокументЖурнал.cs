@@ -76,11 +76,13 @@ namespace InterfaceGtk
 
             //Період
             Період.Changed = PeriodChanged;
+            Період.CanFocus = false;
             HBoxTop.PackStart(Період, false, false, 2);
 
             //Пошук
             Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
             Пошук.Clear = async () => await BeforeLoadRecords();
+            Пошук.CanFocus = false;
             HBoxTop.PackStart(Пошук, false, false, 2);
 
             //Фільтр
@@ -88,6 +90,7 @@ namespace InterfaceGtk
             Фільтр.Clear = async () => await BeforeLoadRecords();
             Фільтр.FillFilterList = FillFilterList;
             Фільтр.Період = Період;
+            Фільтр.CanFocus = false;
 
             CreateToolbar();
 
@@ -95,6 +98,7 @@ namespace InterfaceGtk
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
             TreeViewGrid.ButtonReleaseEvent += OnButtonReleaseEvent;
             TreeViewGrid.KeyReleaseEvent += OnKeyReleaseEvent;
+            TreeViewGrid.ReceivesDefault = true;
 
             //Сторінки
             AddPages(new Сторінки.Налаштування() { Тип = Сторінки.ТипЖурналу.Документи });
@@ -109,6 +113,8 @@ namespace InterfaceGtk
 
         public override async ValueTask SetValue()
         {
+            DefaultGrabFocus();
+
             await BeforeSetValue();
         }
 

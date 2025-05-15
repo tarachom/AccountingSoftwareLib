@@ -124,7 +124,9 @@ namespace InterfaceGtk
 
         public override async ValueTask SetValue()
         {
-            await BeforeSetValue();
+            DefaultGrabFocus();
+
+            await BeforeSetValue();            
         }
 
         #region Hierarchy

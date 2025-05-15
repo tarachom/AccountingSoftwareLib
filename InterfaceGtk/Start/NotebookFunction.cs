@@ -284,7 +284,14 @@ namespace InterfaceGtk
                 (Widget wg) =>
                 {
                     if (wg.Name == codePage)
+                    {
                         notebook.CurrentPage = counter;
+
+                        //Передати фокус
+                        if (notebook.CurrentPageWidget is ScrolledWindow scroll)
+                            if (scroll.Child is Viewport viewport)
+                                viewport.Child?.GetType().GetMethod("DefaultGrabFocus")?.Invoke(viewport.Child, null);
+                    }
 
                     counter++;
                 });

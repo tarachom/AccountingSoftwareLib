@@ -77,6 +77,8 @@ namespace InterfaceGtk
 
         public override async ValueTask SetValue()
         {
+            DefaultGrabFocus();
+
             await BeforeSetValue();
         }
 
