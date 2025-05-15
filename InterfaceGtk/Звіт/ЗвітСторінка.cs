@@ -68,14 +68,16 @@ namespace InterfaceGtk
         public SelectRequest_Record RecordResult { get; set; } = new SelectRequest_Record();
 
         /// <summary>
-        /// Налаштування для колонок
-        /// </summary>
-        public Dictionary<string, ColumnsSettings> ColumnSettings { get; set; } = [];
-
-        /// <summary>
         /// Додаткова інформація для звіту
         /// </summary>
         public Func<ValueTask<string>>? GetInfo { get; set; } = null;
+
+        #region View
+
+        /// <summary>
+        /// Налаштування для колонок
+        /// </summary>
+        public Dictionary<string, ColumnsSettings> ColumnSettings { get; set; } = [];
 
         public record ColumnsSettings(string Caption = "", string DataColumn = "", string Type = "", float Xalign = 0, TreeCellDataFunc? Func = null,
             ФункціїДляДинамічногоВідкриття.TypeForm TypeOpenForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal)
@@ -111,6 +113,8 @@ namespace InterfaceGtk
             public ФункціїДляДинамічногоВідкриття.TypeForm TypeForm { get; set; } = TypeOpenForm;
         }
 
+        #endregion
+
         #region PDF
 
         public Dictionary<string, PDFColumnsSettings> PDFColumnSettings { get; set; } = [];
@@ -128,6 +132,37 @@ namespace InterfaceGtk
         {
             Constant,
             Relative
+        }
+
+        #endregion
+
+        #region Excel
+
+        public Dictionary<string, ExcelColumnsSettings> ExcelColumnSettings { get; set; } = [];
+
+        public record ExcelColumnsSettings(string Caption = "", string Type = "", float Width = 0, float Xalign = 0, Func<object, string>? Func = null)
+        {
+            public string Caption { get; set; } = Caption;
+
+            /// <summary>
+            /// Тип даних клітинки
+            /// </summary>
+            public string Type { get; set; } = Type;
+
+            /// <summary>
+            /// Ширина колонки, 0 - авторозмір
+            /// </summary>
+            public float Width { get; set; } = Width;
+
+            /// <summary>
+            /// 0 - зліва, 0.5 - середина, 1 - зправа
+            /// </summary>
+            public float Xalign { get; set; } = Xalign;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public Func<object, string>? Func { get; set; } = Func;
         }
 
         #endregion
@@ -220,6 +255,44 @@ namespace InterfaceGtk
         }
 
         /// <summary>
+        /// Функція повертає набір рядків із налаштуваннями для створення Excel
+        /// </summary>
+        public (Dictionary<string, ExcelColumnsSettings> Settings, List<string[]> Rows) FillListForExcel()
+        {
+            Dictionary<string, ExcelColumnsSettings> newExcelColumnSettings = [];
+            List<string[]> rows = [];
+
+            List<string> columns = [.. RecordResult.ColumnsName];
+
+            //Перевірка наявності колонки з результатів запиту в налаштуваннях
+            foreach (var columnSettings in ExcelColumnSettings)
+                if (columns.Exists((x) => x == columnSettings.Key))
+                    newExcelColumnSettings.Add(columnSettings.Key, columnSettings.Value);
+
+            int columnsCount = newExcelColumnSettings.Count;
+
+            //Дані
+            foreach (Dictionary<string, object> row in RecordResult.ListRow)
+            {
+                string[] cols = new string[columnsCount];
+
+                int counter = 0;
+                foreach (var columnSettings in newExcelColumnSettings)
+                {
+                    string value = row[columnSettings.Key]?.ToString() ?? "";
+                    if (columnSettings.Value.Func != null)
+                        value = columnSettings.Value.Func(value);
+
+                    cols[counter++] = value;
+                }
+
+                rows.Add(cols);
+            }
+
+            return (newExcelColumnSettings, rows);
+        }
+
+        /// <summary>
         /// Вигрузка даних у таблицю
         /// </summary>
         public void FillTreeView()
@@ -308,7 +381,7 @@ namespace InterfaceGtk
 
                 //Обновити
                 {
-                    string label = "Обновити";
+                    string label = "Оновити";
 
                     ToolButton button = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
@@ -327,7 +400,7 @@ namespace InterfaceGtk
                 toolbar.Add(separator);
 
                 //Зберегти в довіднику "Збережені звіти"
-                {
+                /*{
                     string label = "Зберегти в довіднику \"Збережені звіти\"";
 
                     ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), label) { TooltipText = label };
@@ -339,16 +412,16 @@ namespace InterfaceGtk
                         await Select();
                         await ЗберегтиЗвіт(this, FillList());
                     };
-                }
+                }*/
 
                 //Довідник "Збережені звіти"
-                {
+                /*{
                     string label = "Відкрити довідник \"Збережені звіти\"";
 
                     ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), label) { TooltipText = label };
                     toolbar.Add(button);
                     button.Clicked += async (sender, args) => await ВідкритиЗбереженіЗвіти();
-                }
+                }*/
 
                 //PDF
                 {
@@ -358,8 +431,12 @@ namespace InterfaceGtk
                     toolbar.Add(button);
                     button.Clicked += async (sender, args) =>
                     {
+                        button.Sensitive = false;
+
                         await Select();
                         await ВигрузитиВФайл_PDF(this, FillListForPDF());
+
+                        button.Sensitive = true;
                     };
                 }
 
@@ -371,8 +448,12 @@ namespace InterfaceGtk
                     toolbar.Add(button);
                     button.Clicked += async (sender, args) =>
                     {
+                        button.Sensitive = false;
+
                         await Select();
-                        await ВигрузитиВФайл_Excel(this, FillList());
+                        await ВигрузитиВФайл_Excel(this, FillListForExcel());
+
+                        button.Sensitive = true;
                     };
                 }
 
@@ -521,10 +602,12 @@ namespace InterfaceGtk
 
         protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
         protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
-        protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
-        protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
+
+        //protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+        //protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
+
         protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
-        protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
+        protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, (Dictionary<string, ExcelColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
 
         #endregion
 
