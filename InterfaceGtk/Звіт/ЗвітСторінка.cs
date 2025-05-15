@@ -399,30 +399,6 @@ namespace InterfaceGtk
                 ToolItem separator = [new Separator(Orientation.Horizontal)];
                 toolbar.Add(separator);
 
-                //Зберегти в довіднику "Збережені звіти"
-                /*{
-                    string label = "Зберегти в довіднику \"Збережені звіти\"";
-
-                    ToolButton button = new ToolButton(new Image(Stock.Save, IconSize.Menu), label) { TooltipText = label };
-                    toolbar.Add(button);
-                    button.Clicked += async (sender, args) =>
-                    {
-                        button.Sensitive = false;
-
-                        await Select();
-                        await ЗберегтиЗвіт(this, FillList());
-                    };
-                }*/
-
-                //Довідник "Збережені звіти"
-                /*{
-                    string label = "Відкрити довідник \"Збережені звіти\"";
-
-                    ToolButton button = new ToolButton(new Image(Stock.GoForward, IconSize.Menu), label) { TooltipText = label };
-                    toolbar.Add(button);
-                    button.Clicked += async (sender, args) => await ВідкритиЗбереженіЗвіти();
-                }*/
-
                 //PDF
                 {
                     string label = "Вигрузити в PDF файл";
@@ -456,6 +432,8 @@ namespace InterfaceGtk
                         button.Sensitive = true;
                     };
                 }
+
+                AppendToolbar(toolbar);
 
                 vBox.PackStart(toolbar, false, false, 0);
             }
@@ -599,13 +577,10 @@ namespace InterfaceGtk
         }
 
         #region Virtual & Abstract Function
-
         protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
         protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
 
-        //protected virtual async ValueTask ЗберегтиЗвіт(ЗвітСторінка звіт, List<string[]> rows) { await ValueTask.FromResult(true); }
-        //protected virtual async ValueTask ВідкритиЗбереженіЗвіти() { await ValueTask.FromResult(true); }
-
+        protected virtual async void AppendToolbar(Toolbar toolbar) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
         protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, (Dictionary<string, ExcelColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
 
