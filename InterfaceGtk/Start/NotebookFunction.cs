@@ -325,24 +325,25 @@ namespace InterfaceGtk
 
         static void OnNotebookKeyReleaseEvent(object sender, KeyReleaseEventArgs args)
         {
-            switch (args.Event.Key)
-            {
-                case Gdk.Key.Escape:
-                    {
-                        Notebook notebook = (Notebook)sender;
-                        Widget widget = notebook.CurrentPageWidget;
-                        if (widget != null)
-                            //Пошук в назві вкладки LinkButton для закриття сторінки
-                            foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
-                                if (children is LinkButton lbClose && lbClose.Uri == "Close")
-                                {
-                                    CloseNotebookPageToCode(notebook, lbClose.Name);
-                                    break;
-                                }
+            Notebook notebook = (Notebook)sender;
 
-                        break;
-                    }
-            }
+            //if (notebook.IsFocus) !!! 
+                switch (args.Event.Key)
+                {
+                    case Gdk.Key.Escape:
+                        {
+                            Widget widget = notebook.CurrentPageWidget;
+                            if (widget != null)
+                                //Пошук в назві вкладки LinkButton для закриття сторінки
+                                foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
+                                    if (children is LinkButton lbClose && lbClose.Uri == "Close")
+                                    {
+                                        CloseNotebookPageToCode(notebook, lbClose.Name);
+                                        break;
+                                    }
+                            break;
+                        }
+                }
         }
 
         #region ObjectChangeEvents

@@ -112,7 +112,10 @@ namespace InterfaceGtk
             ClearHBoxInfoValid();
 
             if (string.IsNullOrEmpty(entryDateTimeValue.Text))
+            {
+                mValue = DateTime.MinValue;
                 return false;
+            }
 
             if (DateTime.TryParse(entryDateTimeValue.Text, out DateTime value))
             {
