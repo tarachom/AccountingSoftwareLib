@@ -229,8 +229,8 @@ SELECT EXISTS
             //Прибрати пізніше
             await ExecuteSQL($@"ALTER TABLE {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
 
-            await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory}");
-            await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.TablePartVersionsHistory}");
+            //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory}");
+            //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.TablePartVersionsHistory}");
 
             //Список системних таблиць
             List<string> specialTable = await GetSpecialTableList();
