@@ -299,6 +299,11 @@ namespace AccountingSoftware
         /// Власник
         /// </summary>
         public Guid Owner { get; set; } = Guid.Empty;
+
+        /// <summary>
+        /// Тип власника
+        /// </summary>
+        public NameAndText OwnerType { get; set; } = new NameAndText();
     }
 
     #endregion

@@ -3262,12 +3262,12 @@ FROM
             }
         }
 
-        public async ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query_field = "uid, period, owner";
-                string query_values = "@uid, @period, @owner";
+                string query_field = "uid, period, owner, ownertype";
+                string query_values = "@uid, @period, @owner, @ownertype";
 
                 if (fieldArray.Length != 0)
                 {
@@ -3281,6 +3281,7 @@ FROM
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
+                command.Parameters.AddWithValue("ownertype", ownertype);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
@@ -3293,11 +3294,11 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> UpdateRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
-                string query = $"UPDATE {table} SET period = @period, owner = @owner";
+                string query = $"UPDATE {table} SET period = @period, owner = @owner, ownertype = @ownertype";
 
                 foreach (string field in fieldArray)
                     query += ", " + field + " = @" + field;
@@ -3308,6 +3309,7 @@ FROM
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
+                command.Parameters.AddWithValue("ownertype", ownertype);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
@@ -3326,7 +3328,7 @@ FROM
 
             if (DataSource != null)
             {
-                string query = "SELECT uid, period, owner";
+                string query = "SELECT uid, period, owner, ownertype";
 
                 if (fieldArray.Length != 0)
                     query += ", " + string.Join(", ", fieldArray);
@@ -3343,6 +3345,7 @@ FROM
                 {
                     record.Period = (DateTime)reader["period"];
                     record.Owner = (Guid)reader["owner"];
+                    record.OwnerType = reader["ownertype"] != DBNull.Value ? (NameAndText)reader["ownertype"] : new NameAndText();
 
                     foreach (string field in fieldArray)
                         fieldValue[field] = reader[field];

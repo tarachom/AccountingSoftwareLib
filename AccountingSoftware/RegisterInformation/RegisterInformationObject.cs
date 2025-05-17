@@ -39,6 +39,11 @@ namespace AccountingSoftware
         public Guid Owner { get; set; } = Guid.Empty;
 
         /// <summary>
+        /// Тип власника запису
+        /// </summary>
+        public NameAndText OwnerType { get; set; } = new NameAndText();
+
+        /// <summary>
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
@@ -55,6 +60,8 @@ namespace AccountingSoftware
                 UnigueID = uid;
                 Period = record.Period;
                 Owner = record.Owner;
+                OwnerType = record.OwnerType;
+                
                 IsSave = true;
 
                 return true;
@@ -72,13 +79,13 @@ namespace AccountingSoftware
 
             if (IsNew)
             {
-                result = await Kernel.DataBase.InsertRegisterInformationObject(UnigueID, Period, Owner, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertRegisterInformationObject(UnigueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
                 if (result) IsNew = false;
             }
             else
             {
                 if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
-                    result = await Kernel.DataBase.UpdateRegisterInformationObject(UnigueID, Period, Owner, Table, FieldArray, FieldValue);
+                    result = await Kernel.DataBase.UpdateRegisterInformationObject(UnigueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий об'єкт");
             }

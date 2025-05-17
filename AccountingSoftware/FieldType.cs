@@ -77,7 +77,7 @@ namespace AccountingSoftware
 				new ("pointer", "[ pointer ] - Вказівник"),
 				new ("composite_pointer", "[ composite_pointer ] - Вказівник з вибором типу"),
 				new ("any_pointer", "[ any_pointer ] - Унікальний ідентифікатор Guid"),
-				new ("composite_text", "[ composite_text ] - Кортеж - два текстові поля"),
+				new ("composite_text", "[ composite_text ] - Кортеж: два текстові поля"),
 				new ("bytea", "[ bytea ] - Бінарні дані"),
 				new ("string[]", "[ a, b, ... ] - Масив текст"),
 				new ("integer[]", "[ 1, 2, ... ] - Масив ціле число"),
