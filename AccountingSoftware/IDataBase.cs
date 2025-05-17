@@ -115,16 +115,13 @@ namespace AccountingSoftware
 
         #region SpetialTable VersionsHistory
 
-        //ObjectVersionsHistory
-
-        ValueTask SpetialTableObjectVersionsHistoryAddIfNotExist(Guid version_id, Guid user_uid, UuidAndText obj, byte transactionID = 0);
         ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0);
         ValueTask<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj);
         ValueTask<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj);
         ValueTask SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0);
         ValueTask SpetialTableObjectVersionsHistoryClear(UuidAndText obj, byte transactionID = 0);
+        ValueTask SpetialTableObjectVersionsHistoryAddIfNotExist(Guid version_id, Guid user_uid, UuidAndText obj, byte transactionID = 0);
 
-        //TablePartVersionsHistory
 
         ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText obj);

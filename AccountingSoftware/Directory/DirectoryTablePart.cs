@@ -174,8 +174,13 @@ namespace AccountingSoftware
             return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
         }
 
-        protected async ValueTask IsExistOwnerVersion()
+        /// <summary>
+        /// Перевірка нявності запису для власника таб частини. Якщо нема - добавляється новий запис.
+        /// Додатково відбувається очистка попередніх записів версії, якщо такі є
+        /// </summary>
+        protected async ValueTask BeforeSaveOwnerVersion()
         {
+            //Перевірка і створення запису для власника
             await Kernel.DataBase.SpetialTableObjectVersionsHistoryAddIfNotExist(OwnerVersionID, Kernel.User, OwnerBasis, TransactionID);
 
             //Очистка попередніх записів

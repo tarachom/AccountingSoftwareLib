@@ -1615,17 +1615,17 @@ WHERE (LockedObject.obj).uuid = @obj
 
         #region SpetialTable VersionsHistory
 
-        //ObjectVersionsHistory
+        #region ObjectVersionsHistory
 
-        public async ValueTask SpetialTableObjectVersionsHistoryAddIfNotExist(Guid version_id, Guid user_uid, UuidAndText obj, byte transactionID = 0)
-        {
-            string query = $@"SELECT count(uid) FROM {SpecialTables.ObjectVersionsHistory} WHERE uid = @uid";
-            object? count = await ExecuteSQLScalar(query, new() { { "uid", version_id } });
-
-            if (count != null && (long)count == 0)
-                await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, obj, null, 'E', "", transactionID);
-        }
-
+        /// <summary>
+        /// Добаляє новий запис в історію змін обєктів
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="user_uid">Юзер</param>
+        /// <param name="obj">Обєкт для якого записується історія</param>
+        /// <param name="fieldValue">Поля із значеннями</param>
+        /// <param name="operation">Операція</param>
+        /// <param name="info">Додаткова інформація</param>
         public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0)
         {
             List<NameAndText> nameAndText = [];
@@ -1679,6 +1679,11 @@ ON CONFLICT (uid) DO UPDATE SET
 
         }
 
+        /// <summary>
+        /// Список всіх змін для обєкту
+        /// </summary>
+        /// <param name="obj">Обєкт</param>
+        /// <returns>Колекція змін</returns>
         public async ValueTask<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj)
         {
             SelectVersionsHistoryList_Record record = new();
@@ -1725,6 +1730,12 @@ ORDER BY
             return record;
         }
 
+        /// <summary>
+        /// Один запис з історії змін для обєкту
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="obj">Обєкт</param>
+        /// <returns>Колекція</returns>
         public async ValueTask<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj)
         {
             SelectVersionsHistoryItem_Record record = new();
@@ -1769,6 +1780,11 @@ WHERE
             return record;
         }
 
+        /// <summary>
+        /// Видалення запису з істрії змін
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="obj">Обєкт</param>
         public async ValueTask SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
@@ -1794,6 +1810,10 @@ paramQuery, transactionID);
             }
         }
 
+        /// <summary>
+        /// Видалення всіх записів в історії для обєкту
+        /// </summary>
+        /// <param name="obj">Обєкт</param>
         public async ValueTask SpetialTableObjectVersionsHistoryClear(UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
@@ -1817,8 +1837,34 @@ paramQuery, transactionID);
             }
         }
 
-        //TablePartVersionsHistory
+        /// <summary>
+        /// Функція перевіряє наявність запису для об'єкту і якщо немає - добавляє новий, без полів і з міткою E (пустий)
+        /// Використовується для табличних частин, коли є зміни в таб частині але немає змін в самому об'єкті
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="user_uid">Юзер</param>
+        /// <param name="obj">Обєкт</param>
+        public async ValueTask SpetialTableObjectVersionsHistoryAddIfNotExist(Guid version_id, Guid user_uid, UuidAndText obj, byte transactionID = 0)
+        {
+            string query = $@"SELECT count(uid) FROM {SpecialTables.ObjectVersionsHistory} WHERE uid = @uid";
+            object? count = await ExecuteSQLScalar(query, new() { { "uid", version_id } });
 
+            if (count != null && (long)count == 0)
+                await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, obj, null, 'E', "", transactionID);
+        }
+
+        #endregion
+
+        #region TablePartVersionsHistory
+
+        /// <summary>
+        /// Добавляє запис в історію змін для табличної частини один рядок
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="user_uid">Юзер</param>
+        /// <param name="objowner">Обєкт власник</param>
+        /// <param name="tablepart">Таблиця таб частини</param>
+        /// <param name="fieldValue">Поля</param>
         public async ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             List<NameAndText> nameAndText = new(fieldValue.Count);
@@ -1860,6 +1906,11 @@ VALUES
 
         }
 
+        /// <summary>
+        /// Зчитує всі записи версії для обєкту-власника
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="objowner">Обєкт-власник</param>
         public async ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText objowner)
         {
             SelectVersionsHistoryTablePart_Record record = new();
@@ -1905,26 +1956,11 @@ WHERE
             return record;
         }
 
-        async ValueTask SpetialTableTablePartVersionsHistoryClear(UuidAndText objowner, byte transactionID = 0)
-        {
-            if (!objowner.IsEmpty())
-            {
-                Dictionary<string, object> paramQuery = new()
-                {
-                    { "uuid", objowner.Uuid },
-                    { "text", objowner.Text },
-                };
-
-                await ExecuteSQL($@"
-DELETE FROM {SpecialTables.TablePartVersionsHistory} 
-WHERE 
-    (objowner).uuid = @uuid AND
-    (objowner).text = @text
-",
-paramQuery, transactionID);
-            }
-        }
-
+        /// <summary>
+        /// Видаляє всі записи версії для обєкту-власника 
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="objowner">Обєкт-власник</param>
         async ValueTask SpetialTableTablePartVersionsHistoryRemove(Guid version_id, UuidAndText objowner, byte transactionID = 0)
         {
             if (!objowner.IsEmpty())
@@ -1947,6 +1983,37 @@ paramQuery, transactionID);
             }
         }
 
+        /// <summary>
+        /// Очищає всі записи для обєкту-вланика
+        /// </summary>
+        /// <param name="objowner">Обєкт-власник</param>
+        async ValueTask SpetialTableTablePartVersionsHistoryClear(UuidAndText objowner, byte transactionID = 0)
+        {
+            if (!objowner.IsEmpty())
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
+                };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHistory} 
+WHERE 
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text
+",
+paramQuery, transactionID);
+            }
+        }
+
+        /// <summary>
+        /// Очищає всі записи версії для обєкту-власника і для даної таб частини.
+        /// Використувється для перезапису версії, коли таб частина зберізається більше одного разу
+        /// </summary>
+        /// <param name="version_id">Версія</param>
+        /// <param name="obj">Обєкт-власник</param>
+        /// <param name="tablepart">Таблиця таб частини</param>
         public async ValueTask SpetialTableTablePartVersionsHistoryRemoveBeforeSave(Guid version_id, UuidAndText obj, string tablepart, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
@@ -1970,6 +2037,8 @@ WHERE
 paramQuery, transactionID);
             }
         }
+
+        #endregion
 
         #endregion
 
