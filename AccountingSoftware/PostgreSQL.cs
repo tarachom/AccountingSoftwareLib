@@ -226,12 +226,6 @@ SELECT EXISTS
 
         public async ValueTask CreateSpecialTables()
         {
-            //Прибрати пізніше
-            await ExecuteSQL($@"ALTER TABLE {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
-
-            //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory}");
-            //await ExecuteSQL($"DROP TABLE IF EXISTS {SpecialTables.TablePartVersionsHistory}");
-
             //Список системних таблиць
             List<string> specialTable = await GetSpecialTableList();
 
@@ -492,6 +486,11 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}
 )");
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {SpecialTables.ObjectUpdateTriger}(datewrite)");
+            }
+            else
+            {
+                /* !!! В таблицю додано нове поле */
+                await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
             }
 
             if (!specialTable.Contains(SpecialTables.ObjectVersionsHistory))
