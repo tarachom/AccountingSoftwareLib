@@ -67,7 +67,7 @@ namespace AccountingSoftware
         /// Унікальний ідентифікатор запису
         /// </summary>
         public UnigueID UnigueID { get; protected set; } = new UnigueID();
-        
+
         /// <summary>
         /// Чи вже записаний
         /// </summary>
@@ -95,11 +95,14 @@ namespace AccountingSoftware
             UnigueID = UnigueID.NewUnigueID();
             IsNew = true;
             IsSave = false;
+
+            BeforeBaseNew();
         }
 
         #region Virtual Function
 
         public virtual UuidAndText GetBasis() { return new UuidAndText(); }
+        protected virtual void BeforeBaseNew() { }
 
         #endregion
 

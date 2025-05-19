@@ -51,7 +51,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор для збереження версій
         /// </summary>
-        public Guid VersionID { get; init; } = Guid.NewGuid();
+        public Guid VersionID { get; private set; } = Guid.NewGuid();
 
         /// <summary>
         /// Вести історію версій значень полів
@@ -243,5 +243,14 @@ namespace AccountingSoftware
         {
             return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
         }
+
+        /// <summary>
+        /// При створенні нового об'єкту змінюється і VersionID версії
+        /// </summary>
+        protected override void BeforeBaseNew()
+        {
+            VersionID = Guid.NewGuid();
+        }
+
     }
 }
