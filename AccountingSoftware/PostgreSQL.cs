@@ -1633,7 +1633,27 @@ WHERE (LockedObject.obj).uuid = @obj
             {
                 nameAndText = new(fieldValue.Count);
                 foreach (var field in fieldValue)
-                    nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
+                    switch (field.Value?.GetType().ToString() ?? "")
+                    {
+                        case "System.Byte[]":
+                            {
+                                nameAndText.Add(new NameAndText(field.Key, ""));
+                                break;
+                            }
+                        case "System.String[]":
+                        case "System.Int32[]":
+                        case "System.Decimal[]":
+                        case "System.Guid[]":
+                            {
+                                nameAndText.Add(new NameAndText(field.Key, string.Join(", ", field.Value?.ToString() ?? "")));
+                                break;
+                            }
+                        default:
+                            {
+                                nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
+                                break;
+                            }
+                    }
             }
 
             Dictionary<string, object> paramQuery = new()

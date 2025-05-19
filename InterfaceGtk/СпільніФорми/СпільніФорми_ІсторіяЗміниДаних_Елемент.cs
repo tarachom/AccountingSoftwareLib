@@ -117,6 +117,10 @@ namespace InterfaceGtk
                             {
                                 case "string":
                                 case "any_pointer":
+                                case "string[]":
+                                case "integer[]":
+                                case "numeric[]":
+                                case "uuid[]":
                                     {
                                         if (Field.Multiline)
                                         {

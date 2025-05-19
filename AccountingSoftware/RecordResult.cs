@@ -98,13 +98,8 @@ namespace AccountingSoftware
 
     public record SelectVersionsHistoryList_Record
     {
-        /// <summary>
-        /// Результат функції
-        /// </summary>
         public bool Result;
-
         public UuidAndText Obj = new UuidAndText();
-
         public List<Row> ListRow = [];
 
         public record Row()
@@ -120,21 +115,12 @@ namespace AccountingSoftware
 
     public record SelectVersionsHistoryItem_Record
     {
-        /// <summary>
-        /// Результат функції
-        /// </summary>
         public bool Result;
-
         public Guid VersionID = Guid.Empty;
-
         public DateTime DateWrite = DateTime.MinValue;
-
         public Guid UserID = Guid.Empty;
-        
         public string UserName = "";
-
         public UuidAndText Obj = new UuidAndText();
-
         public NameAndText[] Fields = [];
 
         public Dictionary<string, string> GetDictionaryFields()
@@ -149,25 +135,16 @@ namespace AccountingSoftware
 
     public record SelectVersionsHistoryTablePart_Record
     {
-        /// <summary>
-        /// Результат функції
-        /// </summary>
         public bool Result;
-
         public Guid VersionID = Guid.Empty;
-
         public UuidAndText ObjOwner = new UuidAndText();
-
         public List<Row> ListRow = [];
 
         public record Row()
         {
             public DateTime DateWrite = DateTime.MinValue;
-
             public Guid UserID = Guid.Empty;
-
             public string TablePart = "";
-
             public NameAndText[] Fields = [];
 
             public Dictionary<string, string> GetDictionaryFields()
