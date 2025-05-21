@@ -62,5 +62,10 @@ namespace InterfaceGtk
 
             await FillList(listBox);
         }
+
+        protected static string SubstringName(string name)
+        {
+            return name.Length >= 90 ? name[..87] + "..." : name;
+        }
     }
 }
