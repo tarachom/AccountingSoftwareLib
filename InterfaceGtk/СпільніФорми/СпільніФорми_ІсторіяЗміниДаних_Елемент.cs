@@ -282,7 +282,7 @@ namespace InterfaceGtk
                                     {
                                         case "string":
                                             {
-                                                value = value.Replace("\n", " ");
+                                                value = value.Replace("\n", " ").Replace("\r", "");
                                                 value = value.Length > 100 ? value[..100] + " ..." : value;
                                                 break;
                                             }
