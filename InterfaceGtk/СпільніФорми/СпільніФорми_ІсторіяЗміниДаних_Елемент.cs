@@ -29,10 +29,12 @@ namespace InterfaceGtk
     public abstract class СпільніФорми_ІсторіяЗміниДаних_Елемент : Форма
     {
         Kernel Kernel { get; set; }
-        ListBox listBoxField = new ListBox();
-        Notebook notebookTablePart = new Notebook() { Scrollable = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
+
         CompositePointerControl pointerObj;
         Box hBoxInfo = new Box(Orientation.Horizontal, 5);
+
+        ListBox listBoxField = new ListBox();
+        Notebook notebookTablePart = new Notebook() { Scrollable = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
 
         public СпільніФорми_ІсторіяЗміниДаних_Елемент(Kernel kernel) : base()
         {
@@ -231,7 +233,6 @@ namespace InterfaceGtk
             {
                 SelectVersionsHistoryTablePart_Record recordResult = await Kernel.DataBase.SpetialTableTablePartVersionsHistorySelect(versionID, obj);
                 if (recordResult.Result)
-                {
                     foreach (ConfigurationTablePart tablePart in TabularParts.Values)
                     {
                         //Таблична частина в якій немає даних пропускається
@@ -306,7 +307,6 @@ namespace InterfaceGtk
                         }
 
                     }
-                }
             }
         }
 
@@ -325,27 +325,5 @@ namespace InterfaceGtk
             listBoxField.Add(new ListBoxRow() { vBox });
             listBoxField.ShowAll();
         }
-
-        /*void AppendTablePart(string caption, Widget widget)
-        {
-            Box vBox = new Box(Orientation.Vertical, 0);
-
-            //Заголовок
-            {
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(new Label(caption), false, false, 2);
-                vBox.PackStart(hBox, false, false, 2);
-            }
-
-            //Віджет
-            {
-                Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(widget, true, true, 2);
-                vBox.PackStart(hBox, true, true, 2);
-            }
-
-            listBoxTablePart.Add(new ListBoxRow() { vBox });
-            listBoxTablePart.ShowAll();
-        }*/
     }
 }

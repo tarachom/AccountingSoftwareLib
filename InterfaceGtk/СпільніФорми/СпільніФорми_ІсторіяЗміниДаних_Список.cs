@@ -30,6 +30,7 @@ namespace InterfaceGtk
     {
         enum Columns
         {
+            Image,
             VersionID,
             UserID,
             DateWrite,
@@ -39,6 +40,7 @@ namespace InterfaceGtk
         }
 
         ListStore Store = new ListStore(
+            typeof(Gdk.Pixbuf), //Image
             typeof(string), //VersionID
             typeof(string), //UserID
             typeof(string), //DateWrite
@@ -60,8 +62,6 @@ namespace InterfaceGtk
         {
             Kernel = kernel;
 
-            CreateToolbar();
-
             TreeViewGrid = new TreeView(Store) { ActivateOnSingleClick = true };
             TreeViewGrid.Selection.Mode = SelectionMode.Multiple;
             TreeViewGrid.ButtonPressEvent += OnButtonPressEvent;
@@ -71,6 +71,8 @@ namespace InterfaceGtk
             scrollTree.Add(TreeViewGrid);
 
             AddColumn();
+
+            CreateToolbar();
 
             PackStart(scrollTree, true, true, 0);
             ShowAll();
@@ -86,6 +88,10 @@ namespace InterfaceGtk
             deleteButton.Clicked += OnDeleteClick;
             ToolbarTop.Add(deleteButton);
 
+            ToolButton upButton = new ToolButton(new Image(Stock.Edit, IconSize.Menu), "Переглянути") { TooltipText = "Переглянути" };
+            upButton.Clicked += OnOpenElementClick;
+            ToolbarTop.Add(upButton);
+
             ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
             refreshButton.Clicked += OnRefreshClick;
             ToolbarTop.Add(refreshButton);
@@ -96,19 +102,20 @@ namespace InterfaceGtk
         public async ValueTask Load()
         {
             if (!Obj.IsEmpty())
-            {                
+            {
                 SelectVersionsHistoryList_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistoryList(Obj);
                 Store.Clear();
-                
+
                 if (recordResult.Result)
                     foreach (var row in recordResult.ListRow)
                         Store.AppendValues(
-                           row.VersionID.ToString(),
-                           row.UserID.ToString(),
-                           row.DateWrite.ToString(),
-                           row.UserName,
-                           row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", 'E' => "Зміни в табличних частинах", _ => "" },
-                           row.Info
+                            Іконки.ДляТабличногоСписку.Normal,
+                            row.VersionID.ToString(),
+                            row.UserID.ToString(),
+                            row.DateWrite.ToString(),
+                            row.UserName,
+                            row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", 'E' => "Зміни в табличних частинах", _ => "" },
+                            row.Info
                         );
             }
         }
@@ -125,6 +132,7 @@ namespace InterfaceGtk
 
         void AddColumn()
         {
+            TreeViewGrid.AppendColumn(new TreeViewColumn("", new CellRendererPixbuf(), "pixbuf", (int)Columns.Image));
             TreeViewGrid.AppendColumn(new TreeViewColumn("VersionID", new CellRendererText(), "text", (int)Columns.VersionID) { Visible = false });
             TreeViewGrid.AppendColumn(new TreeViewColumn("UserID", new CellRendererText(), "text", (int)Columns.UserID) { Visible = false });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Дата", new CellRendererText(), "text", (int)Columns.DateWrite));
@@ -153,6 +161,20 @@ namespace InterfaceGtk
         async void OnRefreshClick(object? sender, EventArgs args)
         {
             await Load();
+        }
+
+        async void OnOpenElementClick(object? sender, EventArgs args)
+        {
+            if (TreeViewGrid.Selection.CountSelectedRows() != 0)
+            {
+                TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
+                foreach (TreePath itemPath in selectionRows)
+                    if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
+                    {
+                        Guid versionID = Guid.Parse((string)TreeViewGrid.Model.GetValue(iter, (int)Columns.VersionID));
+                        await OpenElement(versionID);
+                    }
+            }
         }
 
         async void OnDeleteClick(object? sender, EventArgs args)
