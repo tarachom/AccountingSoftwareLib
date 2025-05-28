@@ -30,14 +30,11 @@ namespace InterfaceGtk
     public abstract class СпільніФорми_ВивідПовідомленняПроПомилки : Форма
     {
         Kernel Kernel { get; set; }
-        string NameSpageProgram { get; set; }
-        Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
         Box vBoxMessage = new Box(Orientation.Vertical, 0);
 
-        public СпільніФорми_ВивідПовідомленняПроПомилки(Kernel kernel, string nameSpageProgram) : base()
+        public СпільніФорми_ВивідПовідомленняПроПомилки(Kernel kernel) : base()
         {
             Kernel = kernel;
-            NameSpageProgram = nameSpageProgram;
 
             //Кнопки
             Box hBoxTop = new Box(Orientation.Horizontal, 0);
@@ -64,6 +61,7 @@ namespace InterfaceGtk
 
         //!!! переробити на -> protected abstract CompositePointerControl CreateCompositControl();
 
+        /*
         Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
         {
             object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
@@ -81,6 +79,13 @@ namespace InterfaceGtk
             else
                 return null;
         }
+        */
+
+        #endregion
+
+        #region Virtual & Abstract Function
+
+        protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
 
         #endregion
 
@@ -150,10 +155,8 @@ namespace InterfaceGtk
 
                 if (!unigueID.IsEmpty() && !string.IsNullOrEmpty(type))
                 {
-                    Widget? Обєкт = CreateCompositControl("", new UuidAndText(unigueID, type));
-
                     Box hBox = new Box(Orientation.Horizontal, 0);
-                    hBox.PackStart(Обєкт, false, false, 0);
+                    hBox.PackStart(CreateCompositeControl("", new UuidAndText(unigueID, type)), false, false, 0);
                     vBoxInfo.PackStart(hBox, false, false, 0);
                 }
             }

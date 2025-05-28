@@ -215,6 +215,7 @@ namespace InterfaceGtk
         #region Редагування ячейки
 
         bool IsEditingCell = false;
+
         protected void EditingStarted(object? sender, EditingStartedArgs args) => IsEditingCell = true;
 
         /// <summary>
@@ -244,6 +245,8 @@ namespace InterfaceGtk
                 bool newValue = (bool)TreeViewGrid.Model.GetValue(cellInfo.Iter, cellInfo.ColNumber);
                 ChangeCell(cellInfo.Iter, cellInfo.RowNumber, cellInfo.ColNumber, !newValue);
             }
+
+            IsEditingCell = false;
         }
 
         #endregion

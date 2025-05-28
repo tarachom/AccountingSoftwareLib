@@ -28,9 +28,6 @@ limitations under the License.
 
 */
 
-using Gtk;
-using AccountingSoftware;
-
 namespace InterfaceGtk
 {
     public abstract class РегістриНакопиченняЖурнал_СпрощенийРежим : ФормаЖурнал

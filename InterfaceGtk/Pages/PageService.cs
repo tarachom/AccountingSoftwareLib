@@ -215,8 +215,7 @@ namespace InterfaceGtk
 
         #region Функції
 
-        //!!! переробити на -> protected abstract CompositePointerControl CreateCompositControl();
-
+        /*
         Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
         {
             object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
@@ -234,10 +233,13 @@ namespace InterfaceGtk
             else
                 return null;
         }
+        */
 
         #endregion
 
         #region Virtual & Abstract Function
+
+        protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
 
         protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
@@ -306,7 +308,7 @@ namespace InterfaceGtk
                                         msg += "<i>" + row["message"].ToString() + "</i>";
 
                                     Лог.CreateMessage(msg, LogMessage.TypeMessage.None, true);
-                                    Лог.CreateWidget(CreateCompositControl("Документи:", journalSelect.Current.GetBasis()), LogMessage.TypeMessage.None, true);
+                                    Лог.CreateWidget(CreateCompositeControl("Документи:", journalSelect.Current.GetBasis()), LogMessage.TypeMessage.None, true);
                                     Лог.CreateMessage("Проведення документів перервано!", LogMessage.TypeMessage.Info, true);
 
                                     break;
@@ -463,7 +465,7 @@ namespace InterfaceGtk
                         foreach (Dictionary<string, object> row in recordResult.ListRow)
                             if (dependence.ConfigurationGroupName == "Довідники" || dependence.ConfigurationGroupName == "Документи")
                             {
-                                Widget? composit = CreateCompositControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
+                                Widget? composit = CreateCompositeControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
                                 Лог.CreateWidget(composit, LogMessage.TypeMessage.None, false);
                             }
                     }

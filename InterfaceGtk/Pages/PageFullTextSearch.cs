@@ -28,7 +28,6 @@ limitations under the License.
 */
 
 using Gtk;
-using System.Reflection;
 using AccountingSoftware;
 
 namespace InterfaceGtk
@@ -36,21 +35,15 @@ namespace InterfaceGtk
     public abstract class PageFullTextSearch : Форма
     {
         private Kernel Kernel { get; set; }
-        private string NameSpageProgram { get; set; }
-        private string NameSpageCodeGeneration { get; set; }
-        private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-
         Box vBoxMessage = new Box(Orientation.Vertical, 0);
         SearchEntry entryTextSearch = new SearchEntry() { WidthRequest = 500 };
         const int maxRowsToPage = 10;
         uint offset = 0;
         int count = 0;
 
-        public PageFullTextSearch(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration) : base()
+        public PageFullTextSearch(Kernel kernel) : base()
         {
             Kernel = kernel;
-            NameSpageProgram = nameSpageProgram;
-            NameSpageCodeGeneration = nameSpageCodeGeneration;
 
             Box hBoxTop = new Box(Orientation.Horizontal, 0) { Halign = Align.Center };
             PackStart(hBoxTop, false, false, 10);
@@ -95,50 +88,30 @@ namespace InterfaceGtk
             vBoxMessage.ShowAll();
         }
 
-        #region Функції
+        #region Virtual & Abstract Function
 
-        Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
-        {
-            object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
-            if (compositControlInstance != null)
-            {
-                dynamic compositControl = compositControlInstance;
-
-                compositControl.Caption = caption;
-                compositControl.ClearSensetive = false;
-                compositControl.TypeSelectSensetive = false;
-                compositControl.Pointer = uuidAndText;
-
-                return compositControl;
-            }
-            else
-                return null;
-        }
+        protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
 
         #endregion
 
         void CreateMessage(Dictionary<string, object> row)
         {
-            Widget? widgetObj = CreateCompositControl("", (UuidAndText)row["obj"]);
-            if (widgetObj != null)
-            {
-                CompositePointerControl Обєкт = (CompositePointerControl)widgetObj;
+            CompositePointerControl Обєкт = CreateCompositeControl("", (UuidAndText)row["obj"]);
 
-                Box hBoxRowInfo = new Box(Orientation.Horizontal, 0);
-                vBoxMessage.PackStart(hBoxRowInfo, false, false, 3);
-                hBoxRowInfo.PackStart(new Label(row["value"].ToString()) { UseMarkup = true, Wrap = true, Selectable = true }, false, false, 12);
+            Box hBoxRowInfo = new Box(Orientation.Horizontal, 0);
+            vBoxMessage.PackStart(hBoxRowInfo, false, false, 3);
+            hBoxRowInfo.PackStart(new Label(row["value"].ToString()) { UseMarkup = true, Wrap = true, Selectable = true }, false, false, 12);
 
-                Box hBoxRowType = new Box(Orientation.Horizontal, 0);
-                vBoxMessage.PackStart(hBoxRowType, false, false, 3);
-                hBoxRowType.PackStart(new Label("<small>" + Обєкт.PointerName + ": " + Обєкт.TypeCaption + "</small>") { UseMarkup = true, Selectable = true, UseUnderline = false }, false, false, 12);
-                hBoxRowType.PackStart(new Label("<small>Додано: " + row["dateadd"].ToString() + "</small>") { UseMarkup = true, Selectable = true, UseUnderline = false }, false, false, 12);
+            Box hBoxRowType = new Box(Orientation.Horizontal, 0);
+            vBoxMessage.PackStart(hBoxRowType, false, false, 3);
+            hBoxRowType.PackStart(new Label("<small>" + Обєкт.PointerName + ": " + Обєкт.TypeCaption + "</small>") { UseMarkup = true, Selectable = true, UseUnderline = false }, false, false, 12);
+            hBoxRowType.PackStart(new Label("<small>Додано: " + row["dateadd"].ToString() + "</small>") { UseMarkup = true, Selectable = true, UseUnderline = false }, false, false, 12);
 
-                Box hBoxRowControl = new Box(Orientation.Horizontal, 0);
-                vBoxMessage.PackStart(hBoxRowControl, false, false, 3);
-                hBoxRowControl.PackStart(Обєкт, false, false, 0);
+            Box hBoxRowControl = new Box(Orientation.Horizontal, 0);
+            vBoxMessage.PackStart(hBoxRowControl, false, false, 3);
+            hBoxRowControl.PackStart(Обєкт, false, false, 0);
 
-                vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 0);
-            }
+            vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 0);
         }
 
         void CreatePagination()
