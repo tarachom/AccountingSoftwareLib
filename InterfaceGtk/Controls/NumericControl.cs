@@ -54,6 +54,7 @@ namespace InterfaceGtk
             {
                 mValue = value;
                 entryNumeric.Text = mValue.ToString("N", numberFormatUA);
+                entryNumeric.TooltipText = entryNumeric.Text;
             }
         }
 

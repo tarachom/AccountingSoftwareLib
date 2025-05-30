@@ -57,6 +57,7 @@ namespace InterfaceGtk
             set
             {
                 comboBox.ActiveId = value;
+                comboBox.TooltipText = comboBox.ActiveText;
             }
         }
 

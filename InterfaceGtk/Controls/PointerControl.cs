@@ -103,6 +103,7 @@ namespace InterfaceGtk
             set
             {
                 entryText.Text = value;
+                entryText.TooltipText = value;
             }
         }
 

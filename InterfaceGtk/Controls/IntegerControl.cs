@@ -49,6 +49,7 @@ namespace InterfaceGtk
             {
                 mValue = value;
                 entryInteger.Text = mValue.ToString();
+                entryInteger.TooltipText = entryInteger.Text;
             }
         }
 

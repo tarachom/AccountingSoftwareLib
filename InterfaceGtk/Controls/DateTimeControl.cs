@@ -88,6 +88,8 @@ namespace InterfaceGtk
                 }
                 else
                     entryDateTimeValue.Text = mValue.ToString("dd.MM.yyyy HH:mm:ss");
+
+                entryDateTimeValue.TooltipText = entryDateTimeValue.Text;
             }
         }
 

@@ -56,6 +56,7 @@ namespace InterfaceGtk
             {
                 mValue = value;
                 entryTime.Text = mValue.ToString();
+                entryTime.TooltipText = entryTime.Text;
             }
         }
 
