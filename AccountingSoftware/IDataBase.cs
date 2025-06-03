@@ -244,11 +244,11 @@ namespace AccountingSoftware
 
         #region SQL
 
-        ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0);
-        ValueTask<int> ExecuteSQL(string query, byte transactionID = 0);
-        ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0);
-        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0);
-        ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null);
+        ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0);
+        ValueTask<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0);
+        ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0);
+        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0);
+        ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0);
         ValueTask<DateTime> SelectCurrentTimestamp();
 
         #endregion

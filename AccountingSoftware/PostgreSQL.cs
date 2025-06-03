@@ -28,6 +28,12 @@ namespace AccountingSoftware
 {
     public class PostgreSQL : IDataBase
     {
+        #region Const
+
+        const int DefaultCommandTimeout = 120; // 2 хвилини
+
+        #endregion
+
         #region Connect
         NpgsqlDataSource? DataSource { get; set; }
 
@@ -766,6 +772,8 @@ ORDER BY period
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 bool hasRows = reader.HasRows;
@@ -879,12 +887,11 @@ VALUES
 )
 ON CONFLICT (name) DO NOTHING;
 ");
-
         }
 
         public async ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
         {
-            Dictionary<string, object> paramQuery = new Dictionary<string, object>
+            Dictionary<string, object> paramQuery = new()
             {
                 { "name", name.Trim().ToLower() },
                 { "fullname", fullname },
@@ -950,6 +957,8 @@ WHERE
                 string query = $"SELECT name, fullname FROM {SpecialTables.Users} ORDER BY name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
@@ -1009,6 +1018,7 @@ ORDER BY
                     (not_uid.HasValue ? " AND uid != @uid" : "");
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("name", name);
 
                 if (uid.HasValue)
@@ -1035,6 +1045,7 @@ ORDER BY
                 string query = $"SELECT fullname FROM {SpecialTables.Users} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", user_uid);
 
                 object? resultat = await command.ExecuteScalarAsync();
@@ -1053,6 +1064,7 @@ ORDER BY
                     string query = $"DELETE FROM {SpecialTables.Users} WHERE uid = @uid";
 
                     NpgsqlCommand command = DataSource.CreateCommand(query);
+                    command.CommandTimeout = DefaultCommandTimeout;
                     command.Parameters.AddWithValue("uid", user_uid);
 
                     await command.ExecuteNonQueryAsync();
@@ -1073,6 +1085,7 @@ ORDER BY
                 string query = $"SELECT uid FROM {SpecialTables.Users} WHERE name = @name AND password = @password";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("name", user);
                 command.Parameters.AddWithValue("password", password);
 
@@ -1132,6 +1145,7 @@ VALUES
                 string query = $"SELECT master FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("session", session_uid);
 
                 object? master = await command.ExecuteScalarAsync();
@@ -1262,6 +1276,7 @@ COMMIT;
 DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("session", session_uid);
 
                 await command.ExecuteNonQueryAsync();
@@ -1338,6 +1353,7 @@ ON CONFLICT (uidobj) DO UPDATE SET
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uidobj", obj.Uuid);
                 command.Parameters.AddWithValue("obj", obj);
                 command.Parameters.AddWithValue("value", pointer + " (" + type + "): " + value);
@@ -1355,10 +1371,8 @@ ON CONFLICT (uidobj) DO UPDATE SET
 DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                NpgsqlCommand command = (transaction != null) ?
-                    new NpgsqlCommand(query, transaction.Connection, transaction) :
-                    DataSource.CreateCommand(query);
-
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", uid.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -1584,6 +1598,7 @@ FROM {SpecialTables.LockedObject} AS LockedObject
 WHERE (LockedObject.obj).uuid = @obj
 ";
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("obj", obj.Uuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -1614,7 +1629,7 @@ WHERE (LockedObject.obj).uuid = @obj
 
         #region SpetialTable VersionsHistory
 
-        #region ObjectVersionsHistory
+        //ObjectVersionsHistory
 
         /// <summary>
         /// Добаляє новий запис в історію змін обєктів
@@ -1695,7 +1710,6 @@ ON CONFLICT (uid) DO UPDATE SET
     operation = @operation,
     info = @info
 ", paramQuery, transactionID);
-
         }
 
         /// <summary>
@@ -1727,6 +1741,7 @@ ORDER BY
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uuid", obj.Uuid);
                 command.Parameters.AddWithValue("text", obj.Text);
 
@@ -1778,6 +1793,7 @@ WHERE
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("version_id", version_id);
                 command.Parameters.AddWithValue("uuid", obj.Uuid);
                 command.Parameters.AddWithValue("text", obj.Text);
@@ -1872,9 +1888,7 @@ paramQuery, transactionID);
                 await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, obj, null, 'E', "", transactionID);
         }
 
-        #endregion
-
-        #region TablePartVersionsHistory
+        // TablePartVersionsHistory
 
         /// <summary>
         /// Добавляє запис в історію змін для табличної частини один рядок
@@ -1922,7 +1936,6 @@ VALUES
     @fields
 )
 ", paramQuery, transactionID);
-
         }
 
         /// <summary>
@@ -1951,6 +1964,7 @@ WHERE
 ";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("version_id", version_id);
                 command.Parameters.AddWithValue("uuid", objowner.Uuid);
                 command.Parameters.AddWithValue("text", objowner.Text);
@@ -1959,8 +1973,8 @@ WHERE
                 record.Result = reader.HasRows;
                 record.VersionID = version_id;
                 record.ObjOwner = objowner;
+
                 while (await reader.ReadAsync())
-                {
                     record.ListRow.Add(new()
                     {
                         DateWrite = (DateTime)reader["datewrite"],
@@ -1968,7 +1982,6 @@ WHERE
                         TablePart = reader["tablepart"]?.ToString() ?? "",
                         Fields = (NameAndText[])reader["fields"],
                     });
-                }
                 await reader.CloseAsync();
             }
 
@@ -2059,13 +2072,10 @@ paramQuery, transactionID);
 
         #endregion
 
-        #endregion
-
         #region Transaction
         readonly Lock Loсked = new();
         readonly Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
         volatile byte TransactionCounter = 0;
-        private static readonly string[] sourceArray = new string[] { "row_number", "row_count" };
 
         public async ValueTask<byte> BeginTransaction()
         {
@@ -2150,6 +2160,7 @@ paramQuery, transactionID);
                 string query = $"SELECT {field} FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", Guid.Empty);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -2172,6 +2183,7 @@ paramQuery, transactionID);
                                $"ON CONFLICT (uid) DO UPDATE SET {field} = @{field}";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", Guid.Empty);
                 command.Parameters.AddWithValue(field, fieldValue);
 
@@ -2186,6 +2198,7 @@ paramQuery, transactionID);
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2231,7 +2244,7 @@ paramQuery, transactionID);
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
 
                 foreach (string field in fieldArray)
@@ -2249,7 +2262,7 @@ paramQuery, transactionID);
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
@@ -2264,7 +2277,7 @@ paramQuery, transactionID);
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 await command.ExecuteNonQueryAsync();
             }
         }
@@ -2298,6 +2311,8 @@ paramQuery, transactionID);
             {
                 string query = "";
                 UnigueID unigueIDLocal = unigueID ?? new UnigueID();
+
+                string[] sourceArray = ["row_number", "row_count"];
 
                 bool existUnigueID = !unigueIDLocal.IsEmpty() && await IsExistUniqueID(unigueIDLocal, QuerySelect.Table);
                 if (existUnigueID)
@@ -2377,6 +2392,7 @@ FROM
                 }
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2432,6 +2448,7 @@ FROM
             if (DataSource != null)
             {
                 NpgsqlCommand command = DataSource.CreateCommand($"SELECT count(*) FROM ({query}) AS S");
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
@@ -2471,14 +2488,15 @@ FROM
 
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
-                NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.Parameters.AddWithValue("uid", unigueID.UGuid);
-                nCommand.Parameters.AddWithValue("deletion_label", false);
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("deletion_label", false);
 
                 foreach (string field in fieldArray)
-                    nCommand.Parameters.AddWithValue(field, fieldValue[field]);
+                    command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                await nCommand.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -2498,15 +2516,16 @@ FROM
 
                 query += " WHERE uid = @uid";
 
-                NpgsqlCommand nCommand = DataSource.CreateCommand(query);
-                nCommand.Parameters.AddWithValue("uid", unigueID.UGuid);
-                nCommand.Parameters.AddWithValue("deletion_label", deletion_label);
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("deletion_label", deletion_label);
 
                 if (fieldArray != null && fieldValue != null)
                     foreach (string field in fieldArray)
-                        nCommand.Parameters.AddWithValue(field, fieldValue[field]);
+                        command.Parameters.AddWithValue(field, fieldValue[field]);
 
-                await nCommand.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync();
 
                 return true;
             }
@@ -2528,6 +2547,7 @@ FROM
                 query += $" FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -2554,7 +2574,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -2568,6 +2588,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2601,6 +2622,7 @@ FROM
                 string query = QuerySelect.ConstructHierarchical();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2642,6 +2664,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 if (QuerySelect.Where.Count > 0)
                     foreach (Where field in QuerySelect.Where)
@@ -2665,6 +2688,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2699,6 +2723,7 @@ FROM
                     string query = $"DROP TABLE IF EXISTS {directorySelect.QuerySelect.TempTable}";
 
                     NpgsqlCommand command = DataSource.CreateCommand(query);
+                    command.CommandTimeout = DefaultCommandTimeout;
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -2711,6 +2736,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2756,7 +2782,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -2775,7 +2801,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
                 command.Parameters.AddWithValue("uid", UID);
 
@@ -2791,7 +2817,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -2816,6 +2842,7 @@ FROM
                 query += $" FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -2853,6 +2880,7 @@ FROM
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
                 command.Parameters.AddWithValue("deletion_label", false);
                 command.Parameters.AddWithValue("spend", spend);
@@ -2892,6 +2920,7 @@ FROM
                 query += string.Join(", ", allfield.ToList()) + " WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 if (deletion_label != null)
@@ -2923,7 +2952,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -2937,6 +2966,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -2974,6 +3004,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 if (QuerySelect.Where.Count > 0)
                     foreach (Where field in QuerySelect.Where)
@@ -2997,6 +3028,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -3023,6 +3055,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
                     command.Parameters.AddWithValue(field.Alias, field.Value);
@@ -3068,7 +3101,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
@@ -3087,7 +3120,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
                 command.Parameters.AddWithValue("uid", UID);
 
@@ -3103,7 +3136,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", ownerUnigueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -3169,6 +3202,7 @@ FROM
                     query += "\nORDER BY docdate";
 
                     NpgsqlCommand command = DataSource.CreateCommand(query);
+                    command.CommandTimeout = DefaultCommandTimeout;
                     command.Parameters.AddWithValue("periodstart", periodStart);
                     command.Parameters.AddWithValue("periodend", periodEnd);
 
@@ -3205,6 +3239,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 if (QuerySelect.Where.Count > 0)
                 {
@@ -3253,7 +3288,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
@@ -3274,7 +3309,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", owner);
 
                 await command.ExecuteNonQueryAsync();
@@ -3297,6 +3332,7 @@ FROM
                 string query = $"INSERT INTO {table} ({query_field}) VALUES ({query_values})";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
@@ -3325,6 +3361,7 @@ FROM
                 query += " WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
@@ -3355,6 +3392,7 @@ FROM
                 query += $" FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", unigueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -3383,7 +3421,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
@@ -3397,6 +3435,7 @@ FROM
                 string query = $"DELETE FROM {table} WHERE uid = @uid";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", uid.UGuid);
 
                 await command.ExecuteNonQueryAsync();
@@ -3414,6 +3453,7 @@ FROM
                 string query = QuerySelect.Construct();
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 if (QuerySelect.Where.Count > 0)
                 {
@@ -3462,7 +3502,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("income", income);
@@ -3487,7 +3527,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", owner);
 
                 if (periodCurrent != null)
@@ -3522,7 +3562,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("owner", owner);
 
                 await command.ExecuteNonQueryAsync();
@@ -3541,6 +3581,7 @@ FROM
                 query += " FROM " + table;
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -3574,7 +3615,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
 
                 foreach (string field in fieldArray)
@@ -3592,7 +3633,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
-
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("uid", UID);
 
                 await command.ExecuteNonQueryAsync();
@@ -3607,6 +3648,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -3625,6 +3667,7 @@ FROM
                                "WHERE table_schema = 'public' AND table_type = 'BASE TABLE' AND table_name = @table_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("table_name", tableName);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
@@ -3647,6 +3690,7 @@ FROM
                                "WHERE table_schema = 'public' AND table_name = @table_name AND column_name = @column_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("table_name", tableName);
                 command.Parameters.AddWithValue("column_name", columnName);
 
@@ -3677,6 +3721,7 @@ FROM
                                "ORDER BY table_name, column_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -3721,6 +3766,8 @@ FROM
                                "ORDER BY table_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
@@ -3744,6 +3791,8 @@ FROM
                                "ORDER BY table_name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
@@ -3765,7 +3814,7 @@ FROM
         /// <param name="table">Таблиця</param>
         /// <param name="paramQuery">Поля і значення</param>
         /// <returns></returns>
-        public async ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0)
+        public async ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
@@ -3778,6 +3827,7 @@ FROM
 
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(insertQuery, transaction.Connection, transaction) : DataSource.CreateCommand(insertQuery);
+                command.CommandTimeout = commandTimeout > DefaultCommandTimeout ? commandTimeout : DefaultCommandTimeout;
 
                 foreach (KeyValuePair<string, object> param in paramQuery)
                     command.Parameters.AddWithValue(param.Key, param.Value);
@@ -3793,9 +3843,9 @@ FROM
         /// </summary>
         /// <param name="sqlQuery">Запит</param>
         /// <returns></returns>
-        public async ValueTask<int> ExecuteSQL(string query, byte transactionID = 0)
+        public async ValueTask<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0)
         {
-            return await ExecuteSQL(query, null, transactionID);
+            return await ExecuteSQL(query, null, transactionID, commandTimeout);
         }
 
         /// <summary>
@@ -3804,12 +3854,13 @@ FROM
         /// <param name="sqlQuery">Запит</param>
         /// <param name="paramQuery">Параметри</param>
         /// <returns></returns>
-        public async ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0)
+        public async ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 await using NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+                command.CommandTimeout = commandTimeout > DefaultCommandTimeout ? commandTimeout : DefaultCommandTimeout;
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)
@@ -3821,12 +3872,13 @@ FROM
                 return -1;
         }
 
-        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0)
+        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+                command.CommandTimeout = commandTimeout > DefaultCommandTimeout ? commandTimeout : DefaultCommandTimeout;
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)
@@ -3838,13 +3890,14 @@ FROM
                 return null;
         }
 
-        public async ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null)
+        public async ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0)
         {
             SelectRequest_Record record = new();
 
             if (DataSource != null)
             {
                 NpgsqlCommand command = DataSource.CreateCommand(selectQuery);
+                command.CommandTimeout = commandTimeout > DefaultCommandTimeout ? commandTimeout : DefaultCommandTimeout;
 
                 if (paramQuery != null)
                     foreach (KeyValuePair<string, object> param in paramQuery)
@@ -3880,6 +3933,7 @@ FROM
             if (DataSource != null)
             {
                 NpgsqlCommand command = DataSource.CreateCommand("SELECT CURRENT_TIMESTAMP::timestamp");
+                command.CommandTimeout = DefaultCommandTimeout;
                 object? result = await command.ExecuteScalarAsync();
 
                 return result != null ? (DateTime)result : DateTime.Now;
