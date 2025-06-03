@@ -171,9 +171,11 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
+            SpinnerOn(notebook);
             bool isSave = await Save();
+            SpinnerOff(notebook);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
-
+            
             if (isSave)
             {
                 if (CallBack_OnSelectPointer != null && UnigueID != null)

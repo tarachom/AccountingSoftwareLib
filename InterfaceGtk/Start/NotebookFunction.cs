@@ -165,14 +165,17 @@ namespace InterfaceGtk
         /// <returns>НBox</returns>
         static Box CreateLabelPageWidget(Notebook? notebook, string caption, string codePage, bool notClosePage = false)
         {
-            Box hBoxLabel = new Box(Orientation.Horizontal, 0);
+            Box hBox = new Box(Orientation.Horizontal, 0);
 
-            //Ico
-            hBoxLabel.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 0);
+            Box hBoxForSpinner = new Box(Orientation.Horizontal, 0) { Name = "BoxForSpinner" };
+            hBoxForSpinner.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 0);
+
+            //Ico / BoxForSpinner
+            hBox.PackStart(hBoxForSpinner, false, false, 0);
 
             //Текст
             Label label = new Label { Name = "Caption", Text = SubstringPageName(caption), TooltipText = caption };
-            hBoxLabel.PackStart(label, false, false, 3);
+            hBox.PackStart(label, false, false, 3);
 
             if (!notClosePage)
             {
@@ -187,12 +190,12 @@ namespace InterfaceGtk
 
                 lbClose.Clicked += (sender, args) => CloseNotebookPageToCode(notebook, codePage);
 
-                hBoxLabel.PackEnd(lbClose, false, false, 0);
+                hBox.PackEnd(lbClose, false, false, 0);
             }
 
-            hBoxLabel.ShowAll();
+            hBox.ShowAll();
 
-            return hBoxLabel;
+            return hBox;
         }
 
         /// <summary>
@@ -243,6 +246,39 @@ namespace InterfaceGtk
                         }
 
                         notebook.DetachTab(wg);
+
+                        GC.Collect();
+                    }
+                });
+        }
+
+        /// <summary>
+        /// Відображення спінера або іконки
+        /// </summary>
+        /// <param name="notebook">Блокнот</param>
+        /// <param name="active">Спінер якшо true, Іконка якщо false</param>
+        /// <param name="codePage">Код сторінки</param>
+        public static void SpinnerNotebookPageToCode(Notebook? notebook, bool active, string codePage)
+        {
+            notebook?.Foreach(
+                (Widget wg) =>
+                {
+                    if (wg.Name == codePage)
+                    {
+                        foreach (Widget children in ((Box)notebook.GetTabLabel(wg)).Children)
+                            if (children is Box boxForSpiner && boxForSpiner.Name == "BoxForSpinner")
+                            {
+                                foreach (var item in boxForSpiner.Children)
+                                    boxForSpiner.Remove(item);
+
+                                if (active)
+                                    boxForSpiner.PackStart(new Spinner() { Active = true }, false, false, 0);
+                                else
+                                    boxForSpiner.PackStart(new Image(Іконки.ДляКнопок.Doc), false, false, 0);
+
+                                boxForSpiner.ShowAll();
+                                break;
+                            }
                     }
                 });
         }
@@ -320,7 +356,7 @@ namespace InterfaceGtk
         /// <returns></returns>
         public static string SubstringPageName(string pageName)
         {
-            return pageName.Length >= 20 ? pageName[..17] + "..." : pageName;
+            return pageName.Length >= 23 ? pageName[..20] : pageName;
         }
 
         static void OnNotebookKeyReleaseEvent(object sender, KeyReleaseEventArgs args)
@@ -328,22 +364,22 @@ namespace InterfaceGtk
             Notebook notebook = (Notebook)sender;
 
             //if (notebook.IsFocus) !!! 
-                switch (args.Event.Key)
-                {
-                    case Gdk.Key.Escape:
-                        {
-                            Widget widget = notebook.CurrentPageWidget;
-                            if (widget != null)
-                                //Пошук в назві вкладки LinkButton для закриття сторінки
-                                foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
-                                    if (children is LinkButton lbClose && lbClose.Uri == "Close")
-                                    {
-                                        CloseNotebookPageToCode(notebook, lbClose.Name);
-                                        break;
-                                    }
-                            break;
-                        }
-                }
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Escape:
+                    {
+                        Widget widget = notebook.CurrentPageWidget;
+                        if (widget != null)
+                            //Пошук в назві вкладки LinkButton для закриття сторінки
+                            foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
+                                if (children is LinkButton lbClose && lbClose.Uri == "Close")
+                                {
+                                    CloseNotebookPageToCode(notebook, lbClose.Name);
+                                    break;
+                                }
+                        break;
+                    }
+            }
         }
 
         #region ObjectChangeEvents

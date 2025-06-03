@@ -218,54 +218,90 @@ namespace InterfaceGtk
 
         protected async ValueTask BeforeLoadRecords()
         {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            SpinnerOn(notebook);
+
             async ValueTask PageNavigation()
             {
+                SpinnerOn(notebook);
+
                 await LoadRecords();
                 PagesShow(PageNavigation);
+
+                SpinnerOff(notebook);
             }
 
             ClearPages();
             await LoadRecords();
             PagesShow(PageNavigation);
+
+            SpinnerOff(notebook);
         }
 
         protected async ValueTask BeforeLoadRecords_OnSearch(string searchText)
         {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            SpinnerOn(notebook);
+
             async ValueTask PageNavigation()
             {
+                SpinnerOn(notebook);
+
                 await LoadRecords_OnSearch(searchText);
                 PagesShow(PageNavigation);
+
+                SpinnerOff(notebook);
             }
 
             ClearPages();
             await LoadRecords_OnSearch(searchText);
             PagesShow(PageNavigation);
+
+            SpinnerOff(notebook);
         }
 
         protected async ValueTask BeforeLoadRecords_OnFilter()
         {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            SpinnerOn(notebook);
+
             async ValueTask PageNavigation()
             {
+                SpinnerOn(notebook);
+
                 await LoadRecords_OnFilter();
                 PagesShow(PageNavigation);
+
+                SpinnerOff(notebook);
             }
 
             ClearPages();
             await LoadRecords_OnFilter();
             PagesShow(PageNavigation);
+
+            SpinnerOff(notebook);
         }
 
         protected async ValueTask BeforeLoadRecords_OnTree()
         {
+            Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
+            SpinnerOn(notebook);
+
             async ValueTask PageNavigation()
             {
+                SpinnerOn(notebook);
+
                 await LoadRecords_OnTree();
                 PagesShow(PageNavigation);
+
+                SpinnerOff(notebook);
             }
 
             ClearPages();
             await LoadRecords_OnTree();
             PagesShow(PageNavigation);
+
+            SpinnerOff(notebook);
         }
 
         #endregion

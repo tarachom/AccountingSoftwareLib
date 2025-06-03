@@ -257,6 +257,7 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Видалити?") == ResponseType.Yes)
                 {
+                    SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
                     ToolButtonSensitive(sender, false);
 
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();
@@ -281,6 +282,7 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
+                    SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
                     ToolButtonSensitive(sender, false);
 
                     TreePath[] selectionRows = TreeViewGrid.Selection.GetSelectedRows();

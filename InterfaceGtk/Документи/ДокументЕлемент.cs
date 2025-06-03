@@ -279,8 +279,10 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
+            SpinnerOn(notebook);
             bool isSave = await Save();
             bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
+            SpinnerOff(notebook);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
             if (isSave)

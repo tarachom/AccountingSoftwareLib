@@ -85,7 +85,9 @@ namespace InterfaceGtk
             Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
+            SpinnerOn(notebook);
             await Save();
+            SpinnerOff(notebook);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
             CallBack_LoadRecords?.Invoke(UnigueID);

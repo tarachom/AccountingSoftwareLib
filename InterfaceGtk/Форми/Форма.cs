@@ -172,5 +172,8 @@ namespace InterfaceGtk
         }
 
         #endregion
+
+        public void SpinnerOn(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, true, this.Name);
+        public void SpinnerOff(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, false, this.Name);
     }
 }

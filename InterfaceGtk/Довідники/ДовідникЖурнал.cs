@@ -354,6 +354,7 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Встановити або зняти помітку на видалення?") == ResponseType.Yes)
                 {
+                    SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
                     ToolButtonSensitive(sender, false);
 
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
@@ -379,6 +380,7 @@ namespace InterfaceGtk
             if (TreeViewGrid.Selection.CountSelectedRows() != 0)
                 if (Message.Request(null, "Копіювати?") == ResponseType.Yes)
                 {
+                    SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
                     ToolButtonSensitive(sender, false);
 
                     foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
