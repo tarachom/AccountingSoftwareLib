@@ -33,6 +33,9 @@ namespace InterfaceGtk
 {
     public class СпільніФорми_РедагуванняДати : ФормаСпливаючеВікно
     {
+        Entry entryDateTimeValue = new Entry();
+        Box hBoxInfoValid = new Box(Orientation.Horizontal, 0) { WidthRequest = 16 };
+
         Calendar calendar = new Calendar();
         SpinButton hourSpin = new SpinButton(0, 23, 1) { Orientation = Orientation.Vertical };
         SpinButton minuteSpin = new SpinButton(0, 59, 1) { Orientation = Orientation.Vertical };
@@ -42,13 +45,24 @@ namespace InterfaceGtk
 
         public СпільніФорми_РедагуванняДати()
         {
+            //Entry
+            {
+                Box hBox = new Box(Orientation.Horizontal, 2);
+                PackStart(hBox, false, false, 5);
+
+                hBox.PackStart(hBoxInfoValid, false, false, 1);
+
+                entryDateTimeValue.Changed += OnEntryDateTimeChanged;
+                hBox.PackStart(entryDateTimeValue, false, false, 1);
+            }
+
             //Календар
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
                 PackStart(hBox, true, true, 0);
 
                 Box vBox = new Box(Orientation.Vertical, 0);
-                hBox.PackStart(vBox, false, false, 0);
+                hBox.PackStart(vBox, true, true, 0);
 
                 calendar.DaySelected += (sender, args) =>
                 {
@@ -69,7 +83,7 @@ namespace InterfaceGtk
                     PopoverParent?.Hide();
                 };
 
-                vBox.PackStart(calendar, false, false, 0);
+                vBox.PackStart(calendar, true, true, 0);
 
                 Box hBoxTime = new Box(Orientation.Horizontal, 0) { Halign = Align.Center };
                 vBox.PackStart(hBoxTime, false, false, 5);
@@ -154,6 +168,8 @@ namespace InterfaceGtk
             {
                 _Value = value;
 
+                entryDateTimeValue.Text = _Value.ToString("dd.MM.yyyy HH:mm:ss");
+
                 if (isInit)
                 {
                     isInit = false;
@@ -164,6 +180,45 @@ namespace InterfaceGtk
                     secondSpin.Value = TimeOnly.FromDateTime(_Value).Second;
                 }
             }
+        }
+
+        void ClearHBoxInfoValid()
+        {
+            foreach (Widget item in hBoxInfoValid.Children)
+                hBoxInfoValid.Remove(item);
+        }
+
+        public bool IsValidValue()
+        {
+            ClearHBoxInfoValid();
+
+            if (string.IsNullOrEmpty(entryDateTimeValue.Text))
+            {
+                _Value = DateTime.MinValue;
+                return false;
+            }
+
+            if (DateTime.TryParse(entryDateTimeValue.Text, out DateTime value))
+            {
+                _Value = value;
+
+                hBoxInfoValid.Add(new Image(Іконки.ДляІнформування.Ok));
+                hBoxInfoValid.ShowAll();
+
+                return true;
+            }
+            else
+            {
+                hBoxInfoValid.Add(new Image(Іконки.ДляІнформування.Error));
+                hBoxInfoValid.ShowAll();
+
+                return false;
+            }
+        }
+
+        void OnEntryDateTimeChanged(object? sender, EventArgs args)
+        {
+            IsValidValue();
         }
     }
 }

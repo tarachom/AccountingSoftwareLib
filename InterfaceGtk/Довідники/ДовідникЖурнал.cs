@@ -94,7 +94,11 @@ namespace InterfaceGtk
             PackStart(HBoxTop, false, false, 10);
 
             //Пошук
-            Пошук.Select = async x => await BeforeLoadRecords_OnSearch(x);
+            Пошук.Select = async x =>
+            {
+                Фільтр.IsFiltered = false;
+                await BeforeLoadRecords_OnSearch(x);
+            };
             Пошук.Clear = async () => await BeforeLoadRecords();
             HBoxTop.PackStart(Пошук, false, false, 2);
 
@@ -344,7 +348,10 @@ namespace InterfaceGtk
         {
             ToolButtonSensitive(sender, false);
 
-            await BeforeLoadRecords();
+            if (Фільтр.IsFiltered)
+                await BeforeLoadRecords_OnFilter();
+            else
+                await BeforeLoadRecords();
 
             ToolButtonSensitive(sender, true);
         }

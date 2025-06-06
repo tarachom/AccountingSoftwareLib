@@ -102,6 +102,8 @@ namespace InterfaceGtk
                     if (FilterList.Children.Cast<ListBoxRow>().Any())
                     {
                         bool existFilter = GetWhere?.Invoke() ?? false;
+                        IsFiltered = existFilter;
+
                         if (existFilter) Select?.Invoke();
                     }
                 };
@@ -111,14 +113,26 @@ namespace InterfaceGtk
                 buttonClear.Clicked += (sender, arrg) =>
                 {
                     if (FilterList.Children.Cast<ListBoxRow>().Any())
+                    {
+                        IsFiltered = false;
                         Clear?.Invoke();
+                    }
                 };
+
                 hBox.PackStart(buttonClear, false, false, 5);
             }
 
             ShowAll();
         }
 
+        /// <summary>
+        /// Відфільтровано, є фільтр
+        /// </summary>
+        public bool IsFiltered { get; set; } = false;
+
+        /// <summary>
+        /// Створене спливаюче вікно
+        /// </summary>
         public bool IsFilterCreated { get; private set; } = false;
 
         /// <summary>

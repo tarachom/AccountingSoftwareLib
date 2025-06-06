@@ -30,7 +30,7 @@ namespace AccountingSoftware
     {
         #region Const
 
-        const int DefaultCommandTimeout = 120; // 2 хвилини
+        const int DefaultCommandTimeout = 90; // 1 хвилина, 30 сек (стандартно 30 сек)
 
         #endregion
 

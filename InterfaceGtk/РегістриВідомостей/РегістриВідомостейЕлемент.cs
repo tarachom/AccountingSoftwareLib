@@ -90,7 +90,8 @@ namespace InterfaceGtk
             SpinnerOff(notebook);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
-            CallBack_LoadRecords?.Invoke(UnigueID);
+            if (IsNew) /* Експеримент! Оновлення тільки для нових */
+                CallBack_LoadRecords?.Invoke(UnigueID);
 
             if (closePage)
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);

@@ -363,23 +363,23 @@ namespace InterfaceGtk
         {
             Notebook notebook = (Notebook)sender;
 
-            //if (notebook.IsFocus) !!! 
-            switch (args.Event.Key)
-            {
-                case Gdk.Key.Escape:
-                    {
-                        Widget widget = notebook.CurrentPageWidget;
-                        if (widget != null)
-                            //Пошук в назві вкладки LinkButton для закриття сторінки
-                            foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
-                                if (children is LinkButton lbClose && lbClose.Uri == "Close")
-                                {
-                                    CloseNotebookPageToCode(notebook, lbClose.Name);
-                                    break;
-                                }
-                        break;
-                    }
-            }
+            if (notebook.IsFocus)
+                switch (args.Event.Key)
+                {
+                    case Gdk.Key.Escape:
+                        {
+                            Widget widget = notebook.CurrentPageWidget;
+                            if (widget != null)
+                                //Пошук в назві вкладки LinkButton для закриття сторінки
+                                foreach (Widget children in ((Box)notebook.GetTabLabel(widget)).Children)
+                                    if (children is LinkButton lbClose && lbClose.Uri == "Close")
+                                    {
+                                        CloseNotebookPageToCode(notebook, lbClose.Name);
+                                        break;
+                                    }
+                            break;
+                        }
+                }
         }
 
         #region ObjectChangeEvents

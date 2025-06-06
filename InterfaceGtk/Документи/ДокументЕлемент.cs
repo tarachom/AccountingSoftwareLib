@@ -280,8 +280,10 @@ namespace InterfaceGtk
 
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
             SpinnerOn(notebook);
+
             bool isSave = await Save();
             bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
+
             SpinnerOff(notebook);
             NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
@@ -290,7 +292,8 @@ namespace InterfaceGtk
                 if (CallBack_OnSelectPointer != null && UnigueID != null)
                     CallBack_OnSelectPointer.Invoke(UnigueID);
 
-                CallBack_LoadRecords?.Invoke(UnigueID);
+                if (IsNew) /* Експеримент! Оновлення тільки для нових */
+                    CallBack_LoadRecords?.Invoke(UnigueID);
 
                 if (closePage && isSpend)
                     NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);

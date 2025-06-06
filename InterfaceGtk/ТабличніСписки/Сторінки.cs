@@ -68,7 +68,7 @@ namespace InterfaceGtk
             /// <summary>
             /// Розмір сторінки
             /// </summary>
-            public int PageSize = 200;
+            public int PageSize = 100;
 
             /// <summary>
             /// Очистити
