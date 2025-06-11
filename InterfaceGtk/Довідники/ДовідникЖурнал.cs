@@ -376,7 +376,10 @@ namespace InterfaceGtk
                         }
                     }
 
-                    await BeforeLoadRecords();
+                    if (Фільтр.IsFiltered)
+                        await BeforeLoadRecords_OnFilter();
+                    else
+                        await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -402,7 +405,10 @@ namespace InterfaceGtk
                         }
                     }
 
-                    await BeforeLoadRecords();
+                    if (Фільтр.IsFiltered)
+                        await BeforeLoadRecords_OnFilter();
+                    else
+                        await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }

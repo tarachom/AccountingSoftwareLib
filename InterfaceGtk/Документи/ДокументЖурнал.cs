@@ -430,7 +430,10 @@ namespace InterfaceGtk
                         SelectPointerItem = unigueID;
                     }
 
-                    await BeforeLoadRecords();
+                    if (Фільтр.IsFiltered)
+                        await BeforeLoadRecords_OnFilter();
+                    else
+                        await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -456,7 +459,10 @@ namespace InterfaceGtk
                             SelectPointerItem = newUnigueID;
                     }
 
-                    await BeforeLoadRecords();
+                    if (Фільтр.IsFiltered)
+                        await BeforeLoadRecords_OnFilter();
+                    else
+                        await BeforeLoadRecords();
 
                     ToolButtonSensitive(sender, true);
                 }
@@ -497,7 +503,10 @@ namespace InterfaceGtk
                     SelectPointerItem = unigueID;
                 }
 
-                await BeforeLoadRecords();
+                if (Фільтр.IsFiltered)
+                    await BeforeLoadRecords_OnFilter();
+                else
+                    await BeforeLoadRecords();
             }
         }
 
