@@ -206,7 +206,7 @@ namespace InterfaceGtk
         public static void CloseNotebookPageToCode(Notebook? notebook, string codePage)
         {
             notebook?.Foreach(
-                async (Widget wg) =>
+                async wg =>
                 {
                     if (wg.Name == codePage)
                     {
@@ -261,7 +261,7 @@ namespace InterfaceGtk
         public static void SpinnerNotebookPageToCode(Notebook? notebook, bool active, string codePage)
         {
             notebook?.Foreach(
-                (Widget wg) =>
+                wg =>
                 {
                     if (wg.Name == codePage)
                     {
@@ -292,7 +292,7 @@ namespace InterfaceGtk
         public static void RenameNotebookPageToCode(Notebook? notebook, string caption, string codePage)
         {
             notebook?.Foreach(
-                (Widget wg) =>
+                wg =>
                 {
                     if (wg.Name == codePage)
                     {
@@ -317,7 +317,7 @@ namespace InterfaceGtk
             int counter = 0;
 
             notebook?.Foreach(
-                (Widget wg) =>
+                wg =>
                 {
                     if (wg.Name == codePage)
                     {
@@ -342,7 +342,7 @@ namespace InterfaceGtk
         public static void SensitiveNotebookPageToCode(Notebook? notebook, string codePage, bool sensitive)
         {
             notebook?.Foreach(
-                (Widget wg) =>
+                wg =>
                 {
                     if (wg.Name == codePage)
                         wg.Sensitive = sensitive;

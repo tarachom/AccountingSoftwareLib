@@ -21,10 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-/*
-
-*/
-
 using AccountingSoftware;
 
 namespace InterfaceGtk

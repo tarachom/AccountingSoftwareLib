@@ -62,11 +62,13 @@ namespace AccountingSoftware
 		/// </summary>
 		/// <param name="fieldName">Назва поля в базі даних</param>
 		/// <param name="fieldValue">Значення поля</param>
+		/// <param name="funcToField">Функція для поля</param>
+		/// <param name="funcToField_Param1">Перший параметр для функції</param>
 		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected async ValueTask<UnigueID?> BaseFindByField(string fieldName, object fieldValue)
+		protected async ValueTask<UnigueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
 			Query querySelect = new(Table);
-			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
+			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
 
 			return await Kernel.DataBase.FindDocumentPointer(querySelect);
 		}

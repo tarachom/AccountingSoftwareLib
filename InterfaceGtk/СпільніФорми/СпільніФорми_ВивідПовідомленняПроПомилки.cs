@@ -23,7 +23,6 @@ limitations under the License.
 
 using Gtk;
 using AccountingSoftware;
-using System.Reflection;
 
 namespace InterfaceGtk
 {
@@ -56,32 +55,6 @@ namespace InterfaceGtk
 
             ShowAll();
         }
-
-        #region Функції
-
-        //!!! переробити на -> protected abstract CompositePointerControl CreateCompositControl();
-
-        /*
-        Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
-        {
-            object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
-            if (compositControlInstance != null)
-            {
-                dynamic compositControl = compositControlInstance;
-
-                compositControl.Caption = caption;
-                compositControl.ClearSensetive = false;
-                compositControl.TypeSelectSensetive = false;
-                compositControl.Pointer = uuidAndText;
-
-                return compositControl;
-            }
-            else
-                return null;
-        }
-        */
-
-        #endregion
 
         #region Virtual & Abstract Function
 

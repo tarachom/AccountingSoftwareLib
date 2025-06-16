@@ -107,6 +107,18 @@ namespace InterfaceGtk
             }
         }
 
+        public string CssClass
+        {
+            set
+            {
+                foreach (var className in entryText.StyleContext.ListClasses())
+                    entryText.StyleContext.RemoveClass(className);
+
+                if (!string.IsNullOrEmpty(value))
+                    entryText.StyleContext.AddClass(value);
+            }
+        }
+
         public bool ClearSensetive
         {
             set

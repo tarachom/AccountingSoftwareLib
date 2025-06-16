@@ -94,7 +94,7 @@ namespace InterfaceGtk
         /// <param name="field">Поле</param>
         /// <param name="halign">Положення</param>
         /// <param name="put_vbox">Вкласти в додатковий вертикальний блок</param>
-        protected Box CreateField(Box parentBox, string? label, Widget? field = null, Align halign = Align.End, bool put_vbox = false)
+        protected static Box CreateField(Box parentBox, string? label, Widget? field = null, Align halign = Align.End, bool put_vbox = false)
         {
             Box usingBox = parentBox;
 
@@ -136,7 +136,7 @@ namespace InterfaceGtk
         /// <param name="field">Поле</param>
         /// <param name="Width">Висота</param>
         /// <param name="Height">Ширина</param>
-        protected void CreateFieldView(Box vBox, string? label, Widget field, int Width = 100, int Height = 100, Align Halign = Align.End)
+        protected static void CreateFieldView(Box vBox, string? label, Widget field, int Width = 100, int Height = 100, Align Halign = Align.End)
         {
             Box hBox = new Box(Orientation.Horizontal, 0) { Halign = Halign };
             vBox.PackStart(hBox, false, false, 5);
@@ -157,7 +157,7 @@ namespace InterfaceGtk
         /// <param name="vBox">Контейнер</param>
         /// <param name="label">Заголовок</param>
         /// <param name="tablePart">Таб частина</param>
-        protected void CreateTablePart(Box vBox, string? label, Widget tablePart)
+        protected static void CreateTablePart(Box vBox, string? label, Widget tablePart)
         {
             if (label != null)
             {
@@ -173,7 +173,11 @@ namespace InterfaceGtk
 
         #endregion
 
+        #region Spinner
+
         public void SpinnerOn(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, true, this.Name);
         public void SpinnerOff(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, false, this.Name);
+
+        #endregion
     }
 }

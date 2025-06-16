@@ -2305,7 +2305,7 @@ paramQuery, transactionID);
         /// <param name="pageSize">Розмір сторінки</param>
         public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UnigueID? unigueID, int pageSize = 1000)
         {
-            SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
+            SplitSelectToPages_Record record = new() { PageSize = pageSize };
 
             if (DataSource != null)
             {

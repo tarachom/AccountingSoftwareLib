@@ -488,12 +488,12 @@ UNION ALL
         public bool UsingSQLToValue { get; set; }
 
         /// <summary>
-        ///  Функція для поля
+        /// Функція для поля
         /// </summary>
         public string FuncToField { get; set; } = "";
 
         /// <summary>
-        ///  Перший параметр для функції
+        /// Перший параметр для функції
         /// </summary>
         public string FuncToField_Param1 { get; set; } = "";
     }

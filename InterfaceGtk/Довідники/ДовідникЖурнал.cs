@@ -237,7 +237,7 @@ namespace InterfaceGtk
 
         #endregion
 
-        #region  TreeView
+        #region TreeView
 
         void OnRowActivated(object sender, RowActivatedArgs args)
         {

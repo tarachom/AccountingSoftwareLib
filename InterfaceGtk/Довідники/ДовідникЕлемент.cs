@@ -181,7 +181,7 @@ namespace InterfaceGtk
                 if (CallBack_OnSelectPointer != null && UnigueID != null)
                     CallBack_OnSelectPointer.Invoke(UnigueID);
 
-                if (IsNew) /* Експеримент! Оновлення тільки для нових */
+                if (IsNew)
                     CallBack_LoadRecords?.Invoke(UnigueID);
 
                 if (closePage)
