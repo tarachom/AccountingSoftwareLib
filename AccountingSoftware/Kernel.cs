@@ -219,48 +219,56 @@ namespace AccountingSoftware
 
             while (true)
             {
-                await DataBase.SpetialTableActiveUsersUpdateSession(Session);
-                UpdateSession?.Invoke(this, new());
-
-                //Тригери оновлення обєктів
-                if (DirectoryObjectChanged != null || DocumentObjectChanged != null)
+                try
                 {
-                    SelectRequest_Record resultRecords = await DataBase.SpetialTableObjectUpdateTrigerSelect(AfterUpdateSession);
-                    if (resultRecords.Result)
+                    await DataBase.SpetialTableActiveUsersUpdateSession(Session);
+                    UpdateSession?.Invoke(this, new());
+
+                    //Тригери оновлення обєктів
+                    if (DirectoryObjectChanged != null || DocumentObjectChanged != null)
                     {
-                        AfterUpdateSession = (DateTime)resultRecords.ListRow[0]["after"];
-
-                        Dictionary<string, List<ObjectChanged>> directory = [];
-                        Dictionary<string, List<ObjectChanged>> document = [];
-
-                        foreach (var record in resultRecords.ListRow)
+                        SelectRequest_Record resultRecords = await DataBase.SpetialTableObjectUpdateTrigerSelect(AfterUpdateSession);
+                        if (resultRecords.Result)
                         {
-                            UuidAndText obj = (UuidAndText)record["obj"];
-                            TypeObjectChanged operation = (char)record["operation"] switch { 'A' => TypeObjectChanged.Add, 'U' => TypeObjectChanged.Update, 'D' => TypeObjectChanged.Delete, _ => TypeObjectChanged.Update };
-                            var (_, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
+                            AfterUpdateSession = (DateTime)resultRecords.ListRow[0]["after"];
 
-                            if (pointerGroup == "Довідники")
+                            Dictionary<string, List<ObjectChanged>> directory = [];
+                            Dictionary<string, List<ObjectChanged>> document = [];
+
+                            foreach (var record in resultRecords.ListRow)
                             {
-                                if (directory.TryGetValue(pointerType, out List<ObjectChanged>? list))
-                                    list.Add(new(obj.Uuid, operation));
-                                else
-                                    directory.Add(pointerType, [new(obj.Uuid, operation)]);
+                                UuidAndText obj = (UuidAndText)record["obj"];
+                                TypeObjectChanged operation = (char)record["operation"] switch { 'A' => TypeObjectChanged.Add, 'U' => TypeObjectChanged.Update, 'D' => TypeObjectChanged.Delete, _ => TypeObjectChanged.Update };
+                                var (_, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
+
+                                if (pointerGroup == "Довідники")
+                                {
+                                    if (directory.TryGetValue(pointerType, out List<ObjectChanged>? list))
+                                        list.Add(new(obj.Uuid, operation));
+                                    else
+                                        directory.Add(pointerType, [new(obj.Uuid, operation)]);
+                                }
+                                else if (pointerGroup == "Документи")
+                                {
+                                    if (document.TryGetValue(pointerType, out List<ObjectChanged>? list))
+                                        list.Add(new(obj.Uuid, operation));
+                                    else
+                                        document.Add(pointerType, [new(obj.Uuid, operation)]);
+                                }
                             }
-                            else if (pointerGroup == "Документи")
-                            {
-                                if (document.TryGetValue(pointerType, out List<ObjectChanged>? list))
-                                    list.Add(new(obj.Uuid, operation));
-                                else
-                                    document.Add(pointerType, [new(obj.Uuid, operation)]);
-                            }
+
+                            if (DirectoryObjectChanged != null && directory.Count > 0)
+                                DirectoryObjectChanged.Invoke(this, directory);
+
+                            if (DocumentObjectChanged != null && document.Count > 0)
+                                DocumentObjectChanged.Invoke(this, document);
                         }
-
-                        if (DirectoryObjectChanged != null && directory.Count > 0)
-                            DirectoryObjectChanged.Invoke(this, directory);
-
-                        if (DocumentObjectChanged != null && document.Count > 0)
-                            DocumentObjectChanged.Invoke(this, document);
                     }
+                }
+                catch (Exception exception)
+                {
+                    string path = Path.Combine(AppContext.BaseDirectory, "Error_Kernel_LoopUpdateSession.txt");
+                    File.AppendAllText(path, $"{DateTime.Now}\n{exception.Message}");
                 }
 
                 //Затримка на 5 сек

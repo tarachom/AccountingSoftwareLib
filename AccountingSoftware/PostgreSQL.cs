@@ -1178,7 +1178,7 @@ SELECT count(*) FROM update_session
         public async ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid)
         {
             int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
-            int life_active = 8; //Активна сесія якщо останнє обновлення більше заданого часу
+            int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
 
             //Обновлення сесії
             bool session_update = await SpetialTableActiveUsersIsExistSessionToUpdate(session_uid);
@@ -1262,7 +1262,7 @@ COMMIT;
             }
             catch (Exception ex)
             {
-                System.IO.File.AppendAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "error.txt"), ex.Message);
+                File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "error.txt"), ex.Message);
             }
 
             return session_update;
