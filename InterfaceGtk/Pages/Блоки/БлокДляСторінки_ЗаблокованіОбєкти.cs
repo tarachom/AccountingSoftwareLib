@@ -38,24 +38,26 @@ namespace InterfaceGtk
         {
             Session,
             UserUID,
-            UserName,
+            ObjValue,
             DateLock,
-            ObjType,
-            ObjValue
+            UserName,
+            ObjType
         }
 
         ListStore Store = new ListStore(
             typeof(string), //Session
             typeof(string), //UserUID
-            typeof(string), //UserName
+            typeof(string), //ObjValue
             typeof(string), //DateLock
-            typeof(string), //ObjType
-            typeof(string)  //ObjValue
+            typeof(string), //UserName
+            typeof(string)  //ObjType
         );
 
         TreeView TreeViewGrid;
 
         Kernel Kernel { get; set; }
+
+        Dictionary<Guid, (CompositePointerPresentation_Record Record, DateTime DateExpire)> CacheData = [];
 
         public БлокДляСторінки_ЗаблокованіОбєкти(Kernel kernel) : base()
         {
@@ -89,21 +91,32 @@ namespace InterfaceGtk
         {
             var recordResult = await Kernel.DataBase.SpetialTableLockedObjectSelect();
 
+            //Очистка через певний час
+            foreach (Guid remove in CacheData.Select(x => x.Value.DateExpire < DateTime.Now ? x.Key : Guid.Empty))
+                if (remove != Guid.Empty && CacheData.ContainsKey(remove))
+                    CacheData.Remove(remove);
+
             Store.Clear();
             foreach (Dictionary<string, object> record in recordResult.ListRow)
             {
                 string datelock = DateTime.Parse(record["datelock"].ToString() ?? DateTime.MinValue.ToString()).ToString("HH:mm:ss");
-
                 UuidAndText obj = (UuidAndText)record["obj"];
-                CompositePointerPresentation_Record presentation = await CompositePointerPresentation(obj);
+
+                if (!CacheData.TryGetValue(obj.Uuid, out (CompositePointerPresentation_Record Record, DateTime DateExpire) presentation))
+                {
+                    presentation.Record = await CompositePointerPresentation(obj);
+                    presentation.DateExpire = DateTime.Now.AddMinutes(5); // 5 хвилин в кеші
+
+                    CacheData.Add(obj.Uuid, presentation);
+                }
 
                 Store.AppendValues(
                     record["session"].ToString(),
                     record["users"].ToString(),
-                    record["username"].ToString(),
+                    presentation.Record.result,
                     datelock,
-                    obj.Text,
-                    presentation.result
+                    record["username"].ToString(),
+                    obj.Text
                 );
             }
         }
@@ -114,10 +127,10 @@ namespace InterfaceGtk
         {
             TreeViewGrid.AppendColumn(new TreeViewColumn("Session", new CellRendererText(), "text", (int)Columns.Session) { Visible = false });
             TreeViewGrid.AppendColumn(new TreeViewColumn("UserUID", new CellRendererText(), "text", (int)Columns.UserUID) { Visible = false });
+            TreeViewGrid.AppendColumn(new TreeViewColumn("Об'єкт", new CellRendererText(), "text", (int)Columns.ObjValue));
+            TreeViewGrid.AppendColumn(new TreeViewColumn("Дата", new CellRendererText(), "text", (int)Columns.DateLock) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Користувач", new CellRendererText(), "text", (int)Columns.UserName));
-            TreeViewGrid.AppendColumn(new TreeViewColumn("Заблоковано", new CellRendererText() { Xalign = 0.5f }, "text", (int)Columns.DateLock) { Alignment = 0.5f });
             TreeViewGrid.AppendColumn(new TreeViewColumn("Тип", new CellRendererText(), "text", (int)Columns.ObjType));
-            TreeViewGrid.AppendColumn(new TreeViewColumn("Значення", new CellRendererText(), "text", (int)Columns.ObjValue));
 
             //Пустишка
             TreeViewGrid.AppendColumn(new TreeViewColumn());
