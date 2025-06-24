@@ -98,6 +98,8 @@ namespace InterfaceGtk
             pointerObj.Pointer = obj;
             pointerObj.Caption = pointerGroup switch { "Довідники" => "Довідник", "Документи" => "Документ", _ => "Об'єкт" } + " " + pointerFullName;
 
+            SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
+
             //Поля
             {
                 SelectVersionsHistoryItem_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistorySelect(versionID, obj);
@@ -308,6 +310,8 @@ namespace InterfaceGtk
 
                     }
             }
+
+            SpinnerOff(NotebookFunction.GetNotebookFromWidget(this)); 
         }
 
         void AppendField(string caption, Widget widget)

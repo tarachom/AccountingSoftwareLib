@@ -103,6 +103,8 @@ namespace InterfaceGtk
         {
             if (!Obj.IsEmpty())
             {
+                SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
+
                 SelectVersionsHistoryList_Record recordResult = await Kernel.DataBase.SpetialTableObjectVersionsHistoryList(Obj);
                 Store.Clear();
 
@@ -117,6 +119,8 @@ namespace InterfaceGtk
                             row.Operation switch { 'A' => "Додано новий", 'U' => "Записано", 'E' => "Зміни в табличних частинах", _ => "" },
                             row.Info
                         );
+
+                SpinnerOff(NotebookFunction.GetNotebookFromWidget(this));
             }
         }
 
