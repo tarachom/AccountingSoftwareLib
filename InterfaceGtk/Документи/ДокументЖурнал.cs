@@ -203,17 +203,55 @@ namespace InterfaceGtk
         {
             Menu Menu = new Menu();
 
-            MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
-            spendTheDocumentButton.Activated += (sender, args) => SpendTheDocumentOrClear(true);
-            Menu.Append(spendTheDocumentButton);
+            {
+                MenuItem menu = new MenuItem("Додати");
+                menu.Activated += OnAddClick;
+                Menu.Append(menu);
+            }
 
-            MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
-            clearSpendButton.Activated += (sender, args) => SpendTheDocumentOrClear(false);
-            Menu.Append(clearSpendButton);
+            {
+                MenuItem menu = new MenuItem("Редагувати");
+                menu.Activated += OnEditClick;
+                Menu.Append(menu);
+            }
 
-            MenuItem setDeletionLabel = new MenuItem("Помітка на видалення");
-            setDeletionLabel.Activated += OnDeleteClick;
-            Menu.Append(setDeletionLabel);
+            {
+                MenuItem menu = new MenuItem("Копіювати");
+                menu.Activated += OnCopyClick;
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Видалити");
+                menu.Activated += OnDeleteClick;
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Обновити");
+                menu.Activated += OnRefreshClick;
+                Menu.Append(menu);
+            }
+
+            Menu.Append(new SeparatorMenuItem());
+
+            {
+                MenuItem menu = new MenuItem("Провести документ");
+                menu.Activated += (sender, args) => SpendTheDocumentOrClear(true);
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Відмінити проведення");
+                menu.Activated += (sender, args) => SpendTheDocumentOrClear(false);
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Помітка на видалення");
+                menu.Activated += OnDeleteClick;
+                Menu.Append(menu);
+            }
 
             Menu.ShowAll();
 

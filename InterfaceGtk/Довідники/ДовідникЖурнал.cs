@@ -202,17 +202,49 @@ namespace InterfaceGtk
 
         Menu PopUpContextMenu()
         {
-            Menu menu = new Menu();
+            Menu Menu = new Menu();
 
             {
-                MenuItem item = new MenuItem("Вибрати");
-                item.Activated += OnMultipleSelectClick;
-                menu.Append(item);
+                MenuItem menu = new MenuItem("Додати");
+                menu.Activated += OnAddClick;
+                Menu.Append(menu);
             }
 
-            menu.ShowAll();
+            {
+                MenuItem menu = new MenuItem("Редагувати");
+                menu.Activated += OnEditClick;
+                Menu.Append(menu);
+            }
 
-            return menu;
+            {
+                MenuItem menu = new MenuItem("Копіювати");
+                menu.Activated += OnCopyClick;
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Видалити");
+                menu.Activated += OnDeleteClick;
+                Menu.Append(menu);
+            }
+
+            {
+                MenuItem menu = new MenuItem("Обновити");
+                menu.Activated += OnRefreshClick;
+                Menu.Append(menu);
+            }
+
+            Menu.Append(new SeparatorMenuItem());
+
+            {
+                MenuItem menu = new MenuItem("Вибрати");
+                menu.Activated += OnMultipleSelectClick;
+                Menu.Append(menu);
+            }
+
+            Menu.ShowAll();
+
+            return Menu;
         }
 
         #endregion
