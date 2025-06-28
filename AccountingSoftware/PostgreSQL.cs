@@ -21,6 +21,9 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Security.Cryptography;
+using System.Text;
+
 using System.Text.RegularExpressions;
 using Npgsql;
 
@@ -512,6 +515,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {
                 @fields - масив полів
                 @operation - тип операції (A, U, E) - Add, Update, Empty
                 @info - додаткова інформація
+                @hashdata - хеш полів @fields
 
                 */
 
@@ -525,6 +529,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}
     fields nametext[] NOT NULL,
     operation ""char"" NOT NULL DEFAULT '',
     info text NOT NULL DEFAULT '',
+    hashdata text NOT NULL DEFAULT '',
     PRIMARY KEY(uid)
 )");
 
@@ -539,7 +544,12 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objuuid_idx ON 
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objtext_idx ON {SpecialTables.ObjectVersionsHistory}(((obj).text))");
-
+            }
+            else
+            {
+                /* !!! В таблицю додано нове поле */
+                await ExecuteSQL($@"
+ALTER TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory} ADD COLUMN IF NOT EXISTS hashdata text NOT NULL DEFAULT ''", 0, 120);
             }
 
             if (!specialTable.Contains(SpecialTables.TablePartVersionsHistory))
@@ -584,7 +594,53 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHistory}_objowneruuid
 
                 await ExecuteSQL($@"
 CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHistory}_objownertext_idx ON {SpecialTables.TablePartVersionsHistory}(((objowner).text))");
+            }
 
+            if (!specialTable.Contains(SpecialTables.TablePartVersionsHashData))
+            {
+                /*
+                
+                Таблиця для запису хеш-кодів табличних частин
+
+                @uid - PRIMARY KEY
+                @objversionid - uid з таб {SpecialTables.ObjectVersionsHistory} 
+                @datewrite - дата запису
+                @users - користувач
+                @objowner - обєкт власник
+                @tablepart - назва табличної частини
+                @hashdata - хеш-код всієї таб частини
+
+                */
+
+                await ExecuteSQL($@"
+CREATE TABLE IF NOT EXISTS {SpecialTables.TablePartVersionsHashData} 
+(
+    uid uuid NOT NULL,
+    objversionid uuid NOT NULL,
+    datewrite timestamp without time zone NOT NULL,
+    users uuid NOT NULL,
+    objowner uuidtext NOT NULL,
+    tablepart text NOT NULL DEFAULT '',
+    hashdata text NOT NULL DEFAULT '',
+    PRIMARY KEY(uid)
+)");
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_objversionid_idx ON {SpecialTables.TablePartVersionsHashData}(objversionid)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_datewrite_idx ON {SpecialTables.TablePartVersionsHashData}(datewrite)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_users_idx ON {SpecialTables.TablePartVersionsHashData}(users)");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_objowneruuid_idx ON {SpecialTables.TablePartVersionsHashData}(((objowner).uuid))");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_objownertext_idx ON {SpecialTables.TablePartVersionsHashData}(((objowner).text))");
+
+                await ExecuteSQL($@"
+CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_tablepart_idx ON {SpecialTables.TablePartVersionsHashData}(tablepart)");
             }
         }
 
@@ -1632,7 +1688,8 @@ WHERE (LockedObject.obj).uuid = @obj
         //ObjectVersionsHistory
 
         /// <summary>
-        /// Добаляє новий запис в історію змін обєктів
+        /// Добавляє новий запис в історію змін об'єктів.
+        /// Запис добавляється тільки коли змінились дані.
         /// </summary>
         /// <param name="version_id">Версія</param>
         /// <param name="user_uid">Юзер</param>
@@ -1642,33 +1699,46 @@ WHERE (LockedObject.obj).uuid = @obj
         /// <param name="info">Додаткова інформація</param>
         public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0)
         {
+            #region Local Func
+
+            async ValueTask<string?> GetOldHashData(Guid version_id, UuidAndText obj)
+            {
+                Dictionary<string, object> paramQuery = new() { { "version_id", version_id }, { "uuid", obj.Uuid }, { "text", obj.Text } };
+
+                string query = $@" 
+SELECT 
+    hashdata
+FROM 
+    {SpecialTables.ObjectVersionsHistory} 
+WHERE
+    (obj).uuid = @uuid AND
+    (obj).text = @text AND
+    uid != @version_id AND
+    hashdata != ''
+ORDER BY
+    datewrite DESC
+LIMIT 1
+";
+                return (await ExecuteSQLScalar(query, paramQuery))?.ToString();
+            }
+
+            #endregion
+
             List<NameAndText> nameAndText = [];
+            string hashdata = "";
 
             if (fieldValue != null)
             {
-                nameAndText = new(fieldValue.Count);
-                foreach (var field in fieldValue)
-                    switch (field.Value?.GetType().ToString() ?? "")
-                    {
-                        case "System.Byte[]":
-                            {
-                                nameAndText.Add(new NameAndText(field.Key, ""));
-                                break;
-                            }
-                        case "System.String[]":
-                        case "System.Int32[]":
-                        case "System.Decimal[]":
-                        case "System.Guid[]":
-                            {
-                                nameAndText.Add(new NameAndText(field.Key, string.Join(", ", field.Value?.ToString() ?? "")));
-                                break;
-                            }
-                        default:
-                            {
-                                nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
-                                break;
-                            }
-                    }
+                //Заповнення списку nameAndText полями
+                SpetialTableObjectVersionsHistory_FillNameAndTextList(fieldValue, out nameAndText);
+
+                //Хеш
+                hashdata = MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString())));
+
+                //Попередній хеш
+                string? previous_hashdata = await GetOldHashData(version_id, obj);
+                if (previous_hashdata != null && hashdata == previous_hashdata)
+                    return;
             }
 
             Dictionary<string, object> paramQuery = new()
@@ -1678,7 +1748,8 @@ WHERE (LockedObject.obj).uuid = @obj
                 { "obj", obj },
                 { "fields", nameAndText.ToArray() },
                 { "operation", operation },
-                { "info", info }
+                { "info", info },
+                { "hashdata", hashdata }
             };
 
             await ExecuteSQL($@"
@@ -1690,7 +1761,8 @@ INSERT INTO {SpecialTables.ObjectVersionsHistory}
     obj,
     fields,
     operation,
-    info
+    info,
+    hashdata
 )
 VALUES
 (
@@ -1700,7 +1772,8 @@ VALUES
     @obj,
     @fields,
     @operation,
-    @info
+    @info,
+    @hashdata
 )
 ON CONFLICT (uid) DO UPDATE SET
     datewrite = CURRENT_TIMESTAMP::timestamp,
@@ -1708,7 +1781,8 @@ ON CONFLICT (uid) DO UPDATE SET
     obj = @obj,
     fields = @fields,
     operation = @operation,
-    info = @info
+    info = @info,
+    hashdata = @hashdata
 ", paramQuery, transactionID);
         }
 
@@ -1730,6 +1804,7 @@ SELECT
     VersionsHistory.users,
     VersionsHistory.operation,
     VersionsHistory.info,
+    VersionsHistory.hashdata,
     Users.fullname AS username
 FROM {SpecialTables.ObjectVersionsHistory} AS VersionsHistory
     JOIN {SpecialTables.Users} AS Users ON Users.uid = VersionsHistory.users
@@ -1756,6 +1831,7 @@ ORDER BY
                         UserID = (Guid)reader["users"],
                         Operation = (char)reader["operation"],
                         Info = reader["info"]?.ToString() ?? "",
+                        HashData = reader["hashdata"]?.ToString() ?? "",
                         UserName = reader["username"]?.ToString() ?? ""
                     });
                 await reader.CloseAsync();
@@ -1774,6 +1850,32 @@ ORDER BY
         {
             SelectVersionsHistoryItem_Record record = new();
 
+            #region Local Func
+
+            async ValueTask<NameAndText[]> GetPreviousFields()
+            {
+                Dictionary<string, object> paramQuery = new() { { "version_id", version_id }, { "uuid", obj.Uuid }, { "text", obj.Text } };
+
+                string query = $@" 
+SELECT 
+    fields
+FROM 
+    {SpecialTables.ObjectVersionsHistory} 
+WHERE
+    (obj).uuid = @uuid AND
+    (obj).text = @text AND
+    uid != @version_id AND
+    hashdata != ''
+ORDER BY
+    datewrite DESC
+LIMIT 1
+";
+                object? fields = await ExecuteSQLScalar(query, paramQuery);
+                return fields != null ? (NameAndText[])fields : [];
+            }
+
+            #endregion
+
             if (DataSource != null)
             {
                 string query = $@"
@@ -1782,7 +1884,8 @@ SELECT
     VersionsHistory.users,
     Users.fullname AS username,
     VersionsHistory.obj,
-    VersionsHistory.fields
+    VersionsHistory.fields,
+    VersionsHistory.hashdata
 FROM
     {SpecialTables.ObjectVersionsHistory} AS VersionsHistory
     JOIN {SpecialTables.Users} AS Users ON Users.uid = VersionsHistory.users
@@ -1791,7 +1894,6 @@ WHERE
     (VersionsHistory.obj).uuid = @uuid AND
     (VersionsHistory.obj).text = @text
 ";
-
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("version_id", version_id);
@@ -1808,6 +1910,8 @@ WHERE
                     record.UserName = reader["username"]?.ToString() ?? "";
                     record.Obj = (UuidAndText)reader["obj"];
                     record.Fields = (NameAndText[])reader["fields"];
+                    record.HashData = reader["hashdata"].ToString() ?? "";
+                    record.PreviousFields = await GetPreviousFields();
                 }
                 await reader.CloseAsync();
             }
@@ -1837,8 +1941,7 @@ WHERE
     uid = @version_id AND
     (obj).uuid = @uuid AND
     (obj).text = @text
-",
-paramQuery, transactionID);
+", paramQuery, transactionID);
 
                 //Видалення історії для табличних частин
                 await SpetialTableTablePartVersionsHistoryRemove(version_id, obj, transactionID);
@@ -1849,7 +1952,7 @@ paramQuery, transactionID);
         /// Видалення всіх записів в історії для обєкту
         /// </summary>
         /// <param name="obj">Обєкт</param>
-        public async ValueTask SpetialTableObjectVersionsHistoryClear(UuidAndText obj, byte transactionID = 0)
+        public async ValueTask SpetialTableObjectVersionsHistoryRemoveAll(UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
             {
@@ -1864,57 +1967,134 @@ DELETE FROM {SpecialTables.ObjectVersionsHistory}
 WHERE 
     (obj).uuid = @uuid AND
     (obj).text = @text
-",
-paramQuery, transactionID);
+", paramQuery, transactionID);
 
                 //Очистка історії для табличних частин
-                await SpetialTableTablePartVersionsHistoryClear(obj, transactionID);
+                await SpetialTableTablePartVersionsHistoryRemoveAll(obj, transactionID);
             }
-        }
-
-        /// <summary>
-        /// Функція перевіряє наявність запису для об'єкту і якщо немає - добавляє новий, без полів і з міткою E (пустий)
-        /// Використовується для табличних частин, коли є зміни в таб частині але немає змін в самому об'єкті
-        /// </summary>
-        /// <param name="version_id">Версія</param>
-        /// <param name="user_uid">Юзер</param>
-        /// <param name="obj">Обєкт</param>
-        public async ValueTask SpetialTableObjectVersionsHistoryAddIfNotExist(Guid version_id, Guid user_uid, UuidAndText obj, byte transactionID = 0)
-        {
-            string query = $@"SELECT count(uid) FROM {SpecialTables.ObjectVersionsHistory} WHERE uid = @uid";
-            object? count = await ExecuteSQLScalar(query, new() { { "uid", version_id } });
-
-            if (count != null && (long)count == 0)
-                await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, obj, null, 'E', "", transactionID);
         }
 
         // TablePartVersionsHistory
 
-        /// <summary>
-        /// Добавляє запис в історію змін для табличної частини один рядок
-        /// </summary>
-        /// <param name="version_id">Версія</param>
-        /// <param name="user_uid">Юзер</param>
-        /// <param name="objowner">Обєкт власник</param>
-        /// <param name="tablepart">Таблиця таб частини</param>
-        /// <param name="fieldValue">Поля</param>
-        public async ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<Guid, Dictionary<string, object>> listFieldValue, byte transactionID = 0)
         {
-            List<NameAndText> nameAndText = new(fieldValue.Count);
-            foreach (var field in fieldValue)
-                nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
+            #region Local Func
 
-            Dictionary<string, object> paramQuery = new()
+            // Перевірка запису в основній таблиці і добавлення якщо немає
+            async ValueTask AddGeneralRecord()
             {
-                { "uid", Guid.NewGuid() },
-                { "objversionid", version_id },
-                { "user", user_uid },
-                { "objowner", objowner },
-                { "tablepart", tablepart },
-                { "fields", nameAndText.ToArray() }
-            };
+                Dictionary<string, object> paramQuery = new() { { "version_id", version_id } };
+                string query = $@"
+SELECT 
+    count(uid) 
+FROM 
+    {SpecialTables.ObjectVersionsHistory} 
+WHERE 
+    uid = @version_id";
 
-            await ExecuteSQL($@"
+                object? count = await ExecuteSQLScalar(query, paramQuery);
+                if (count != null && (long)count == 0)
+                    await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, objowner, null, 'E', "", transactionID);
+            }
+
+            // Очистка попередніх записів
+            async ValueTask Clean()
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "version_id", version_id },
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
+                    { "tablepart", tablepart }
+                };
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHistory} 
+WHERE 
+    objversionid = @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text AND
+    tablepart = @tablepart", paramQuery, transactionID);
+            }
+
+            // Отримати попередній хеш для таб частини
+            async ValueTask<string?> GetOldHashDataRecord()
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "version_id", version_id },
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
+                    { "tablepart", tablepart }
+                };
+
+                string query = $@"
+SELECT 
+    hashdata
+FROM 
+    {SpecialTables.TablePartVersionsHashData} 
+WHERE
+    objversionid != @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text AND
+    tablepart = @tablepart
+ORDER BY
+    datewrite DESC
+LIMIT 1
+";
+                return (await ExecuteSQLScalar(query, paramQuery))?.ToString();
+            }
+
+            // Добавлення хешу для таб частини
+            async ValueTask AddHashDataRecord(string hashdata)
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "uid", Guid.NewGuid() },
+                    { "objversionid", version_id },
+                    { "user", user_uid },
+                    { "objowner", objowner },
+                    { "tablepart", tablepart },
+                    { "hashdata", hashdata }
+                };
+
+                await ExecuteSQL($@"
+INSERT INTO {SpecialTables.TablePartVersionsHashData} 
+(
+    uid,
+    objversionid,
+    datewrite,
+    users,
+    objowner,
+    tablepart,
+    hashdata
+)
+VALUES
+(
+    @uid,
+    @objversionid,
+    CURRENT_TIMESTAMP::timestamp,
+    @user,
+    @objowner,
+    @tablepart,
+    @hashdata
+)", paramQuery);
+            }
+
+            // Добавлення запису в історію
+            async ValueTask AddRecord(NameAndText[] nameAndText)
+            {
+                Dictionary<string, object> paramQuery = new()
+                    {
+                        { "uid", Guid.NewGuid() },
+                        { "objversionid", version_id },
+                        { "user", user_uid },
+                        { "objowner", objowner },
+                        { "tablepart", tablepart },
+                        { "fields", nameAndText }
+                    };
+
+                await ExecuteSQL($@"
 INSERT INTO {SpecialTables.TablePartVersionsHistory} 
 (
     uid,
@@ -1935,7 +2115,41 @@ VALUES
     @tablepart,
     @fields
 )
-", paramQuery, transactionID);
+ ", paramQuery, transactionID);
+            }
+
+            #endregion
+
+            Dictionary<Guid, List<NameAndText>> listNameAndText = [];
+            List<string> listHashData = [];
+
+            foreach (var fieldValue in listFieldValue)
+            {
+                //Заповнення списку nameAndText полями
+                SpetialTableObjectVersionsHistory_FillNameAndTextList(fieldValue.Value, out List<NameAndText> nameAndText);
+                listNameAndText.Add(fieldValue.Key, nameAndText);
+
+                //Хеш рядка
+                listHashData.Add(MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString()))));
+            }
+
+            //Загальний хеш всієї таб частини
+            string hashdata = string.Join("|", listHashData);
+
+            //Попередній хеш
+            string? previous_hashdata = await GetOldHashDataRecord();
+            if (previous_hashdata == null || hashdata != previous_hashdata)
+            {
+                await AddGeneralRecord();
+                await AddHashDataRecord(hashdata);
+                await Clean();
+
+                if (listNameAndText.Count > 0)
+                    foreach (var itemNameAndText in listNameAndText)
+                        await AddRecord([.. itemNameAndText.Value]);
+                else
+                    await AddRecord([]);
+            }
         }
 
         /// <summary>
@@ -1980,7 +2194,7 @@ WHERE
                         DateWrite = (DateTime)reader["datewrite"],
                         UserID = (Guid)reader["users"],
                         TablePart = reader["tablepart"]?.ToString() ?? "",
-                        Fields = (NameAndText[])reader["fields"],
+                        Fields = (NameAndText[])reader["fields"]
                     });
                 await reader.CloseAsync();
             }
@@ -2010,16 +2224,23 @@ WHERE
     objversionid = @version_id AND
     (objowner).uuid = @uuid AND
     (objowner).text = @text
-",
-paramQuery, transactionID);
+", paramQuery, transactionID);
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHashData} 
+WHERE 
+    objversionid = @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text
+", paramQuery, transactionID);
             }
         }
 
         /// <summary>
-        /// Очищає всі записи для обєкту-вланика
+        /// Очищає всі записи для обєкту-влаcника
         /// </summary>
         /// <param name="objowner">Обєкт-власник</param>
-        async ValueTask SpetialTableTablePartVersionsHistoryClear(UuidAndText objowner, byte transactionID = 0)
+        async ValueTask SpetialTableTablePartVersionsHistoryRemoveAll(UuidAndText objowner, byte transactionID = 0)
         {
             if (!objowner.IsEmpty())
             {
@@ -2034,40 +2255,49 @@ DELETE FROM {SpecialTables.TablePartVersionsHistory}
 WHERE 
     (objowner).uuid = @uuid AND
     (objowner).text = @text
-",
-paramQuery, transactionID);
+", paramQuery, transactionID);
+
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHashData} 
+WHERE 
+    objversionid = @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text
+", paramQuery, transactionID);
             }
         }
 
         /// <summary>
-        /// Очищає всі записи версії для обєкту-власника і для даної таб частини.
-        /// Використувється для перезапису версії, коли таб частина зберізається більше одного разу
+        /// Заповнення списку nameAndText полями з fieldValue
         /// </summary>
-        /// <param name="version_id">Версія</param>
-        /// <param name="obj">Обєкт-власник</param>
-        /// <param name="tablepart">Таблиця таб частини</param>
-        public async ValueTask SpetialTableTablePartVersionsHistoryRemoveBeforeSave(Guid version_id, UuidAndText obj, string tablepart, byte transactionID = 0)
+        /// <param name="fieldValue">Поля із значеннями</param>
+        /// <param name="nameAndText">Список nameAndText</param>
+        void SpetialTableObjectVersionsHistory_FillNameAndTextList(Dictionary<string, object> fieldValue, out List<NameAndText> nameAndText)
         {
-            if (!obj.IsEmpty())
-            {
-                Dictionary<string, object> paramQuery = new()
-                {
-                    { "uuid", obj.Uuid },
-                    { "text", obj.Text },
-                    { "version_id", version_id },
-                    { "tablepart", tablepart }
-                };
+            nameAndText = new(fieldValue.Count);
 
-                await ExecuteSQL($@"
-DELETE FROM {SpecialTables.TablePartVersionsHistory} 
-WHERE 
-    objversionid = @version_id AND
-    tablepart = @tablepart AND
-    (objowner).uuid = @uuid AND
-    (objowner).text = @text
-",
-paramQuery, transactionID);
-            }
+            foreach (var field in fieldValue)
+                switch (field.Value?.GetType().ToString() ?? "")
+                {
+                    case "System.Byte[]":
+                        {
+                            nameAndText.Add(new NameAndText(field.Key, ""));
+                            break;
+                        }
+                    case "System.String[]":
+                    case "System.Int32[]":
+                    case "System.Decimal[]":
+                    case "System.Guid[]":
+                        {
+                            nameAndText.Add(new NameAndText(field.Key, string.Join(", ", field.Value?.ToString() ?? "")));
+                            break;
+                        }
+                    default:
+                        {
+                            nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
+                            break;
+                        }
+                }
         }
 
         #endregion
@@ -2285,6 +2515,11 @@ paramQuery, transactionID);
         #endregion
 
         #region Func (Directory, Document)
+
+        string MD5HashData(string text)
+        {
+            return Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
+        }
 
         public async ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table)
         {

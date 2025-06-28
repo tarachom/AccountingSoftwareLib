@@ -141,20 +141,6 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Видалити запис
-        /// </summary>
-        /// <param name="UID">Ключ</param>
-        /// <param name="ownerUnigueID">Вкласник</param>
-        /*
-        protected async ValueTask BaseRemove(Guid UID, UnigueID ownerUnigueID)
-        {
-            UnigueID unigueID = new(UID);
-            if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
-                await Kernel.DataBase.RemoveDocumentTablePartRecords(UID, ownerUnigueID, Table, TransactionID);
-        }
-        */
-
-        /// <summary>
         /// Видалити всі дані з таб. частини
         /// </summary>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
@@ -174,16 +160,12 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Перевірка нявності запису для власника таб частини перед записом. Якщо нема - добавляється новий запис.
-        /// Додатково відбувається очистка попередніх записів версії, якщо такі є
+        /// !!! Видалити
         /// </summary>
+        /// <returns></returns>
         protected async ValueTask BeforeSaveOwnerVersion()
         {
-            //Перевірка і створення запису для власника
-            await Kernel.DataBase.SpetialTableObjectVersionsHistoryAddIfNotExist(OwnerVersionID, Kernel.User, OwnerBasis, TransactionID);
-
-            //Очистка попередніх записів
-            await Kernel.DataBase.SpetialTableTablePartVersionsHistoryRemoveBeforeSave(OwnerVersionID, OwnerBasis, Table, TransactionID);
+            await ValueTask.FromResult(true);
         }
 
         /// <summary>
@@ -197,11 +179,17 @@ namespace AccountingSoftware
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertDocumentTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
 
-            //Записати в історію поточну версію значень полів
-            if (VersionsHistory && OwnerVersionID != Guid.Empty && !OwnerBasis.IsEmpty())
-                await Kernel.DataBase.SpetialTableTablePartVersionsHistoryAdd(OwnerVersionID, Kernel.User, OwnerBasis, Table, fieldValue);
-
             return recordUnigueID;
+        }
+
+        /// <summary>
+        /// Записати в історію поточну версію значень полів
+        /// </summary>
+        /// <param name="listFieldValue">Всі поля</param>
+        protected async ValueTask BaseSaveVersion(Dictionary<Guid, Dictionary<string, object>> listFieldValue)
+        {
+            if (VersionsHistory && OwnerVersionID != Guid.Empty && !OwnerBasis.IsEmpty())
+                await Kernel.DataBase.SpetialTableTablePartVersionsHistoryAdd(OwnerVersionID, Kernel.User, OwnerBasis, Table, listFieldValue);
         }
     }
 }

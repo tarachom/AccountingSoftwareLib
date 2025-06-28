@@ -96,7 +96,7 @@ namespace InterfaceGtk
             };
 
             pointerObj.Pointer = obj;
-            pointerObj.Caption = pointerGroup switch { "Довідники" => "Довідник", "Документи" => "Документ", _ => "Об'єкт" } + " " + pointerFullName;
+            pointerObj.Caption = "Об'єкт:";
 
             SpinnerOn(NotebookFunction.GetNotebookFromWidget(this));
 
@@ -113,10 +113,17 @@ namespace InterfaceGtk
                     }
 
                     Dictionary<string, string> dictionaryFields = recordResult.GetDictionaryFields();
+                    Dictionary<string, string> dictionaryPreviousFields = recordResult.GetDictionaryPreviousFields();
 
                     if (dictionaryFields.Count > 0)
                         foreach (var Field in Fields.Values)
                         {
+                            dictionaryFields.TryGetValue(Field.NameInTable, out string? value);
+
+                            bool valueChanged = false;
+                            if (dictionaryPreviousFields.TryGetValue(Field.NameInTable, out string? previous_value))
+                                if (value != null && value != previous_value) valueChanged = true;
+
                             switch (Field.Type)
                             {
                                 case "string":
@@ -129,23 +136,19 @@ namespace InterfaceGtk
                                         if (Field.Multiline)
                                         {
                                             TextView text = new TextView();
+                                            text.Buffer.Text = value;
 
                                             ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = 500, HeightRequest = 300 };
                                             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
                                             scroll.Add(text);
 
-                                            if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                                text.Buffer.Text = value;
-
-                                            AppendField(Field.FullName, scroll);
+                                            AppendField(Field.FullName, scroll, valueChanged, previous_value);
                                         }
                                         else
                                         {
-                                            Entry entry = new Entry() { WidthRequest = 500 };
-                                            if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                                entry.Text = value;
+                                            Entry entry = new Entry() { WidthRequest = 500, Text = value };
 
-                                            AppendField(Field.FullName, entry);
+                                            AppendField(Field.FullName, entry, valueChanged, previous_value);
                                         }
                                         break;
                                     }
@@ -153,77 +156,92 @@ namespace InterfaceGtk
                                 case "datetime":
                                     {
                                         DateTimeControl dateTime = new DateTimeControl() { OnlyDate = Field.Type == "date" };
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            dateTime.Value = DateTime.Parse(value);
+                                        if (value != null) dateTime.Value = DateTime.Parse(value);
 
-                                        AppendField(Field.FullName, dateTime);
+                                        AppendField(Field.FullName, dateTime, valueChanged, previous_value);
                                         break;
                                     }
                                 case "time":
                                     {
                                         TimeControl time = new TimeControl();
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            time.Value = TimeSpan.Parse(value);
+                                        if (value != null) time.Value = TimeSpan.Parse(value);
 
-                                        AppendField(Field.FullName, time);
+                                        AppendField(Field.FullName, time, valueChanged, previous_value);
                                         break;
                                     }
                                 case "integer":
                                     {
                                         IntegerControl numeric = new IntegerControl();
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            numeric.Value = int.Parse(value);
+                                        if (value != null) numeric.Value = int.Parse(value);
 
-                                        AppendField(Field.FullName, numeric);
+                                        AppendField(Field.FullName, numeric, valueChanged, previous_value);
                                         break;
                                     }
                                 case "numeric":
                                     {
                                         NumericControl numeric = new NumericControl();
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            numeric.Value = decimal.Parse(value);
+                                        if (value != null) numeric.Value = decimal.Parse(value);
 
-                                        AppendField(Field.FullName, numeric);
+                                        AppendField(Field.FullName, numeric, valueChanged, previous_value);
                                         break;
                                     }
                                 case "boolean":
                                     {
                                         CheckButton check = new CheckButton(Field.FullName);
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            check.Active = bool.Parse(value);
+                                        if (value != null) check.Active = bool.Parse(value);
 
-                                        AppendField("", check);
+                                        AppendField("", check, valueChanged, previous_value);
                                         break;
                                     }
                                 case "enum":
                                     {
                                         ComboBoxTextControl comboBox = new ComboBoxTextControl();
+                                        string previous_value_presentation = "";
 
                                         string[] searchNameSplit = Field.Pointer.Split(["."], StringSplitOptions.None);
                                         foreach (ConfigurationEnumField enumField in Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values)
+                                        {
                                             comboBox.Append(enumField.Value.ToString(), enumField.Desc);
 
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
-                                            comboBox.ActiveId = value;
+                                            if (valueChanged && previous_value != null && previous_value != "0" && previous_value == enumField.Value.ToString())
+                                                previous_value_presentation = enumField.Desc;
+                                        }
 
-                                        AppendField(Field.FullName, comboBox);
+                                        if (value != null) comboBox.ActiveId = value;
+
+                                        AppendField(Field.FullName, comboBox, valueChanged, previous_value_presentation);
                                         break;
                                     }
                                 case "pointer":
                                 case "composite_pointer":
                                     {
                                         CompositePointerControl pointer = CreateCompositControl();
-                                        if (dictionaryFields.TryGetValue(Field.NameInTable, out string? value))
+                                        string previous_value_presentation = "";
+                                        if (value != null)
                                             if (Field.Type == "pointer")
+                                            {
                                                 pointer.Pointer = new UuidAndText(Guid.Parse(value), Field.Pointer);
+
+                                                if (valueChanged && previous_value != null)
+                                                    previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(previous_value), Field.Pointer))).result;
+                                            }
                                             else
                                             {
-                                                string[] UuidNameSplit = value.Split([":"], StringSplitOptions.None);
-                                                if (UuidNameSplit.Length == 2)
-                                                    pointer.Pointer = new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]);
+                                                {
+                                                    string[] UuidNameSplit = value.Split([":"], StringSplitOptions.None);
+                                                    if (UuidNameSplit.Length == 2)
+                                                        pointer.Pointer = new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]);
+                                                }
+
+                                                if (valueChanged && previous_value != null)
+                                                {
+                                                    string[] UuidNameSplit = previous_value.Split([":"], StringSplitOptions.None);
+                                                    if (UuidNameSplit.Length == 2)
+                                                        previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]))).result;
+                                                }
                                             }
 
-                                        AppendField(Field.FullName, pointer);
+                                        AppendField(Field.FullName, pointer, valueChanged, previous_value_presentation);
                                         break;
                                     }
                             }
@@ -269,7 +287,7 @@ namespace InterfaceGtk
                         notebookTablePart.ShowAll();
 
                         //Дані
-                        foreach (var row in recordResult.ListRow.Where(x => x.TablePart == tablePart.Table).OrderBy(x => x.DateWrite))
+                        foreach (var row in recordResult.ListRow.Where(x => x.TablePart == tablePart.Table && x.Fields.Length > 0).OrderBy(x => x.DateWrite))
                         {
                             //Рядок
                             TreeIter iter = Store.Append();
@@ -311,10 +329,10 @@ namespace InterfaceGtk
                     }
             }
 
-            SpinnerOff(NotebookFunction.GetNotebookFromWidget(this)); 
+            SpinnerOff(NotebookFunction.GetNotebookFromWidget(this));
         }
 
-        void AppendField(string caption, Widget widget)
+        void AppendField(string caption, Widget widget, bool valueChanged, string? previous_value = null)
         {
             Box hBox = new Box(Orientation.Horizontal, 0) { Halign = Align.End };
             Box vBox = new Box(Orientation.Vertical, 0);
@@ -325,6 +343,13 @@ namespace InterfaceGtk
 
             //Віджет
             hBox.PackStart(widget, false, false, 2);
+
+            //Змінений
+            if (valueChanged)
+            {
+                hBox.PackStart(new Image(Іконки.ДляІнформування.Error), false, false, 2);
+                hBox.PackStart(new Label("<b>Змінено</b>") { UseMarkup = true, TooltipText = previous_value }, false, false, 2);
+            }
 
             listBoxField.Add(new ListBoxRow() { vBox });
             listBoxField.ShowAll();

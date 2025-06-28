@@ -89,6 +89,11 @@ namespace AccountingSoftware
         public static readonly string TablePartVersionsHistory = "tab_special_tablepart_versions_history";
 
         /// <summary>
+        /// Хеш-коди для історії змін табличних частин
+        /// </summary>
+        public static readonly string TablePartVersionsHashData = "tab_special_tablepart_versions_hashdata";
+
+        /// <summary>
         /// Список
         /// </summary>
         public static readonly string[] SpecialTablesList =
@@ -102,7 +107,8 @@ namespace AccountingSoftware
             MessageError,
             ObjectUpdateTriger,
             ObjectVersionsHistory,
-            TablePartVersionsHistory
+            TablePartVersionsHistory,
+            TablePartVersionsHashData
         ];
     }
 }

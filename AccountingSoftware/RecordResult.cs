@@ -110,6 +110,7 @@ namespace AccountingSoftware
             public string UserName = "";
             public char Operation = 'U';
             public string Info = "";
+            public string HashData = "";
         }
     }
 
@@ -122,6 +123,8 @@ namespace AccountingSoftware
         public string UserName = "";
         public UuidAndText Obj = new UuidAndText();
         public NameAndText[] Fields = [];
+        public NameAndText[] PreviousFields = [];
+        public string HashData = "";
 
         public Dictionary<string, string> GetDictionaryFields()
         {
@@ -130,6 +133,15 @@ namespace AccountingSoftware
                 dictionaryFields.Add(field.Name, field.Text);
 
             return dictionaryFields;
+        }
+
+        public Dictionary<string, string> GetDictionaryPreviousFields()
+        {
+            Dictionary<string, string> dictionaryPreviousFields = [];
+            foreach (var field in PreviousFields)
+                dictionaryPreviousFields.Add(field.Name, field.Text);
+
+            return dictionaryPreviousFields;
         }
     }
 

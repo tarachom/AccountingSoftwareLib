@@ -167,7 +167,7 @@ namespace AccountingSoftware
             await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
 
             //Видалення з історії зміни даних
-            await Kernel.DataBase.SpetialTableObjectVersionsHistoryClear(GetBasis(), TransactionID);
+            await Kernel.DataBase.SpetialTableObjectVersionsHistoryRemoveAll(GetBasis(), TransactionID);
 
             await Kernel.DataBase.CommitTransaction(TransactionID);
 
