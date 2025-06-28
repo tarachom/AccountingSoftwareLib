@@ -2292,6 +2292,12 @@ WHERE
                             nameAndText.Add(new NameAndText(field.Key, string.Join(", ", field.Value?.ToString() ?? "")));
                             break;
                         }
+                    case "System.Decimal":
+                        {
+                            decimal value = field.Value != null ? (decimal)field.Value : 0;
+                            nameAndText.Add(new NameAndText(field.Key, string.Join(", ", value.ToString("N2") ?? "")));
+                            break;
+                        }
                     default:
                         {
                             nameAndText.Add(new NameAndText(field.Key, field.Value?.ToString() ?? ""));
