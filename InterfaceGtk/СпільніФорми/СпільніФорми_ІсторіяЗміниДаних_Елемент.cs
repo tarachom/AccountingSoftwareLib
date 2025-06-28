@@ -347,8 +347,14 @@ namespace InterfaceGtk
             //Змінений
             if (valueChanged)
             {
-                hBox.PackStart(new Image(Іконки.ДляІнформування.Error), false, false, 2);
-                hBox.PackStart(new Label("<b>Змінено</b>") { UseMarkup = true, TooltipText = previous_value }, false, false, 2);
+                Image image = new Image(Іконки.ДляІнформування.Error);
+                Label label = new Label("<b>Змінено</b>") { UseMarkup = true };
+
+                if (previous_value != null)
+                    image.TooltipText = label.TooltipText = $"\"{previous_value}\"";
+
+                hBox.PackStart(image, false, false, 2);
+                hBox.PackStart(label, false, false, 2);
             }
 
             listBoxField.Add(new ListBoxRow() { vBox });

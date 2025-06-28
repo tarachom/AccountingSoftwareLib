@@ -1852,9 +1852,15 @@ ORDER BY
 
             #region Local Func
 
-            async ValueTask<NameAndText[]> GetPreviousFields()
+            async ValueTask<NameAndText[]> GetPreviousFields(DateTime datewrite)
             {
-                Dictionary<string, object> paramQuery = new() { { "version_id", version_id }, { "uuid", obj.Uuid }, { "text", obj.Text } };
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "version_id", version_id },
+                    { "uuid", obj.Uuid },
+                    { "text", obj.Text },
+                    { "datewrite", datewrite }
+                };
 
                 string query = $@" 
 SELECT 
@@ -1865,6 +1871,7 @@ WHERE
     (obj).uuid = @uuid AND
     (obj).text = @text AND
     uid != @version_id AND
+    datewrite < @datewrite AND
     hashdata != ''
 ORDER BY
     datewrite DESC
@@ -1911,7 +1918,7 @@ WHERE
                     record.Obj = (UuidAndText)reader["obj"];
                     record.Fields = (NameAndText[])reader["fields"];
                     record.HashData = reader["hashdata"].ToString() ?? "";
-                    record.PreviousFields = await GetPreviousFields();
+                    record.PreviousFields = await GetPreviousFields(record.DateWrite);
                 }
                 await reader.CloseAsync();
             }
