@@ -90,5 +90,10 @@ namespace InterfaceGtk
         {
             IsValidValue();
         }
+
+        public static decimal FormatUA(decimal value)
+        {
+            return Math.Round(decimal.Parse(value.ToString("N", new CultureInfo("uk-UA", false).NumberFormat)),2);
+        }
     }
 }
