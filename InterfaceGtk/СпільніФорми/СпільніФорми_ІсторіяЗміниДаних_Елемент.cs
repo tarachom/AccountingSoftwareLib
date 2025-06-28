@@ -351,7 +351,7 @@ namespace InterfaceGtk
                 Label label = new Label("<b>Змінено</b>") { UseMarkup = true };
 
                 if (previous_value != null)
-                    image.TooltipText = label.TooltipText = $"\"{previous_value}\"";
+                    image.TooltipText = label.TooltipText = $"Було: \"{previous_value}\"";
 
                 hBox.PackStart(image, false, false, 2);
                 hBox.PackStart(label, false, false, 2);
