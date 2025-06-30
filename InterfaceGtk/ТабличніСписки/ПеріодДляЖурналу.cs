@@ -172,9 +172,10 @@ namespace InterfaceGtk
         static DateTime ПочатокКварталу(DateTime dt)
         {
             DateTime? Дата = null;
+            DateTime dtDateOnly = dt.Date;
 
             foreach (var (Початок, Кінець) in СписокКварталів(dt))
-                if (dt >= Початок && dt <= Кінець)
+                if (dtDateOnly >= Початок && dtDateOnly <= Кінець)
                 {
                     Дата = Початок;
                     break;
@@ -186,9 +187,10 @@ namespace InterfaceGtk
         static DateTime КінецьКварталу(DateTime dt)
         {
             DateTime? Дата = null;
+            DateTime dtDateOnly = dt.Date;
 
             foreach (var (Початок, Кінець) in СписокКварталів(dt))
-                if (dt >= Початок && dt <= Кінець)
+                if (dtDateOnly >= Початок && dtDateOnly <= Кінець)
                 {
                     Дата = Кінець;
                     break;
