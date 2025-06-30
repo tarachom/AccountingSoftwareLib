@@ -21,6 +21,9 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using System.Security.Cryptography;
+using System.Text;
+
 namespace AccountingSoftware
 {
     /// <summary>

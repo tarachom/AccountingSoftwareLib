@@ -21,9 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using System.Security.Cryptography;
-using System.Text;
-
 using System.Text.RegularExpressions;
 using Npgsql;
 
@@ -360,6 +357,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
     name text NOT NULL,
     fullname text,
     password text NOT NULL,
+    pass_hash text NOT NULL DEFAULT '',
     dateadd timestamp without time zone NOT NULL,
     dateupdate timestamp without time zone NOT NULL,
     info text NOT NULL DEFAULT '',
@@ -368,6 +366,11 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
 )");
                 /* Користувач Admin */
                 await SpetialTableUsersAddSuperUser();
+            }
+            else
+            {
+                /* !!! В таблицю додано нове поле */
+                await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.Users} ADD COLUMN IF NOT EXISTS pass_hash text NOT NULL DEFAULT ''");
             }
 
             if (!specialTable.Contains(SpecialTables.ActiveUsers))
@@ -930,8 +933,10 @@ WHERE users = @users AND session = @session" + (document != null ? " AND documen
 
         async ValueTask SpetialTableUsersAddSuperUser()
         {
+            Dictionary<string, object> paramQuery = new() { { "password", "" }, { "pass_hash", PasswordFunc.HashPassword("") } };
+
             await ExecuteSQL($@"
-INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password) 
+INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, pass_hash) 
 VALUES 
 (
     uuid_generate_v4(),
@@ -939,10 +944,11 @@ VALUES
     'Admin',
     CURRENT_TIMESTAMP::timestamp,
     CURRENT_TIMESTAMP::timestamp,
-    '' /* password */
+    @password,
+    @pass_hash
 )
 ON CONFLICT (name) DO NOTHING;
-");
+", paramQuery);
         }
 
         public async ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
@@ -950,8 +956,9 @@ ON CONFLICT (name) DO NOTHING;
             Dictionary<string, object> paramQuery = new()
             {
                 { "name", name.Trim().ToLower() },
-                { "fullname", fullname },
-                { "password", password },
+                { "fullname", string.IsNullOrEmpty(fullname) ? name : fullname },
+                { "password", "" },
+                { "pass_hash", PasswordFunc.HashPassword(password) },
                 { "info", info }
             };
 
@@ -961,7 +968,7 @@ ON CONFLICT (name) DO NOTHING;
                 paramQuery.Add("uid", user_uid);
 
                 await ExecuteSQL($@"
-INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, info) 
+INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, pass_hash, info) 
 VALUES 
 (
     @uid,
@@ -970,13 +977,15 @@ VALUES
     CURRENT_TIMESTAMP::timestamp,
     CURRENT_TIMESTAMP::timestamp,
     @password,
+    @pass_hash,
     @info
 )
 ON CONFLICT (name) 
 DO UPDATE SET 
-    password = @password,
     fullname = @fullname,
     dateupdate = CURRENT_TIMESTAMP::timestamp,
+    password = @password,
+    pass_hash = @pass_hash,
     info = @info
 ", paramQuery);
 
@@ -992,8 +1001,9 @@ DO UPDATE SET
 UPDATE {SpecialTables.Users} SET
     name = @name,
     fullname = @fullname,
-    password = @password,
     dateupdate = CURRENT_TIMESTAMP::timestamp,
+    password = @password,
+    pass_hash = @pass_hash,
     info = @info
 WHERE
     uid = @uid
@@ -1016,10 +1026,15 @@ WHERE
                 command.CommandTimeout = DefaultCommandTimeout;
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
                 while (await reader.ReadAsync())
-                    users.Add((string)reader["name"], (string)reader["fullname"]);
+                {
+                    string name = (string)reader["name"];
 
+                    string fullname = (string)reader["fullname"];
+                    if (string.IsNullOrEmpty(fullname)) fullname = name;
+
+                    users.Add(name, fullname);
+                }
                 await reader.CloseAsync();
             }
 
@@ -1050,8 +1065,6 @@ ORDER BY
 SELECT 
     name,
     fullname,
- /* dateadd,
-    dateupdate, */
     info
 FROM 
     {SpecialTables.Users}
@@ -1084,7 +1097,6 @@ ORDER BY
                     command.Parameters.AddWithValue("uid", not_uid.Value);
 
                 object? count_user = await command.ExecuteScalarAsync();
-
                 if (count_user != null && (long)count_user == 1)
                     return true;
                 else
@@ -1138,30 +1150,37 @@ ORDER BY
         {
             if (DataSource != null)
             {
-                string query = $"SELECT uid FROM {SpecialTables.Users} WHERE name = @name AND password = @password";
+                string query = $"SELECT uid, password, pass_hash FROM {SpecialTables.Users} WHERE name = @name";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("name", user);
-                command.Parameters.AddWithValue("password", password);
 
-                object? uid = command.ExecuteScalar();
+                Guid user_uid = Guid.Empty;
+                bool pass_verify = false;
 
-                if (uid != null)
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    Guid user_uid = (Guid)uid;
+                    user_uid = (Guid)reader["uid"];
+                    string password_real = (string)reader["password"];
+                    string pass_hash = (string)reader["pass_hash"];
+
+                    if (!string.IsNullOrEmpty(pass_hash))
+                        try { pass_verify = PasswordFunc.VerifyPassword(password, pass_hash); } catch { }
+                    else
+                        pass_verify = password == password_real;
+                }
+                await reader.CloseAsync();
+
+                if (user_uid != Guid.Empty && pass_verify)
+                {
                     Guid session_uid = await SpetialTableActiveUsersAddSession(user_uid, typeForm);
-
-                    //Додаткова перевірка всіх наявних сесій на актуальність
-                    await SpetialTableActiveUsersUpdateSession(session_uid);
-
                     return (user_uid, session_uid);
                 }
-                else
-                    return null;
             }
-            else
-                return null;
+
+            return null;
         }
 
         #endregion
@@ -1345,15 +1364,17 @@ DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
 SELECT 
     ActiveUsers.uid,
     ActiveUsers.usersuid,
-    Users.fullname AS username,
+    CASE WHEN TRIM(Users.fullname) != '' THEN Users.fullname ELSE Users.name END AS username,
     ActiveUsers.datelogin,
     ActiveUsers.dateupdate, 
     ActiveUsers.master,
     ActiveUsers.type_form
 FROM 
     {SpecialTables.ActiveUsers} AS ActiveUsers
+
     JOIN {SpecialTables.Users} AS Users ON Users.uid =
         ActiveUsers.usersuid
+    
 ORDER BY
     ActiveUsers.dateupdate DESC
 ";
@@ -1685,7 +1706,7 @@ WHERE (LockedObject.obj).uuid = @obj
 
         #region SpetialTable VersionsHistory
 
-        //ObjectVersionsHistory
+        // ObjectVersionsHistory
 
         /// <summary>
         /// Добавляє новий запис в історію змін об'єктів.
@@ -1733,13 +1754,20 @@ LIMIT 1
                 SpetialTableObjectVersionsHistory_FillNameAndTextList(fieldValue, out nameAndText);
 
                 //Хеш
-                hashdata = MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString())));
+                hashdata = Encryption.MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString())));
 
                 //Попередній хеш
                 string? previous_hashdata = await GetOldHashData(version_id, obj);
                 if (previous_hashdata != null && hashdata == previous_hashdata)
                     return;
             }
+
+            /*
+
+            Якщо fieldValue == null тоді це пустий запис для табличних частин і записується із hashdata = ""
+            Якщо є поля і попередній хеш співпадає із поточним тоді нічого не записуємо в історію
+
+            */
 
             Dictionary<string, object> paramQuery = new()
             {
@@ -1901,6 +1929,7 @@ WHERE
     (VersionsHistory.obj).uuid = @uuid AND
     (VersionsHistory.obj).text = @text
 ";
+
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
                 command.Parameters.AddWithValue("version_id", version_id);
@@ -2137,7 +2166,7 @@ VALUES
                 listNameAndText.Add(fieldValue.Key, nameAndText);
 
                 //Хеш рядка
-                listHashData.Add(MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString()))));
+                listHashData.Add(Encryption.MD5HashData(string.Join("\n", nameAndText.Select(x => x.ToString()))));
             }
 
             //Загальний хеш всієї таб частини
@@ -2254,7 +2283,7 @@ WHERE
                 Dictionary<string, object> paramQuery = new()
                 {
                     { "uuid", objowner.Uuid },
-                    { "text", objowner.Text },
+                    { "text", objowner.Text }
                 };
 
                 await ExecuteSQL($@"
@@ -2267,7 +2296,6 @@ WHERE
                 await ExecuteSQL($@"
 DELETE FROM {SpecialTables.TablePartVersionsHashData} 
 WHERE 
-    objversionid = @version_id AND
     (objowner).uuid = @uuid AND
     (objowner).text = @text
 ", paramQuery, transactionID);
@@ -2279,7 +2307,7 @@ WHERE
         /// </summary>
         /// <param name="fieldValue">Поля із значеннями</param>
         /// <param name="nameAndText">Список nameAndText</param>
-        void SpetialTableObjectVersionsHistory_FillNameAndTextList(Dictionary<string, object> fieldValue, out List<NameAndText> nameAndText)
+        static void SpetialTableObjectVersionsHistory_FillNameAndTextList(Dictionary<string, object> fieldValue, out List<NameAndText> nameAndText)
         {
             nameAndText = new(fieldValue.Count);
 
@@ -2528,11 +2556,6 @@ WHERE
         #endregion
 
         #region Func (Directory, Document)
-
-        string MD5HashData(string text)
-        {
-            return Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
-        }
 
         public async ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table)
         {

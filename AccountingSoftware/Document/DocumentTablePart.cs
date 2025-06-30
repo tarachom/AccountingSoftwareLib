@@ -160,15 +160,6 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// !!! Видалити
-        /// </summary>
-        /// <returns></returns>
-        protected async ValueTask BeforeSaveOwnerVersion()
-        {
-            await ValueTask.FromResult(true);
-        }
-
-        /// <summary>
         /// Зберегти один запис таб частини
         /// </summary>
         /// <param name="UID">Унікальний ідентифікатор запису</param>
