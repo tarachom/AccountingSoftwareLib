@@ -89,41 +89,38 @@ public static class NotebookFunction
         notebook.AddController(eventControllerKey);
         eventControllerKey.OnKeyReleased += (sender, args) =>
         {
+            Console.WriteLine(args.Keycode);
+
             if (notebook.IsFocus())
-                switch (args.Keycode)
+                if (args.Keycode == 9 || args.Keycode == 27) // Esc Console.WriteLine(char.ConvertToUtf32("\e", 0));
                 {
-                    case 9: // Esc
+                    Widget? wg = notebook.GetNthPage(notebook.GetCurrentPage());
+                    if (wg != null)
+                    {
+                        Widget? tabLabel = notebook.GetTabLabel(wg);
+                        if (tabLabel != null)
                         {
-                            Widget? wg = notebook.GetNthPage(notebook.GetCurrentPage());
-                            if (wg != null)
+                            Widget? child = ((Box)tabLabel).GetFirstChild();
+                            while (child != null)
                             {
-                                Widget? tabLabel = notebook.GetTabLabel(wg);
-                                if (tabLabel != null)
+                                //Бокс для кнопки
+                                if (child is Box box && box.Name == "Close")
                                 {
-                                    Widget? child = ((Box)tabLabel).GetFirstChild();
-                                    while (child != null)
+                                    //Кнопка Закрити
+                                    Widget? bClose = child.GetFirstChild();
+                                    if (bClose != null)
                                     {
-                                        //Бокс для кнопки
-                                        if (child is Box box && box.Name == "Close")
-                                        {
-                                            //Кнопка Закрити
-                                            Widget? bClose = child.GetFirstChild();
-                                            if (bClose != null)
-                                            {
-                                                string? codePage = bClose.Name;
-                                                if (codePage != null) CloseNotebookPageToCode(notebook, codePage);
-                                            }
-
-                                            break;
-                                        }
-
-                                        child = child.GetNextSibling();
+                                        string? codePage = bClose.Name;
+                                        if (codePage != null) CloseNotebookPageToCode(notebook, codePage);
                                     }
-                                }
-                            }
 
-                            break;
+                                    break;
+                                }
+
+                                child = child.GetNextSibling();
+                            }
                         }
+                    }
                 }
         };
 
@@ -243,7 +240,7 @@ public static class NotebookFunction
         Box hBoxIconOrSpinner = Box.New(Orientation.Horizontal, 0);
         hBoxIconOrSpinner.Name = "BoxIconOrSpinner";
         hBoxIconOrSpinner.MarginEnd = 5;
-        hBoxIconOrSpinner.Append(Image.NewFromFile($"{AppContext.BaseDirectory}images/doc.png"));
+        hBoxIconOrSpinner.Append(Image.NewFromIconName("doc"));
 
         //Ico / BoxIconOrSpinner
         hBox.Append(hBoxIconOrSpinner);
@@ -265,7 +262,7 @@ public static class NotebookFunction
 
             Button button = Button.New();
             button.Cursor = Gdk.Cursor.NewFromName("hand", null);
-            button.Child = Image.NewFromFile($"{AppContext.BaseDirectory}images/clean.png");
+            button.Child = Image.NewFromIconName("clean");
             button.Name = codePage;
             button.TooltipText = "Закрити";
             button.AddCssClass("small-button");
@@ -363,7 +360,7 @@ public static class NotebookFunction
                             if (active)
                                 BoxIconOrSpinner.Append(new Spinner() { Spinning = true });
                             else
-                                BoxIconOrSpinner.Append(Image.NewFromFile($"{AppContext.BaseDirectory}images/doc.png"));
+                                BoxIconOrSpinner.Append(Image.NewFromIconName("doc"));
 
                             break;
                         }
@@ -402,7 +399,7 @@ public static class NotebookFunction
                         {
                             label.SetText(SubstringPageName(caption));
                             label.TooltipText = caption;
-                            
+
                             break;
                         }
 

@@ -30,70 +30,59 @@ namespace InterfaceGtk4;
 public abstract class FormGeneral : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
-    //private Kernel Kernel { get; set; }
+    Kernel Kernel { get; set; }
 
-    public Notebook Notebook = NotebookFunction.CreateNotebook(true, true);
-    protected Statusbar StatusBar = new Statusbar();
+    protected Notebook Notebook;
+    protected Statusbar StatusBar;
 
-    public Button ButtonMessage;
-
-    public FormGeneral(Application app/*, Kernel kernel*/) : base()
+    public FormGeneral(Application app, Kernel kernel) : base()
     {
-        //Kernel = kernel;
-
         Application = app;
-        //Title = "EditableLabel";
+        Kernel = kernel;
 
         SetDefaultSize(1200, 900);
-
-        //if (File.Exists(Іконки.ДляФорми.General)) SetDefaultIconFromFile(Іконки.ДляФорми.General);
+        SetIconName("gtk3-demo");
+        Maximized = true;
 
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
-
-            headerBar.TitleWidget = Label.New("Title"); //Kernel.Conf.Name, Kernel.Conf.Subtitle,
-                                                        // headerBar.ShowTitleButtons = true;
+            headerBar.TitleWidget = Label.New($"{Kernel.Conf.Name} - {Kernel.Conf.Subtitle}");
+            Titlebar = headerBar;
 
             //Блок кнопок у шапці головного вікна
             {
                 //Повідомлення
-                ButtonMessage = Button.New();
-                ButtonMessage.Child = Image.NewFromIconName("application-exit");
-                ButtonMessage.TooltipText = "Повідомлення";
-                ButtonMessage.OnClicked += (sender, args) => ButtonMessageClicked();
-                headerBar.PackEnd(ButtonMessage);
+                {
+                    Button button = Button.New();
+                    button.Child = Image.NewFromIconName("messaging-app");
+                    button.TooltipText = "Повідомлення";
+                    button.OnClicked += (sender, args) => ButtonMessageClicked();
+                    headerBar.PackEnd(button);
+                }
 
                 //Повнотекстовий пошук
-                Button buttonFind = Button.New();
-                buttonFind.Child = Image.NewFromIconName("application-exit");
-                buttonFind.TooltipText = "Пошук";
-                buttonFind.OnClicked += OnButtonFindClicked;
-                headerBar.PackEnd(buttonFind);
+                {
+                    Button button = Button.New();
+                    button.Child = Image.NewFromIconName("find");
+                    button.TooltipText = "Пошук";
+                    button.OnClicked += OnButtonFindClicked;
+                    headerBar.PackEnd(button);
+                }
             }
-
-            Titlebar = headerBar;
         }
 
-        Box vBox = Box.New(Orientation.Vertical, 5);
-        vBox.MarginTop = vBox.MarginEnd = 5; //vBox.MarginBottom = vBox.MarginStart = vBox.MarginEnd = 5;
-
+        Box vBox = Box.New(Orientation.Vertical, 0);
         Box hBox = Box.New(Orientation.Horizontal, 0);
         vBox.Append(hBox);
 
         CreateLeftMenu(hBox);
 
-        hBox.Append(Notebook);
+        hBox.Append(Notebook = NotebookFunction.CreateNotebook(true, true));
+        vBox.Append(StatusBar = Statusbar.New());
+        Child = vBox;
 
         //NotebookFunction.ConnectingToKernelObjectChangeEvents(Notebook, kernel);
-
-        vBox.Append(StatusBar);
-        Child = vBox;
-    }
-
-    public void SetStatusBar()
-    {
-        StatusBar.Push(1, $" Сервер: {OpenConfigurationParam?.DataBaseServer}, база даних: {OpenConfigurationParam?.DataBaseBaseName}");
     }
 
     #region FullTextSearch
@@ -105,6 +94,7 @@ public abstract class FormGeneral : Window
         popoverFind.SetParent(buttonFind);
 
         SearchEntry entry = new SearchEntry() { WidthRequest = 500 };
+      
         // entryFullTextSearch.KeyReleaseEvent += (sender, args) =>
         // {
         //     if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
@@ -142,42 +132,44 @@ public abstract class FormGeneral : Window
 
     void CreateLeftMenu(Box hbox)
     {
-        Box vbox = Box.New(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         ScrolledWindow scroll = new ScrolledWindow();
         scroll.SetPolicy(PolicyType.Never, PolicyType.Never);
-        scroll.Child = vbox;
+        scroll.Child = vBox;
 
-        CreateItemLeftMenu(vbox, "Документи", Документи, "images/documents.png");
-        CreateItemLeftMenu(vbox, "Журнали", Журнали, "images/journal.png");
-        CreateItemLeftMenu(vbox, "Звіти", Звіти, "images/report.png");
-        CreateItemLeftMenu(vbox, "Довідники", Довідники, "images/directory.png");
-        CreateItemLeftMenu(vbox, "Регістри", Регістри, "images/register.png");
-        CreateItemLeftMenu(vbox, "Сервіс", Сервіс, "images/service.png");
-        CreateItemLeftMenu(vbox, "Обробки", Обробки, "images/working.png");
-        CreateItemLeftMenu(vbox, "Налаштування", Налаштування, "images/preferences.png");
+        void Add(string name, Action<Button> action, string image)
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, $"images/{image}");
+
+            Image img = Image.NewFromFile(path);
+            img.SetSizeRequest(48, 48);
+
+            Box hBox = Box.New(Orientation.Horizontal, 5);
+            hBox.Append(img);
+            hBox.Append(Label.New(name));
+
+            Button button = Button.New();
+            button.Cursor = Gdk.Cursor.NewFromName("hand", null);
+            button.MarginStart = button.MarginEnd = button.MarginTop = button.MarginBottom = 5;
+            button.AddCssClass("left-menu");
+            button.Child = hBox;
+            button.TooltipText = name;
+            button.OnClicked += (sender, args) => action.Invoke(button);
+
+            vBox.Append(button);
+        }
+
+        Add("Документи", Документи, "documents.png");
+        Add("Журнали", Журнали, "journal.png");
+        Add("Звіти", Звіти, "report.png");
+        Add("Довідники", Довідники, "directory.png");
+        Add("Регістри", Регістри, "register.png");
+        Add("Сервіс", Сервіс, "service.png");
+        Add("Обробки", Обробки, "working.png");
+        Add("Налаштування", Налаштування, "preferences.png");
 
         hbox.Append(scroll);
-    }
-
-    void CreateItemLeftMenu(Box vBox, string name, Action<Button> ClikAction, string image)
-    {
-        Image img = Image.NewFromFile($"{AppContext.BaseDirectory}{image}");
-        img.SetSizeRequest(48, 48);
-
-        Box hBox = Box.New(Orientation.Horizontal, 5);
-        hBox.Append(img);
-        hBox.Append(Label.New(name));
-
-        Button button = Button.New();
-        button.Cursor = Gdk.Cursor.NewFromName("hand", null);
-        button.MarginStart = button.MarginEnd = button.MarginTop = button.MarginBottom = 10;
-        button.AddCssClass("left-menu");
-        button.Child = hBox;
-        button.TooltipText = name;
-        button.OnClicked += (sender, args) => ClikAction.Invoke(button);
-
-        vBox.Append(button);
     }
 
     void Документи(Button button)
@@ -433,6 +425,15 @@ public abstract class FormGeneral : Window
     protected abstract void Налаштування(Button button);
     protected abstract void Сервіс(Button button);
     protected abstract void Обробки(Button button);
+
+    #endregion
+
+    #region StatusBar
+
+    public void SetStatusBar()
+    {
+        StatusBar.Push(1, $" Сервер: {OpenConfigurationParam?.DataBaseServer}, база даних: {OpenConfigurationParam?.DataBaseBaseName}");
+    }
 
     #endregion
 }
