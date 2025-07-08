@@ -23,6 +23,7 @@ limitations under the License.
 
 using Gtk;
 using AccountingSoftware;
+using InterfaceGtkLib;
 
 namespace InterfaceGtk3;
 

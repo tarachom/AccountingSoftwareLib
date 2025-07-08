@@ -24,7 +24,7 @@ limitations under the License.
 using System.Xml;
 using System.Xml.XPath;
 
-namespace InterfaceGtk3;
+namespace InterfaceGtkLib;
 
 public class ConfigurationParamCollection
 {
