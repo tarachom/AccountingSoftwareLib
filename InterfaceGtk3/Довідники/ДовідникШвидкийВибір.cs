@@ -31,7 +31,13 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
     /// <summary>
     /// Елемент для вибору
     /// </summary>
-    public UnigueID? DirectoryPointerItem { get; set; }
+    public UnigueID? DirectoryPointerItem
+    {
+        get { return directoryPointerItem; }
+        set { SelectPointerItem = directoryPointerItem = value; }
+    }
+
+    UnigueID? directoryPointerItem;
 
     /// <summary>
     /// Відкрита папка.

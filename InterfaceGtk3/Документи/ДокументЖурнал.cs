@@ -31,7 +31,13 @@ public abstract class ДокументЖурнал : ФормаЖурнал
     /// <summary>
     /// Для вибору і позиціювання
     /// </summary>
-    public UnigueID? DocumentPointerItem { get; set; }
+    public UnigueID? DocumentPointerItem
+    {
+        get { return documentPointerItem; }
+        set { SelectPointerItem = documentPointerItem = value; }
+    }
+
+    UnigueID? documentPointerItem;
 
     /// <summary>
     /// Функція зворотнього виклику при виборі

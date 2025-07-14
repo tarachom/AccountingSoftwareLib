@@ -31,7 +31,13 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
     /// <summary>
     /// Елемент на який треба спозиціонувати список при виборі
     /// </summary>
-    public UnigueID? DirectoryPointerItem { get; set; }
+    public UnigueID? DirectoryPointerItem
+    {
+        get { return directoryPointerItem; }
+        set { SelectPointerItem = directoryPointerItem = value; }
+    }
+
+    UnigueID? directoryPointerItem;
 
     /// <summary>
     /// Відкрита папка.
