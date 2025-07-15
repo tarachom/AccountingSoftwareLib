@@ -183,8 +183,7 @@ public static class NotebookFunction
             string? currNotebookName = notebook.Name;
             string codePage = Guid.NewGuid().ToString();
 
-            ScrolledWindow scroll = ScrolledWindow.New();
-            scroll.Name = codePage;
+            ScrolledWindow scroll = new() { Name = codePage };
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
             Box hBoxLabel = CreateTabLabelPageWidget(notebook, tabName, codePage, notClosePage);
@@ -261,7 +260,7 @@ public static class NotebookFunction
             hBox.Append(vBoxClose);
 
             Button button = Button.New();
-            button.Cursor = Gdk.Cursor.NewFromName("hand", null);
+            button.Cursor = Cursor.NewFromName("hand", null);
             button.Child = Image.NewFromIconName("clean");
             button.Name = codePage;
             button.TooltipText = "Закрити";
@@ -306,22 +305,22 @@ public static class NotebookFunction
                 }
 
                 /*
-                    //Очищення вказівників на функції реакції на зміни об'єктів
-                    var objectChangeEvents = GetDataObjectChangeEvents(notebook);
-                    if (objectChangeEvents != null)
-                    {
-                        foreach (var item in objectChangeEvents.Values)
-                            item.RemoveAll(x => x.codePage == codePage);
-                    }
+                //Очищення вказівників на функції реакції на зміни об'єктів
+                var objectChangeEvents = GetDataObjectChangeEvents(notebook);
+                if (objectChangeEvents != null)
+                {
+                    foreach (var item in objectChangeEvents.Values)
+                        item.RemoveAll(x => x.codePage == codePage);
+                }
 
-                    //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
-                    var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
-                    if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
-                    {
-                        await unlockFunc.Invoke();
-                        lockObjectPageFunc.Remove(codePage);
-                    }
-                    */
+                //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
+                var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
+                if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                {
+                    await unlockFunc.Invoke();
+                    lockObjectPageFunc.Remove(codePage);
+                }
+                */
 
                 notebook?.DetachTab(wg);
                 GC.Collect();
