@@ -33,7 +33,15 @@ namespace InterfaceGtk4;
 
 public class Message
 {
-    static MessageDialog Create(Application? app, Window? win, string text, string secondaryText = "")
+    /// <summary>
+    /// Внітрішня функція - створює базове діалогове вікно
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="win"></param>
+    /// <param name="text"></param>
+    /// <param name="secondaryText"></param>
+    /// <returns>MessageDialog</returns>
+    static MessageDialog Create(Application? app, Window? win, string text, string? secondaryText = null)
     {
         return new()
         {
@@ -47,12 +55,12 @@ public class Message
         };
     }
 
-    public static void Info(Application? app, Window? win, string text, string secondaryText = "")
+    public static void Info(Application? app, Window? win, string text, string? secondaryText = null)
     {
         MessageDialog message = Create(app, win, text, secondaryText);
         message.AddButton("Закрити", 1);
 
-        message.OnResponse += (_, arrg) =>
+        message.OnResponse += (_, _) =>
         {
             message.Hide();
             message.Destroy();
@@ -61,12 +69,12 @@ public class Message
         message.Show();
     }
 
-    public static void Error(Application? app, Window? win, string text, string secondaryText = "")
+    public static void Error(Application? app, Window? win, string text, string? secondaryText = null)
     {
         MessageDialog message = Create(app, win, text, secondaryText);
         message.AddButton("Закрити", 1);
 
-        message.OnResponse += (_, arrg) =>
+        message.OnResponse += (_, _) =>
         {
             message.Hide();
             message.Destroy();
@@ -81,20 +89,26 @@ public class Message
     /// <param name="pwin">Вікно власник</param>
     /// <param name="message">Текст</param>
     /// <returns>Так або Ні</returns>
-    public static void Request(Application? app, Window? win, string text, string secondaryText = "", Action<int>? callBackResponse = null)
+    public static void Request(Application? app, Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
     {
         MessageDialog message = Create(app, win, text, secondaryText);
-        message.AddButton("Так", 1);
-        message.AddButton("Ні", 2);
+        message.AddButton("Так", (int)YesNo.Yes);
+        message.AddButton("Ні", (int)YesNo.No);
 
         message.OnResponse += (_, arrg) =>
         {
-            callBackResponse?.Invoke(arrg.ResponseId);
+            callBackResponse?.Invoke((YesNo)arrg.ResponseId);
 
             message.Hide();
             message.Destroy();
         };
 
         message.Show();
+    }
+
+    public enum YesNo
+    {
+        Yes = 1,
+        No = 2
     }
 }

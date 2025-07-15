@@ -145,14 +145,7 @@ public class ConfigurationParamCollection
     public static bool RemoveConfigurationParam(string key)
     {
         ConfigurationParam? selectConfigurationParam = GetConfigurationParam(key);
-
-        if (selectConfigurationParam != null)
-        {
-            ListConfigurationParam.Remove(selectConfigurationParam);
-            return true;
-        }
-        else
-            return false;
+        return selectConfigurationParam != null && ListConfigurationParam.Remove(selectConfigurationParam);
     }
 
     public static void SelectConfigurationParam(string key)
@@ -195,13 +188,7 @@ public class ConfigurationParam
 
     public static ConfigurationParam New()
     {
-        ConfigurationParam configurationParam = new()
-        {
-            ConfigurationKey = Guid.NewGuid().ToString(),
-            ConfigurationName = "* Новий"
-        };
-
-        return configurationParam;
+        return new ConfigurationParam() { ConfigurationKey = Guid.NewGuid().ToString(), ConfigurationName = "* Новий" };
     }
 
     public ConfigurationParam Clone()

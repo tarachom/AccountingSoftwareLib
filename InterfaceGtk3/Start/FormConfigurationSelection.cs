@@ -27,7 +27,7 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk3;
 
-public class FormConfigurationSelection : Window
+public abstract class FormConfigurationSelection : Window
 {
     TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
     Kernel? ProgramKernel { get; set; }
@@ -132,7 +132,7 @@ public class FormConfigurationSelection : Window
     #region Virtual Functions
 
     public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
-    public virtual async ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
+    public abstract ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
 
     #endregion
 

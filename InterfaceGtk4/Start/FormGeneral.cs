@@ -35,13 +35,13 @@ public abstract class FormGeneral : Window
     protected Notebook Notebook;
     protected Statusbar StatusBar;
 
-    public FormGeneral(Application app, Kernel kernel) : base()
+    public FormGeneral(Application? app, Kernel kernel) : base()
     {
         Application = app;
         Kernel = kernel;
 
         SetDefaultSize(1200, 900);
-        SetIconName("gtk3-demo");
+        SetIconName("gtk");
         Maximized = true;
 
         //HeaderBar
@@ -80,6 +80,7 @@ public abstract class FormGeneral : Window
 
         hBox.Append(Notebook = NotebookFunction.CreateNotebook(true, true));
         vBox.Append(StatusBar = Statusbar.New());
+
         Child = vBox;
 
         //NotebookFunction.ConnectingToKernelObjectChangeEvents(Notebook, kernel);
@@ -94,12 +95,16 @@ public abstract class FormGeneral : Window
         popoverFind.SetParent(buttonFind);
 
         SearchEntry entry = new SearchEntry() { WidthRequest = 500 };
-      
-        // entryFullTextSearch.KeyReleaseEvent += (sender, args) =>
-        // {
-        //     if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
-        //         ButtonFindClicked(((SearchEntry)sender!).Text);
-        // };
+
+        EventControllerKey eventControllerKey = EventControllerKey.New();
+        entry.AddController(eventControllerKey);
+        eventControllerKey.OnKeyReleased += (sender, args) =>
+        {
+            /*
+            if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
+                ButtonFindClicked(((SearchEntry)sender!).Text);
+            */
+        };
 
         Box hBox = Box.New(Orientation.Horizontal, 10);
         hBox.Append(entry);
@@ -174,252 +179,303 @@ public abstract class FormGeneral : Window
 
     void Документи(Button button)
     {
-        /*
-        Box vBox = new Box(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         //Всі Документи
         {
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 10);
+            Box hBox = Box.New(Orientation.Horizontal, 0);
+            vBox.Append(hBox);
 
-            Expander expander = new Expander("Всі документи");
-            hBox.PackStart(expander, false, false, 5);
+            Expander expander = Expander.New("Всі документи");
+            hBox.Append(expander);
 
-            Box vBoxList = new Box(Orientation.Vertical, 0);
-            expander.Add(vBoxList);
+            Box vBoxList = Box.New(Orientation.Vertical, 0);
+            expander.Child = vBoxList;
 
-            vBoxList.PackStart(new Label("Документи"), false, false, 2);
+            Label labelCaption = Label.New("Документи");
+            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+            vBoxList.Append(labelCaption);
 
             ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
-            listBox.ButtonPressEvent += (sender, args) =>
+
+            GestureClick gesture = GestureClick.New();
+            listBox.AddController(gesture);
+            gesture.OnPressed += (_, args) =>
             {
-                if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                    ВідкритиДокументВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                if (args.NPress >= 2)
+                {
+                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                    if (selectedRow != null && selectedRow.Name != null)
+                        ВідкритиДокументВідповідноДоВиду(selectedRow.Name);
+                }
             };
 
-            ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
-            scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollList.Add(listBox);
+            ScrolledWindow scroll = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Child = listBox;
 
-            vBoxList.PackStart(scrollList, false, false, 2);
+            vBoxList.Append(scroll);
 
             foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents.OrderBy(x => x.Value.Name))
             {
                 string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
 
-                ListBoxRow row = new ListBoxRow() { Name = documents.Key };
-                row.Add(new Label(title) { Halign = Align.Start });
+                Label label = Label.New(title);
+                label.Halign = Align.Start;
 
-                listBox.Add(row);
+                ListBoxRow row = new ListBoxRow() { Name = documents.Key, Child = label };
+                listBox.Append(row);
             }
         }
 
         МенюДокументи(vBox);
 
-        Popover popover = new Popover(lb) { Position = PositionType.Right };
-        popover.Add(vBox);
-        popover.ShowAll();
-        */
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(button);
+        popover.Child = vBox;
+        popover.Show();
     }
 
     void Довідники(Button button)
     {
-        /*
-        Box vBox = new Box(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         //Всі Довідники
         {
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 10);
+            Box hBox = Box.New(Orientation.Horizontal, 0);
+            vBox.Append(hBox);
 
-            Expander expander = new Expander("Всі довідники");
-            hBox.PackStart(expander, false, false, 5);
+            Expander expander = Expander.New("Всі довідники");
+            hBox.Append(expander);
 
-            Box vBoxList = new Box(Orientation.Vertical, 0);
-            expander.Add(vBoxList);
+            Box vBoxList = Box.New(Orientation.Vertical, 0);
+            expander.Child = vBoxList;
 
-            vBoxList.PackStart(new Label("Довідники"), false, false, 2);
+            Label labelCaption = Label.New("Довідники");
+            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+            vBoxList.Append(labelCaption);
 
-            ListBox listBox = new ListBox();
-            listBox.ButtonPressEvent += (sender, args) =>
+            ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
+
+            GestureClick gesture = GestureClick.New();
+            listBox.AddController(gesture);
+            gesture.OnPressed += (_, args) =>
             {
-                if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                    ВідкритиДовідникВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                if (args.NPress >= 2)
+                {
+                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                    if (selectedRow != null && selectedRow.Name != null)
+                        ВідкритиДовідникВідповідноДоВиду(selectedRow.Name);
+                }
             };
 
-            ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
-            scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollList.Add(listBox);
+            ScrolledWindow scroll = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Child = listBox;
 
-            vBoxList.PackStart(scrollList, false, false, 2);
+            vBoxList.Append(scroll);
 
             foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories.OrderBy(x => x.Value.Name))
             {
                 string title = string.IsNullOrEmpty(directories.Value.FullName) ? directories.Value.Name : directories.Value.FullName;
 
-                ListBoxRow row = new ListBoxRow() { Name = directories.Key };
-                row.Add(new Label(title) { Halign = Align.Start });
+                Label label = Label.New(title);
+                label.Halign = Align.Start;
 
-                listBox.Add(row);
+                ListBoxRow row = new ListBoxRow() { Name = directories.Key, Child = label };
+                listBox.Append(row);
             }
         }
 
         МенюДовідники(vBox);
 
-        Popover popover = new Popover(lb) { Position = PositionType.Right };
-        popover.Add(vBox);
-        popover.ShowAll();
-        */
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(button);
+        popover.Child = vBox;
+        popover.Show();
     }
 
     void Журнали(Button button)
     {
-        /*
-        Box vBox = new Box(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         //Всі Журнали
         {
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 10);
+            Box hBox = Box.New(Orientation.Horizontal, 0);
+            vBox.Append(hBox);
 
-            Expander expanderAll = new Expander("Всі журнали");
-            hBox.PackStart(expanderAll, false, false, 5);
+            Expander expander = Expander.New("Всі журнали");
+            hBox.Append(expander);
 
-            Box vBoxList = new Box(Orientation.Vertical, 0);
-            expanderAll.Add(vBoxList);
+            Box vBoxList = Box.New(Orientation.Vertical, 0);
+            expander.Child = vBoxList;
 
-            vBoxList.PackStart(new Label("Журнали"), false, false, 2);
+            Label labelCaption = Label.New("Журнали");
+            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+            vBoxList.Append(labelCaption);
 
-            ListBox listBox = new ListBox();
-            listBox.ButtonPressEvent += (sender, args) =>
+            ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
+
+            GestureClick gesture = GestureClick.New();
+            listBox.AddController(gesture);
+            gesture.OnPressed += (_, args) =>
             {
-                if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                    ВідкритиЖурналВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                if (args.NPress >= 2)
+                {
+                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                    if (selectedRow != null && selectedRow.Name != null)
+                        ВідкритиЖурналВідповідноДоВиду(selectedRow.Name);
+                }
             };
 
-            ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
-            scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollList.Add(listBox);
+            ScrolledWindow scroll = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Child = listBox;
 
-            vBoxList.PackStart(scrollList, false, false, 2);
+            vBoxList.Append(scroll);
 
             foreach (KeyValuePair<string, ConfigurationJournals> journal in Kernel.Conf.Journals.OrderBy(x => x.Value.Name))
             {
                 string title = journal.Value.Name;
 
-                ListBoxRow row = new ListBoxRow() { Name = journal.Key };
-                row.Add(new Label(title) { Halign = Align.Start });
+                Label label = Label.New(title);
+                label.Halign = Align.Start;
 
-                listBox.Add(row);
+                ListBoxRow row = new ListBoxRow() { Name = journal.Key, Child = label };
+                listBox.Append(row);
             }
         }
 
         МенюЖурнали(vBox);
 
-        Popover popover = new Popover(lb) { Position = PositionType.Right };
-        popover.Add(vBox);
-        popover.ShowAll();
-        */
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(button);
+        popover.Child = vBox;
+        popover.Show();
     }
 
     void Звіти(Button button)
     {
-        /*
-        Box vBox = new Box(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         МенюЗвіти(vBox);
 
-        Popover popover = new Popover(lb) { Position = PositionType.Right };
-        popover.Add(vBox);
-        popover.ShowAll();
-        */
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(button);
+        popover.Child = vBox;
+        popover.Show();
     }
 
     void Регістри(Button button)
     {
-        /*
-        Box vBox = new Box(Orientation.Vertical, 0);
+        Box vBox = Box.New(Orientation.Vertical, 0);
 
         //Всі Регістри
         {
-            Box hBox = new Box(Orientation.Horizontal, 0);
-            vBox.PackStart(hBox, false, false, 10);
+            Box hBox = Box.New(Orientation.Horizontal, 0);
+            vBox.Append(hBox);
 
-            Expander expanderAll = new Expander("Всі регістри");
-            hBox.PackStart(expanderAll, false, false, 5);
+            Expander expanderAll = Expander.New("Всі регістри");
+            hBox.Append(expanderAll);
 
-            Box hBoxList = new Box(Orientation.Horizontal, 0);
-            expanderAll.Add(hBoxList);
+            Box hBoxList = Box.New(Orientation.Horizontal, 0);
+            expanderAll.Child = hBoxList;
 
             //Регістри відомостей
             {
-                Box vBoxBlock = new Box(Orientation.Vertical, 0);
-                hBoxList.PackStart(vBoxBlock, false, false, 2);
+                Box vBoxBlock = Box.New(Orientation.Vertical, 0);
+                vBoxBlock.MarginEnd = 5;
+                hBoxList.Append(vBoxBlock);
 
-                vBoxBlock.PackStart(new Label("Регістри відомостей"), false, false, 2);
+                Label labelCaption = Label.New("Регістри відомостей");
+                labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+                vBoxBlock.Append(labelCaption);
 
-                ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (sender, args) =>
+                ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
+
+                GestureClick gesture = GestureClick.New();
+                listBox.AddController(gesture);
+                gesture.OnPressed += (_, args) =>
                 {
-                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                        ВідкритиРегістрВідомостейВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                    if (args.NPress >= 2)
+                    {
+                        ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                        if (selectedRow != null && selectedRow.Name != null)
+                            ВідкритиРегістрВідомостейВідповідноДоВиду(selectedRow.Name);
+                    }
                 };
 
-                ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
-                scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                scrollList.Add(listBox);
+                ScrolledWindow scroll = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scroll.Child = listBox;
 
-                vBoxBlock.PackStart(scrollList, false, false, 2);
+                vBoxBlock.Append(scroll);
 
                 foreach (KeyValuePair<string, ConfigurationRegistersInformation> register in Kernel.Conf.RegistersInformation.OrderBy(x => x.Value.Name))
                 {
                     string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
 
-                    ListBoxRow row = new ListBoxRow() { Name = register.Key };
-                    row.Add(new Label(title) { Halign = Align.Start });
+                    Label label = Label.New(title);
+                    label.Halign = Align.Start;
 
-                    listBox.Add(row);
+                    ListBoxRow row = new ListBoxRow() { Name = register.Key, Child = label };
+                    listBox.Append(row);
                 }
             }
 
             //Регістри накопичення
             {
-                Box vBoxBlock = new Box(Orientation.Vertical, 0);
-                hBoxList.PackStart(vBoxBlock, false, false, 2);
+                Box vBoxBlock = Box.New(Orientation.Vertical, 0);
+                hBoxList.Append(vBoxBlock);
 
-                vBoxBlock.PackStart(new Label("Регістри накопичення"), false, false, 2);
+                Label labelCaption = Label.New("Регістри накопичення");
+                labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+                vBoxBlock.Append(labelCaption);
 
-                ListBox listBox = new ListBox();
-                listBox.ButtonPressEvent += (sender, args) =>
+                ListBox listBox = new ListBox() { SelectionMode = SelectionMode.Single };
+
+                GestureClick gesture = GestureClick.New();
+                listBox.AddController(gesture);
+                gesture.OnPressed += (_, args) =>
                 {
-                    if (args.Event.Type == Gdk.EventType.DoubleButtonPress && listBox.SelectedRows.Length != 0)
-                        ВідкритиРегістрНакопиченняВідповідноДоВиду(listBox.SelectedRows[0].Name);
+                    if (args.NPress >= 2)
+                    {
+                        ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                        if (selectedRow != null && selectedRow.Name != null)
+                            ВідкритиРегістрНакопиченняВідповідноДоВиду(selectedRow.Name);
+                    }
                 };
 
-                ScrolledWindow scrollList = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, ShadowType = ShadowType.In };
-                scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                scrollList.Add(listBox);
+                ScrolledWindow scroll = new ScrolledWindow() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+                scroll.Child = listBox;
 
-                vBoxBlock.PackStart(scrollList, false, false, 2);
+                vBoxBlock.Append(scroll);
 
                 foreach (KeyValuePair<string, ConfigurationRegistersAccumulation> register in Kernel.Conf.RegistersAccumulation.OrderBy(x => x.Value.Name))
                 {
                     string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
 
-                    ListBoxRow row = new ListBoxRow() { Name = register.Key };
-                    row.Add(new Label(title) { Halign = Align.Start });
+                    Label label = Label.New(title);
+                    label.Halign = Align.Start;
 
-                    listBox.Add(row);
+                    ListBoxRow row = new ListBoxRow() { Name = register.Key, Child = label };
+                    listBox.Append(row);
                 }
             }
         }
 
         МенюРегістри(vBox);
 
-        Popover popover = new Popover(lb) { Position = PositionType.Right };
-        popover.Add(vBox);
-        popover.ShowAll();
-        */
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(button);
+        popover.Child = vBox;
+        popover.Show();
     }
 
     protected abstract void Налаштування(Button button);
