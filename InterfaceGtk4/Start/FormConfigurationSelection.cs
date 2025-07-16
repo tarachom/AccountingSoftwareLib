@@ -140,7 +140,7 @@ public abstract class FormConfigurationSelection : Window
         vBox.Append(toolbarBox);
 
         {
-            Button button = Button.NewFromIconName("add");
+            Button button = Button.NewFromIconName("edit-add");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnButtonAddClicked;
