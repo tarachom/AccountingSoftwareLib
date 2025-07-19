@@ -34,7 +34,7 @@ class FormLogIn : Window
     public Action? CallBack_ResponseCancel { get; set; }
 
     ComboBoxText comboBoxAllUsers;
-    Entry passwordUser;
+    PasswordEntry passwordUser;
 
     public FormLogIn(Application? app) : base()
     {
@@ -72,7 +72,7 @@ class FormLogIn : Window
             label.Halign = Align.End;
             grid.Attach(label, 0, row, 1, 1);
 
-            passwordUser = new Entry() { WidthRequest = 200, Visibility = false };
+            passwordUser = new PasswordEntry() { WidthRequest = 200, ShowPeekIcon = true };
 
             EventControllerKey eventControllerKey = EventControllerKey.New();
             passwordUser.AddController(eventControllerKey);

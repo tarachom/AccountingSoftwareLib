@@ -345,10 +345,10 @@ public static class NotebookFunction
             Widget? wg = notebook?.GetNthPage(i);
             if (wg?.Name == codePage)
             {
-                Widget? tabLabel = notebook?.GetTabLabel(wg);
+                Box? tabLabel = (Box?)notebook?.GetTabLabel(wg);
                 if (tabLabel != null)
                 {
-                    Widget? child = ((Box)tabLabel).GetFirstChild();
+                    Widget? child = tabLabel.GetFirstChild();
                     while (child != null)
                     {
                         if (child is Box BoxIconOrSpinner && BoxIconOrSpinner.Name == "BoxIconOrSpinner")
@@ -388,10 +388,10 @@ public static class NotebookFunction
             Widget? wg = notebook?.GetNthPage(i);
             if (wg?.Name == codePage)
             {
-                Widget? tabLabel = notebook?.GetTabLabel(wg);
+                Box? tabLabel = (Box?)notebook?.GetTabLabel(wg);
                 if (tabLabel != null)
                 {
-                    Widget? child = ((Box)tabLabel).GetFirstChild();
+                    Widget? child = tabLabel.GetFirstChild();
                     while (child != null)
                     {
                         if (child is Label label && label.Name == "Caption")
