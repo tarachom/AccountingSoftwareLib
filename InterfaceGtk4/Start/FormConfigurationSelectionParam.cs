@@ -34,7 +34,8 @@ class FormConfigurationSelectionParam : Window
 
     #region Fields
 
-    Entry ConfName, Server, Port, Login, Password, Basename;
+    Entry ConfName, Server, Port, Login, Basename;
+    PasswordEntry Password;
 
     #endregion
 
@@ -116,7 +117,7 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Password = new Entry() { WidthRequest = 300, Visibility = false };
+                Password = new PasswordEntry() { WidthRequest = 300, ShowPeekIcon = true };
                 grid.Attach(Password, 1, row, 1, 1);
             }
 

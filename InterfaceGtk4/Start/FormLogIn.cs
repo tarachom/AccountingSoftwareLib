@@ -61,6 +61,12 @@ class FormLogIn : Window
             grid.Attach(label, 0, row, 1, 1);
 
             comboBoxAllUsers = new ComboBoxText() { WidthRequest = 200 };
+
+            //Заборона прокрутки
+            EventControllerScroll controller = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
+            comboBoxAllUsers.AddController(controller);
+            controller.OnScroll += (sender, args) => true;
+
             grid.Attach(comboBoxAllUsers, 1, row, 1, 1);
         }
 

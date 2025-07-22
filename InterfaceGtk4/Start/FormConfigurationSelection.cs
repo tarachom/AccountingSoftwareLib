@@ -67,7 +67,7 @@ public abstract class FormConfigurationSelection : Window
             scroll.HasFrame = true;
 
             GestureClick gesture = GestureClick.New();
-            gesture.OnPressed += (_, args) => { if (args.NPress >= 2) OnButtonEditClicked(null, new EventArgs()); };
+            gesture.OnPressed += (_, args) => { if (args.NPress >= 2) OnEdit(null, new EventArgs()); };
 
             listBox = new ListBox { SelectionMode = SelectionMode.Single };
             listBox.AddController(gesture);
@@ -88,7 +88,7 @@ public abstract class FormConfigurationSelection : Window
             {
                 buttonOpen = Button.NewWithLabel("Відкрити");
                 buttonOpen.MarginBottom = 5;
-                buttonOpen.OnClicked += OnButtonOpenClicked;
+                buttonOpen.OnClicked += OnOpen;
 
                 vBoxButton.Append(buttonOpen);
 
@@ -100,7 +100,7 @@ public abstract class FormConfigurationSelection : Window
             {
                 buttonConfigurator = Button.NewWithLabel("Конфігуратор");
                 buttonConfigurator.MarginBottom = 5;
-                buttonConfigurator.OnClicked += OnButtonOpenConfiguratorClicked;
+                buttonConfigurator.OnClicked += OnOpenConfigurator;
 
                 vBoxButton.Append(buttonConfigurator);
 
@@ -140,10 +140,10 @@ public abstract class FormConfigurationSelection : Window
         vBox.Append(toolbarBox);
 
         {
-            Button button = Button.NewFromIconName("edit-add");
+            Button button = Button.NewFromIconName("new");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
-            button.OnClicked += OnButtonAddClicked;
+            button.OnClicked += OnAdd;
             toolbarBox.Append(button);
         }
 
@@ -151,23 +151,23 @@ public abstract class FormConfigurationSelection : Window
             Button button = Button.NewFromIconName("edit");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
-            button.OnClicked += OnButtonEditClicked;
+            button.OnClicked += OnEdit;
             toolbarBox.Append(button);
         }
 
         {
-            Button button = Button.NewFromIconName("edit-copy");
+            Button button = Button.NewFromIconName("copy");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
-            button.OnClicked += OnButtonCopyClicked;
+            button.OnClicked += OnCopy;
             toolbarBox.Append(button);
         }
 
         {
-            Button button = Button.NewFromIconName("edit-delete");
+            Button button = Button.NewFromIconName("delete");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
-            button.OnClicked += OnButtonDeleteClicked;
+            button.OnClicked += OnDelete;
             toolbarBox.Append(button);
         }
     }
@@ -225,7 +225,7 @@ public abstract class FormConfigurationSelection : Window
         FillListBoxDataBase(itemConfigurationParam.ConfigurationKey);
     }
 
-    async void OnButtonOpenClicked(object? sender, EventArgs args)
+    async void OnOpen(object? sender, EventArgs args)
     {
         if (ProgramKernel == null) return;
 
@@ -279,7 +279,7 @@ public abstract class FormConfigurationSelection : Window
         SensitiveWidgets(true);
     }
 
-    void OnButtonOpenConfiguratorClicked(object? sender, EventArgs args)
+    void OnOpenConfigurator(object? sender, EventArgs args)
     {
         /*
         if (ConfiguratorKernel == null) return;
@@ -402,7 +402,7 @@ public abstract class FormConfigurationSelection : Window
         buttonConfigurator.Sensitive = value;
     }
 
-    void OnButtonAddClicked(Button button, EventArgs args)
+    void OnAdd(Button button, EventArgs args)
     {
         ConfigurationParam itemConfigurationParam = ConfigurationParam.New();
         ConfigurationParamCollection.ListConfigurationParam?.Add(itemConfigurationParam);
@@ -411,7 +411,7 @@ public abstract class FormConfigurationSelection : Window
         FillListBoxDataBase(itemConfigurationParam.ConfigurationKey);
     }
 
-    void OnButtonCopyClicked(Button button, EventArgs args)
+    void OnCopy(Button button, EventArgs args)
     {
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
@@ -428,7 +428,7 @@ public abstract class FormConfigurationSelection : Window
         }
     }
 
-    void OnButtonDeleteClicked(Button button, EventArgs args)
+    void OnDelete(Button button, EventArgs args)
     {
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
@@ -443,7 +443,7 @@ public abstract class FormConfigurationSelection : Window
             });
     }
 
-    void OnButtonEditClicked(Button? button, EventArgs args)
+    void OnEdit(Button? button, EventArgs args)
     {
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)

@@ -264,7 +264,6 @@ public static class NotebookFunction
             button.Child = Image.NewFromIconName("page-close");
             button.Name = codePage;
             button.TooltipText = "Закрити";
-            button.AddCssClass("notebook-page-close");
             button.OnClicked += (sender, args) => CloseNotebookPageToCode(notebook, codePage);
 
             vBoxClose.Append(button);
