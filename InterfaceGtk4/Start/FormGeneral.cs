@@ -143,7 +143,7 @@ public abstract class FormGeneral : Window
         scroll.SetPolicy(PolicyType.Never, PolicyType.Never);
         scroll.Child = vBox;
 
-        void Add(string name, Action<Button> action, string image)
+        void Add(string name, Action<LinkButton> action, string image)
         {
             string path = Path.Combine(AppContext.BaseDirectory, $"images/{image}");
 
@@ -154,15 +154,18 @@ public abstract class FormGeneral : Window
             hBox.Append(img);
             hBox.Append(Label.New(name));
 
-            Button button = Button.New();
-            button.Cursor = Gdk.Cursor.NewFromName("hand", null);
-            button.MarginStart = button.MarginEnd = button.MarginTop = button.MarginBottom = 5;
-            button.AddCssClass("left-menu");
-            button.Child = hBox;
-            button.TooltipText = name;
-            button.OnClicked += (sender, args) => action.Invoke(button);
+            LinkButton linkButton = LinkButton.New("");
+            linkButton.Child = hBox;
+            linkButton.MarginStart = linkButton.MarginEnd = linkButton.MarginTop = linkButton.MarginBottom = 5;
+            linkButton.AddCssClass("left-menu");
+            linkButton.TooltipText = name;
+            linkButton.OnActivateLink += (_, _) =>
+            {
+                action.Invoke(linkButton);
+                return true;
+            };
 
-            vBox.Append(button);
+            vBox.Append(linkButton);
         }
 
         Add("Документи", Документи, "documents.png");
@@ -177,7 +180,7 @@ public abstract class FormGeneral : Window
         hbox.Append(scroll);
     }
 
-    void Документи(Button button)
+    void Документи(LinkButton linkButton)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -232,12 +235,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(button);
+        popover.SetParent(linkButton);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Довідники(Button button)
+    void Довідники(LinkButton linkButton)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -292,12 +295,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(button);
+        popover.SetParent(linkButton);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Журнали(Button button)
+    void Журнали(LinkButton linkButton)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -352,12 +355,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(button);
+        popover.SetParent(linkButton);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Звіти(Button button)
+    void Звіти(LinkButton linkButton)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -365,12 +368,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(button);
+        popover.SetParent(linkButton);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Регістри(Button button)
+    void Регістри(LinkButton linkButton)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -473,14 +476,14 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(button);
+        popover.SetParent(linkButton);
         popover.Child = vBox;
         popover.Show();
     }
 
-    protected abstract void Налаштування(Button button);
-    protected abstract void Сервіс(Button button);
-    protected abstract void Обробки(Button button);
+    protected abstract void Налаштування(LinkButton linkButton);
+    protected abstract void Сервіс(LinkButton linkButton);
+    protected abstract void Обробки(LinkButton linkButton);
 
     #endregion
 

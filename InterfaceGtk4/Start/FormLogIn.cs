@@ -107,6 +107,9 @@ class FormLogIn : Window
                 button.MarginStart = button.MarginEnd = 3;
                 button.OnClicked += OnLogIn;
                 hBox.Append(button);
+
+                //Фокус для кнопки
+                OnShow += (_, _) => button.GrabFocus();
             }
 
             {

@@ -104,8 +104,8 @@ public abstract class FormConfigurationSelection : Window
 
                 vBoxButton.Append(buttonConfigurator);
 
-                if (TypeOpenForm == TypeForm.Configurator) //Фокус для кнопки
-                    OnShow += (_, _) => buttonConfigurator.GrabFocus();
+                if (TypeOpenForm == TypeForm.Configurator)
+                    OnShow += (_, _) => buttonConfigurator.GrabFocus(); //Фокус для кнопки
             }
 
             //Spinner
