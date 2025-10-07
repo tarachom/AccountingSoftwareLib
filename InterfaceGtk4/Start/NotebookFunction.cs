@@ -21,7 +21,6 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using AccountingSoftware;
 using Gdk;
 using Gtk;
 
@@ -85,9 +84,9 @@ public static class NotebookFunction
             Name = Guid.NewGuid().ToString()
         };
 
-        EventControllerKey eventControllerKey = EventControllerKey.New();
-        notebook.AddController(eventControllerKey);
-        eventControllerKey.OnKeyReleased += (sender, args) =>
+        EventControllerKey controller = EventControllerKey.New();
+        notebook.AddController(controller);
+        controller.OnKeyReleased += (sender, args) =>
         {
             Console.WriteLine(args.Keycode);
 
@@ -97,10 +96,10 @@ public static class NotebookFunction
                     Widget? wg = notebook.GetNthPage(notebook.GetCurrentPage());
                     if (wg != null)
                     {
-                        Widget? tabLabel = notebook.GetTabLabel(wg);
+                        Box? tabLabel = (Box?)notebook.GetTabLabel(wg);
                         if (tabLabel != null)
                         {
-                            Widget? child = ((Box)tabLabel).GetFirstChild();
+                            Widget? child = tabLabel.GetFirstChild();
                             while (child != null)
                             {
                                 //Бокс для кнопки
@@ -111,7 +110,9 @@ public static class NotebookFunction
                                     if (bClose != null)
                                     {
                                         string? codePage = bClose.Name;
-                                        if (codePage != null) CloseNotebookPageToCode(notebook, codePage);
+
+                                        if (codePage != null)
+                                            CloseNotebookPageToCode(notebook, codePage);
                                     }
 
                                     break;
@@ -132,15 +133,15 @@ public static class NotebookFunction
         {
             HistorySwitch.Add(notebook.Name, []);
 
-            notebook.OnSwitchPage += (sender, args) =>
+            notebook.OnSwitchPage += (_, args) =>
             {
-                string? currNotebookName = sender.Name;
+                string? currNotebookName = notebook.Name;
                 string? currPageName = args.Page.Name;
 
-                if (currNotebookName != null && currPageName != null && HistorySwitch.TryGetValue(currNotebookName, out List<string>? ListPageName))
+                if (currNotebookName != null && currPageName != null && HistorySwitch.TryGetValue(currNotebookName, out List<string>? listPageName))
                 {
-                    ListPageName.Remove(currPageName); // Поточна сторінка видаляється із списку, якщо вона там є
-                    ListPageName.Add(currPageName); // Поточна сторінка ставиться у кінець списку
+                    listPageName.Remove(currPageName); // Поточна сторінка видаляється із списку, якщо вона там є
+                    listPageName.Add(currPageName); // Поточна сторінка ставиться у кінець списку
                 }
             };
         }
@@ -208,8 +209,8 @@ public static class NotebookFunction
 
             //Додаткова функція яка викликається після закриття сторінки блокноту
             if (currNotebookName != null && afterClosePageFunc != null)
-                if (AfterClosePageFunc.TryGetValue(currNotebookName, out Dictionary<string, Action>? PageNameAndFunc))
-                    PageNameAndFunc.Add(codePage, afterClosePageFunc);
+                if (AfterClosePageFunc.TryGetValue(currNotebookName, out Dictionary<string, Action>? pageNameAndFunc))
+                    pageNameAndFunc.Add(codePage, afterClosePageFunc);
                 else
                     AfterClosePageFunc.Add(currNotebookName, new Dictionary<string, Action>() { { codePage, afterClosePageFunc } });
 
@@ -282,24 +283,27 @@ public static class NotebookFunction
         for (int i = 0; i < notebook?.GetNPages(); i++)
         {
             Widget? wg = notebook?.GetNthPage(i);
-            if (wg != null && wg.Name == codePage)
+            if (wg?.Name == codePage)
             {
                 string? currNotebookName = notebook?.Name;
                 if (currNotebookName != null)
                 {
                     //Історія переключення сторінок
-                    if (HistorySwitch.TryGetValue(currNotebookName, out List<string>? ListPageName))
+                    if (HistorySwitch.TryGetValue(currNotebookName, out List<string>? listPageName))
                     {
-                        ListPageName.Remove(codePage);
-                        if (ListPageName.Count > 0) CurrentNotebookPageToCode(notebook, ListPageName[^1]);
+                        listPageName.Remove(codePage);
+
+                        //Встановлення поточної сторінки, яка остання в списку
+                        if (listPageName.Count > 0)
+                            CurrentNotebookPageToCode(notebook, listPageName[^1]);
                     }
 
                     //Додаткова функція яка викликається після закриття сторінки блокноту
-                    if (AfterClosePageFunc.TryGetValue(currNotebookName, out Dictionary<string, Action>? PageNameAndFunc))
-                        if (PageNameAndFunc.TryGetValue(codePage, out Action? func))
+                    if (AfterClosePageFunc.TryGetValue(currNotebookName, out Dictionary<string, Action>? pageNameAndFunc))
+                        if (pageNameAndFunc.TryGetValue(codePage, out Action? func))
                         {
                             func?.Invoke();
-                            PageNameAndFunc.Remove(codePage);
+                            pageNameAndFunc.Remove(codePage);
                         }
                 }
 

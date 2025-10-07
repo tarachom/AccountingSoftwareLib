@@ -36,13 +36,80 @@ public abstract class Form : Box
         SetOrientation(Orientation.Vertical);
     }
 
-    static string AddColon(string text)
-    {
-        string txt = text.TrimEnd();
-        if (!txt.EndsWith(':')) txt += ":";
+    #region Link
 
-        return txt;
+    /// <summary>
+    /// Створює лінк з іконкою
+    /// </summary>
+    /// <param name="parent">Бокс куди буде доданий лінк</param>
+    /// <param name="caption">Назва</param>
+    /// <param name="func">Процедура</param>
+    public static void CreateLink(Box parent, string caption, Action? func = null)
+    {
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        hBox.Append(Image.NewFromIconName("doc"));
+
+        Label label = Label.New(caption);
+        label.MarginStart = 5;
+        hBox.Append(label);
+
+        LinkButton linkButton = LinkButton.New("");
+        linkButton.Halign = Align.Start;
+        linkButton.Child = hBox;
+
+        parent.Append(linkButton);
+
+        linkButton.OnActivateLink += (_, _) =>
+        {
+            func?.Invoke();
+            return true;
+        };
     }
+
+    /// <summary>
+    /// Створює простий заголовок або лінк
+    /// </summary>
+    /// <param name="parent">Бокс куди буде доданий лінк</param>
+    /// <param name="caption"><Назва/param>
+    /// <param name="func">Процедура</param>
+    public static void CreateCaptionLink(Box parent, string caption, Action? func = null)
+    {
+        if (func != null)
+        {
+            LinkButton linkButton = LinkButton.New("");
+            linkButton.Label = caption;
+
+            parent.Append(linkButton);
+
+            linkButton.OnActivateLink += (_, _) =>
+            {
+                func?.Invoke();
+                return true;
+            };
+        }
+        else
+        {
+            Label label = Label.New(caption);
+            label.MarginTop = label.MarginBottom = 5;
+
+            parent.Append(label);
+        }
+    }
+
+    /// <summary>
+    /// Створює розділювач
+    /// </summary>
+    /// <param name="parent">Бокс куди буде доданий розділювач</param>
+    /// <param name="orientation">Орієнтація розділювача</param>
+    public static void CreateSeparator(Box parent, Orientation orientation = Orientation.Horizontal)
+    {
+        Separator separator = Separator.New(orientation);
+        separator.MarginStart = separator.MarginEnd = separator.MarginTop = separator.MarginBottom = 5;
+
+        parent.Append(separator);
+    }
+
+    #endregion
 
     #region Field
 
@@ -173,12 +240,26 @@ public abstract class Form : Box
         return hBox;
     }
 
+    /// <summary>
+    /// Добавляє дві крапки в кінці тексту
+    /// </summary>
+    /// <param name="text">Текст</param>
+    /// <returns>Модифікований текст</returns>
+    static string AddColon(string text)
+    {
+        string txt = text.TrimEnd();
+        if (!string.IsNullOrEmpty(txt) && !txt.EndsWith(':')) txt += ":";
+
+        return txt;
+    }
+
     #endregion
 
     #region Spinner
 
-    public void SpinnerOn(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, true, this.GetName());
-    public void SpinnerOff(Notebook? notebook) => NotebookFunction.SpinnerNotebookPageToCode(notebook, false, this.GetName());
+    public void SpinnerOn() => NotebookFunction.SpinnerNotebookPageToCode(true, this.GetName());
+
+    public void SpinnerOff() => NotebookFunction.SpinnerNotebookPageToCode(false, this.GetName());
 
     #endregion
 }

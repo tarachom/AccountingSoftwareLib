@@ -80,9 +80,9 @@ class FormLogIn : Window
 
             passwordUser = new PasswordEntry() { WidthRequest = 200, ShowPeekIcon = true };
 
-            EventControllerKey eventControllerKey = EventControllerKey.New();
-            passwordUser.AddController(eventControllerKey);
-            eventControllerKey.OnKeyReleased += (sender, args) =>
+            EventControllerKey controller = EventControllerKey.New();
+            passwordUser.AddController(controller);
+            controller.OnKeyReleased += (sender, args) =>
             {
                 /*
                 
