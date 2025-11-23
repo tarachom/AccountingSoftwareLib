@@ -24,15 +24,18 @@ limitations under the License.
 using System.Security.Cryptography;
 using System.Text;
 
-public class Encryption
+namespace AccountingSoftware
 {
-    /// <summary>
-    /// MD5 хешування тексту
-    /// </summary>
-    /// <param name="text">Текст</param>
-    /// <returns>Хеш</returns>
-    public static string MD5HashData(string text)
+    public class Encryption
     {
-        return Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
+        /// <summary>
+        /// MD5 хешування тексту
+        /// </summary>
+        /// <param name="text">Текст</param>
+        /// <returns>Хеш</returns>
+        public static string MD5HashData(string text)
+        {
+            return Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
+        }
     }
 }

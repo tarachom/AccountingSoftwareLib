@@ -566,6 +566,11 @@ UNION ALL
         /// </summary>
         public List<string>? FuncParams { get; private set; } = funcParams;
 
+        /// <summary>
+        /// Формування запиту із параметрів
+        /// </summary>
+        /// <param name="field">Назва поля</param>
+        /// <returns>SQL запит</returns>
         public string Construct(string field)
         {
             return FuncName + "(" + field + (FuncParams != null && FuncParams.Count > 0 ? ", " + string.Join(", ", FuncParams) : "") + ")";

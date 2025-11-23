@@ -45,7 +45,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; protected set; } = new UnigueID();
+        public UnigueID UnigueID { get; protected set; } = new();
 
         /// <summary>
         /// Поля які були додатково прочитані з бази даних

@@ -37,12 +37,12 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
     /// <summary>
     /// Горизонтальний бокс для кнопок
     /// </summary>
-    protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTop = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок для полів
     /// </summary>
-    protected Paned HPanedTop = new Paned(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
+    protected Paned HPanedTop = new(Orientation.Horizontal) { BorderWidth = 5, Position = 500 };
 
     /// <summary>
     /// Кнопки "Зберегти та закрити", "Зберегти"
@@ -52,7 +52,7 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
     /// <summary>
     /// Індикатор стану блокування
     /// </summary>
-    Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+    Label LabelLock = new() { UseMarkup = true, UseUnderline = false };
 
     /// <summary>
     /// Функція для отримання інформації про блокування
@@ -71,7 +71,7 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
 
         //Інформація про блокування
         {
-            Button bLock = new Button
+            Button bLock = new()
             {
                 ImagePosition = PositionType.Left,
                 AlwaysShowImage = true,
@@ -84,10 +84,10 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
                 {
                     LockedObject_Record recordResult = await FuncLockInfo.Invoke();
 
-                    Popover popover = new Popover((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
+                    Popover popover = new((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
 
-                    Box vBox = new Box(Orientation.Vertical, 0);
-                    Box hBox = new Box(Orientation.Horizontal, 0);
+                    Box vBox = new(Orientation.Vertical, 0);
+                    Box hBox = new(Orientation.Horizontal, 0);
                     vBox.PackStart(hBox, false, false, 10);
 
                     string info = "";
@@ -116,12 +116,12 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
         PackStart(HBoxTop, false, false, 10);
 
         //Pack1
-        Box vBox1 = new Box(Orientation.Vertical, 0);
+        Box vBox1 = new(Orientation.Vertical, 0);
         HPanedTop.Pack1(vBox1, false, false);
         CreatePack1(vBox1);
 
         //Pack2
-        Box vBox2 = new Box(Orientation.Vertical, 0);
+        Box vBox2 = new(Orientation.Vertical, 0);
         HPanedTop.Pack2(vBox2, false, false);
         CreatePack2(vBox2);
 

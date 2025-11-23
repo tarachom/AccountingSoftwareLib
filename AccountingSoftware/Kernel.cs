@@ -147,14 +147,14 @@ namespace AccountingSoftware
         public void Close()
         {
             DataBase.Close();
-            Conf = new Configuration();
+            Conf = new();
             User = Session = Guid.Empty;
         }
 
         /// <summary>
         /// Конфігурація
         /// </summary>
-        public Configuration Conf { get; set; } = new Configuration();
+        public Configuration Conf { get; set; } = new();
 
         /// <summary>
         /// Інтерфейс для роботи з базою даних

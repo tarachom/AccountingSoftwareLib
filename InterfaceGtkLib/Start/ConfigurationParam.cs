@@ -37,13 +37,13 @@ public class ConfigurationParamCollection
 
         if (File.Exists(pathToXML))
         {
-            XPathDocument xPathDoc = new XPathDocument(pathToXML);
+            XPathDocument xPathDoc = new(pathToXML);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();
 
             XPathNodeIterator? ConfigurationParamNodes = xPathDocNavigator.Select("/root/Configuration");
             while (ConfigurationParamNodes!.MoveNext())
             {
-                ConfigurationParam ItemConfigurationParam = new ConfigurationParam();
+                ConfigurationParam ItemConfigurationParam = new();
 
                 XPathNavigator? currentNode = ConfigurationParamNodes.Current;
 
@@ -79,7 +79,7 @@ public class ConfigurationParamCollection
 
     public static void SaveConfigurationParamFromXML(string pathToXML)
     {
-        XmlDocument xmlConfParamDocument = new XmlDocument();
+        XmlDocument xmlConfParamDocument = new();
         xmlConfParamDocument.AppendChild(xmlConfParamDocument.CreateXmlDeclaration("1.0", "utf-8", ""));
 
         XmlElement rootNode = xmlConfParamDocument.CreateElement("root");
@@ -193,7 +193,7 @@ public class ConfigurationParam
 
     public ConfigurationParam Clone()
     {
-        ConfigurationParam configurationParam = new ConfigurationParam
+        ConfigurationParam configurationParam = new()
         {
             ConfigurationKey = Guid.NewGuid().ToString(),
             ConfigurationName = ConfigurationName + " - Копія",

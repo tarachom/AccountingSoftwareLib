@@ -49,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
 		/// Запит SELECT
 		/// </summary>
-		public Query QuerySelect { get; set; } = new Query(table) { ParentField = parentField };
+		public Query QuerySelect { get; set; } = new(table) { ParentField = parentField };
 
         /// <summary>
         /// Поточна позиція

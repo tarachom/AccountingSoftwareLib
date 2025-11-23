@@ -57,7 +57,7 @@ namespace AccountingSoftware
 
         async ValueTask Open(string connectionString, bool startScript = true)
         {
-            NpgsqlDataSourceBuilder dataBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            NpgsqlDataSourceBuilder dataBuilder = new(connectionString);
             dataBuilder.MapComposite<UuidAndText>("uuidtext");
             dataBuilder.MapComposite<NameAndText>("nametext");
 

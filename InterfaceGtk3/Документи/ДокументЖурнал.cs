@@ -47,27 +47,27 @@ public abstract class ДокументЖурнал : ФормаЖурнал
     /// <summary>
     /// Верхній набір меню
     /// </summary>
-    protected Toolbar ToolbarTop = new Toolbar();
+    protected Toolbar ToolbarTop = new();
 
     /// <summary>
     /// Верхній бок для додаткових кнопок
     /// </summary>
-    protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTop = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Період
     /// </summary>
-    protected PeriodControl Період = new PeriodControl();
+    protected PeriodControl Період = new();
 
     /// <summary>
     /// Пошук
     /// </summary>
-    SearchControl Пошук = new SearchControl();
+    SearchControl Пошук = new();
 
     /// <summary>
     /// Фільтр
     /// </summary>
-    protected ListFilterControl Фільтр = new ListFilterControl(true);
+    protected ListFilterControl Фільтр = new(true);
 
     /// <summary>
     /// Додатковий ключ форми журналу для налаштувань
@@ -130,35 +130,35 @@ public abstract class ДокументЖурнал : ФормаЖурнал
     {
         PackStart(ToolbarTop, false, false, 0);
 
-        ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
+        ToolButton addButton = new(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
         addButton.Clicked += OnAddClick;
         ToolbarTop.Add(addButton);
 
-        ToolButton upButton = new ToolButton(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
+        ToolButton upButton = new(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
         upButton.Clicked += OnEditClick;
         ToolbarTop.Add(upButton);
 
-        ToolButton copyButton = new ToolButton(new Image(Stock.Copy, IconSize.Menu), "Копіювати") { TooltipText = "Копіювати" };
+        ToolButton copyButton = new(new Image(Stock.Copy, IconSize.Menu), "Копіювати") { TooltipText = "Копіювати" };
         copyButton.Clicked += OnCopyClick;
         ToolbarTop.Add(copyButton);
 
-        ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
+        ToolButton deleteButton = new(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
         deleteButton.Clicked += OnDeleteClick;
         ToolbarTop.Add(deleteButton);
 
-        ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+        ToolButton refreshButton = new(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
         refreshButton.Clicked += OnRefreshClick;
         ToolbarTop.Add(refreshButton);
 
         //Separator
-        ToolItem toolItemSeparator = new ToolItem { new Separator(Orientation.Horizontal) };
+        ToolItem toolItemSeparator = new() { new Separator(Orientation.Horizontal) };
         ToolbarTop.Add(toolItemSeparator);
 
-        ToolButton filterButton = new ToolButton(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
+        ToolButton filterButton = new(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
         filterButton.Clicked += OnFilterClick;
         ToolbarTop.Add(filterButton);
 
-        MenuToolButton provodkyButton = new MenuToolButton(new Image(Stock.Find, IconSize.Menu), "Проводки") { IsImportant = true };
+        MenuToolButton provodkyButton = new(new Image(Stock.Find, IconSize.Menu), "Проводки") { IsImportant = true };
         provodkyButton.Clicked += OnReportSpendTheDocumentClick;
         provodkyButton.Menu = ToolbarProvodkySubMenu();
         ToolbarTop.Add(provodkyButton);
@@ -166,37 +166,37 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         Menu? menuItem = ToolbarNaOsnoviSubMenu();
         if (menuItem != null)
         {
-            MenuToolButton naOsnoviButton = new MenuToolButton(new Image(Stock.New, IconSize.Menu), "Ввести на основі") { IsImportant = true };
+            MenuToolButton naOsnoviButton = new(new Image(Stock.New, IconSize.Menu), "Ввести на основі") { IsImportant = true };
             naOsnoviButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
             naOsnoviButton.Menu = menuItem;
             ToolbarTop.Add(naOsnoviButton);
         }
 
-        MenuToolButton printingButton = new MenuToolButton(new Image(Stock.Print, IconSize.Menu), "Друк") { IsImportant = true };
+        MenuToolButton printingButton = new(new Image(Stock.Print, IconSize.Menu), "Друк") { IsImportant = true };
         printingButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
         printingButton.Menu = ToolbarPrintingSubMenu();
         ToolbarTop.Add(printingButton);
 
         //Експорт
-        MenuToolButton exportButton = new MenuToolButton(new Image(Stock.Convert, IconSize.Menu), "Експорт") { IsImportant = true };
+        MenuToolButton exportButton = new(new Image(Stock.Convert, IconSize.Menu), "Експорт") { IsImportant = true };
         exportButton.Clicked += (sender, arg) => { ((Menu)((MenuToolButton)sender!).Menu).Popup(); };
         exportButton.Menu = ToolbarExportSubMenu();
         ToolbarTop.Add(exportButton);
 
-        ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
+        ToolButton versionshistoryButton = new(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
         versionshistoryButton.Clicked += OnVersionsHistoryClick;
         ToolbarTop.Add(versionshistoryButton);
     }
 
     Menu ToolbarProvodkySubMenu()
     {
-        Menu Menu = new Menu();
+        Menu Menu = new();
 
-        MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
+        MenuItem spendTheDocumentButton = new("Провести документ");
         spendTheDocumentButton.Activated += (sender, args) => SpendTheDocumentOrClear(true);
         Menu.Append(spendTheDocumentButton);
 
-        MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
+        MenuItem clearSpendButton = new("Відмінити проведення");
         clearSpendButton.Activated += (sender, args) => SpendTheDocumentOrClear(false);
         Menu.Append(clearSpendButton);
 
@@ -210,25 +210,25 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         Menu Menu = new Menu();
 
         {
-            MenuItem menu = new MenuItem("Додати");
+            MenuItem menu = new("Додати");
             menu.Activated += OnAddClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Редагувати");
+            MenuItem menu = new("Редагувати");
             menu.Activated += OnEditClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Копіювати");
+            MenuItem menu = new("Копіювати");
             menu.Activated += OnCopyClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Видалити");
+            MenuItem menu = new("Видалити");
             menu.Activated += OnDeleteClick;
             Menu.Append(menu);
         }
@@ -242,19 +242,19 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         Menu.Append(new SeparatorMenuItem());
 
         {
-            MenuItem menu = new MenuItem("Провести документ");
+            MenuItem menu = new("Провести документ");
             menu.Activated += (sender, args) => SpendTheDocumentOrClear(true);
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Відмінити проведення");
+            MenuItem menu = new("Відмінити проведення");
             menu.Activated += (sender, args) => SpendTheDocumentOrClear(false);
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Помітка на видалення");
+            MenuItem menu = new("Помітка на видалення");
             menu.Activated += OnDeleteClick;
             Menu.Append(menu);
         }
@@ -266,9 +266,9 @@ public abstract class ДокументЖурнал : ФормаЖурнал
 
     Menu ToolbarPrintingSubMenu()
     {
-        Menu Menu = new Menu();
+        Menu Menu = new();
 
-        MenuItem printButton = new MenuItem("Документ");
+        MenuItem printButton = new("Документ");
         printButton.Activated += OnPrintingInvoiceClick;
         Menu.Append(printButton);
 
@@ -281,13 +281,13 @@ public abstract class ДокументЖурнал : ФормаЖурнал
 
     Menu ToolbarExportSubMenu()
     {
-        Menu Menu = new Menu();
+        Menu Menu = new();
 
-        MenuItem exportXMLButton = new MenuItem("Формат XML");
+        MenuItem exportXMLButton = new("Формат XML");
         exportXMLButton.Activated += OnExportXMLClick;
         Menu.Append(exportXMLButton);
 
-        MenuItem exportExcelButton = new MenuItem("Формат Excel");
+        MenuItem exportExcelButton = new("Формат Excel");
         exportExcelButton.Activated += OnExportExcelClick;
         Menu.Append(exportExcelButton);
 
@@ -364,7 +364,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                 if (DocumentPointerItem == null)
                     await OpenPageElement(false, unigueID);
@@ -435,7 +435,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
             foreach (TreePath itemPath in selectionRows)
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                 {
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                     await OpenPageElement(false, unigueID);
                 }
 
@@ -467,7 +467,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in selectionRows)
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     await SetDeletionLabel(unigueID);
 
@@ -495,7 +495,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in selectionRows)
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     UnigueID? newUnigueID = await Copy(unigueID);
 
@@ -525,7 +525,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                 ReportSpendTheDocument(unigueID);
             }
     }
@@ -540,7 +540,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
             foreach (TreePath itemPath in selectionRows)
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                 await SpendTheDocument(unigueID, spend);
 
@@ -560,7 +560,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         {
             string pathToFolder = "";
 
-            FileChooserDialog fc = new FileChooserDialog("Виберіть каталог", null,
+            FileChooserDialog fc = new("Виберіть каталог", null,
                 FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
 
             if (fc.Run() == (int)ResponseType.Accept)
@@ -573,7 +573,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     await ExportXML(unigueID, pathToFolder);
                 }
@@ -586,7 +586,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         {
             string pathToFolder = "";
 
-            FileChooserDialog fc = new FileChooserDialog("Виберіть каталог", null,
+            FileChooserDialog fc = new("Виберіть каталог", null,
                 FileChooserAction.SelectFolder, "Закрити", ResponseType.Cancel, "Вибрати", ResponseType.Accept);
 
             if (fc.Run() == (int)ResponseType.Accept)
@@ -599,7 +599,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     await ExportExcel(unigueID, pathToFolder);
                 }
@@ -612,7 +612,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
             foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                 await PrintingDoc(unigueID);
             }
@@ -625,7 +625,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
         {
             TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-            UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
             await VersionsHistory(unigueID);
         }

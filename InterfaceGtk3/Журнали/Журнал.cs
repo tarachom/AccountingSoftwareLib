@@ -32,7 +32,7 @@ public abstract class Журнал : ФормаЖурнал
     /// <summary>
     /// Період
     /// </summary>
-    protected PeriodControl Період = new PeriodControl();
+    protected PeriodControl Період = new();
 
     /// <summary>
     /// Список документів
@@ -50,7 +50,7 @@ public abstract class Журнал : ФормаЖурнал
     {
         NameSpageCodeGeneration = nameSpageCodeGeneration;
 
-        Box HBoxTop = new Box(Orientation.Horizontal, 0);
+        Box HBoxTop = new(Orientation.Horizontal, 0);
         PackStart(HBoxTop, false, false, 10);
 
         //Період
@@ -86,30 +86,30 @@ public abstract class Журнал : ФормаЖурнал
 
     void CreateToolbar()
     {
-        Toolbar toolbar = new Toolbar();
+        Toolbar toolbar = new();
         PackStart(toolbar, false, false, 0);
 
-        ToolButton findButton = new ToolButton(new Image(Stock.GoUp, IconSize.Menu), "Знайти в журналі") { TooltipText = "Знайти в журналі" };
+        ToolButton findButton = new(new Image(Stock.GoUp, IconSize.Menu), "Знайти в журналі") { TooltipText = "Знайти в журналі" };
         findButton.Clicked += OFindClick;
         toolbar.Add(findButton);
 
-        ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
+        ToolButton deleteButton = new(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
         deleteButton.Clicked += OnDeleteClick;
         toolbar.Add(deleteButton);
 
-        ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+        ToolButton refreshButton = new(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
         refreshButton.Clicked += OnRefreshClick;
         toolbar.Add(refreshButton);
 
         //Separator
-        ToolItem toolItemSeparator = new ToolItem { new Separator(Orientation.Horizontal) };
+        ToolItem toolItemSeparator = new() { new Separator(Orientation.Horizontal) };
         toolbar.Add(toolItemSeparator);
 
-        TypeDocToolButton = new ToolButton(new Image(Stock.Index, IconSize.Menu), "Документи") { IsImportant = true };
+        TypeDocToolButton = new(new Image(Stock.Index, IconSize.Menu), "Документи") { IsImportant = true };
         TypeDocToolButton.Clicked += OnTypeDocsClick;
         toolbar.Add(TypeDocToolButton);
 
-        MenuToolButton provodkyButton = new MenuToolButton(new Image(Stock.Find, IconSize.Menu), "Проводки") { IsImportant = true };
+        MenuToolButton provodkyButton = new(new Image(Stock.Find, IconSize.Menu), "Проводки") { IsImportant = true };
         provodkyButton.Clicked += OnReportSpendTheDocumentClick;
         provodkyButton.Menu = ToolbarProvodkySubMenu();
         toolbar.Add(provodkyButton);
@@ -117,13 +117,13 @@ public abstract class Журнал : ФормаЖурнал
 
     Menu ToolbarProvodkySubMenu()
     {
-        Menu Menu = new Menu();
+        Menu Menu = new();
 
-        MenuItem spend = new MenuItem("Провести документ");
+        MenuItem spend = new("Провести документ");
         spend.Activated += OnSpendTheDocument;
         Menu.Append(spend);
 
-        MenuItem clear = new MenuItem("Відмінити проведення");
+        MenuItem clear = new("Відмінити проведення");
         clear.Activated += OnClearSpend;
         Menu.Append(clear);
 
@@ -134,29 +134,29 @@ public abstract class Журнал : ФормаЖурнал
 
     Menu PopUpContextMenu()
     {
-        Menu Menu = new Menu();
+        Menu Menu = new();
 
-        MenuItem findButton = new MenuItem("Знайти в журналі");
+        MenuItem findButton = new("Знайти в журналі");
         findButton.Activated += OFindClick;
         Menu.Append(findButton);
 
-        MenuItem refreshButton = new MenuItem("Обновити");
+        MenuItem refreshButton = new("Обновити");
         refreshButton.Activated += OnRefreshClick;
         Menu.Append(refreshButton);
 
-        MenuItem deleteButton = new MenuItem("Помітка на видалення");
+        MenuItem deleteButton = new("Помітка на видалення");
         deleteButton.Activated += OnDeleteClick;
         Menu.Append(deleteButton);
 
-        MenuItem provodkyButton = new MenuItem("Проводки");
+        MenuItem provodkyButton = new("Проводки");
         provodkyButton.Activated += OnReportSpendTheDocumentClick;
         Menu.Append(provodkyButton);
 
-        MenuItem spendTheDocumentButton = new MenuItem("Провести документ");
+        MenuItem spendTheDocumentButton = new("Провести документ");
         spendTheDocumentButton.Activated += OnSpendTheDocument;
         Menu.Append(spendTheDocumentButton);
 
-        MenuItem clearSpendButton = new MenuItem("Відмінити проведення");
+        MenuItem clearSpendButton = new("Відмінити проведення");
         clearSpendButton.Activated += OnClearSpend;
         Menu.Append(clearSpendButton);
 
@@ -188,7 +188,7 @@ public abstract class Журнал : ФормаЖурнал
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
         {
             TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
-            SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            SelectPointerItem = new((string)TreeViewGrid.Model.GetValue(iter, 1));
         }
     }
 
@@ -198,7 +198,7 @@ public abstract class Журнал : ФормаЖурнал
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
                 string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
-                SelectPointerItem = new UnigueID(uid);
+                SelectPointerItem = new(uid);
 
                 PopUpContextMenu().Popup();
             }
@@ -217,7 +217,7 @@ public abstract class Журнал : ФормаЖурнал
             {
                 string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                 string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
-                OpenDoc(typeDoc, new UnigueID(uid));
+                OpenDoc(typeDoc, new(uid));
             }
     }
 
@@ -327,7 +327,7 @@ public abstract class Журнал : ФормаЖурнал
                 string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                 string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
-                UnigueID unigueID = new UnigueID(uid);
+                UnigueID unigueID = new(uid);
                 object? documentPointer = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer", false, BindingFlags.CreateInstance, null, [unigueID, null!], null, null);
                 if (documentPointer != null)
                     ReportSpendTheDocument((DocumentPointer)documentPointer);
@@ -340,7 +340,7 @@ public abstract class Журнал : ФормаЖурнал
 
     async ValueTask SpendTheDocument(string uid, string typeDoc, bool spendDoc)
     {
-        UnigueID unigueID = new UnigueID(uid);
+        UnigueID unigueID = new(uid);
 
         object? documentObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
         if (documentObjestInstance != null)

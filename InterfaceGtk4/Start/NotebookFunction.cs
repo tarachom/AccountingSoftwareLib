@@ -74,7 +74,7 @@ public static class NotebookFunction
     /// <returns>Notebook</returns>
     public static Notebook CreateNotebook(bool historySwitchList = true, bool isGeneralNotebook = false)
     {
-        Notebook notebook = new Notebook()
+        Notebook notebook = new()
         {
             Scrollable = true,
             ShowBorder = false,

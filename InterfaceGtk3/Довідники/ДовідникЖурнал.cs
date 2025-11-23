@@ -65,34 +65,34 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
     /// <summary>
     /// Верхній набір меню
     /// </summary>
-    protected Toolbar ToolbarTop = new Toolbar();
+    protected Toolbar ToolbarTop = new();
 
     /// <summary>
     /// Верхній горизонтальний бокс.
     /// можна додаткові кнопки і різні лінки добавляти
     /// </summary>
-    protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTop = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панелька яка містить одну область за замовчуванням і туди добавляється список
     /// У випадку якщо потрібно можна додати ще одну область, це використовується для ієрархічних довідників
     /// </summary>
-    protected Paned HPanedTable = new Paned(Orientation.Horizontal);
+    protected Paned HPanedTable = new(Orientation.Horizontal);
 
     /// <summary>
     /// Пошук
     /// </summary>
-    protected SearchControl Пошук = new SearchControl();
+    protected SearchControl Пошук = new();
 
     /// <summary>
     /// Фільтр
     /// </summary>
-    protected ListFilterControl Фільтр = new ListFilterControl();
+    protected ListFilterControl Фільтр = new();
 
     /// <summary>
     /// Переключатель для довідника з деревом
     /// </summary>
-    protected CheckButton IsHierarchy = new CheckButton("Ієрархія папок") { Active = true, Name = "IsHierarchy" };
+    protected CheckButton IsHierarchy = new("Ієрархія папок") { Active = true, Name = "IsHierarchy" };
 
     public ДовідникЖурнал()
     {
@@ -169,39 +169,39 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
     {
         PackStart(ToolbarTop, false, false, 0);
 
-        ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
+        ToolButton addButton = new(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
         addButton.Clicked += OnAddClick;
         ToolbarTop.Add(addButton);
 
-        ToolButton upButton = new ToolButton(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
+        ToolButton upButton = new(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
         upButton.Clicked += OnEditClick;
         ToolbarTop.Add(upButton);
 
-        ToolButton copyButton = new ToolButton(new Image(Stock.Copy, IconSize.Menu), "Копіювати") { TooltipText = "Копіювати" };
+        ToolButton copyButton = new(new Image(Stock.Copy, IconSize.Menu), "Копіювати") { TooltipText = "Копіювати" };
         copyButton.Clicked += OnCopyClick;
         ToolbarTop.Add(copyButton);
 
-        ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
+        ToolButton deleteButton = new(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
         deleteButton.Clicked += OnDeleteClick;
         ToolbarTop.Add(deleteButton);
 
-        ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+        ToolButton refreshButton = new(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
         refreshButton.Clicked += OnRefreshClick;
         ToolbarTop.Add(refreshButton);
 
         //Separator
-        ToolItem toolItemSeparator = new ToolItem { new Separator(Orientation.Horizontal) };
+        ToolItem toolItemSeparator = new() { new Separator(Orientation.Horizontal) };
         ToolbarTop.Add(toolItemSeparator);
 
-        ToolButton filterButton = new ToolButton(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
+        ToolButton filterButton = new(new Image(Stock.SortAscending, IconSize.Menu), "Фільтрувати") { TooltipText = "Фільтрувати" };
         filterButton.Clicked += OnFilterClick;
         ToolbarTop.Add(filterButton);
 
-        ToolButton multipleSelectButton = new ToolButton(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
+        ToolButton multipleSelectButton = new(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
         multipleSelectButton.Clicked += OnMultipleSelectClick;
         ToolbarTop.Add(multipleSelectButton);
 
-        ToolButton versionshistoryButton = new ToolButton(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
+        ToolButton versionshistoryButton = new(new Image(Stock.FindAndReplace, IconSize.Menu), "Історія зміни даних") { TooltipText = "Історія зміни даних" };
         versionshistoryButton.Clicked += OnVersionsHistoryClick;
         ToolbarTop.Add(versionshistoryButton);
     }
@@ -211,31 +211,31 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
         Menu Menu = new Menu();
 
         {
-            MenuItem menu = new MenuItem("Додати");
+            MenuItem menu = new("Додати");
             menu.Activated += OnAddClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Редагувати");
+            MenuItem menu = new("Редагувати");
             menu.Activated += OnEditClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Копіювати");
+            MenuItem menu = new("Копіювати");
             menu.Activated += OnCopyClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Видалити");
+            MenuItem menu = new("Видалити");
             menu.Activated += OnDeleteClick;
             Menu.Append(menu);
         }
 
         {
-            MenuItem menu = new MenuItem("Обновити");
+            MenuItem menu = new("Обновити");
             menu.Activated += OnRefreshClick;
             Menu.Append(menu);
         }
@@ -243,7 +243,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
         Menu.Append(new SeparatorMenuItem());
 
         {
-            MenuItem menu = new MenuItem("Вибрати");
+            MenuItem menu = new("Вибрати");
             menu.Activated += OnMultipleSelectClick;
             Menu.Append(menu);
         }
@@ -302,7 +302,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                 if (DirectoryPointerItem == null)
                 {
@@ -373,7 +373,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
             foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                 {
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                     if (!unigueID.IsEmpty())
                         await OpenPageElement(false, unigueID);
                 }
@@ -405,7 +405,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     if (!unigueID.IsEmpty())
                     {
@@ -434,7 +434,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                     if (!unigueID.IsEmpty())
                     {
                         UnigueID? newUnigueID = await Copy(unigueID);
@@ -483,7 +483,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
         foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
         {
             TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-            UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
             if (!unigueID.IsEmpty())
                 await VersionsHistory(unigueID);

@@ -30,25 +30,46 @@ namespace AccountingSoftware
     /// </summary>
     public class UuidAndText
     {
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
         public UuidAndText() { }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="uuid">Унікальний ідентифікатор</param>
         public UuidAndText(Guid uuid)
         {
             Uuid = uuid;
         }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="text">Текст</param>
         public UuidAndText(string text)
         {
             Uuid = Guid.Empty;
             Text = text;
         }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="uuid">Унікальний ідентифікатор</param>
+        /// <param name="text">Текст</param>
         public UuidAndText(Guid uuid, string text)
         {
             Uuid = uuid;
             Text = text;
         }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="unigueID">Унікальний ідентифікатор</param>
+        /// <param name="text">Текст</param>
         public UuidAndText(UnigueID unigueID, string text)
         {
             Uuid = unigueID.UGuid;
@@ -76,11 +97,19 @@ namespace AccountingSoftware
             return $"<uuid>{Uuid}</uuid><text>{Text}</text>";
         }
 
+        /// <summary>
+        /// Чи пустий?
+        /// </summary>
+        /// <returns>true якщо пустий</returns>
         public bool IsEmpty()
         {
             return Uuid == Guid.Empty;
         }
 
+        /// <summary>
+        /// Унікальний ідентифікатор
+        /// </summary>
+        /// <returns>Новий UnigueID</returns>
         public UnigueID UnigueID()
         {
             return new UnigueID(Uuid);

@@ -221,7 +221,7 @@ class FormConfigurationSelectionParam : Window
         {
             button.Sensitive = false;
 
-            Kernel kernel = new Kernel();
+            Kernel kernel = new();
 
             bool ifExistsDatabase = await kernel.IfExistDatabase(
                 OpenConfigurationParam.DataBaseServer,

@@ -31,10 +31,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Пустий вказівник
         /// </summary>
-        public UnigueID()
-        {
-            UGuid = Guid.Empty;
-        }
+        public UnigueID() { }
 
         /// <summary>
         /// Унікальний ідентифікатор
@@ -51,8 +48,8 @@ namespace AccountingSoftware
         /// <param name="uGuid">Унікальний ідентифікатор як object</param>
         public UnigueID(object? uGuid)
         {
-            if (uGuid != null && uGuid != DBNull.Value)
-                UGuid = (Guid)uGuid;
+            if (uGuid != null && uGuid != DBNull.Value && uGuid is Guid guid)
+                UGuid = guid;
             else
                 UGuid = Guid.Empty;
         }
@@ -63,8 +60,8 @@ namespace AccountingSoftware
         /// <param name="uGuid">Унікальний ідентифікатор</param>
         public UnigueID(string uGuid)
         {
-            if (Guid.TryParse(uGuid, out Guid resultUGuid))
-                UGuid = resultUGuid;
+            if (Guid.TryParse(uGuid, out Guid result))
+                UGuid = result;
             else
                 UGuid = Guid.Empty;
         }
@@ -110,7 +107,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
-        public Guid UGuid { get; private set; }
+        public Guid UGuid { get; private set; } = Guid.Empty;
 
         /// <summary>
         /// Порівняння

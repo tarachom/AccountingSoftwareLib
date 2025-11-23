@@ -30,13 +30,25 @@ namespace AccountingSoftware
     /// </summary>
     public class NameAndText
     {
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
         public NameAndText() { }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="name">Назва</param>
         public NameAndText(string name)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="text">Значення</param>
         public NameAndText(string name, string text)
         {
             Name = name;

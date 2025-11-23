@@ -23,10 +23,22 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
+    /// <summary>
+    /// Структура для назви і значення
+    /// </summary>
+    /// <typeparam name="T">Тип значення</typeparam>
     public class NameValue<T>
     {
+        /// <summary>
+        /// Нова структура
+        /// </summary>
         public NameValue() { }
 
+        /// <summary>
+        /// Нова структура
+        /// </summary>
+        /// <param name="name">Назва</param>
+        /// <param name="value">Значення</param>
         public NameValue(string name, T value)
         {
             Name = name;

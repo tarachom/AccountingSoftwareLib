@@ -23,37 +23,28 @@ limitations under the License.
 
 namespace AccountingSoftware
 {
-	/// <summary>
-	/// Типи даних полів
-	/// </summary>
-	public class FieldType
-	{
-		/// <summary>
-		/// Типи даних полів
-		/// </summary>
-		/// <param name="confTypeName">Тип даних в конфігурації</param>
-		/// <param name="viewTypeName">Представлення типу даних в списку</param>
-		public FieldType(string confTypeName, string viewTypeName)
-		{
-			ConfTypeName = confTypeName;
-			ViewTypeName = viewTypeName;
-		}
+    /// <summary>
+    /// Типи даних полів
+    /// </summary>
+    /// <param name="confTypeName">Тип даних в конфігурації</param>
+    /// <param name="viewTypeName">Представлення типу даних в списку</param>
+    public class FieldType(string confTypeName, string viewTypeName)
+    {
+        /// <summary>
+        /// Тип даних в конфігурації
+        /// </summary>
+        public string ConfTypeName { get; set; } = confTypeName;
 
-		/// <summary>
-		/// Тип даних в конфігурації
-		/// </summary>
-		public string ConfTypeName { get; set; }
+        /// <summary>
+        /// Представлення типу даних в списку
+        /// </summary>
+        public string ViewTypeName { get; set; } = viewTypeName;
 
-		/// <summary>
-		/// Представлення типу даних в списку
-		/// </summary>
-		public string ViewTypeName { get; set; }
-
-		/// <summary>
-		/// ViewTypeName
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
+        /// <summary>
+        /// ViewTypeName
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
 		{
 			return ViewTypeName;
 		}

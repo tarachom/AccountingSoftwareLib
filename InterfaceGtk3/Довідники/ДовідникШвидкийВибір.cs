@@ -59,17 +59,17 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
     /// <summary>
     /// Верхній набір меню
     /// </summary>
-    protected Toolbar ToolbarTop = new Toolbar();
+    protected Toolbar ToolbarTop = new();
 
     /// <summary>
     /// Верхній горизонтальний блок
     /// </summary>
-    protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTop = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Пошук
     /// </summary>
-    protected SearchControl Пошук = new SearchControl();
+    protected SearchControl Пошук = new();
 
     public ДовідникШвидкийВибір(bool visibleSearch = true, int width = 750, int height = 300)
     {
@@ -129,37 +129,37 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         if (visibleSearch)
             ToolbarTop.Add(new ToolItem { Пошук });
 
-        ToolButton openButton = new ToolButton(new Image(Stock.GoUp, IconSize.Menu), "Відкрити") { TooltipText = "Відкрити" };
+        ToolButton openButton = new(new Image(Stock.GoUp, IconSize.Menu), "Відкрити") { TooltipText = "Відкрити" };
         openButton.Clicked += OnListClick;
         ToolbarTop.Add(openButton);
 
-        ToolButton addButton = new ToolButton(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
+        ToolButton addButton = new(new Image(Stock.Add, IconSize.Menu), "Додати") { TooltipText = "Додати" };
         addButton.Clicked += OnAddClick;
         ToolbarTop.Add(addButton);
 
-        ToolButton upButton = new ToolButton(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
+        ToolButton upButton = new(new Image(Stock.Edit, IconSize.Menu), "Редагувати") { TooltipText = "Редагувати" };
         upButton.Clicked += OnEditClick;
         ToolbarTop.Add(upButton);
 
-        ToolButton deleteButton = new ToolButton(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
+        ToolButton deleteButton = new(new Image(Stock.Delete, IconSize.Menu), "Видалити") { TooltipText = "Видалити" };
         deleteButton.Clicked += OnDeleteClick;
         ToolbarTop.Add(deleteButton);
 
-        ToolButton refreshButton = new ToolButton(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
+        ToolButton refreshButton = new(new Image(Stock.Refresh, IconSize.Menu), "Обновити") { TooltipText = "Обновити" };
         refreshButton.Clicked += OnRefreshClick;
         ToolbarTop.Add(refreshButton);
 
-        ToolButton multipleSelectButton = new ToolButton(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
+        ToolButton multipleSelectButton = new(new Image(Stock.RevertToSaved, IconSize.Menu), "Вибрати") { TooltipText = "Вибрати" };
         multipleSelectButton.Clicked += OnMultipleSelectClick;
         ToolbarTop.Add(multipleSelectButton);
     }
 
     Menu PopUpContextMenu()
     {
-        Menu menu = new Menu();
+        Menu menu = new();
 
         {
-            MenuItem item = new MenuItem("Вибрати");
+            MenuItem item = new("Вибрати");
             item.Activated += OnMultipleSelectClick;
             menu.Append(item);
         }
@@ -178,7 +178,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
         {
             TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
-            DirectoryPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            DirectoryPointerItem = new((string)TreeViewGrid.Model.GetValue(iter, 1));
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                 if (unigueID.IsEmpty()) return;
 
                 DirectoryPointerItem = unigueID;
@@ -202,7 +202,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         if (args.Event.Button == 3 && TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                SelectPointerItem = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                 PopUpContextMenu().Popup();
             }
     }
@@ -235,7 +235,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
             foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                 {
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                     if (!unigueID.IsEmpty())
                         await OpenPageElement(false, unigueID);
                 }
@@ -254,7 +254,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
                     if (!unigueID.IsEmpty())
                     {
@@ -287,7 +287,7 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRow);
 
-                UnigueID unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
                 if (unigueID.IsEmpty()) continue;
 
                 listUnigueID.Add(unigueID);

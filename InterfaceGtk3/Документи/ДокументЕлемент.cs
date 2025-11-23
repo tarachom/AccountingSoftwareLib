@@ -37,37 +37,37 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// <summary>
     /// Горизонтальний бокс для кнопок
     /// </summary>
-    protected Box HBoxTop = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTop = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Горизонтальний бокс для назви
     /// </summary>
-    protected Box HBoxName = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxName = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Горизонтальний бокс для коментаря
     /// </summary>
-    protected Box HBoxComment = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxComment = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок
     /// </summary>
-    protected Paned HPanedTop = new Paned(Orientation.Vertical) { BorderWidth = 5 };
+    protected Paned HPanedTop = new(Orientation.Vertical) { BorderWidth = 5 };
 
     /// <summary>
     /// Верхній контейнер який вкладається в експандер "Реквізити шапки"
     /// </summary>
-    protected Box HBoxTopContainer = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxTopContainer = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Блокнот для табличних частин і додаткових реквізитів
     /// </summary>
-    protected Notebook NotebookTablePart = new Notebook() { Scrollable = true, EnablePopup = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
+    protected Notebook NotebookTablePart = new() { Scrollable = true, EnablePopup = true, BorderWidth = 0, ShowBorder = false, TabPos = PositionType.Top };
 
     /// <summary>
     /// Контейнер для додаткових реквізитів який вкладається у вкладку блокноту "Додаткові реквізити"
     /// </summary>
-    protected Box HBoxOtherContainer = new Box(Orientation.Horizontal, 0);
+    protected Box HBoxOtherContainer = new(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Кнопки "Зберегти та провести", "Провести", "Зберегти"
@@ -77,7 +77,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// <summary>
     /// Індикатор стану блокування
     /// </summary>
-    Label LabelLock = new Label() { UseMarkup = true, UseUnderline = false };
+    Label LabelLock = new() { UseMarkup = true, UseUnderline = false };
 
     /// <summary>
     /// Функція для отримання інформації про блокування
@@ -100,7 +100,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
 
         //Проводки
         {
-            LinkButton linkNew = new LinkButton("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
+            LinkButton linkNew = new("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
             linkNew.Clicked += (sender, args) => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); };
 
             HBoxTop.PackStart(linkNew, false, false, 0);
@@ -108,7 +108,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
 
         //В журналі
         {
-            LinkButton linkInJournal = new LinkButton("В журналі") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
+            LinkButton linkInJournal = new("В журналі") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
             linkInJournal.Clicked += async (sender, args) => { if (UnigueID != null) await InJournal(UnigueID); };
 
             HBoxTop.PackStart(linkInJournal, false, false, 0);
@@ -116,7 +116,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
 
         //Інформація про блокування
         {
-            Button bLock = new Button
+            Button bLock = new()
             {
                 ImagePosition = PositionType.Left,
                 AlwaysShowImage = true,
@@ -129,10 +129,10 @@ public abstract class ДокументЕлемент : ФормаЕлемент
                 {
                     LockedObject_Record recordResult = await FuncLockInfo.Invoke();
 
-                    Popover popover = new Popover((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
+                    Popover popover = new((Button)sender!) { Position = PositionType.Left, BorderWidth = 5 };
 
-                    Box vBox = new Box(Orientation.Vertical, 0);
-                    Box hBox = new Box(Orientation.Horizontal, 0);
+                    Box vBox = new(Orientation.Vertical, 0);
+                    Box hBox = new(Orientation.Horizontal, 0);
                     vBox.PackStart(hBox, false, false, 10);
 
                     string info = "";
@@ -161,12 +161,12 @@ public abstract class ДокументЕлемент : ФормаЕлемент
         PackStart(HBoxTop, false, false, 10);
 
         //Pack1
-        Box vBox1 = new Box(Orientation.Vertical, 0);
+        Box vBox1 = new(Orientation.Vertical, 0);
         HPanedTop.Pack1(vBox1, false, false);
         CreatePack1(vBox1);
 
         //Pack2
-        Box vBox2 = new Box(Orientation.Vertical, 0);
+        Box vBox2 = new(Orientation.Vertical, 0);
         HPanedTop.Pack2(vBox2, true, false);
         CreatePack2(vBox2);
 
@@ -182,19 +182,19 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     {
         vBox.PackStart(HBoxName, false, false, 5);
 
-        Expander expanderHead = new Expander("Реквізити шапки") { Expanded = true };
+        Expander expanderHead = new("Реквізити шапки") { Expanded = true };
         expanderHead.Add(HBoxTopContainer);
 
         vBox.PackStart(expanderHead, false, false, 5);
 
         //Container1
-        Box vBoxContainer1 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
+        Box vBoxContainer1 = new(Orientation.Vertical, 0) { WidthRequest = 500 };
         HBoxTopContainer.PackStart(vBoxContainer1, false, false, 5);
 
         CreateContainer1(vBoxContainer1);
 
         //Container2
-        Box vBoxContainer2 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
+        Box vBoxContainer2 = new(Orientation.Vertical, 0) { WidthRequest = 500 };
         HBoxTopContainer.PackStart(vBoxContainer2, false, false, 5);
 
         CreateContainer2(vBoxContainer2);
@@ -210,9 +210,9 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     {
         vBox.PackStart(NotebookTablePart, true, true, 0);
 
-        Box vBoxPage = new Box(Orientation.Vertical, 0);
+        Box vBoxPage = new(Orientation.Vertical, 0);
 
-        ScrolledWindow scroll = new ScrolledWindow();
+        ScrolledWindow scroll = new();
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         scroll.Add(vBoxPage);
 
@@ -221,12 +221,12 @@ public abstract class ДокументЕлемент : ФормаЕлемент
         //Два блоки для полів -->
         vBoxPage.PackStart(HBoxOtherContainer, false, false, 5);
 
-        Box vBoxContainer1 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
+        Box vBoxContainer1 = new(Orientation.Vertical, 0) { WidthRequest = 500 };
         HBoxOtherContainer.PackStart(vBoxContainer1, false, false, 5);
 
         CreateContainer3(vBoxContainer1);
 
-        Box vBoxContainer2 = new Box(Orientation.Vertical, 0) { WidthRequest = 500 };
+        Box vBoxContainer2 = new(Orientation.Vertical, 0) { WidthRequest = 500 };
         HBoxOtherContainer.PackStart(vBoxContainer2, false, false, 5);
 
         CreateContainer4(vBoxContainer2);

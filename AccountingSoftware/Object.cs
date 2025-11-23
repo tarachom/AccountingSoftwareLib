@@ -66,7 +66,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; protected set; } = new UnigueID();
+        public UnigueID UnigueID { get; protected set; } = new();
 
         /// <summary>
         /// Чи вже записаний
@@ -111,7 +111,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Ключ блокування
         /// </summary>
-        private UnigueID LockKey { get; set; } = new UnigueID();
+        private UnigueID LockKey { get; set; } = new();
 
         /// <summary>
         /// Заблокувати

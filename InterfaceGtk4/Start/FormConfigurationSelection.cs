@@ -390,15 +390,9 @@ public abstract class FormConfigurationSelection : Window
     void SensitiveWidgets(bool value)
     {
         spinner.Spinning = !value;
-
-        if (toolbarBox != null)
-            toolbarBox.Sensitive = value;
-
+        toolbarBox?.Sensitive = value;
         listBox.Sensitive = value;
-
-        if (buttonOpen != null)
-            buttonOpen.Sensitive = value;
-
+        buttonOpen?.Sensitive = value;
         buttonConfigurator.Sensitive = value;
     }
 

@@ -21,15 +21,32 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-public static class PasswordFunc
+namespace AccountingSoftware
 {
-    public static string HashPassword(string password)
+    /// <summary>
+    /// Хешування і перевірка паролів
+    /// </summary>
+    public static class PasswordFunc
     {
-        return BCrypt.Net.BCrypt.HashPassword(password);
-    }
+        /// <summary>
+        /// Хешування пароля
+        /// </summary>
+        /// <param name="password">Пароль</param>
+        /// <returns>Хеш і сіль в одній стрічці</returns>
+        public static string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
 
-    public static bool VerifyPassword(string password, string hashedPassword)
-    {
-        return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+        /// <summary>
+        /// Порівняння пароля і хеша
+        /// </summary>
+        /// <param name="password">Пароль</param>
+        /// <param name="hashedPassword">Хеш і сіль</param>
+        /// <returns>Пароль підходить тоді true</returns>
+        public static bool VerifyPassword(string password, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+        }
     }
 }
