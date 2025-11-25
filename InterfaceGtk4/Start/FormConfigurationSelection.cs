@@ -445,6 +445,7 @@ public abstract class FormConfigurationSelection : Window
             FormConfigurationSelectionParam configurationSelectionParam = new(Application)
             {
                 TransientFor = this,
+                Modal = true,
                 OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name),
                 CallBackUpdate = CallBackUpdate
             };
