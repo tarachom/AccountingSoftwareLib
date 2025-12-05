@@ -147,11 +147,11 @@ public abstract class FormGeneral : Window
         {
             string path = Path.Combine(AppContext.BaseDirectory, $"images/{image}");
 
-            Image img = Image.NewFromFile(path);
-            img.SetSizeRequest(48, 48);
+            Picture picture = Picture.NewForFilename(path);
+            picture.SetSizeRequest(50, 50);
 
             Box hBox = Box.New(Orientation.Horizontal, 5);
-            hBox.Append(img);
+            hBox.Append(picture);
             hBox.Append(Label.New(name));
 
             LinkButton linkButton = LinkButton.New("");

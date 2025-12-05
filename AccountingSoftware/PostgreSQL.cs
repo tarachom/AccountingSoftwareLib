@@ -1284,33 +1284,38 @@ LOCK TABLE {SpecialTables.ActiveUsers};
 
 -- #1
 WITH
+-- Устарівші сесії
 old_session AS
 (
     SELECT uid FROM {SpecialTables.ActiveUsers}
     WHERE dateupdate < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} seconds')
 ),
+-- Видалення устарівших сесій
 del_session AS
 (
     DELETE FROM {SpecialTables.ActiveUsers}
     WHERE uid IN (SELECT uid FROM old_session)
-    RETURNING uid
 )
+-- Видалення заблокованих об'єктів які пов'язані з неіснуючими сесіями
 DELETE FROM {SpecialTables.LockedObject}
-WHERE session IN (SELECT uid FROM del_session);
+WHERE session NOT IN (SELECT uid FROM {SpecialTables.ActiveUsers});
 
 -- #2
 WITH
+-- Встановлення признаку master = false для всіх сесій які не оновлені вчасно
 clear AS
 (
     UPDATE {SpecialTables.ActiveUsers} SET master = false
     WHERE dateupdate <= (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds')
 ),
+-- Пошук головної сесії master = true
 master AS
 (
     SELECT uid FROM {SpecialTables.ActiveUsers}
     WHERE dateupdate > (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_active} seconds') AND
         master = true AND type_form = {(int)TypeForm.WorkingProgram}
 ),
+-- Оприділення головної сесії master = true. Якщо є головна сесія вона і дальше лишається головною, інакше перша із існуючих
 record AS
 (
     SELECT 
@@ -1325,6 +1330,7 @@ record AS
             )
         END
 ),
+-- Встановлення головної сесії master = true
 update AS
 (
     UPDATE {SpecialTables.ActiveUsers} SET master = true
