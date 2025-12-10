@@ -34,7 +34,7 @@ namespace AccountingSoftware
     /// </summary>
     public class Configuration
     {
-        #region Поля
+        #region Публічні поля
 
         /// <summary>
         /// Назва конфігурації
@@ -65,21 +65,6 @@ namespace AccountingSoftware
         /// Опис
         /// </summary>
         public string Desc { get; set; } = "";
-
-        /// <summary>
-        /// Шлях до хмл файлу конфігурації
-        /// </summary>
-        public string PathToXmlFileConfiguration { get; set; } = "";
-
-        /// <summary>
-        /// Шлях до копії хмл файлу конфігурації
-        /// </summary>
-        public string PathToCopyXmlFileConfiguration { get; set; } = "";
-
-        /// <summary>
-        /// Шлях до тимчасового хмл файлу конфігурації
-        /// </summary>
-        public string PathToTempXmlFileConfiguration { get; set; } = "";
 
         /// <summary>
         /// Назва словника для повнотектового пошуку
@@ -133,20 +118,102 @@ namespace AccountingSoftware
 
         #endregion
 
-        #region Private_Function
+        #region Змінні які використовуються тільки при збереженні конфігурації
+
+        /// <summary>
+        /// Шлях до хмл файлу конфігурації
+        /// </summary>
+        public string PathToXmlFileConfiguration { get; set; } = "";
+
+        /// <summary>
+        /// Шлях до копії хмл файлу конфігурації
+        /// </summary>
+        public string PathToCopyXmlFileConfiguration { get; set; } = "";
+
+        /// <summary>
+        /// Шлях до тимчасового хмл файлу конфігурації
+        /// </summary>
+        public string PathToTempXmlFileConfiguration { get; set; } = "";
+
+        #endregion
+
+        #region Приватні поля
 
         /// <summary>
         /// Список зарезервованих назв таблиць.
-        /// Довідка: коли створюється новий довідник, чи документ 
-        /// для нього резервується нова унікальна назва таблиці в базі даних. 
+        /// Довідка: коли створюється новий довідник, чи документ для нього резервується нова унікальна назва таблиці в базі даних. 
         /// </summary>
-        private List<string> ReservedUnigueTableName { get; set; } = [];
+        List<string> ReservedUnigueTableName { get; set; } = [];
 
         /// <summary>
         /// Список зарезервованих назв стовпців.
         /// Ключем виступає назва таблиці для якої резервуються стовпці.
         /// </summary>
-        private Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; } = [];
+        Dictionary<string, List<string>> ReservedUnigueColumnName { get; set; } = [];
+
+        #endregion
+
+        #region Append
+
+        /// <summary>
+        /// Додати константу
+        /// </summary>
+        /// <param name="blockName"></param>
+        /// <param name="constants"></param>
+        public void AppendConstants(string blockName, ConfigurationConstants constants)
+        {
+            if (ConstantsBlock.TryGetValue(blockName, out ConfigurationConstantsBlock? block))
+            {
+                constants.Block = block;
+                block.Constants.Add(constants.Name, constants);
+            }
+        }
+
+        /// <summary>
+        /// Додати блок констант
+        /// </summary>
+        /// <param name="constantsBlock"></param>
+        public void AppendConstantsBlock(ConfigurationConstantsBlock constantsBlock) => ConstantsBlock.Add(constantsBlock.BlockName, constantsBlock);
+
+        /// <summary>
+        /// Додати довідник в список довідників
+        /// </summary>
+        /// <param name="Directory">Довідник</param>
+        public void AppendDirectory(ConfigurationDirectories Directory) => Directories.Add(Directory.Name, Directory);
+
+        /// <summary>
+        /// Додати перелічення в список перелічень
+        /// </summary>
+        /// <param name="Enum">Перелічення</param>
+        public void AppendEnum(ConfigurationEnums Enum) => Enums.Add(Enum.Name, Enum);
+
+        /// <summary>
+        /// Додати документ в список документів
+        /// </summary>
+        /// <param name="Document">Документ</param>
+        public void AppendDocument(ConfigurationDocuments document) => Documents.Add(document.Name, document);
+
+        /// <summary>
+        /// Додати регістр в список регістрів
+        /// </summary>
+        /// <param name="registersInformation">Регістр</param>
+        public void AppendRegistersInformation(ConfigurationRegistersInformation registersInformation) => RegistersInformation.Add(registersInformation.Name, registersInformation);
+
+        /// <summary>
+        /// Додати регістр в список регістрів
+        /// </summary>
+        /// <param name="registersAccumulation">Регістр</param>
+        public void AppendRegistersAccumulation(ConfigurationRegistersAccumulation registersAccumulation) => RegistersAccumulation.Add(registersAccumulation.Name, registersAccumulation);
+
+        /// <summary>
+        /// Додати журнал в список журналів
+        /// </summary>
+        /// <param name="Journal">Журнал</param>
+        public void AppendJournal(ConfigurationJournals Journal) => Journals.Add(Journal.Name, Journal);
+
+        #endregion
+
+        #region Function
 
         /// <summary>
         /// Масив з бук анг. алфавіту. Використовується для задання назви таблиці або стовпчика в базі даних
@@ -180,88 +247,6 @@ namespace AccountingSoftware
                 "ь", "ю", "я"
             ];
         }
-
-        #endregion
-
-        #region Append
-
-        /// <summary>
-        /// Додати константу
-        /// </summary>
-        /// <param name="blockName"></param>
-        /// <param name="constants"></param>
-        public void AppendConstants(string blockName, ConfigurationConstants constants)
-        {
-            ConstantsBlock[blockName].Constants.Add(constants.Name, constants);
-            constants.Block = ConstantsBlock[blockName];
-        }
-
-        /// <summary>
-        /// Додати блок констант
-        /// </summary>
-        /// <param name="constantsBlock"></param>
-        public void AppendConstantsBlock(ConfigurationConstantsBlock constantsBlock)
-        {
-            ConstantsBlock.Add(constantsBlock.BlockName, constantsBlock);
-        }
-
-        /// <summary>
-        /// Додати довідник в список довідників
-        /// </summary>
-        /// <param name="Directory">Довідник</param>
-        public void AppendDirectory(ConfigurationDirectories Directory)
-        {
-            Directories.Add(Directory.Name, Directory);
-        }
-
-        /// <summary>
-        /// Додати перелічення в список перелічень
-        /// </summary>
-        /// <param name="Enum">Перелічення</param>
-        public void AppendEnum(ConfigurationEnums Enum)
-        {
-            Enums.Add(Enum.Name, Enum);
-        }
-
-        /// <summary>
-        /// Додати документ в список документів
-        /// </summary>
-        /// <param name="Document">Документ</param>
-        public void AppendDocument(ConfigurationDocuments document)
-        {
-            Documents.Add(document.Name, document);
-        }
-
-        /// <summary>
-        /// Додати регістр в список регістрів
-        /// </summary>
-        /// <param name="registersInformation">Регістр</param>
-        public void AppendRegistersInformation(ConfigurationRegistersInformation registersInformation)
-        {
-            RegistersInformation.Add(registersInformation.Name, registersInformation);
-        }
-
-        /// <summary>
-        /// Додати регістр в список регістрів
-        /// </summary>
-        /// <param name="registersAccumulation">Регістр</param>
-        public void AppendRegistersAccumulation(ConfigurationRegistersAccumulation registersAccumulation)
-        {
-            RegistersAccumulation.Add(registersAccumulation.Name, registersAccumulation);
-        }
-
-        /// <summary>
-        /// Додати журнал в список журналів
-        /// </summary>
-        /// <param name="Journal">Журнал</param>
-        public void AppendJournal(ConfigurationJournals Journal)
-        {
-            Journals.Add(Journal.Name, Journal);
-        }
-
-        #endregion
-
-        #region Function
 
         /// <summary>
         /// Пошук ссилок довідників і документів
@@ -700,7 +685,7 @@ namespace AccountingSoftware
             else
                 throw new Exception("Назва для пошуку має бути 'Перелічення.<Назва перелічення>'");
 
-            List<string> ListPointer = new List<string>();
+            List<string> ListPointer = [];
 
             //Перевірити константи
             foreach (ConfigurationConstantsBlock constantsBlockItem in ConstantsBlock.Values)
@@ -993,10 +978,7 @@ namespace AccountingSoftware
             configurationObjectName = configurationObjectName.Trim();
 
             if (string.IsNullOrEmpty(configurationObjectName))
-            {
-                errorList += "Назва не задана";
-                return errorList;
-            }
+                return errorList += "Назва не задана";
 
             string allovChar = "abcdefghijklnmopqrstuvwxyz_";
             string allovNum = "0123456789";
@@ -1120,7 +1102,7 @@ namespace AccountingSoftware
         #region Load (завантаження конфігурації з ХМЛ файлу)
 
         /// <summary>
-        /// Завантаження конфігурації
+        /// Завантаження конфігурації з ХМЛ файлу
         /// </summary>
         /// <param name="pathToConf">Шлях до файлу конфігурації</param>
         /// <param name="Conf">Конфігурація</param>
@@ -1138,7 +1120,7 @@ namespace AccountingSoftware
                     NameSpace = "НоваКонфігурація_1_0"
                 });
 
-            XPathDocument xPathDoc = new XPathDocument(pathToConf);
+            XPathDocument xPathDoc = new(pathToConf);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();
 
             LoadConfigurationInfo(Conf, xPathDocNavigator);
@@ -1158,6 +1140,11 @@ namespace AccountingSoftware
             LoadRegistersAccumulation(Conf, xPathDocNavigator);
         }
 
+        /// <summary>
+        /// Завантаження загальної інформації
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadConfigurationInfo(Configuration Conf, XPathNavigator xPathDocNavigator)
         {
             XPathNavigator? rootNodeConfiguration = xPathDocNavigator.SelectSingleNode("/Configuration");
@@ -1173,6 +1160,12 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження констант. 
+        /// Константи згруповані в блоки констант.
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadConstants(Configuration Conf, XPathNavigator xPathDocNavigator)
         {
             XPathNodeIterator constantsBlockNodes = xPathDocNavigator.Select("/Configuration/ConstantsBlocks/ConstantsBlock");
@@ -1196,7 +1189,7 @@ namespace AccountingSoftware
                         string constPointer = (constType == "pointer" || constType == "enum") ?
                             (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                        ConfigurationConstants configurationConstants = new ConfigurationConstants(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc);
+                        ConfigurationConstants configurationConstants = new(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc);
 
                         configurationConstantsBlock.Constants.Add(configurationConstants.Name, configurationConstants);
 
@@ -1205,6 +1198,11 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження довідників
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadDirectories(Configuration Conf, XPathNavigator xPathDocNavigator)
         {
             //Довідники
@@ -1212,16 +1210,19 @@ namespace AccountingSoftware
             while (directoryNodes.MoveNext())
             {
                 string? name = directoryNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва довідника");
-                string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
-                string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
-                string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                bool autoNum = (directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1";
-                bool versionsHistory = (directoryNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
-                string directoryOwner = directoryNodes.Current?.SelectSingleNode("DirectoryOwner")?.Value ?? ""; //Власник довідника
-                string pointerFieldOwner = directoryNodes.Current?.SelectSingleNode("PointerFieldOwner")?.Value ?? ""; //Поле яке відповідає за підпорядкування власнику
+                string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? ""; //Повна назва
+                string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? ""; //Таблиця
+                string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? ""; //Опис
+                string dirType = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? ""; //Тип довідника
+                bool autoNum = (directoryNodes.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1"; //Автонумерація
+                bool versionsHistory = (directoryNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1"; //Ведення історії версій
+
+                //Якщо довідник підпорядкований іншому довіднику
+                string directoryOwner = directoryNodes.Current?.SelectSingleNode("DirectoryOwner")?.Value ?? ""; //Власник довідника, якщо є підпорядкування. Вказівник на довідник. Наприклад "Довідники.Номенклатура"
+                string pointerFieldOwner = directoryNodes.Current?.SelectSingleNode("PointerFieldOwner")?.Value ?? ""; //Поле яке відповідає за підпорядкування власнику, назва поля наприклад "Номенклатура"
 
                 //Тип довідника (звичайний , ієрархічний чи ієрархія в окремому довіднику)
-                ConfigurationDirectories.TypeDirectories typeDirectory = (directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? "") switch
+                ConfigurationDirectories.TypeDirectories typeDirectory = dirType switch
                 {
                     "Normal" => ConfigurationDirectories.TypeDirectories.Normal,
                     "Hierarchical" => ConfigurationDirectories.TypeDirectories.Hierarchical,
@@ -1233,27 +1234,29 @@ namespace AccountingSoftware
                 string iconTree_Hierarchical = "";
                 string pointerFolders_HierarchyInAnotherDirectory = "";
 
+                //Поля для ієрархічного довідника
                 if (typeDirectory == ConfigurationDirectories.TypeDirectories.Hierarchical)
                 {
-                    parentField_Hierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? "";
-                    iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? "";
+                    parentField_Hierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? ""; //Поле родич. Тобто поле яке буде містити вказівник на родича чи папку
+                    iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? ""; //Тип іконки в дереві
                 }
+                //Для типу ієрархія в окремому довіднику
                 else if (typeDirectory == ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory)
-                    pointerFolders_HierarchyInAnotherDirectory = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? "";
+                    pointerFolders_HierarchyInAnotherDirectory = directoryNodes.Current?.SelectSingleNode("PointerFolders")?.Value ?? ""; //Повна назва типу довідника, вказівник на тип довідника де зберігаються папки. Наприклад "Довідники.Номенклатура_Папки"
 
-                ConfigurationDirectories ConfObjectDirectories = new ConfigurationDirectories(name, fullName, table, desc, autoNum, typeDirectory)
+                ConfigurationDirectories ConfObjectDirectories = new(name, fullName, table, desc, autoNum, typeDirectory)
                 {
                     //Записувати історію версій
                     VersionsHistory = versionsHistory,
 
-                    //Hierarchical
+                    //Для типу Hierarchical
                     ParentField_Hierarchical = parentField_Hierarchical,
                     IconTree_Hierarchical = iconTree_Hierarchical,
 
-                    //HierarchyInAnotherDirectory
+                    //Для типу HierarchyInAnotherDirectory
                     PointerFolders_HierarchyInAnotherDirectory = pointerFolders_HierarchyInAnotherDirectory,
 
-                    //Subordination
+                    //Підпорядкування / Subordination
                     DirectoryOwner_Subordination = directoryOwner,
                     PointerFieldOwner_Subordination = pointerFieldOwner
                 };
@@ -1275,6 +1278,12 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження полів
+        /// </summary>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
+        /// <param name="parentName">Назва власника колеції полів</param>
         private static void LoadFields(Dictionary<string, ConfigurationField> fields, XPathNavigator? xPathDocNavigator, string parentName)
         {
             XPathNodeIterator? fieldNodes = xPathDocNavigator?.Select("Fields/Field");
@@ -1294,7 +1303,7 @@ namespace AccountingSoftware
                     bool isExport = (fieldNodes.Current?.SelectSingleNode("IsExport")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationField ConfObjectField = new ConfigurationField(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex,
+                    ConfigurationField ConfObjectField = new(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex,
                         isFullTextSearch, isSearch, isExport);
 
                     //
@@ -1317,7 +1326,7 @@ namespace AccountingSoftware
                         //Не використовувати документи
                         ConfObjectField.CompositePointerNotUseDocuments = (fieldNodes.Current?.SelectSingleNode("CompositePointerNotUseDocuments")?.Value ?? "") == "1";
 
-                        //Функція вибірки
+                        //Внутрішня функція вибірки
                         List<string> Get(string nameAllowBlock)
                         {
                             List<string> listAllow = [];
@@ -1341,6 +1350,12 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження табличних частин
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="tabularParts">Колекція табличних частин</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadTabularParts(Configuration Conf, Dictionary<string, ConfigurationTablePart> tabularParts, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tablePartNodes = xPathDocNavigator?.Select("TabularParts/TablePart");
@@ -1353,7 +1368,7 @@ namespace AccountingSoftware
                     string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     bool versionsHistory = (tablePartNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
 
-                    ConfigurationTablePart ConfObjectTablePart = new ConfigurationTablePart(name, fullName, table, desc)
+                    ConfigurationTablePart ConfObjectTablePart = new(name, fullName, table, desc)
                     {
                         //Записувати історію версій
                         VersionsHistory = versionsHistory
@@ -1374,6 +1389,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження табличних списків
+        /// </summary>
+        /// <param name="tabularLists">Колекція табличних списків</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
@@ -1383,7 +1403,7 @@ namespace AccountingSoftware
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличного списку");
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                    ConfigurationTabularList ConfTabularList = new(name, desc);
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     //Поля
@@ -1399,7 +1419,7 @@ namespace AccountingSoftware
                             bool sortDirection = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("SortDirection")?.Value ?? "False");
                             bool filterField = bool.Parse(tabularListFieldNodes.Current?.SelectSingleNode("FilterField")?.Value ?? "False");
 
-                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, captionField, sizeField, sortNumField, sortField, sortDirection, filterField);
+                            ConfigurationTabularListField ConfTabularListField = new(nameField, captionField, sizeField, sortNumField, sortField, sortDirection, filterField);
                             ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                         }
 
@@ -1416,14 +1436,17 @@ namespace AccountingSoftware
                             string typeField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Type")?.Value ?? "string";
                             string valueField = tabularListAdditionalFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "";
 
-                            ConfigurationTabularListAdditionalField ConfTabularListAdditionalField =
-                                new ConfigurationTabularListAdditionalField(visibleField, nameField, captionField, sizeField, sortNumField, typeField, valueField);
-
+                            ConfigurationTabularListAdditionalField ConfTabularListAdditionalField = new(visibleField, nameField, captionField, sizeField, sortNumField, typeField, valueField);
                             ConfTabularList.AdditionalFields.Add(ConfTabularListAdditionalField.Name, ConfTabularListAdditionalField);
                         }
                 }
         }
 
+        /// <summary>
+        /// Завантаження табличних списків журналів
+        /// </summary>
+        /// <param name="tabularLists">Колекція табличних списків</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadJournalTabularList(Dictionary<string, ConfigurationTabularList> tabularLists, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tabularListsNodes = xPathDocNavigator?.Select("TabularLists/TabularList");
@@ -1433,7 +1456,7 @@ namespace AccountingSoftware
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличного списку");
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationTabularList ConfTabularList = new ConfigurationTabularList(name, desc);
+                    ConfigurationTabularList ConfTabularList = new(name, desc);
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
@@ -1443,12 +1466,17 @@ namespace AccountingSoftware
                             string? nameField = tabularListFieldNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва поля табличного списку");
                             string docField = tabularListFieldNodes.Current?.SelectSingleNode("DocField")?.Value ?? "";
 
-                            ConfigurationTabularListField ConfTabularListField = new ConfigurationTabularListField(nameField, docField);
+                            ConfigurationTabularListField ConfTabularListField = new(nameField, docField);
                             ConfTabularList.Fields.Add(ConfTabularListField.Name, ConfTabularListField);
                         }
                 }
         }
 
+        /// <summary>
+        /// Завантаження форм
+        /// </summary>
+        /// <param name="forms">Колекція форм</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadForms(Dictionary<string, ConfigurationForms> forms, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? tableForm = xPathDocNavigator?.Select("Forms/Form");
@@ -1464,12 +1492,13 @@ namespace AccountingSoftware
                     if (!Enum.TryParse(type, out ConfigurationForms.TypeForms typeForms))
                         typeForms = ConfigurationForms.TypeForms.None;
 
-                    ConfigurationForms form = new ConfigurationForms(name, desc, typeForms)
+                    ConfigurationForms form = new(name, desc, typeForms)
                     {
                         GeneratedCode = generatedCode,
                         NotSaveToFile = notSaveToFile == "1"
                     };
 
+                    //Поля які залежать від типу форми
                     if (typeForms == ConfigurationForms.TypeForms.List ||
                         typeForms == ConfigurationForms.TypeForms.ListSmallSelect ||
                         typeForms == ConfigurationForms.TypeForms.ListAndTree)
@@ -1490,6 +1519,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження полів форми
+        /// </summary>
+        /// <param name="elementFields">Колекція полів форми</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadFormElementField(Dictionary<string, ConfigurationFormsElementField> elementFields, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? elementFieldNodes = xPathDocNavigator?.Select("ElementFields/Field");
@@ -1507,6 +1541,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження полів табличної частини
+        /// </summary>
+        /// <param name="elementTableParts">Колекція полів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadFormElementTablePart(Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? elementTablePartNodes = xPathDocNavigator?.Select("ElementTableParts/TablePart");
@@ -1523,6 +1562,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження колекції доступних регістрів для документу
+        /// </summary>
+        /// <param name="allowRegisterAccumulation">Список доступних регістрів накопичення</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowRegisterAccumulationNodes = xPathDocNavigator?.Select("AllowRegisterAccumulation/Name");
@@ -1534,6 +1578,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження функцій тригерів
+        /// </summary>
+        /// <param name="triggerFunctions">Функції тригерів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
         {
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
@@ -1565,6 +1614,11 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження функцій тригерів для таб частини
+        /// </summary>
+        /// <param name="triggerFunctions">Функції тригерів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadTriggerTablePartFunctions(ConfigurationTriggerTablePartFunctions triggerFunctions, XPathNavigator? xPathDocNavigator)
         {
             XPathNavigator? nodeTriggerFunctions = xPathDocNavigator?.SelectSingleNode("TriggerFunctions");
@@ -1580,6 +1634,11 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження функцій проведення для документу
+        /// </summary>
+        /// <param name="triggerFunctions">Функції проведення</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadSpendFunctions(ConfigurationSpendFunctions spendFunctions, XPathNavigator? xPathDocNavigator)
         {
             XPathNavigator? nodeSpendFunctions = xPathDocNavigator?.SelectSingleNode("SpendFunctions");
@@ -1595,6 +1654,11 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Завантаження перелічень
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadEnums(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Перелічення
@@ -1606,7 +1670,7 @@ namespace AccountingSoftware
                     string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
 
-                    ConfigurationEnums configurationEnums = new ConfigurationEnums(name, serialNumber, desc);
+                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc);
                     Conf.Enums.Add(configurationEnums.Name, configurationEnums);
 
                     XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
@@ -1622,6 +1686,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження журналів
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadJournals(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Журнали
@@ -1632,7 +1701,7 @@ namespace AccountingSoftware
                     string? name = journalsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва журналу");
                     string desc = journalsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationJournals configurationJournals = new ConfigurationJournals(name, desc);
+                    ConfigurationJournals configurationJournals = new(name, desc);
                     Conf.Journals.Add(configurationJournals.Name, configurationJournals);
 
                     XPathNodeIterator? journalFieldsNodes = journalsNodes?.Current?.Select("Fields/Field");
@@ -1657,6 +1726,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження документів які входить в журнал
+        /// </summary>
+        /// <param name="allowDocument">Колекція документів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadJournalsAllowDocument(List<string> allowDocument, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowDocumentNodes = xPathDocNavigator?.Select("AllowDocument/Item");
@@ -1668,6 +1742,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження документів
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadDocuments(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Документи
@@ -1683,7 +1762,7 @@ namespace AccountingSoftware
                     bool versionsHistory = (documentsNode.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
                     bool exportXml = (documentsNode.Current?.SelectSingleNode("ExportXml")?.Value ?? "") == "1";
 
-                    ConfigurationDocuments configurationDocuments = new ConfigurationDocuments(name, fullName, table, desc, autoNum, exportXml) { VersionsHistory = versionsHistory };
+                    ConfigurationDocuments configurationDocuments = new(name, fullName, table, desc, autoNum, exportXml) { VersionsHistory = versionsHistory };
 
                     Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
@@ -1706,6 +1785,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження регістрів інформації
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadRegistersInformation(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Регістри відомостей
@@ -1718,7 +1802,7 @@ namespace AccountingSoftware
                     string table = registerInformationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = registerInformationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationRegistersInformation configurationRegistersInformation = new ConfigurationRegistersInformation(name, fullName, table, desc);
+                    ConfigurationRegistersInformation configurationRegistersInformation = new(name, fullName, table, desc);
                     Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
                     XPathNavigator? dimensionFieldsNode = registerInformationNode.Current?.SelectSingleNode("DimensionFields");
@@ -1742,6 +1826,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження документів які можуть робити проводки в регістрі
+        /// </summary>
+        /// <param name="allowDocumentSpend">Колекція документів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadAllowDocumentSpendRegisterAccumulation(List<string> allowDocumentSpend, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? allowDocumentSpendNodes = xPathDocNavigator?.Select("AllowDocumentSpend/Name");
@@ -1753,6 +1842,11 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження регістрів накопичення
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadRegistersAccumulation(Configuration Conf, XPathNavigator? xPathDocNavigator)
         {
             //Регістри накопичення
@@ -1767,16 +1861,16 @@ namespace AccountingSoftware
                     string desc = registerAccumulationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string noSummary = registerAccumulationNode.Current?.SelectSingleNode("NoSummary")?.Value ?? "";
 
-                    TypeRegistersAccumulation typeRegistersAccumulation;
-                    if (type == "Residues")
-                        typeRegistersAccumulation = TypeRegistersAccumulation.Residues;
-                    else if (type == "Turnover")
-                        typeRegistersAccumulation = TypeRegistersAccumulation.Turnover;
-                    else
-                        throw new Exception("Не оприділений тип регістру");
+                    //Тип регістру
+                    TypeRegistersAccumulation typeRegistersAccumulation = type switch
+                    {
+                        "Residues" => TypeRegistersAccumulation.Residues,
+                        "Turnover" => TypeRegistersAccumulation.Turnover,
+                        _ => throw new Exception("Не оприділений тип регістру")
+                    };
 
                     ConfigurationRegistersAccumulation configurationRegistersAccumulation =
-                        new ConfigurationRegistersAccumulation(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" };
+                        new(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" };
 
                     Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
 
@@ -1805,16 +1899,21 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Завантаження списку запитів
+        /// </summary>
+        /// <param name="queryBlockList">Колекція запитів</param>
+        /// <param name="xPathDocNavigator">Навігатор</param>
         private static void LoadQueryList(Dictionary<string, ConfigurationQueryBlock> queryBlockList, XPathNavigator? xPathDocNavigator)
         {
             XPathNodeIterator? nodeQueryBlock = xPathDocNavigator?.Select("QueryBlockList/QueryBlock");
             if (nodeQueryBlock != null)
                 while (nodeQueryBlock!.MoveNext())
                 {
-                    string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва регістру накопичення");
+                    string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва запиту");
                     bool finalCalculation = (nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "") == "1";
 
-                    ConfigurationQueryBlock QueryBlock = new ConfigurationQueryBlock(name, finalCalculation);
+                    ConfigurationQueryBlock QueryBlock = new(name, finalCalculation);
                     queryBlockList.Add(QueryBlock.Name, QueryBlock);
 
                     XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
@@ -1834,7 +1933,7 @@ namespace AccountingSoftware
         #region Save (Збереження конфігурації в ХМЛ файл)
 
         /// <summary>
-        /// Збереження конфігурації в файл
+        /// Збереження конфігурації в ХМЛ файл
         /// </summary>
         /// <param name="pathToConf">Шлях до ХМЛ файлу конфігурації</param>
         /// <param name="Conf">Конфігурація</param>
@@ -1843,7 +1942,7 @@ namespace AccountingSoftware
             //Перерахувати документи які роблять рухи по регістрах накопичення
             Conf.CalculateAllowDocumentSpendForRegistersAccumulation();
 
-            XmlDocument xmlConfDocument = new XmlDocument();
+            XmlDocument xmlConfDocument = new();
             xmlConfDocument.AppendChild(xmlConfDocument.CreateXmlDeclaration("1.0", "utf-8", ""));
 
             XmlElement rootNode = xmlConfDocument.CreateElement("Configuration");
@@ -1868,6 +1967,12 @@ namespace AccountingSoftware
             xmlConfDocument.Save(pathToConf);
         }
 
+        /// <summary>
+        /// Збереження загальної інформації
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveConfigurationInfo(Configuration Conf, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeName = xmlConfDocument.CreateElement("Name");
@@ -1906,6 +2011,13 @@ namespace AccountingSoftware
             rootNode.AppendChild(nodeDictTSearch);
         }
 
+        /// <summary>
+        /// Зберегти блоки констант
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfConstantsBlocks">Блок</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveConstantsBlock(Configuration Conf, Dictionary<string, ConfigurationConstantsBlock> ConfConstantsBlocks, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootConstantsBlocks = xmlConfDocument.CreateElement("ConstantsBlocks");
@@ -1931,6 +2043,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти константи
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfConstants">Колекція констант</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveConstants(Configuration Conf, Dictionary<string, ConfigurationConstants> ConfConstants, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootConstants = xmlConfDocument.CreateElement("Constants");
@@ -1971,6 +2090,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти довідники
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfDirectories">Колекція довідників</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveDirectories(Configuration Conf, Dictionary<string, ConfigurationDirectories> ConfDirectories, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootDirectories = xmlConfDocument.CreateElement("Directories");
@@ -2054,6 +2180,12 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Збереження попередньо визначених полів
+        /// </summary>
+        /// <param name="predefinedFields">Масив полів</param>
+        /// <param name="xmlConfDocument">документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             /*
@@ -2094,6 +2226,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Збереження полів
+        /// </summary>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
+        /// <param name="parentName">Власник полів</param>
         public static void SaveFields(Dictionary<string, ConfigurationField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
         {
             XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
@@ -2212,6 +2351,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Збереження табличних частин
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="tabularParts">Колекція табличних частин</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveTabularParts(Configuration Conf, Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularParts = xmlConfDocument.CreateElement("TabularParts");
@@ -2257,6 +2403,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Збереження табличних списків
+        /// </summary>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="tabularLists">Колекція табличних списків</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveTabularList(Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             /*
@@ -2380,6 +2533,14 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Збереження табличних списків для журналу
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="tabularLists">Колекція табличних списків</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveJournalTabularList(Configuration Conf, Dictionary<string, ConfigurationJournalField> fields, Dictionary<string, ConfigurationTabularList> tabularLists, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTabularLists = xmlConfDocument.CreateElement("TabularLists");
@@ -2455,6 +2616,15 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Зберегти форми
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="tabularParts">Колекція табличних частин</param>
+        /// <param name="forms">Колекція форм</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveForms(Configuration Conf, Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationTablePart>? tabularParts, Dictionary<string, ConfigurationForms> forms, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeForms = xmlConfDocument.CreateElement("Forms");
@@ -2518,6 +2688,14 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти поля для форми
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="fields">Колекція полів</param>
+        /// <param name="elementFields">Колекція полів в формі</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveFormElementField(Configuration Conf, Dictionary<string, ConfigurationField> fields, Dictionary<string, ConfigurationFormsElementField> elementFields, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeElementFields = xmlConfDocument.CreateElement("ElementFields");
@@ -2571,7 +2749,7 @@ namespace AccountingSoftware
                                 nodeElementField.AppendChild(nodeMultipleSelect);
                             }
 
-                            (bool Result, string PointerGroup, string PointerType) = Configuration.PointerParse(fieldsItem.Pointer, out Exception? _);
+                            (bool Result, string PointerGroup, string PointerType) = PointerParse(fieldsItem.Pointer, out Exception? _);
                             if (Result)
                             {
                                 List<ConfigurationField> presetntationFields = [];
@@ -2615,6 +2793,13 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Зберегти табличні частини для форми
+        /// </summary>
+        /// <param name="tabularParts">Колекція табличних частин</param>
+        /// <param name="elementTableParts">Колекція табличних частин у формі</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveFormElementTablePart(Dictionary<string, ConfigurationTablePart> tabularParts, Dictionary<string, ConfigurationFormsElementTablePart> elementTableParts, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeElementTableParts = xmlConfDocument.CreateElement("ElementTableParts");
@@ -2648,6 +2833,12 @@ namespace AccountingSoftware
                 }
         }
 
+        /// <summary>
+        /// Зберегти доступні регістри для документу
+        /// </summary>
+        /// <param name="allowRegisterAccumulation">Список доступних регістрів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveAllowRegisterAccumulation(List<string> allowRegisterAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeAllowRegisterAccumulation = xmlConfDocument.CreateElement("AllowRegisterAccumulation");
@@ -2661,6 +2852,12 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти функції для тригерів
+        /// </summary>
+        /// <param name="triggerFunctions">Функції для тригерів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveTriggerFunctions(ConfigurationTriggerFunctions triggerFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTriggerFunctions = xmlConfDocument.CreateElement("TriggerFunctions");
@@ -2704,6 +2901,12 @@ namespace AccountingSoftware
             nodeTriggerFunctions.AppendChild(nodeBeforeDelete);
         }
 
+        /// <summary>
+        /// Зберегти функції тригери для табличної частини
+        /// </summary>
+        /// <param name="triggerFunctions">Функції тригери</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveTriggerTablePartFunctions(ConfigurationTriggerTablePartFunctions triggerFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeTriggerFunctions = xmlConfDocument.CreateElement("TriggerFunctions");
@@ -2727,6 +2930,12 @@ namespace AccountingSoftware
             nodeTriggerFunctions.AppendChild(nodeAfterSave);
         }
 
+        /// <summary>
+        /// Зберегти функції для проведення
+        /// </summary>
+        /// <param name="spendFunctions">Функції для проведення</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         public static void SaveSpendFunctions(ConfigurationSpendFunctions spendFunctions, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             void AddAttributeAction(XmlElement node, bool value)
@@ -2750,6 +2959,12 @@ namespace AccountingSoftware
             nodeSpendFunctions.AppendChild(nodeClearSpend);
         }
 
+        /// <summary>
+        /// Зберегти перелічення
+        /// </summary>
+        /// <param name="enums">Колекція перелічень</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveEnums(Dictionary<string, ConfigurationEnums> enums, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeEnums = xmlConfDocument.CreateElement("Enums");
@@ -2798,6 +3013,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти журнали
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="journals">Колекція журналів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveJournals(Configuration Conf, Dictionary<string, ConfigurationJournals> journals, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeJournals = xmlConfDocument.CreateElement("Journals");
@@ -2854,6 +3076,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти список документів для журналу
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="allowDocument">Список доступних документів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveJournalAllowDocument(Configuration Conf, List<string> allowDocument, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeAllowDocument = xmlConfDocument.CreateElement("AllowDocument");
@@ -2868,15 +3097,22 @@ namespace AccountingSoftware
                 nodeName.InnerText = name;
                 nodeItem.AppendChild(nodeName);
 
-                if (Conf.Documents.ContainsKey(name))
+                if (Conf.Documents.TryGetValue(name, out ConfigurationDocuments? value))
                 {
                     XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
-                    nodeFullName.InnerText = Conf.Documents[name].FullName;
+                    nodeFullName.InnerText = value.FullName;
                     nodeItem.AppendChild(nodeFullName);
                 }
             }
         }
 
+        /// <summary>
+        /// Зберегти документи
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfDocuments">Колекція документів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveDocuments(Configuration Conf, Dictionary<string, ConfigurationDocuments> ConfDocuments, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootDocuments = xmlConfDocument.CreateElement("Documents");
@@ -2936,6 +3172,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти регістри інформації
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfRegistersInformation">Колекція регістрів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveRegistersInformation(Configuration Conf, Dictionary<string, ConfigurationRegistersInformation> ConfRegistersInformation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootRegistersInformation = xmlConfDocument.CreateElement("RegistersInformation");
@@ -2982,16 +3225,23 @@ namespace AccountingSoftware
 
                 SaveFields(ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
 
-                Dictionary<string, ConfigurationField> AllFields = Configuration.CombineAllFieldForRegister(
+                Dictionary<string, ConfigurationField> AllFields = CombineAllFieldForRegister(
                     ConfRegisterInfo.Value.DimensionFields.Values,
                     ConfRegisterInfo.Value.ResourcesFields.Values,
                     ConfRegisterInfo.Value.PropertyFields.Values);
+
                 SaveTabularList(AllFields, ConfRegisterInfo.Value.TabularList, xmlConfDocument, nodeRegister);
 
                 SaveForms(Conf, AllFields, null, ConfRegisterInfo.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
+        /// <summary>
+        /// Зберегти список документів які роблять рухи по регістру
+        /// </summary>
+        /// <param name="allowDocumentSpend">Список документів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveAllowDocumentSpendRegisterAccumulation(List<string> allowDocumentSpend, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeAllowDocumentSpend = xmlConfDocument.CreateElement("AllowDocumentSpend");
@@ -3005,6 +3255,13 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Зберегти регістри накопичення
+        /// </summary>
+        /// <param name="Conf">Конфігурація</param>
+        /// <param name="ConfRegistersAccumulation">Колекція регістрів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveRegistersAccumulation(Configuration Conf, Dictionary<string, ConfigurationRegistersAccumulation> ConfRegistersAccumulation, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement rootRegistersAccumulation = xmlConfDocument.CreateElement("RegistersAccumulation");
@@ -3065,16 +3322,23 @@ namespace AccountingSoftware
 
                 SaveQueryBlockList(ConfRegisterAccml.Value.QueryBlockList, xmlConfDocument, nodeRegister);
 
-                Dictionary<string, ConfigurationField> AllFields = Configuration.CombineAllFieldForRegister(
+                Dictionary<string, ConfigurationField> AllFields = CombineAllFieldForRegister(
                     ConfRegisterAccml.Value.DimensionFields.Values,
                     ConfRegisterAccml.Value.ResourcesFields.Values,
                     ConfRegisterAccml.Value.PropertyFields.Values);
+
                 SaveTabularList(AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
 
                 SaveForms(Conf, AllFields, null, ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
             }
         }
 
+        /// <summary>
+        /// Зберегти блоки запитів
+        /// </summary>
+        /// <param name="queryBlockList">Колеція блоків запитів</param>
+        /// <param name="xmlConfDocument">Документ</param>
+        /// <param name="rootNode">Корінна вітка</param>
         private static void SaveQueryBlockList(Dictionary<string, ConfigurationQueryBlock> queryBlockList, XmlDocument xmlConfDocument, XmlElement rootNode)
         {
             XmlElement nodeQueryBlockList = xmlConfDocument.CreateElement("QueryBlockList");
@@ -3178,11 +3442,7 @@ namespace AccountingSoftware
         {
             if (File.Exists(pathToConf))
             {
-                string? dirName = Path.GetDirectoryName(pathToConf);
-
-                if (dirName == null)
-                    throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
-
+                string? dirName = Path.GetDirectoryName(pathToConf) ?? throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
                 string fileNewName = Path.GetFileNameWithoutExtension(pathToConf) + DateTime.Now.ToString("ddMMyyyyHHmmssFFFFFFF") + ".xml";
                 string pathToCopyConf = Path.Combine(dirName, fileNewName);
 
@@ -3215,11 +3475,8 @@ namespace AccountingSoftware
                 string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + Guid.NewGuid().ToString().Replace("-", "") + ".xml";
                 string pathToTempConf = Path.Combine(dirName, fileTempName);
 
-                if (!string.IsNullOrEmpty(oldTempConf))
-                {
-                    if (File.Exists(oldTempConf))
-                        File.Delete(oldTempConf);
-                }
+                if (!string.IsNullOrEmpty(oldTempConf) && File.Exists(oldTempConf))
+                    File.Delete(oldTempConf);
 
                 return pathToTempConf;
             }
@@ -3270,7 +3527,7 @@ namespace AccountingSoftware
         /// <param name="pathToSaveCode">Шлях до файлу куди буде згенерований код</param>
         public static void GeneratedCode(string pathToConf, string pathToTemplate, string pathToSaveCode)
         {
-            XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+            XslCompiledTransform xsltCodeGnerator = new();
             xsltCodeGnerator.Load(pathToTemplate);
 
             xsltCodeGnerator.Transform(pathToConf, pathToSaveCode);
@@ -3286,7 +3543,7 @@ namespace AccountingSoftware
         public static void CreateOneFileForComparison(string pathToInformationSchemaXML,
             string сonfigurationFileName, string secondConfigurationFileName, string pathToSaveXml)
         {
-            XmlWriterSettings settings = new XmlWriterSettings() { NewLineChars = "\r\n", Indent = true, Encoding = Encoding.UTF8 };
+            XmlWriterSettings settings = new() { NewLineChars = "\r\n", Indent = true, Encoding = Encoding.UTF8 };
 
             XmlWriter xmlWriter = XmlWriter.Create(pathToSaveXml, settings);
             xmlWriter.WriteStartDocument();
@@ -3296,7 +3553,7 @@ namespace AccountingSoftware
             //InformationSchema
             //
 
-            XmlDocument InformationSchemaDoc = new XmlDocument();
+            XmlDocument InformationSchemaDoc = new();
             InformationSchemaDoc.Load(pathToInformationSchemaXML);
 
             XmlNode? rootInformationSchema = InformationSchemaDoc.SelectSingleNode("InformationSchema");
@@ -3309,7 +3566,7 @@ namespace AccountingSoftware
             //сonfiguration
             //
 
-            XmlDocument сonfigurationDoc = new XmlDocument();
+            XmlDocument сonfigurationDoc = new();
             сonfigurationDoc.Load(сonfigurationFileName);
 
             XmlNode? rootConfiguration = сonfigurationDoc.SelectSingleNode("Configuration");
@@ -3324,7 +3581,7 @@ namespace AccountingSoftware
             //secondConfiguration
             //
 
-            XmlDocument secondConfigurationDoc = new XmlDocument();
+            XmlDocument secondConfigurationDoc = new();
             secondConfigurationDoc.Load(secondConfigurationFileName);
 
             XmlNode? rootSecondConfiguration = secondConfigurationDoc.SelectSingleNode("Configuration");
@@ -3347,13 +3604,13 @@ namespace AccountingSoftware
         /// <param name="pathToSaveXml">Куди зберегти результати</param>
         public static void Comparison(string pathOneFileForComparison, string pathToTemplate, string pathToSaveXml)
         {
-            XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+            XslCompiledTransform xsltCodeGnerator = new();
 
             xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(false, false), null);
 
-            XsltArgumentList xsltArgumentList = new XsltArgumentList();
+            XsltArgumentList xsltArgumentList = new();
 
-            FileStream fileStream = new FileStream(pathToSaveXml, FileMode.Create);
+            FileStream fileStream = new(pathToSaveXml, FileMode.Create);
 
             xsltCodeGnerator.Transform(pathOneFileForComparison, xsltArgumentList, fileStream);
 
@@ -3369,13 +3626,13 @@ namespace AccountingSoftware
         /// <param name="replacementColumn">Параметр для шаблону (чи потрібно заміщати стовпчики)</param>
         public static void ComparisonAnalizeGeneration(string pathToXML, string pathToTemplate, string pathToSaveCode)
         {
-            XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+            XslCompiledTransform xsltCodeGnerator = new();
             xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
 
-            XsltArgumentList xsltArgumentList = new XsltArgumentList();
+            XsltArgumentList xsltArgumentList = new();
             xsltArgumentList.AddParam("KeyUID", "", DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss"));
 
-            FileStream fileStream = new FileStream(pathToSaveCode, FileMode.Create);
+            FileStream fileStream = new(pathToSaveCode, FileMode.Create);
 
             xsltCodeGnerator.Transform(pathToXML, xsltArgumentList, fileStream);
 
@@ -3396,7 +3653,7 @@ namespace AccountingSoftware
 
             if (navigator != null)
             {
-                XslCompiledTransform xsltCodeGnerator = new XslCompiledTransform();
+                XslCompiledTransform xsltCodeGnerator = new();
                 xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
 
                 XsltArgumentList? xsltArgumentList = null;
@@ -3408,11 +3665,9 @@ namespace AccountingSoftware
                         xsltArgumentList.AddParam(argument.Key, "", argument.Value);
                 }
 
-                using (TextWriter writer = new StringWriter())
-                {
-                    xsltCodeGnerator.Transform(navigator, xsltArgumentList, writer);
-                    result = writer?.ToString() ?? "";
-                }
+                using TextWriter writer = new StringWriter();
+                xsltCodeGnerator.Transform(navigator, xsltArgumentList, writer);
+                result = writer.ToString() ?? "";
             }
 
             return result;
@@ -3427,17 +3682,18 @@ namespace AccountingSoftware
         {
             List<string> slqList = [];
 
-            XPathDocument xPathDoc = new XPathDocument(pathToXML);
+            XPathDocument xPathDoc = new(pathToXML);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();
 
-            XPathNodeIterator sqlNodes = xPathDocNavigator.Select("/root/sql");
-            while (sqlNodes!.MoveNext())
-            {
-                string? sqlText = sqlNodes?.Current?.Value;
+            XPathNodeIterator? sqlNodes = xPathDocNavigator.Select("/root/sql");
+            if (sqlNodes != null)
+                while (sqlNodes.MoveNext())
+                {
+                    string sqlText = sqlNodes.Current?.Value ?? "";
 
-                if (sqlText != null)
-                    slqList.Add(sqlText);
-            }
+                    if (!string.IsNullOrEmpty(sqlText))
+                        slqList.Add(sqlText);
+                }
 
             return slqList;
         }
@@ -3451,7 +3707,14 @@ namespace AccountingSoftware
         /// </summary>
         public enum VariantWorkSearchForPointers
         {
+            /// <summary>
+            /// Інформація
+            /// </summary>
             Info,
+
+            /// <summary>
+            /// Таблиця
+            /// </summary>
             Tables
         }
 
@@ -3466,7 +3729,7 @@ namespace AccountingSoftware
             Full,
 
             /// <summary>
-            /// Тільки необхідні (для готової програми)
+            /// Тільки необхідні компоненти (для готової програми)
             /// </summary>
             Small
         }

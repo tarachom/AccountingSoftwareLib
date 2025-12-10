@@ -132,7 +132,7 @@ namespace AccountingSoftware
         /// </summary>
         public ConfigurationDirectories Copy()
         {
-            ConfigurationDirectories confDirCopy = new ConfigurationDirectories(this.Name, this.FullName, this.Table, this.Desc,
+            ConfigurationDirectories confDirCopy = new(this.Name, this.FullName, this.Table, this.Desc,
                 false, /* Автоматична нумерація не копіюється */ this.TypeDirectory)
             {
                 PointerFolders_HierarchyInAnotherDirectory = this.PointerFolders_HierarchyInAnotherDirectory,

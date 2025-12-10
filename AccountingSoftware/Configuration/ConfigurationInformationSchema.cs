@@ -62,29 +62,21 @@ namespace AccountingSoftware
 		}
 	}
 
-	/// <summary>
-	/// Таблиця
-	/// </summary>
-	public class ConfigurationInformationSchema_Table
-	{
-		/// <summary>
-		/// Таблиця
-		/// </summary>
-		/// <param name="tableName">Назва таблиці</param>
-		public ConfigurationInformationSchema_Table(string tableName)
-		{
-			TableName = tableName;
-		}
+    /// <summary>
+    /// Таблиця
+    /// </summary>
+    /// <param name="tableName">Назва таблиці</param>
+    public class ConfigurationInformationSchema_Table(string tableName)
+    {
+        /// <summary>
+        /// Назва таблиці
+        /// </summary>
+        public string TableName { get; set; } = tableName;
 
-		/// <summary>
-		/// Назва таблиці
-		/// </summary>
-		public string TableName { get; set; } = "";
-
-		/// <summary>
-		/// Стовпці
-		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = [];
+        /// <summary>
+        /// Стовпці
+        /// </summary>
+        public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = [];
 
 		/// <summary>
 		/// Індекси
@@ -92,57 +84,39 @@ namespace AccountingSoftware
 		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = [];
 	}
 
-	/// <summary>
-	/// Стовпчик
-	/// </summary>
-	public class ConfigurationInformationSchema_Column
-	{
-		/// <summary>
-		/// Стовпчик
-		/// </summary>
-		/// <param name="columnName">Назва стовпця</param>
-		/// <param name="dataType">Тип даних</param>
-		/// <param name="udtName">Тип даних</param>
-		public ConfigurationInformationSchema_Column(string columnName, string dataType, string udtName)
-		{
-			ColumnName = columnName;
-			DataType = dataType;
-			UdtName = udtName;
-		}
+    /// <summary>
+    /// Стовпчик
+    /// </summary>
+    /// <param name="columnName">Назва стовпця</param>
+    /// <param name="dataType">Тип даних</param>
+    /// <param name="udtName">Тип даних</param>
+    public class ConfigurationInformationSchema_Column(string columnName, string dataType, string udtName)
+    {
+        /// <summary>
+        /// Назва стовпця
+        /// </summary>
+        public string ColumnName { get; set; } = columnName;
 
-		/// <summary>
-		/// Назва стовпця
-		/// </summary>
-		public string ColumnName { get; set; } = "";
+        /// <summary>
+        /// Тип даних
+        /// </summary>
+        public string DataType { get; set; } = dataType;
 
-		/// <summary>
-		/// Тип даних
-		/// </summary>
-		public string DataType { get; set; } = "";
+        /// <summary>
+        /// Тип даних
+        /// </summary>
+        public string UdtName { get; set; } = udtName;
+    }
 
-		/// <summary>
-		/// Тип даних
-		/// </summary>
-		public string UdtName { get; set; } = "";
-	}
-
-	/// <summary>
-	/// Індекс
-	/// </summary>
-	public class ConfigurationInformationSchema_Index
-	{
-		/// <summary>
-		/// Індекс
-		/// </summary>
-		/// <param name="indexName"></param>
-		public ConfigurationInformationSchema_Index(string indexName)
-		{
-			IndexName = indexName;
-		}
-
-		/// <summary>
-		/// Назва індексу
-		/// </summary>
-		public string IndexName { get; set; } = "";
-	}
+    /// <summary>
+    /// Індекс
+    /// </summary>
+    /// <param name="indexName"></param>
+    public class ConfigurationInformationSchema_Index(string indexName)
+    {
+        /// <summary>
+        /// Назва індексу
+        /// </summary>
+        public string IndexName { get; set; } = indexName;
+    }
 }

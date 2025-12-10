@@ -75,7 +75,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationConstantsBlock Copy()
         {
-            ConfigurationConstantsBlock newConstantsBlock = new ConfigurationConstantsBlock(this.BlockName, this.Desc);
+            ConfigurationConstantsBlock newConstantsBlock = new(this.BlockName, this.Desc);
 
             foreach (ConfigurationConstants constant in Constants.Values)
             {

@@ -89,7 +89,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationTabularList Copy()
         {
-            ConfigurationTabularList newTabularList = new ConfigurationTabularList(Name, Desc);
+            ConfigurationTabularList newTabularList = new(Name, Desc);
 
             //Поля
             foreach (ConfigurationTabularListField item in Fields.Values)

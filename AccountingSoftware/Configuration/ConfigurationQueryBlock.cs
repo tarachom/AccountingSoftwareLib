@@ -64,7 +64,7 @@ namespace AccountingSoftware
         /// </summary>
         public ConfigurationQueryBlock Copy()
         {
-            ConfigurationQueryBlock newQueryBlock = new ConfigurationQueryBlock(Name);
+            ConfigurationQueryBlock newQueryBlock = new(Name);
 
             foreach (KeyValuePair<string, string> item in Query)
                 newQueryBlock.Query.Add(item.Key, item.Value);

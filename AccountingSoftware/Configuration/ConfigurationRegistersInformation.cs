@@ -79,7 +79,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationRegistersInformation Copy()
         {
-            ConfigurationRegistersInformation confRegCopy = new ConfigurationRegistersInformation(this.Name, this.FullName, this.Table, this.Desc);
+            ConfigurationRegistersInformation confRegCopy = new(this.Name, this.FullName, this.Table, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());

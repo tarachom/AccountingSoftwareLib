@@ -26,55 +26,42 @@ namespace AccountingSoftware
     /// <summary>
     /// Попередньо визначене поле
     /// </summary>
-    public class ConfigurationPredefinedField
+    /// <param name="nameInTable">Назва поля в базі даних</param>
+    /// <param name="type">Тип</param>
+    /// <param name="isPrimaryKey">Чи це первинний ключ</param>
+    /// <param name="isIndex">Чи це індексоване поле</param>
+    /// <param name="isNotNull">Не нульове значення поля</param>
+    /// <param name="desc">Опис</param>
+    public class ConfigurationPredefinedField(string nameInTable, string type, bool isPrimaryKey, bool isIndex, bool isNotNull, string desc = "")
     {
-        /// <summary>
-        /// Попередньо визначене поле
-        /// </summary>
-        /// <param name="nameInTable">Назва поля в базі даних</param>
-        /// <param name="type">Тип</param>
-        /// <param name="isPrimaryKey">Чи це первинний ключ</param>
-        /// <param name="isIndex">Чи це індексоване поле</param>
-        /// <param name="isNotNull">Не нульове значення поля</param>
-        /// <param name="desc">Опис</param>
-        public ConfigurationPredefinedField(string nameInTable, string type, bool isPrimaryKey, bool isIndex, bool isNotNull, string desc = "")
-        {
-            NameInTable = nameInTable;
-            Type = type;
-            IsPrimaryKey = isPrimaryKey;
-            IsIndex = isIndex;
-            IsNotNull = isNotNull;
-            Desc = desc;
-        }
-
         /// <summary>
         /// Назва поля в базі даних
         /// </summary>
-        public string NameInTable { get; set; } = "";
+        public string NameInTable { get; set; } = nameInTable;
 
         /// <summary>
         /// Тип даних
         /// </summary>
-        public string Type { get; set; } = "";
+        public string Type { get; set; } = type;
 
         /// <summary>
         /// Первинний ключ (Primary key)
         /// </summary>
-        public bool IsPrimaryKey { get; set; }
+        public bool IsPrimaryKey { get; set; } = isPrimaryKey;
 
         /// <summary>
         /// Індексувати поле
         /// </summary>
-        public bool IsIndex { get; set; }
+        public bool IsIndex { get; set; } = isIndex;
 
         /// <summary>
         /// Не нульове значення поля
         /// </summary>
-        public bool IsNotNull { get; set; }
+        public bool IsNotNull { get; set; } = isNotNull;
 
         /// <summary>
         /// Опис
         /// </summary>
-        public string Desc { get; set; } = "";
+        public string Desc { get; set; } = desc;
     }
 }

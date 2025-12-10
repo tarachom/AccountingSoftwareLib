@@ -75,7 +75,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationJournals Copy()
         {
-            ConfigurationJournals newJournal = new ConfigurationJournals(this.Name, this.Desc);
+            ConfigurationJournals newJournal = new(this.Name, this.Desc);
 
             foreach (ConfigurationJournalField field in Fields.Values)
                 newJournal.AppendField(field.Copy());

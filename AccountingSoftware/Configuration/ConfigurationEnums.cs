@@ -74,7 +74,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationEnums Copy()
         {
-            ConfigurationEnums newEnum = new ConfigurationEnums(this.Name, this.SerialNumber, this.Desc);
+            ConfigurationEnums newEnum = new(this.Name, this.SerialNumber, this.Desc);
 
             foreach (ConfigurationEnumField field in Fields.Values)
                 newEnum.AppendField(field.Copy(field.Value));

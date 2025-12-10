@@ -124,7 +124,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationForms Copy()
         {
-            ConfigurationForms newForms = new ConfigurationForms(Name, Desc, Type);
+            ConfigurationForms newForms = new(Name, Desc, Type);
 
             //Поля для форми елементу
             foreach (KeyValuePair<string, ConfigurationFormsElementField> item in ElementFields)

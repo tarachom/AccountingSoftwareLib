@@ -106,7 +106,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationRegistersAccumulation Copy()
         {
-            ConfigurationRegistersAccumulation confRegCopy = new ConfigurationRegistersAccumulation(this.Name, this.FullName, this.Table, this.TypeRegistersAccumulation, this.Desc);
+            ConfigurationRegistersAccumulation confRegCopy = new(this.Name, this.FullName, this.Table, this.TypeRegistersAccumulation, this.Desc);
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
                 confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
