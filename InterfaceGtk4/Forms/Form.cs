@@ -46,7 +46,7 @@ public abstract class Form : Box
     /// <param name="func">Процедура</param>
     public static void CreateLink(Box parent, string caption, Action? func = null)
     {
-        Box hBox = Box.New(Orientation.Horizontal, 0);
+        Box hBox = New(Orientation.Horizontal, 0);
         hBox.Append(Image.NewFromIconName("doc"));
 
         Label label = Label.New(caption);
@@ -128,7 +128,7 @@ public abstract class Form : Box
         // Якщо parent вертикальний - створюємо додатково горизонтальний бокс
         if (parent.GetOrientation() == Orientation.Vertical)
         {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
+            Box hBox = New(Orientation.Horizontal, 0);
             hBox.MarginStart = hBox.MarginTop = hBox.MarginBottom = 5;
             hBox.Halign = halign;
 
@@ -140,12 +140,12 @@ public abstract class Form : Box
         // Створюємо додатково вертикальний та горизонтальний бокси
         else if (put_vbox)
         {
-            Box vBox = Box.New(Orientation.Vertical, 0);
+            Box vBox = New(Orientation.Vertical, 0);
             vBox.Valign = Align.Center;
 
             parent.Append(vBox);
 
-            Box hBox = Box.New(Orientation.Horizontal, 0);
+            Box hBox = New(Orientation.Horizontal, 0);
             hBox.MarginStart = hBox.MarginTop = hBox.MarginBottom = 5;
             hBox.Halign = halign;
 
@@ -165,7 +165,7 @@ public abstract class Form : Box
         if (field != null)
         {
             field.MarginEnd = 5;
-
+            
             box.Append(field);
         }
 
@@ -183,7 +183,7 @@ public abstract class Form : Box
     /// <param name="halign">Позиціювання</param>
     protected static Box CreateFieldView(Box parent, string? caption, Widget field, int width = 100, int height = 100, Align halign = Align.End)
     {
-        Box hBox = Box.New(Orientation.Horizontal, 0);
+        Box hBox = New(Orientation.Horizontal, 0);
         hBox.MarginStart = hBox.MarginTop = hBox.MarginBottom = 5;
         hBox.Halign = halign;
 
@@ -218,7 +218,7 @@ public abstract class Form : Box
     {
         if (caption != null)
         {
-            Box hBoxCaption = Box.New(Orientation.Horizontal, 0);
+            Box hBoxCaption = New(Orientation.Horizontal, 0);
             hBoxCaption.MarginStart = hBoxCaption.MarginEnd = hBoxCaption.MarginTop = hBoxCaption.MarginBottom = 5;
             parent.Append(hBoxCaption);
 
@@ -228,7 +228,7 @@ public abstract class Form : Box
             hBoxCaption.Append(label);
         }
 
-        Box hBox = Box.New(Orientation.Horizontal, 0);
+        Box hBox = New(Orientation.Horizontal, 0);
         hBox.MarginStart = hBox.MarginEnd = hBox.MarginTop = hBox.MarginBottom = 5;
         hBox.Hexpand = true;
 
@@ -257,9 +257,9 @@ public abstract class Form : Box
 
     #region Spinner
 
-    public void SpinnerOn() => NotebookFunction.SpinnerNotebookPageToCode(true, this.GetName());
+    public void SpinnerOn() => NotebookFunction.SpinnerNotebookPage(GetName());
 
-    public void SpinnerOff() => NotebookFunction.SpinnerNotebookPageToCode(false, this.GetName());
+    public void SpinnerOff() => NotebookFunction.SpinnerNotebookPage(GetName(), false);
 
     #endregion
 }
