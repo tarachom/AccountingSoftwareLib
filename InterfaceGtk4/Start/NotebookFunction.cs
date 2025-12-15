@@ -475,6 +475,6 @@ public static class NotebookFunction
     /// <returns>Обрізана назва</returns>
     public static string SubstringPageName(string pageName)
     {
-        return pageName.Length >= 23 ? pageName[..21] + ".." : pageName;
+        return pageName.Length >= 23 ? pageName[..19] + " ..." : pageName;
     }
 }

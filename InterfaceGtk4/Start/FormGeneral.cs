@@ -55,7 +55,7 @@ public abstract class FormGeneral : Window
                 //Повідомлення
                 {
                     Button button = Button.New();
-                    button.Child = Image.NewFromIconName("messaging-app");
+                    button.Child = Image.NewFromIconName("dialog-information");
                     button.TooltipText = "Повідомлення";
                     button.OnClicked += (sender, args) => ButtonMessageClicked();
                     headerBar.PackEnd(button);
@@ -88,11 +88,11 @@ public abstract class FormGeneral : Window
 
     #region FullTextSearch
 
-    void OnButtonFindClicked(Button buttonFind, EventArgs args)
+    void OnButtonFindClicked(Button button, EventArgs args)
     {
-        Popover popoverFind = Popover.New();
-        popoverFind.Position = PositionType.Bottom;
-        popoverFind.SetParent(buttonFind);
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Bottom;
+        popover.SetParent(button);
 
         SearchEntry entry = new() { WidthRequest = 500 };
 
@@ -109,8 +109,8 @@ public abstract class FormGeneral : Window
         Box hBox = Box.New(Orientation.Horizontal, 10);
         hBox.Append(entry);
 
-        popoverFind.SetChild(hBox);
-        popoverFind.Popup();
+        popover.SetChild(hBox);
+        popover.Popup();
     }
 
     #endregion
@@ -148,24 +148,28 @@ public abstract class FormGeneral : Window
             string path = Path.Combine(AppContext.BaseDirectory, $"images/{image}");
 
             Picture picture = Picture.NewForFilename(path);
-            picture.SetSizeRequest(50, 50);
+            picture.SetSizeRequest(48, 48);
 
-            Box hBox = Box.New(Orientation.Horizontal, 5);
-            hBox.Append(picture);
+            Box hBoxPic = Box.New(Orientation.Horizontal, 0);
+            hBoxPic.Halign = Align.Center;
+            hBoxPic.Append(picture);
+
+            Box hBox = Box.New(Orientation.Vertical, 0);
+            hBox.Append(hBoxPic);
             hBox.Append(Label.New(name));
 
-            LinkButton linkButton = LinkButton.New("");
-            linkButton.Child = hBox;
-            linkButton.MarginStart = linkButton.MarginEnd = linkButton.MarginTop = linkButton.MarginBottom = 5;
-            linkButton.AddCssClass("left-menu");
-            linkButton.TooltipText = name;
-            linkButton.OnActivateLink += (_, _) =>
+            LinkButton link = LinkButton.New("");
+            link.Child = hBox;
+            link.MarginStart = link.MarginEnd = link.MarginTop = link.MarginBottom = 5;
+            link.AddCssClass("left-menu");
+            link.TooltipText = name;
+            link.OnActivateLink += (_, _) =>
             {
-                action.Invoke(linkButton);
+                action.Invoke(link);
                 return true;
             };
 
-            vBox.Append(linkButton);
+            vBox.Append(link);
         }
 
         Add("Документи", Документи, "documents.png");
@@ -180,7 +184,7 @@ public abstract class FormGeneral : Window
         hbox.Append(scroll);
     }
 
-    void Документи(LinkButton linkButton)
+    void Документи(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -235,12 +239,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        popover.SetParent(link);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Довідники(LinkButton linkButton)
+    void Довідники(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -295,12 +299,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        popover.SetParent(link);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Журнали(LinkButton linkButton)
+    void Журнали(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -355,12 +359,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        popover.SetParent(link);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Звіти(LinkButton linkButton)
+    void Звіти(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -368,12 +372,12 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        popover.SetParent(link);
         popover.Child = vBox;
         popover.Show();
     }
 
-    void Регістри(LinkButton linkButton)
+    void Регістри(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -476,14 +480,14 @@ public abstract class FormGeneral : Window
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        popover.SetParent(link);
         popover.Child = vBox;
         popover.Show();
     }
 
-    protected abstract void Налаштування(LinkButton linkButton);
-    protected abstract void Сервіс(LinkButton linkButton);
-    protected abstract void Обробки(LinkButton linkButton);
+    protected abstract void Налаштування(LinkButton link);
+    protected abstract void Сервіс(LinkButton link);
+    protected abstract void Обробки(LinkButton link);
 
     #endregion
 
