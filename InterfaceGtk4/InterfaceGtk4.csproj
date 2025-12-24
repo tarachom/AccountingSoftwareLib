@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.7.0-preview.3" />
-    <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.3" />
+    <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.7.0" />
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0" />
   </ItemGroup>
 
   <ItemGroup>

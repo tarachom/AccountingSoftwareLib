@@ -28,5 +28,8 @@ namespace InterfaceGtk4;
 /// </summary>
 public partial class DirectoryRow : Row
 {
+    /// <summary>
+    /// Помітка на видалення
+    /// </summary>
     public bool DeletionLabel { get; set; } = false;
 }

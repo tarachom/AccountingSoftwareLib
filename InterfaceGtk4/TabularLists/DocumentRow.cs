@@ -28,7 +28,13 @@ namespace InterfaceGtk4;
 /// </summary>
 public partial class DocumentRow : Row
 {
+    /// <summary>
+    /// Помітка на видалення
+    /// </summary>
     public bool DeletionLabel { get; set; } = false;
+
+    /// <summary>
+    /// Проведений
+    /// </summary>
     public bool Spend { get; set; } = false;
-    public DateTime SpendDate { get; set; } = DateTime.MinValue;
 }

@@ -88,10 +88,8 @@ public static class NotebookFunction
         notebook.AddController(controller);
         controller.OnKeyReleased += (sender, args) =>
         {
-            //Console.WriteLine(args.Keycode);
-
             if (notebook.IsFocus())
-                if (args.Keycode == 9 || args.Keycode == 27) // Esc Console.WriteLine(char.ConvertToUtf32("\e", 0));
+                if (args.Keyval == (uint)Key.Escape)
                 {
                     Widget? wg = notebook.GetNthPage(notebook.GetCurrentPage());
                     if (wg != null)
@@ -473,8 +471,5 @@ public static class NotebookFunction
     /// </summary>
     /// <param name="pageName">Назва</param>
     /// <returns>Обрізана назва</returns>
-    public static string SubstringPageName(string pageName)
-    {
-        return pageName.Length >= 23 ? pageName[..19] + " ..." : pageName;
-    }
+    public static string SubstringPageName(string pageName) => pageName.Length >= 23 ? pageName[..19] + " ..." : pageName;
 }

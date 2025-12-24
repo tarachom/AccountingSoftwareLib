@@ -72,10 +72,8 @@ namespace AccountingSoftware
         /// <param name="unigueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UnigueID? unigueID, int pageSize = 1000)
-        {
-            return await Kernel.DataBase.SplitSelectToPages(QuerySelect, unigueID, pageSize);
-        }
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UnigueID? unigueID, int pageSize = 1000) =>
+            await Kernel.DataBase.SplitSelectToPages(QuerySelect, unigueID, pageSize);
 
         /// <summary>
         /// Перейти на початок вибірки
@@ -106,9 +104,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Кількість елементів у вибірці
         /// </summary>
-        public int Count()
-        {
-            return BaseSelectList.Count;
-        }
+        public int Count() => BaseSelectList.Count;
     }
 }

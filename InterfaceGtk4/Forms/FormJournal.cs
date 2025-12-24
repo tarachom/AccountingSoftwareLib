@@ -28,9 +28,10 @@ namespace InterfaceGtk4;
 
 /// <summary>
 /// Основа для класів:
+///     DocumentJournal,
+/// 
 ///     ДовідникЖурнал, 
 ///     ДовідникШвидкийВибір, 
-///     ДокументЖурнал, 
 ///     Журнал, 
 ///     РегістриВідомостейЖурнал, 
 ///     РегістриНакопиченняЖурнал,
@@ -49,24 +50,34 @@ public abstract class FormJournal : Form
     public UnigueID? SelectPointerItem { get; set; }
 
     /// <summary>
-    /// Дерево
+    /// Табличний список
     /// </summary>
-    protected TreeView TreeViewGrid = new TreeView(); //??
+    public ColumnView Grid { get; } = ColumnView.New(null);
+
+    /// <summary>
+    /// Дані для табличного списку
+    /// </summary>
+    public virtual Gio.ListStore Store { get; } = Gio.ListStore.New(Row.GetGType());
+
+    /// <summary>
+    /// Відбори
+    /// </summary>
+    public List<Where>? WhereList { get; set; }
 
     /// <summary>
     /// Прокрутка дерева
     /// </summary>
-    protected ScrolledWindow ScrollTree = ScrolledWindow.New();
+    protected ScrolledWindow ScrollGrid { get; } = ScrolledWindow.New();
 
     /// <summary>
     /// Прокрутка для сторінок
     /// </summary>
-    protected ScrolledWindow ScrollPages = ScrolledWindow.New();
+    protected ScrolledWindow ScrollPages { get; } = ScrolledWindow.New();
 
     /// <summary>
     /// Бокс для сторінок
     /// </summary>
-    protected Box HBoxPages = New(Orientation.Horizontal, 0);
+    protected Box HBoxPages { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Режим який вказує що форма використовується як елемент в іншій формі 
@@ -76,7 +87,81 @@ public abstract class FormJournal : Form
 
     public FormJournal()
     {
-        
+
+    }
+
+    /// <summary>
+    /// Перед початком завантаження даних в Store
+    /// </summary>
+    public void BeforeLoadRecords()
+    {
+        SpinnerOn();
+    }
+
+    /// <summary>
+    /// Функція викликається після завантаження даних в Store
+    /// </summary>
+    /// <param name="selectPosition">Позиція елемента який треба виділити</param>
+    public void AfterRecordsLoaded(uint selectPosition = 0)
+    {
+        //Позиціювання на останньому елементі вибірки у випадку Pages.StartingPosition.End
+        if (selectPosition == 0 && Store.NItems > 0 && SelectPointerItem == null &&
+            PageStartingPosition == Pages.StartingPosition.End && PagesSettings.CurrentPage == PagesSettings.Record.Pages)
+            selectPosition = Store.NItems;
+
+        if (selectPosition > 0)
+        {
+            uint position = selectPosition - 1;
+
+            //MultiSelection model = (MultiSelection)Grid.Model;
+            //model.SelectItem(position, true);
+
+            /*
+            Bitset bitselected = Bitset.NewEmpty();
+            bitselected.Add(position);
+
+            model.SetSelection(bitselected, bitselected);
+            */
+
+            Grid.ScrollTo(position, null, ListScrollFlags.Select, null);
+        }
+
+        PagesShow();
+        SpinnerOff();
+    }
+
+    /// <summary>
+    /// При виділенні елементів в таблиці
+    /// </summary>
+    protected void OnGridSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
+    {
+        Bitset selection = Grid.Model.GetSelection();
+
+        //Коли виділений один рядок
+        if (selection.GetMinimum() == selection.GetMaximum())
+        {
+            uint position = selection.GetMaximum();
+            Row? row = (Row?)Store.GetObject(position);
+            if (row != null) SelectPointerItem = row.UnigueID;
+        }
+    }
+
+    /// <summary>
+    /// Функція повертає список вибраних елементів
+    /// </summary>
+    /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
+    public List<Row> GetSelection()
+    {
+        List<Row> rows = [];
+
+        MultiSelection model = (MultiSelection)Grid.Model;
+        Bitset selection = model.GetSelection();
+
+        for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
+            if (model.IsSelected(i) && model.GetObject(i) is Row row)
+                rows.Add(row);
+
+        return rows;
     }
 
     #region Virtual & Abstract Function
@@ -94,28 +179,139 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Фокус за стандартом
     /// </summary>
-    public virtual void DefaultGrabFocus() { TreeViewGrid.GrabFocus(); }
+    public virtual void DefaultGrabFocus() { Grid.GrabFocus(); }
 
     /// <summary>
     /// Завантаження списку
     /// </summary>
     public abstract ValueTask LoadRecords();
 
-    /// <summary>
-    /// Завантаження списку при пошуку
-    /// </summary>
-    public virtual async ValueTask LoadRecords_OnSearch(string searchText) { await ValueTask.FromResult(true); }
+    #endregion
+
+    #region Pages
 
     /// <summary>
-    /// Фільтер
+    /// Налаштування для обчислення і виводу сторінок
     /// </summary>
-    public virtual async ValueTask LoadRecords_OnFilter() { await ValueTask.FromResult(true); }
+    Pages.Settings PagesSettings { get; } = new();
 
     /// <summary>
-    /// Для дерева
+    /// Розмір сторінки
     /// </summary>
+    public int PageSize
+    {
+        get => PagesSettings.PageSize;
+        set => PagesSettings.PageSize = value;
+    }
+
+    /// <summary>
+    /// Початкове позиціювання (на початок чи кінець)
+    /// </summary>
+    public Pages.StartingPosition PageStartingPosition
+    {
+        get => PagesSettings.Position;
+        set => PagesSettings.Position = value;
+    }
+
+    protected void PagesClear() => PagesSettings.Clear();
+
+    public void SetPagesSettings(int size, Pages.StartingPosition position = InterfaceGtk4.Pages.StartingPosition.Start)
+    {
+        PageSize = size;
+        PageStartingPosition = position;
+    }
+
+    /// <summary>
+    /// Розбивка на сторінки
+    /// </summary>
+    /// <param name="splitSelectToPagesFunc">Функція для обчислення сторінок</param>
+    /// <param name="querySelect">Вибірка для задання меж</param>
+    /// <param name="unigueID">Вибраний елемент для позиціювання вибіоки</param>
     /// <returns></returns>
-    public virtual async ValueTask LoadRecords_OnTree() { await ValueTask.FromResult(true); }
+    public async ValueTask SplitPages(Func<UnigueID? /* Вибраний елемент */, int /* Розмір вибірки */, ValueTask<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UnigueID? unigueID)
+    {
+        if (!PagesSettings.Calculated)
+        {
+            //Обчислення розміру вибірки
+            PagesSettings.Record = await splitSelectToPagesFunc.Invoke(unigueID, PagesSettings.PageSize);
+            PagesSettings.Calculated = true;
+
+            if (unigueID != null && PagesSettings.Record.CurrentPage > 0)
+                PagesSettings.CurrentPage = PagesSettings.Record.CurrentPage;
+            else if (PagesSettings.Position == Pages.StartingPosition.End)
+                PagesSettings.CurrentPage = PagesSettings.Record.Pages;
+        }
+
+        if (PagesSettings.Calculated && PagesSettings.Record.Result)
+        {
+            querySelect.Limit = PagesSettings.Record.PageSize;
+            querySelect.Offset = PagesSettings.Record.PageSize * (PagesSettings.CurrentPage - 1);
+        }
+    }
+
+    /// <summary>
+    /// Вивід сторінок
+    /// </summary>
+    public void PagesShow()
+    {
+        const int offset = 5;
+
+        //Очищення
+        Widget? child = HBoxPages.GetFirstChild();
+        while (child != null)
+        {
+            Widget? next = child.GetNextSibling();
+            HBoxPages.Remove(child);
+            child = next;
+        }
+
+        if (PagesSettings.Record.Pages >= 1)
+        {
+            Label labelCaption = Label.New("<b>Сторінки:</b> ");
+            labelCaption.UseMarkup = true;
+            labelCaption.MarginEnd = 5;
+
+            HBoxPages.Append(labelCaption);
+
+            bool writeSpace = false;
+            for (int i = 1; i <= PagesSettings.Record.Pages; i++)
+                if (i == PagesSettings.CurrentPage)
+                {
+                    Label labelPage = Label.New($"<b>{i}</b>");
+                    labelPage.UseMarkup = true;
+                    labelPage.MarginStart = labelPage.MarginEnd = 19;
+
+                    HBoxPages.Append(labelPage);
+                }
+                else if (i == 1 || i == PagesSettings.Record.Pages || (i > PagesSettings.CurrentPage - offset && i < PagesSettings.CurrentPage + offset))
+                {
+                    LinkButton link = LinkButton.New(i.ToString());
+                    link.Name = i.ToString();
+                    link.OnActivateLink += (_, _) =>
+                    {
+                        PagesSettings.CurrentPage = int.Parse(link.Name);
+                        HBoxPages.Sensitive = false;
+                        LoadRecords();
+
+                        return true;
+                    };
+
+                    HBoxPages.Append(link);
+                    writeSpace = false;
+                }
+                else if (!writeSpace)
+                {
+                    Label labeSpace = Label.New("..");
+                    labeSpace.UseMarkup = true;
+                    labeSpace.MarginStart = labeSpace.MarginEnd = 19;
+
+                    HBoxPages.Append(labeSpace);
+                    writeSpace = true;
+                }
+        }
+
+        HBoxPages.Sensitive = true;
+    }
 
     #endregion
 }

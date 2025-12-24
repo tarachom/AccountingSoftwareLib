@@ -69,6 +69,8 @@ public class Message
         message.Show();
     }
 
+    public static void Info(string text, string? secondaryText = null) => Info(null, null, text, secondaryText);
+
     public static void Error(Application? app, Window? win, string text, string? secondaryText = null)
     {
         MessageDialog message = Create(app, win, text, secondaryText);

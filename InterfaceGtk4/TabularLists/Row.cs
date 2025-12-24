@@ -37,6 +37,13 @@ namespace InterfaceGtk4;
 [Subclass<GObject.Object>]
 public partial class Row
 {
-    public UnigueID UID { get; set; } = new();
+    /// <summary>
+    /// Унікальний ідентифікатор
+    /// </summary>
+    public UnigueID UnigueID { get; set; } = new();
+
+    /// <summary>
+    /// Колекція полів
+    /// </summary>
     public Dictionary<string, string> Fields { get; set; } = [];
 }
