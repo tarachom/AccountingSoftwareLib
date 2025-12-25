@@ -152,8 +152,7 @@ public class DateTimeControl : Box
         {
             try
             {
-                Value = new DateTime(calendar.Date.GetYear(), calendar.Date.GetMonth(), calendar.Date.GetDayOfMonth(),
-                    Value.Hour, Value.Minute, Value.Second);
+                Value = new DateTime(calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(), Value.Hour, Value.Minute, Value.Second);
             }
             catch
             {
@@ -194,7 +193,7 @@ public class DateTimeControl : Box
             {
                 hourSpin.Value = TimeOnly.FromDateTime(Value).Hour;
                 hourSpin.OnValueChanged += (_, _) => Value = new DateTime(
-                    calendar.Date.GetYear(), calendar.Date.GetMonth(), calendar.Date.GetDayOfMonth(),
+                    calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(),
                     (int)hourSpin.Value, Value.Minute, Value.Second);
 
                 hBoxTime.Append(hourSpin);
@@ -206,7 +205,7 @@ public class DateTimeControl : Box
             {
                 minuteSpin.Value = TimeOnly.FromDateTime(Value).Minute;
                 minuteSpin.OnValueChanged += (_, _) => Value = new DateTime(
-                    calendar.Date.GetYear(), calendar.Date.GetMonth(), calendar.Date.GetDayOfMonth(),
+                    calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(),
                     Value.Hour, (int)minuteSpin.Value, Value.Second);
 
                 hBoxTime.Append(minuteSpin);
@@ -218,7 +217,7 @@ public class DateTimeControl : Box
             {
                 secondSpin.Value = TimeOnly.FromDateTime(Value).Second;
                 secondSpin.OnValueChanged += (_, _) => Value = new DateTime(
-                    calendar.Date.GetYear(), calendar.Date.GetMonth(), calendar.Date.GetDayOfMonth(),
+                    calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(),
                     Value.Hour, Value.Minute, (int)secondSpin.Value);
 
                 hBoxTime.Append(secondSpin);
@@ -231,12 +230,14 @@ public class DateTimeControl : Box
             lbCurrentDate.OnActivateLink += (_, _) =>
             {
                 Value = DateTime.Now;
+                TimeSpan timeOfDay = Value.TimeOfDay;
+
                 GLib.DateTime? datetime = GetGLibDateTime();
                 if (datetime != null) calendar.SelectDay(datetime);
 
-                hourSpin.Value = TimeOnly.FromDateTime(Value).Hour;
-                minuteSpin.Value = TimeOnly.FromDateTime(Value).Minute;
-                secondSpin.Value = TimeOnly.FromDateTime(Value).Second;
+                hourSpin.Value = timeOfDay.Hours;
+                minuteSpin.Value = timeOfDay.Minutes;
+                secondSpin.Value = timeOfDay.Seconds;
 
                 popoverCalendar.Hide();
                 return true;
