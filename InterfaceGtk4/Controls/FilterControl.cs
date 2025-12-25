@@ -117,9 +117,16 @@ public class FilterControl : Box
                     bool existFilter = GetWhere?.Invoke() ?? false;
                     IsFiltered = existFilter;
 
-                    if (existFilter) Select?.Invoke();
+                    if (existFilter)
+                        Select?.Invoke();
+                    else
+                        Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
 
                     PopoverParent?.Hide();
+                }
+                else
+                {
+
                 }
             };
             hBox.Append(buttonFilter);
