@@ -146,7 +146,7 @@ public class DateTimeControl : Box
         Calendar calendar = Calendar.New();
 
         GLib.DateTime? datetime = GetGLibDateTime();
-        if (datetime != null) calendar.Date = datetime;
+        if (datetime != null) calendar.SelectDay(datetime);
 
         calendar.OnDaySelected += (_, _) =>
         {
@@ -232,7 +232,7 @@ public class DateTimeControl : Box
             {
                 Value = DateTime.Now;
                 GLib.DateTime? datetime = GetGLibDateTime();
-                if (datetime != null) calendar.Date = datetime;
+                if (datetime != null) calendar.SelectDay(datetime);
 
                 hourSpin.Value = TimeOnly.FromDateTime(Value).Hour;
                 minuteSpin.Value = TimeOnly.FromDateTime(Value).Minute;

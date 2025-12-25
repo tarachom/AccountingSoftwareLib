@@ -219,7 +219,7 @@ public abstract class CompositePointerControl : PointerControl
             bSelectType.Sensitive = TypeSelectSensetive;
             bSelectType.OnClicked += (_, _) =>
             {
-                ВибірТипуДаних(button, Info);
+                ВибірТипуДаних(bSelectType, Info);
                 popoverOpenInfo.Hide();
             };
 
