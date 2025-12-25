@@ -116,14 +116,19 @@ public abstract class FormJournal : Form
             //MultiSelection model = (MultiSelection)Grid.Model;
             //model.SelectItem(position, true);
 
-            /*
-            Bitset bitselected = Bitset.NewEmpty();
-            bitselected.Add(position);
+            /*Bitset bitselected = Bitset.NewEmpty();
+            bitselected.Add(position);*/
 
-            model.SetSelection(bitselected, bitselected);
-            */
+            Grid.Model.SelectItem(position, false);
 
-            Grid.ScrollTo(position, null, ListScrollFlags.Select, null);
+            try
+            {
+                Grid.ScrollTo(position, null, ListScrollFlags.Select, null);
+            }
+            catch
+            {
+                
+            }
         }
 
         PagesShow();
