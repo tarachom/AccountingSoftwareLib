@@ -104,6 +104,9 @@ public abstract class FormJournal : Form
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
     public void AfterRecordsLoaded(uint selectPosition = 0)
     {
+        PagesShow();
+        SpinnerOff();
+
         //Позиціювання на останньому елементі вибірки у випадку Pages.StartingPosition.End
         if (selectPosition == 0 && Store.GetNItems() > 0 && SelectPointerItem == null &&
             PageStartingPosition == Pages.StartingPosition.End && PagesSettings.CurrentPage == PagesSettings.Record.Pages)
@@ -119,20 +122,39 @@ public abstract class FormJournal : Form
             /*Bitset bitselected = Bitset.NewEmpty();
             bitselected.Add(position);*/
 
-            Grid.Model.SelectItem(position, false);
+            Grid.Model.SelectItem(position, true);
 
-            try
+            ScrollTo(selectPosition);
+        }
+    }
+
+    /// <summary>
+    /// Прокрутка
+    /// </summary>
+    /// <param name="selectPosition"></param>
+    void ScrollTo(uint selectPosition)
+    {
+        uint rowCount = Store.GetNItems();
+
+        if (rowCount > 0 && Grid.Vadjustment != null)
+        {
+            double pageSize = Grid.Vadjustment.PageSize;
+            double upper = Grid.Vadjustment.Upper;
+
+            if (pageSize > 0 && upper > 0 && upper > pageSize)
             {
-                Grid.ScrollTo(position, null, ListScrollFlags.Select, null);
-            }
-            catch
-            {
-                
+                double rowHeidth = upper / rowCount;
+                double value = rowHeidth * selectPosition;
+                double pageSizePart = pageSize / 2;
+
+                if (value > pageSizePart)
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(100);
+                        Grid.Vadjustment.SetValue(value - pageSizePart);
+                    });
             }
         }
-
-        PagesShow();
-        SpinnerOff();
     }
 
     /// <summary>
