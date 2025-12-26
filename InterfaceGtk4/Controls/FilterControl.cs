@@ -126,7 +126,7 @@ public class FilterControl : Box
                 }
                 else
                 {
-
+                    //Якось попередити що фільтри відсутні
                 }
             };
             hBox.Append(buttonFilter);
@@ -166,12 +166,12 @@ public class FilterControl : Box
     /// Створити спливаюче вікно фільтру
     /// </summary>
     /// <param name="relative_to">Привязка</param>
-    public void CreatePopover(Widget relative_to)
+    public void CreatePopover(Button button)
     {
         if (!IsFilterCreated)
         {
             PopoverParent = Popover.New();
-            PopoverParent.SetParent(relative_to);
+            PopoverParent.SetParent(button);
             PopoverParent.Position = PositionType.Bottom;
             PopoverParent.MarginTop = PopoverParent.MarginEnd = PopoverParent.MarginBottom = PopoverParent.MarginStart = 2;
             PopoverParent.SetChild(this);

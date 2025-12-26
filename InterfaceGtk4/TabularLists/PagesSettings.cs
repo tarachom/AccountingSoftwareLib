@@ -49,17 +49,17 @@ public class Pages
         /// <summary>
         /// Результат обчислень
         /// </summary>
-        public SplitSelectToPages_Record Record = new();
+        public SplitSelectToPages_Record Record { get; set; } = new();
 
         /// <summary>
         /// Поточна сторінка
         /// </summary>
-        public int CurrentPage = 1;
+        public int CurrentPage { get; set; } = 1;
 
         /// <summary>
         /// Розмір сторінки
         /// </summary>
-        public int PageSize = 1000;
+        public int PageSize { get; set; } = 1000;
 
         /// <summary>
         /// Позиціювання при відкритті (на початку чи кінці вибірки)

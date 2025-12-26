@@ -167,7 +167,7 @@ public abstract class Form : Box
         if (field != null)
         {
             field.MarginEnd = 5;
-            
+
             box.Append(field);
         }
 

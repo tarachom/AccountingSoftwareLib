@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -87,7 +88,16 @@ public abstract class FormJournal : Form
 
     public FormJournal()
     {
-
+        EventControllerKey contrKey = EventControllerKey.New();
+        Grid.AddController(contrKey);
+        contrKey.OnKeyReleased += async (sender, args) =>
+        {
+            //Оновлення сторінки
+            if (args.Keyval == (uint)Key.F5)
+            {
+                await LoadRecords();
+            }
+        };
     }
 
     /// <summary>
@@ -102,7 +112,7 @@ public abstract class FormJournal : Form
     /// Функція викликається після завантаження даних в Store
     /// </summary>
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
-    public void AfterRecordsLoaded(uint selectPosition = 0)
+    public void AfterLoadRecords(uint selectPosition = 0)
     {
         PagesShow();
         SpinnerOff();
@@ -112,18 +122,10 @@ public abstract class FormJournal : Form
             PageStartingPosition == Pages.StartingPosition.End && PagesSettings.CurrentPage == PagesSettings.Record.Pages)
             selectPosition = Store.NItems;
 
+        //Виділення рядка і прокрутка сторінки
         if (selectPosition > 0)
         {
-            uint position = selectPosition - 1;
-
-            //MultiSelection model = (MultiSelection)Grid.Model;
-            //model.SelectItem(position, true);
-
-            /*Bitset bitselected = Bitset.NewEmpty();
-            bitselected.Add(position);*/
-
-            Grid.Model.SelectItem(position, true);
-
+            Grid.Model.SelectItem(selectPosition - 1, true);
             ScrollTo(selectPosition);
         }
     }
@@ -160,7 +162,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// При виділенні елементів в таблиці
     /// </summary>
-    protected void OnGridSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
+    protected void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
     {
         Bitset selection = Grid.Model.GetSelection();
 
@@ -189,6 +191,55 @@ public abstract class FormJournal : Form
                 rows.Add(row);
 
         return rows;
+    }
+
+    public UnigueID[] GetGetSelectionUnigueID() => [.. GetSelection().Select(x => x.UnigueID)];
+
+    public void CreatePopoverMenu(Widget widget, NameValue<Action<UnigueID[]>>[]? links)
+    {
+        if (links != null)
+        {
+            Popover popover = Popover.New();
+            popover.SetParent(widget);
+            popover.Position = PositionType.Bottom;
+            popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
+
+            ListBox list = ListBox.New();
+            list.SelectionMode = SelectionMode.None;
+            list.Hexpand = true;
+
+            popover.SetChild(list);
+
+            foreach (var link in links)
+            {
+                ListBoxRow row = ListBoxRow.New();
+
+                Box hBox = New(Orientation.Horizontal, 0);
+
+                //Картинка на початку елемента меню
+                Image image = Image.NewFromIconName("doc");
+                image.MarginStart = 5;
+                hBox.Append(image);
+
+                //Лінк
+                LinkButton linkButton = LinkButton.New("");
+                linkButton.TooltipText = link.Name;
+                linkButton.Label = link.Name;
+                linkButton.Halign = Align.Start;
+                linkButton.Hexpand = true;
+                linkButton.OnActivateLink += (_, _) =>
+                {
+                    link.Value?.Invoke(GetGetSelectionUnigueID());
+                    return true;
+                };
+                hBox.Append(linkButton);
+
+                row.SetChild(hBox);
+                list.Append(row);
+            }
+
+            popover.Show();
+        }
     }
 
     #region Virtual & Abstract Function

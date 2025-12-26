@@ -94,7 +94,7 @@ public class Message
     public static void Request(Application? app, Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
     {
         MessageDialog message = Create(app, win, text, secondaryText);
-        message.AddButton("Так", (int)YesNo.Yes);
+        Button buttonYes = (Button)message.AddButton("Так", (int)YesNo.Yes);
         message.AddButton("Ні", (int)YesNo.No);
 
         message.OnResponse += (_, arrg) =>
@@ -106,6 +106,7 @@ public class Message
         };
 
         message.Show();
+        buttonYes.GrabFocus();
     }
 
     public enum YesNo

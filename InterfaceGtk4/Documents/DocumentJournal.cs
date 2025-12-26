@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -54,22 +55,22 @@ public abstract class DocumentJournal : FormJournal
     /// <summary>
     /// Верхній набір меню
     /// </summary>
-    protected Box ToolbarTop = New(Orientation.Horizontal, 0);
+    protected Box ToolbarTop { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Верхній бок для додаткових кнопок
     /// </summary>
-    protected Box HBoxTop = New(Orientation.Horizontal, 0);
+    protected Box HBoxTop { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Період
     /// </summary>
-    protected PeriodControl Period = new();
+    protected PeriodControl Period { get; } = new();
 
     /// <summary>
     /// Пошук
     /// </summary>
-    SearchControl Search = new();
+    protected SearchControl Search { get; } = new();
 
     /// <summary>
     /// Фільтр
@@ -136,13 +137,30 @@ public abstract class DocumentJournal : FormJournal
         Toolbar();
 
         MultiSelection model = MultiSelection.New(Store);
-        model.OnSelectionChanged += OnGridSelectionChanged;
+        model.OnSelectionChanged += GridOnSelectionChanged;
 
         Grid.Model = model;
-        Grid.OnActivate += async (sender, args) =>
+        Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
+
+        EventControllerKey contrKey = EventControllerKey.New();
+        Grid.AddController(contrKey);
+        contrKey.OnKeyReleased += async (sender, args) =>
         {
-            if (model.GetObject(args.Position) is Row row)
-                await OpenPageElement(false, row.UnigueID);
+            switch (args.Keyval)
+            {
+                //Помітка на видалення
+                case (uint)Key.Delete:
+                    {
+                        Delete();
+                        break;
+                    }
+                //Новий
+                case (uint)Key.Insert:
+                    {
+                        await OpenPageElement(true);
+                        break;
+                    }
+            }
         };
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
@@ -159,11 +177,9 @@ public abstract class DocumentJournal : FormJournal
     {
         DefaultGrabFocus();
         await BeforeSetValue();
+
+        await LoadRecords();
     }
-
-    #region Toolbar & Menu
-
-    #endregion
 
     #region Virtual & Abstract Function
 
@@ -198,24 +214,35 @@ public abstract class DocumentJournal : FormJournal
     /// </summary>
     /// <param name="filterControl">Контрол Фільтр</param>
     protected virtual void FillFilter(FilterControl filterControl) { }
-
     protected abstract void PeriodChanged();
+    protected virtual async ValueTask SpendTheDocument(UnigueID[] unigueID, bool spendDoc) { await ValueTask.FromResult(true); }
+    protected virtual void ReportSpendTheDocument(UnigueID[] unigueID) { }
+    protected virtual NameValue<Action<UnigueID[]>>[]? SetPrintMenu() { return null; }
+    protected virtual NameValue<Action<UnigueID[]>>[]? SetExportMenu() { return null; }
+    protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
 
-    protected abstract ValueTask SpendTheDocument(UnigueID unigueID, bool spendDoc);
+    #endregion
 
-    protected abstract void ReportSpendTheDocument(UnigueID unigueID);
+    #region Grid
 
-    protected virtual bool IsExportXML() { return false; } //Дозволити експорт
+    /// <summary>
+    /// При активації
+    /// </summary>
+    /// <param name="position">Позиція</param>
+    async ValueTask GridOnActivate(uint position)
+    {
+        MultiSelection model = (MultiSelection)Grid.Model;
+        if (model.GetObject(position) is Row row)
+            if (DocumentPointerItem == null)
+                await OpenPageElement(false, row.UnigueID);
+            else
+            {
+                CallBack_OnSelectPointer?.Invoke(row.UnigueID);
 
-    protected virtual async ValueTask ExportXML(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
-
-    protected virtual bool IsExportExcel() { return false; } //Дозволити експорт
-
-    protected virtual async ValueTask ExportExcel(UnigueID unigueID, string pathToFolder) { await ValueTask.FromResult(true); }
-
-    protected virtual async ValueTask PrintingDoc(UnigueID unigueID) { await ValueTask.FromResult(true); }
-
-    protected virtual async ValueTask VersionsHistory(UnigueID unigueID) { await ValueTask.FromResult(true); }
+                NotebookFunction.CloseNotebookPage(this.GetName());
+                PopoverParent?.Hide();
+            }
+    }
 
     #endregion
 
@@ -275,10 +302,20 @@ public abstract class DocumentJournal : FormJournal
         }
 
         {
+            NameValue<Action<UnigueID[]>>[]? SubMenu()
+            {
+                return
+                [
+                    new ("Відкрити проводки", ReportSpendTheDocument),
+                    new ("Провести", async x=> await SpendTheDocument(x, true)),
+                    new ("Відмінити проведення", async x=> await SpendTheDocument(x, false)),
+                ];
+            }
+
             Button button = Button.NewFromIconName("edit-find");
             button.MarginEnd = 5;
             button.TooltipText = "Проводки";
-            button.OnClicked += OnReportSpendTheDocument;
+            button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());
             ToolbarTop.Append(button);
         }
 
@@ -286,19 +323,7 @@ public abstract class DocumentJournal : FormJournal
             Button button = Button.NewFromIconName("document-print");
             button.MarginEnd = 5;
             button.TooltipText = "Друк";
-            button.OnClicked += (_, _) =>
-            {
-                /*
-                Menu menu = new();
-                menu.Append("Edit", "on_edit");
-                menu.Append("Delete", "on_edit");
-
-                PopoverMenu pop = PopoverMenu.NewFromModel(menu);
-                pop.Position = PositionType.Bottom;
-                pop.SetParent(button);
-                pop.Popup();
-                */
-            };
+            button.OnClicked += (_, _) => CreatePopoverMenu(button, SetPrintMenu());
             ToolbarTop.Append(button);
         }
 
@@ -306,7 +331,15 @@ public abstract class DocumentJournal : FormJournal
             Button button = Button.NewFromIconName("process-working");
             button.MarginEnd = 5;
             button.TooltipText = "Експорт";
-            button.OnClicked += (_, _) => { };
+            button.OnClicked += (_, _) => CreatePopoverMenu(button, SetExportMenu());
+            ToolbarTop.Append(button);
+        }
+
+        {
+            Button button = Button.NewFromIconName("zoom-in");
+            button.MarginEnd = 5;
+            button.TooltipText = "Версії";
+            button.OnClicked += OnVersionsHistory;
             ToolbarTop.Append(button);
         }
     }
@@ -316,14 +349,20 @@ public abstract class DocumentJournal : FormJournal
         await OpenPageElement(true);
     }
 
-    async void OnEdit(Button button, EventArgs args)
+    async void Edit()
     {
         foreach (Row row in GetSelection())
             await OpenPageElement(false, row.UnigueID);
     }
 
+    async void OnEdit(Button button, EventArgs args)
+    {
+        Edit();
+    }
+
     async void OnRefresh(Button sender, EventArgs args)
     {
+        PagesClear();
         await LoadRecords();
     }
 
@@ -332,12 +371,30 @@ public abstract class DocumentJournal : FormJournal
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
             //!!! треба додати app and window і міняти курсор коли йде копіювання або вивести якесь вікно із статусом
-            Message.Request(null, null, "Копіювання", "Копіювати вибрані елементи?", async yesNo =>
+            Message.Request(null, null, "Копіювання", "Копіювати вибрані елементи?", async YN =>
             {
-                if (yesNo == Message.YesNo.Yes)
+                if (YN == Message.YesNo.Yes)
                 {
                     foreach (Row row in rows)
                         SelectPointerItem = await Copy(row.UnigueID);
+
+                    PagesClear();
+                    await LoadRecords();
+                }
+            });
+    }
+
+    void Delete()
+    {
+        List<Row> rows = GetSelection();
+        if (rows.Count > 0)
+            //!!! треба додати app and window і міняти курсор коли йде видалення або вивести якесь вікно із статусом
+            Message.Request(null, null, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
+            {
+                if (YN == Message.YesNo.Yes)
+                {
+                    foreach (Row row in rows)
+                        await SetDeletionLabel(row.UnigueID);
 
                     await LoadRecords();
                 }
@@ -346,19 +403,7 @@ public abstract class DocumentJournal : FormJournal
 
     async void OnDelete(Button button, EventArgs args)
     {
-        List<Row> rows = GetSelection();
-        if (rows.Count > 0)
-            //!!! треба додати app and window і міняти курсор коли йде видалення або вивести якесь вікно із статусом
-            Message.Request(null, null, "Відмітка для видалення", "Відмітити для видалення вибрані елементи?", async yesNo =>
-            {
-                if (yesNo == Message.YesNo.Yes)
-                {
-                    foreach (Row row in rows)
-                        await SetDeletionLabel(row.UnigueID);
-
-                    await LoadRecords();
-                }
-            });
+        Delete();
     }
 
     void OnFilter(Button button, EventArgs args)
@@ -369,9 +414,9 @@ public abstract class DocumentJournal : FormJournal
         Filter.PopoverParent?.Show();
     }
 
-    void OnReportSpendTheDocument(Button button, EventArgs args)
+    async void OnVersionsHistory(Button button, EventArgs args)
     {
-
+        await VersionsHistory(GetGetSelectionUnigueID());
     }
 
     #endregion
