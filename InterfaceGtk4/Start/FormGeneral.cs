@@ -64,7 +64,7 @@ public abstract class FormGeneral : Window
                 //Повнотекстовий пошук
                 {
                     Button button = Button.New();
-                    button.Child = Image.NewFromIconName("find");
+                    button.Child = Image.NewFromIconName("edit-find");
                     button.TooltipText = "Пошук";
                     button.OnClicked += OnButtonFindClicked;
                     headerBar.PackEnd(button);
@@ -96,14 +96,12 @@ public abstract class FormGeneral : Window
 
         SearchEntry entry = new() { WidthRequest = 500 };
 
-        EventControllerKey eventControllerKey = EventControllerKey.New();
-        entry.AddController(eventControllerKey);
-        eventControllerKey.OnKeyReleased += (sender, args) =>
+        EventControllerKey contrKey = EventControllerKey.New();
+        entry.AddController(contrKey);
+        contrKey.OnKeyReleased += (sender, args) =>
         {
-            /*
-            if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter)
-                ButtonFindClicked(((SearchEntry)sender!).Text);
-            */
+            if (args.Keyval == (uint)Gdk.Key.Return || args.Keyval == (uint)Gdk.Key.KP_Enter)
+                ButtonFindClicked(entry.GetText());
         };
 
         Box hBox = Box.New(Orientation.Horizontal, 10);

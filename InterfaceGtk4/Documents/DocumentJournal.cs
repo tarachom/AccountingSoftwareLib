@@ -183,14 +183,8 @@ public abstract class DocumentJournal : FormJournal
 
     #region Virtual & Abstract Function
 
-    //protected virtual Menu? ToolbarNaOsnoviSubMenu() { return null; }
-
-    //protected virtual void PrintingSubMenu(Menu Menu) { }
-
     protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
-
     protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
-
     protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
     /// <summary>
@@ -215,10 +209,39 @@ public abstract class DocumentJournal : FormJournal
     /// <param name="filterControl">Контрол Фільтр</param>
     protected virtual void FillFilter(FilterControl filterControl) { }
     protected abstract void PeriodChanged();
+
+    /// <summary>
+    /// Провести / відмінити проведення документів
+    /// </summary>
+    /// <param name="unigueID">Вибрані елементи</param>
+    /// <param name="spendDoc">Провести / відмінити</param>
     protected virtual async ValueTask SpendTheDocument(UnigueID[] unigueID, bool spendDoc) { await ValueTask.FromResult(true); }
+
+    /// <summary>
+    /// Друк проводок
+    /// </summary>
+    /// <param name="unigueID">Вибрані елементи</param>
     protected virtual void ReportSpendTheDocument(UnigueID[] unigueID) { }
+
+    /// <summary>
+    /// Меню друк
+    /// </summary>
     protected virtual NameValue<Action<UnigueID[]>>[]? SetPrintMenu() { return null; }
+
+    /// <summary>
+    /// Меню експорт
+    /// </summary>
     protected virtual NameValue<Action<UnigueID[]>>[]? SetExportMenu() { return null; }
+
+    /// <summary>
+    /// Меню ввести на основі
+    /// </summary>
+    protected virtual NameValue<Action<UnigueID[]>>[]? SetEnterDocumentBasedMenu() { return null; }
+
+    /// <summary>
+    /// Історія версій
+    /// </summary>
+    /// <param name="unigueID">Вибрані елементи</param>
     protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
 
     #endregion
@@ -316,6 +339,14 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Проводки";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());
+            ToolbarTop.Append(button);
+        }
+
+        {
+            Button button = Button.NewFromIconName("document-open-recent");
+            button.MarginEnd = 5;
+            button.TooltipText = "Ввести на основі";
+            button.OnClicked += (_, _) => CreatePopoverMenu(button, SetEnterDocumentBasedMenu());
             ToolbarTop.Append(button);
         }
 

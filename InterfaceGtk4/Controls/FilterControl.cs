@@ -119,8 +119,8 @@ public class FilterControl : Box
 
                     if (existFilter)
                         Select?.Invoke();
-                    else
-                        Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
+                    //else
+                        //Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
 
                     PopoverParent?.Hide();
                 }

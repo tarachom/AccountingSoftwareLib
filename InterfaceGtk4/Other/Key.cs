@@ -1,3 +1,11 @@
+
+/*
+
+Цей код видертий звідси https://github.com/GtkSharp/GtkSharp
+
+*/
+
+
 namespace Gdk;
 
 public enum Key

@@ -87,9 +87,9 @@ public static class PeriodForJournal
         List<(DateTime Початок, DateTime Кінець)> Квартали =
         [
             (ПочатокРоку, ПочатокРоку.AddMonths(3).AddDays(-1)),              //1                
-                (ПочатокРоку.AddMonths(3), ПочатокРоку.AddMonths(6).AddDays(-1)), //2                
-                (ПочатокРоку.AddMonths(6), ПочатокРоку.AddMonths(9).AddDays(-1)), //3                
-                (ПочатокРоку.AddMonths(9), ПочатокРоку.AddMonths(12).AddDays(-1)) //4
+            (ПочатокРоку.AddMonths(3), ПочатокРоку.AddMonths(6).AddDays(-1)), //2                
+            (ПочатокРоку.AddMonths(6), ПочатокРоку.AddMonths(9).AddDays(-1)), //3                
+            (ПочатокРоку.AddMonths(9), ПочатокРоку.AddMonths(12).AddDays(-1)) //4
         ];
 
         return Квартали;

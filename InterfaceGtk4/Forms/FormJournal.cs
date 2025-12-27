@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 
 /// <summary>
 /// Основа для класів:
-///     DocumentJournal,
+///     DocumentJournal (ДокументЖурнал),
 /// 
 ///     ДовідникЖурнал, 
 ///     ДовідникШвидкийВибір, 
@@ -193,8 +193,17 @@ public abstract class FormJournal : Form
         return rows;
     }
 
+    /// <summary>
+    /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
+    /// </summary>
+    /// <returns>Масив ІД виділених рядків</returns>
     public UnigueID[] GetGetSelectionUnigueID() => [.. GetSelection().Select(x => x.UnigueID)];
 
+    /// <summary>
+    /// Відкриває Popover із списком лінків. Використовується для меню
+    /// </summary>
+    /// <param name="widget">Прикріплення Popover</param>
+    /// <param name="links">Масив лінків</param>
     public void CreatePopoverMenu(Widget widget, NameValue<Action<UnigueID[]>>[]? links)
     {
         if (links != null)
