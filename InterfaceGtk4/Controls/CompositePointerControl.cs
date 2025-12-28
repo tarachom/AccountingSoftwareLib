@@ -219,8 +219,8 @@ public abstract class CompositePointerControl : PointerControl
             bSelectType.Sensitive = TypeSelectSensetive;
             bSelectType.OnClicked += (_, _) =>
             {
-                ВибірТипуДаних(bSelectType, Info);
-                popoverOpenInfo.Hide();
+                ВибірТипуДаних(button, popoverOpenInfo, Info);
+                //popoverOpenInfo.Hide();
             };
 
             hBoxSelect.Append(bSelectType);
@@ -251,7 +251,7 @@ public abstract class CompositePointerControl : PointerControl
     /// Відкриває спливаюче вікно для вибору типу даних
     /// </summary>
     /// <param name="button">Кнопка привязки спливаючого вікна</param>
-    void ВибірТипуДаних(Button button, Action? CallBackSelect = null)
+    void ВибірТипуДаних(Button button, Popover? parent = null, Action? CallBackSelect = null)
     {
         Popover PopoverSelect = Popover.New();
         PopoverSelect.SetParent(button);
@@ -410,6 +410,8 @@ public abstract class CompositePointerControl : PointerControl
 
         PopoverSelect.SetChild(vBoxContainer);
         PopoverSelect.Show();
+
+        parent?.Hide();
     }
 
     /// <summary>
