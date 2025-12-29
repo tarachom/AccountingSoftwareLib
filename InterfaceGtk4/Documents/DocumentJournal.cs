@@ -77,12 +77,6 @@ public abstract class DocumentJournal : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = new(true);
 
-    /// <summary>
-    /// Додатковий ключ форми журналу для налаштувань
-    /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
-    /// </summary>
-    public string KeyForSetting { get; set; } = "";
-
     public DocumentJournal() : base()
     {
         //Кнопки
@@ -178,7 +172,7 @@ public abstract class DocumentJournal : FormJournal
         DefaultGrabFocus();
         await BeforeSetValue();
 
-        await LoadRecords();
+        RunUpdateRecords();
     }
 
     #region Virtual & Abstract Function

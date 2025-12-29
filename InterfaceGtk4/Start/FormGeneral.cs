@@ -79,11 +79,13 @@ public abstract class FormGeneral : Window
         CreateLeftMenu(hBox);
 
         hBox.Append(Notebook = NotebookFunction.CreateNotebook(true, true));
+
+        //Приєднання основвного блокноту до подій ядра
+        NotebookFunction.ConnectingToKernelObjectChangeEvents(kernel);
+
         vBox.Append(StatusBar = Statusbar.New());
 
         Child = vBox;
-
-        //NotebookFunction.ConnectingToKernelObjectChangeEvents(Notebook, kernel);
     }
 
     #region FullTextSearch

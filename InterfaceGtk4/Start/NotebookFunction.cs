@@ -23,15 +23,12 @@ limitations under the License.
 
 using Gdk;
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 public static class NotebookFunction
 {
-    //public const string DataKey_ObjectChangeEvents = "object_change_events";
-    //public const string DataKey_LockObjectPageFunc = "lock_object_page_func";
-
-
     /// <summary>
     /// Історія переключення вкладок для блокнотів
     /// Ключ - назва блокноту
@@ -45,6 +42,11 @@ public static class NotebookFunction
     /// Список - код сторінки і функція
     /// </summary>
     static readonly Dictionary<string, Dictionary<string, Action>> AfterClosePageFunc = [];
+
+    /// <summary>
+    /// 
+    /// </summary>
+    static readonly Dictionary<GroupObjectChangeEvents, List<(string codePage, Action<List<ObjectChanged>> func, string[] pointersType)>> ObjectChangeEventsFunc = [];
 
     /// <summary>
     /// Основний блокнот для форми
@@ -84,9 +86,9 @@ public static class NotebookFunction
             Name = Guid.NewGuid().ToString()
         };
 
-        EventControllerKey controller = EventControllerKey.New();
-        notebook.AddController(controller);
-        controller.OnKeyReleased += (sender, args) =>
+        EventControllerKey contrKey = EventControllerKey.New();
+        notebook.AddController(contrKey);
+        contrKey.OnKeyReleased += (sender, args) =>
         {
             if (notebook.IsFocus())
                 if (args.Keyval == (uint)Key.Escape)
@@ -124,7 +126,14 @@ public static class NotebookFunction
         };
 
         //Встановлення головного блокнота
-        if (isGeneralNotebook) GeneralNotebook = notebook;
+        if (isGeneralNotebook)
+        {
+            GeneralNotebook = notebook;
+
+            //Структура для функцій реакцій на зміни об'єктів, початкове заповнення
+            ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Directory, []);
+            ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Document, []);
+        }
 
         //Обробка переключення вкладок
         if (historySwitchList)
@@ -143,6 +152,7 @@ public static class NotebookFunction
                 }
             };
         }
+
 
         /*
         //Структура для функцій реакцій на зміни об'єктів
@@ -308,10 +318,14 @@ public static class NotebookFunction
                         codePageAndFunc.Remove(codePage);
                     }
 
+                //Очищення вказівників на функції реакції на зміни об'єктів
+                foreach (var item in ObjectChangeEventsFunc.Values)
+                    item.RemoveAll(x => x.codePage == codePage);
+
                 /*
                 //Очищення вказівників на функції реакції на зміни об'єктів
                 var objectChangeEvents = GetDataObjectChangeEvents(notebook);
-                if (objectChangeEvents != null)
+                if (ObjectChangeEvents != null)
                 {
                     foreach (var item in objectChangeEvents.Values)
                         item.RemoveAll(x => x.codePage == codePage);
@@ -472,4 +486,94 @@ public static class NotebookFunction
     /// <param name="pageName">Назва</param>
     /// <returns>Обрізана назва</returns>
     public static string SubstringPageName(string pageName) => pageName.Length >= 23 ? pageName[..19] + " ..." : pageName;
+
+    #region ObjectChangeEvents
+
+    /*
+
+    Цей блок використовується для прив'язки до блокнота функцій оновлення журналів документів та довідників після змін об'єктів.
+    Прив'язка функції відбувається до сторінки блокноту.
+    Коли сторінка блокноту закривається прив'язана функція видаляється.
+
+    ConnectingToKernelObjectChangeEvents викликається після запуску програми один раз для ініціалізації.
+
+    AddChangeFunc викликається із журналу довідника чи документу для привязки функції.
+    AddChangeFuncJournal викликається із журналу документів для прив'язки функції.
+
+    */
+
+    /// <summary>
+    /// Підключення до подій зміни об’єкта
+    /// </summary>
+    /// <param name="notebook">Блокнот</param>
+    /// <param name="kernel">Ядро</param>
+    public static void ConnectingToKernelObjectChangeEvents(Kernel kernel)
+    {
+        //Внутрішня функція для виклику функцій реакції на зміни об'єктів
+        static void InvokeObjectChangeEvents(GroupObjectChangeEvents group, Dictionary<string, List<ObjectChanged>> directoryOrDocument)
+        {
+            if (ObjectChangeEventsFunc[group].Count > 0)
+                try
+                {
+                    foreach (var (_, func, pointersType) in ObjectChangeEventsFunc[group])
+                    {
+                        List<ObjectChanged> listChanged = [];
+                        foreach (string pointerType in pointersType)
+                            if (directoryOrDocument.TryGetValue(pointerType, out var value))
+                                listChanged.AddRange(value);
+
+                        if (listChanged.Count > 0)
+                            func.Invoke(listChanged);
+                    }
+                }
+                catch (Exception) { }
+        }
+
+        //Зміни в довідниках
+        kernel.DirectoryObjectChanged += (_, directory) => InvokeObjectChangeEvents(GroupObjectChangeEvents.Directory, directory);
+
+        //Зміни в документах
+        kernel.DocumentObjectChanged += (_, document) => InvokeObjectChangeEvents(GroupObjectChangeEvents.Document, document);
+    }
+
+    /// <summary>
+    /// Добавлення функції реакції на зміни об'єктів
+    /// </summary>
+    /// <param name="notebook">Блокнот</param>
+    /// <param name="codePage">Код сторінки</param>
+    /// <param name="func">Функція</param>
+    /// <param name="pointerPattern">Фільтр по типу даних</param>
+    public static void AddChangeFunc(string codePage, Action<List<ObjectChanged>> func, string pointerPattern)
+    {
+        var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
+
+        GroupObjectChangeEvents group = pointerGroup switch
+        {
+            "Довідники" => GroupObjectChangeEvents.Directory,
+            "Документи" => GroupObjectChangeEvents.Document,
+            _ => throw ex ?? new Exception("Тільки 'Довідники' або 'Документи'")
+        };
+
+        ObjectChangeEventsFunc[group].Add((codePage, func, [pointerType]));
+    }
+
+    /// <summary>
+    /// Добавлення функції реакції на зміни об'єктів для журналу документів
+    /// </summary>
+    /// <param name="notebook">Блокнот</param>
+    /// <param name="codePage">Код сторінки</param>
+    /// <param name="func">Функція</param>
+    /// <param name="typeDocs">Типи документів які належать журналу</param>
+    public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Action<List<ObjectChanged>> func, string[] allowDocument)
+    {
+        ObjectChangeEventsFunc?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
+    }
+
+    enum GroupObjectChangeEvents
+    {
+        Directory,
+        Document
+    }
+
+    #endregion
 }

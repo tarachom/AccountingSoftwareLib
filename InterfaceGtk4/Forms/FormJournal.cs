@@ -40,6 +40,8 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class FormJournal : Form
 {
+
+
     /// <summary>
     /// Вспливаюче вікно власник даної форми
     /// </summary>
@@ -86,6 +88,25 @@ public abstract class FormJournal : Form
     /// </summary>
     public bool CompositeMode { get; set; } = false;
 
+    /// <summary>
+    /// Назва типу як задано в конфігураторі
+    /// </summary>
+    public string TypeName { get; set; } = "";
+
+    /// <summary>
+    /// Додатковий ключ форми журналу для налаштувань
+    /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
+    /// </summary>
+    public string? KeyForSetting { get; set; }
+
+    /// <summary>
+    /// Ключ форми - текстовий ключ з типу та додаткового ключа
+    /// </summary>
+    public string FormKey
+    {
+        get => TypeName + (!string.IsNullOrEmpty(KeyForSetting) ? $".{KeyForSetting}" : "");
+    }
+
     public FormJournal()
     {
         EventControllerKey contrKey = EventControllerKey.New();
@@ -98,7 +119,11 @@ public abstract class FormJournal : Form
                 await LoadRecords();
             }
         };
+
+        OnEnqueueRecordsChangedQueue += async (sender, args) => await UpdateRecords();
     }
+
+    #region Func
 
     /// <summary>
     /// Перед початком завантаження даних в Store
@@ -251,6 +276,107 @@ public abstract class FormJournal : Form
         }
     }
 
+    #endregion
+
+    #region UpdateRecords
+
+    /// <summary>
+    /// Черга для змінених об'єктів
+    /// </summary>
+    public Queue<List<ObjectChanged>> RecordsChangedQueue { get; } = [];
+
+    /// <summary>
+    /// Блокування черги
+    /// </summary>
+    public readonly Lock Loсked = new();
+
+    /// <summary>
+    /// Подія яка виникає після поміщення змінених об'єктів у чергу
+    /// </summary>
+    event EventHandler? OnEnqueueRecordsChangedQueue;
+
+    /// <summary>
+    /// Привязка функції для відслідковування зміни об'єктів
+    /// </summary>
+    protected void RunUpdateRecords()
+    {
+        NotebookFunction.AddChangeFunc(GetName(),
+            //Записи які були змінені
+            records =>
+            {
+                //Нові записи зразу поміщаються у список
+                List<ObjectChanged> added = records.FindAll(x => x.Type == TypeObjectChanged.Add);
+                List<ObjectChanged> filtered = added;
+
+                //та видаляються
+                if (added.Count > 0)
+                {
+                    records.RemoveAll(x => x.Type == TypeObjectChanged.Add);
+
+                    //Додатково треба буде перерахувати сторінки
+                    PagesClear();
+                }
+
+                //Видалення записів із Store які були видалені
+                if (records.Count > 0)
+                {
+                    List<ObjectChanged> delete = records.FindAll(x => x.Type == TypeObjectChanged.Delete);
+                    if (delete.Count > 0)
+                    {
+                        foreach (var record in delete)
+                            for (uint i = 0; i < Store.GetNItems(); i++)
+                            {
+                                Row? row = (Row?)Store.GetObject(i);
+                                if (row != null && row.UnigueID.UGuid.Equals(record.Uid))
+                                {
+                                    Store.Remove(i);
+                                    break;
+                                }
+                            }
+
+                        records.RemoveAll(x => x.Type == TypeObjectChanged.Delete);
+
+                        //Додатково треба буде перерахувати сторінки
+                        PagesClear();
+                    }
+                }
+
+                //Перевірка чи присутні у таблиці записи які були змінені
+                if (records.Count > 0)
+                    for (uint i = 0; i < Store.GetNItems(); i++)
+                    {
+                        if (records.Count == 0)
+                            break;
+
+                        Row? row = (Row?)Store.GetObject(i);
+                        if (row != null)
+                        {
+                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UnigueID.UGuid));
+                            if (obj != null)
+                            {
+                                filtered.Add(obj);
+                                records.RemoveAll(x => x.Uid.Equals(row.UnigueID.UGuid));
+                            }
+                        }
+                    }
+
+                if (filtered.Count > 0)
+                {
+                    //Добавлення в чергу
+                    lock (Loсked)
+                    {
+                        RecordsChangedQueue.Enqueue(filtered);
+                    }
+
+                    OnEnqueueRecordsChangedQueue?.Invoke(null, new());
+                }
+            },
+            //Відбір по типу
+            TypeName);
+    }
+
+    #endregion
+
     #region Virtual & Abstract Function
 
     /// <summary>
@@ -272,6 +398,11 @@ public abstract class FormJournal : Form
     /// Завантаження списку
     /// </summary>
     public abstract ValueTask LoadRecords();
+
+    /// <summary>
+    /// Оновлення списку
+    /// </summary>
+    public abstract ValueTask UpdateRecords();
 
     #endregion
 
