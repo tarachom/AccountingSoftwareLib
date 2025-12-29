@@ -40,8 +40,6 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class FormJournal : Form
 {
-
-
     /// <summary>
     /// Вспливаюче вікно власник даної форми
     /// </summary>
@@ -116,6 +114,7 @@ public abstract class FormJournal : Form
             //Оновлення сторінки
             if (args.Keyval == (uint)Key.F5)
             {
+                PagesClear();
                 await LoadRecords();
             }
         };

@@ -403,8 +403,8 @@ public abstract class DocumentJournal : FormJournal
                     foreach (Row row in rows)
                         SelectPointerItem = await Copy(row.UnigueID);
 
-                    PagesClear();
-                    await LoadRecords();
+                    //PagesClear();
+                    //await LoadRecords();
                 }
             });
     }
@@ -421,7 +421,7 @@ public abstract class DocumentJournal : FormJournal
                     foreach (Row row in rows)
                         await SetDeletionLabel(row.UnigueID);
 
-                    await LoadRecords();
+                    //await LoadRecords();
                 }
             });
     }
