@@ -27,6 +27,7 @@ limitations under the License.
 
 */
 
+using System.Text;
 using Gtk;
 
 namespace InterfaceGtk4;
@@ -51,7 +52,6 @@ public class LogMessage : Box
         //Верх
         {
             vBox = New(Orientation.Vertical, 0);
-            //vBox.Hexpand = vBox.Vexpand = true;
 
             scrollMessage = ScrolledWindow.New();
             scrollMessage.Vexpand = true;
@@ -168,20 +168,20 @@ public class LogMessage : Box
     {
         if (textTerminal != null && textTerminal.Buffer != null && scrollTextTerminal != null)
         {
+            //Очистка
             if (textTerminal.Buffer.GetLineCount() > MaxLineTextTerminal)
             {
                 textTerminal.Buffer.GetIterAtLine(out TextIter iterStart, 0);
                 textTerminal.Buffer.GetIterAtLine(out TextIter iterEnd, 100);
-
                 textTerminal.Buffer.Delete(iterStart, iterEnd);
             }
 
+            //Поміщення курсору в кінець тексту
             textTerminal.Buffer.GetEndIter(out TextIter iterEndText);
             textTerminal.Buffer.PlaceCursor(iterEndText);
 
             string text = message + "\n";
-
-            textTerminal.Buffer.InsertAtCursor(text, text.Length);
+            textTerminal.Buffer.InsertAtCursor(text, Encoding.UTF8.GetBytes(text).Length);
 
             scrollTextTerminal.Vadjustment?.Value = scrollTextTerminal.Vadjustment.Upper;
         }
@@ -257,16 +257,6 @@ public class LogMessage : Box
         textTerminal?.Buffer?.Text = "";
     }
 
-    /// <summary>
-    /// Максимальна кількість рядків в Лог
-    /// </summary>
-    public int MaxLine { get; set; } = 100;
-
-    /// <summary>
-    ///  Максимальна кількість рядків в текстовому терміналі
-    /// </summary>
-    public int MaxLineTextTerminal { get; set; } = 500;
-
     void TrimMessage()
     {
         int maxChildren = MaxLine;
@@ -281,6 +271,16 @@ public class LogMessage : Box
             child = next;
         }
     }
+
+    /// <summary>
+    /// Максимальна кількість рядків в Лог
+    /// </summary>
+    public int MaxLine { get; set; } = 100;
+
+    /// <summary>
+    ///  Максимальна кількість рядків в текстовому терміналі
+    /// </summary>
+    public int MaxLineTextTerminal { get; set; } = 500;
 
     public enum TypeMessage
     {

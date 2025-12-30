@@ -36,10 +36,7 @@ public class Validate
     /// </summary>
     /// <param name="text">Значення</param>
     /// <returns></returns>
-    public static (bool, int) IsInt(string text)
-    {
-        return (int.TryParse(text, out int value), value);
-    }
+    public static (bool, int) IsInt(string text) => (int.TryParse(text, out int value), value);
 
     /// <summary>
     /// Чи це число з комою
@@ -49,7 +46,7 @@ public class Validate
     public static (bool, decimal) IsDecimal(string text)
     {
         // Треба протестувати чи варто заміняти крапку на кому на інших мовах операційної системи
-        if (text.Contains('.', StringComparison.CurrentCulture))
+        if (text.Contains('.'))
             text = text.Replace(".", ",");
 
         return (decimal.TryParse(text, out decimal value), value);
@@ -60,18 +57,12 @@ public class Validate
     /// </summary>
     /// <param name="text">Значення</param>
     /// <returns></returns>
-    public static (bool, DateTime) IsDateTime(string text)
-    {
-        return (DateTime.TryParse(text, out DateTime value), value);
-    }
-
+    public static (bool, DateTime) IsDateTime(string text) => (DateTime.TryParse(text, out DateTime value), value);
+    
     /// <summary>
     /// Чи це час
     /// </summary>
     /// <param name="text">Значення</param>
     /// <returns></returns>
-    public static (bool, TimeSpan) IsTime(string text)
-    {
-        return (TimeSpan.TryParse(text, out TimeSpan value), value);
-    }
+    public static (bool, TimeSpan) IsTime(string text) => (TimeSpan.TryParse(text, out TimeSpan value), value);
 }

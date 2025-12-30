@@ -149,7 +149,7 @@ public abstract class FormJournal : Form
         //Виділення рядка і прокрутка сторінки
         if (selectPosition > 0)
         {
-            Grid.Model.SelectItem(selectPosition - 1, true);
+            Grid.Model.SelectItem(selectPosition - 1, false);
             ScrollTo(selectPosition);
         }
     }
@@ -432,7 +432,7 @@ public abstract class FormJournal : Form
 
     protected void PagesClear() => PagesSettings.Clear();
 
-    public void SetPagesSettings(int size, Pages.StartingPosition position = InterfaceGtk4.Pages.StartingPosition.Start)
+    public void SetPagesSettings(int size, Pages.StartingPosition position = Pages.StartingPosition.Start)
     {
         PageSize = size;
         PageStartingPosition = position;
