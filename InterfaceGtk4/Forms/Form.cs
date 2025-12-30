@@ -34,7 +34,6 @@ public abstract class Form : Box
     public Form() : base()
     {
         SetOrientation(Orientation.Vertical);
-
         MarginStart = MarginTop = MarginBottom = MarginEnd = 5;
     }
 

@@ -56,6 +56,8 @@ public static class ForInformation
     public static Pixbuf? Lock = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/lock.png");
     public static Pixbuf? Key = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/key.png");
     public static Pixbuf? Synchronizing = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/synchronizing.png");
+
+    public static Pixbuf? Check = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/check.png");
 }
 
 /// <summary>
