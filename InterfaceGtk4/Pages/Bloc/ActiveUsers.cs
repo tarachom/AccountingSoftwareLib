@@ -77,7 +77,10 @@ public partial class ActiveUsers : Box
         label.UseMarkup = true;
         hBoxCaption.Append(label);
 
-        Grid = ColumnView.New(SingleSelection.New(Store));
+        SingleSelection model = SingleSelection.New(Store);
+        model.Autoselect = true;
+
+        Grid = ColumnView.New(model);
         Columns();
 
         ScrolledWindow ScrollGrid = ScrolledWindow.New();

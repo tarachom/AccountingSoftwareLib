@@ -146,11 +146,11 @@ public abstract class FormJournal : Form
             PageStartingPosition == Pages.StartingPosition.End && PagesSettings.CurrentPage == PagesSettings.Record.Pages)
             selectPosition = Store.NItems;
 
-        //Виділення рядка і прокрутка сторінки
+        //Виділення рядка
         if (selectPosition > 0)
         {
             Grid.Model.SelectItem(selectPosition - 1, false);
-            ScrollTo(selectPosition);
+            Grid.Vadjustment?.Upper += 0.01;
         }
     }
 
@@ -158,16 +158,15 @@ public abstract class FormJournal : Form
     /// Прокрутка
     /// </summary>
     /// <param name="selectPosition"></param>
-    void ScrollTo(uint selectPosition)
+    protected void ScrollTo(uint selectPosition)
     {
         uint rowCount = Store.GetNItems();
-
         if (rowCount > 0 && Grid.Vadjustment != null)
         {
             double pageSize = Grid.Vadjustment.PageSize;
             double upper = Grid.Vadjustment.Upper;
 
-            if (pageSize > 0 && upper > 0 && upper > pageSize)
+            if (pageSize > 0 && upper > 0 && upper >= pageSize)
             {
                 double rowHeidth = upper / rowCount;
                 double value = rowHeidth * selectPosition;
@@ -506,10 +505,10 @@ public abstract class FormJournal : Form
                     link.Name = i.ToString();
                     link.OnActivateLink += (_, _) =>
                     {
+                        async void f() => await LoadRecords();
                         PagesSettings.CurrentPage = int.Parse(link.Name);
                         HBoxPages.Sensitive = false;
-                        LoadRecords();
-
+                        f();
                         return true;
                     };
 

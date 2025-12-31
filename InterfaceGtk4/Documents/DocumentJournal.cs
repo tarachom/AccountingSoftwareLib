@@ -165,6 +165,13 @@ public abstract class DocumentJournal : FormJournal
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         Append(ScrollPages);
+
+        //Прокрутка до виділеного рядка
+        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        {
+            Bitset selection = Grid.Model.GetSelection();
+            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
+        };
     }
 
     public override async ValueTask SetValue()
