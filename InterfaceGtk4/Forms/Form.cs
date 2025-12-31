@@ -31,10 +31,17 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class Form : Box
 {
-    public Form() : base()
+    /// <summary>
+    /// Оновний блокнот
+    /// </summary>
+    protected NotebookFunction? Notebook { get; }
+
+    public Form(NotebookFunction? notebook)
     {
         SetOrientation(Orientation.Vertical);
         MarginStart = MarginTop = MarginBottom = MarginEnd = 5;
+
+        Notebook = notebook;
     }
 
     #region Link
@@ -258,9 +265,9 @@ public abstract class Form : Box
 
     #region Spinner
 
-    public void SpinnerOn() => NotebookFunction.SpinnerNotebookPage(GetName());
+    public void SpinnerOn() => Notebook?.SpinnerPage(GetName());
 
-    public void SpinnerOff() => NotebookFunction.SpinnerNotebookPage(GetName(), false);
+    public void SpinnerOff() => Notebook?.SpinnerPage(GetName(), false);
 
     #endregion
 }

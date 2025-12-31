@@ -28,5 +28,5 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class ConstantTablePart : FormTablePart
 {
-    public ConstantTablePart() { }
+    public ConstantTablePart(NotebookFunction? notebook) : base(notebook) { }
 }

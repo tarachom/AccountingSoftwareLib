@@ -44,7 +44,7 @@ public abstract class FormProcessing : Form
     //Лог
     protected virtual LogMessage Log { get; set; } = new LogMessage();
 
-    public FormProcessing()
+    public FormProcessing(NotebookFunction? notebook) : base(notebook)
     {
         //Кнопки
         HBoxTop.MarginBottom = 10;

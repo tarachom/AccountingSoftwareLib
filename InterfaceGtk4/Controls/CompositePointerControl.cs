@@ -32,14 +32,16 @@ public abstract class CompositePointerControl : PointerControl
     Kernel Kernel { get; set; }
     string NameSpageProgram { get; set; }
     string NameSpageCodeGeneration { get; set; }
+    NotebookFunction? Notebook { get; set; }
     Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
     event EventHandler<UuidAndText>? PointerChanged;
 
-    public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration)
+    public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration, NotebookFunction? notebook)
     {
         Kernel = kernel;
         NameSpageProgram = nameSpageProgram;
         NameSpageCodeGeneration = nameSpageCodeGeneration;
+        Notebook = notebook;
 
         PointerChanged += OnPointerChanged;
 
@@ -56,7 +58,6 @@ public abstract class CompositePointerControl : PointerControl
     #region Virtual & Abstract Function
 
     protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
-    protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
 
     #endregion
 
@@ -135,10 +136,7 @@ public abstract class CompositePointerControl : PointerControl
                         listPage.GetType().GetProperty("DirectoryPointerItem")?.SetValue(listPage, pointer.UnigueID());
 
                     //Функція зворотнього виклику при виборі
-                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UnigueID selectPointer) =>
-                    {
-                        Pointer = new UuidAndText(selectPointer.UGuid, GetBasisName());
-                    });
+                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UnigueID selectPointer) => Pointer = new UuidAndText(selectPointer.UGuid, GetBasisName()));
                 }
 
                 //Заголовок журналу з константи конфігурації
@@ -149,7 +147,7 @@ public abstract class CompositePointerControl : PointerControl
                         listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
                 }
 
-                CreateNotebookPage(listName, () => (Widget)listPage);
+                Notebook?.CreatePage(listName, () => (Widget)listPage);
 
                 listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
             }
@@ -201,7 +199,7 @@ public abstract class CompositePointerControl : PointerControl
         //Інформація про тип даних
         {
             Box hBoxInfo = New(Orientation.Horizontal, 0);
-            hBoxInfo.MarginEnd = 5;
+            hBoxInfo.MarginBottom = 5;
             hBoxInfo.Append(labelInfo);
             vBoxContainer.Append(hBoxInfo);
 
@@ -262,7 +260,7 @@ public abstract class CompositePointerControl : PointerControl
         {
             PointerName = p;
             TypeCaption = t;
-            Pointer = new UuidAndText(Guid.Empty, GetBasisName());
+            Pointer = new UuidAndText(GetBasisName());
 
             CallBackSelect?.Invoke();
             PopoverSelect.Hide();
@@ -352,6 +350,7 @@ public abstract class CompositePointerControl : PointerControl
             scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scrollList.WidthRequest = 300;
             scrollList.HeightRequest = 400;
+            scrollList.HasFrame = true;
             scrollList.SetChild(listBox);
 
             vBox.Append(scrollList);
@@ -392,6 +391,7 @@ public abstract class CompositePointerControl : PointerControl
             scrollList.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scrollList.WidthRequest = 300;
             scrollList.HeightRequest = 400;
+            scrollList.HasFrame = true;
             scrollList.SetChild(listBox);
 
             vBox.Append(scrollList);

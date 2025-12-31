@@ -33,17 +33,12 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class FunctionForDynamicOpen(string namespaceProgram, string namespaceCodeGeneration)
+public abstract class FunctionForDynamicOpen(string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebook)
 {
     string NamespaceProgram { get; set; } = namespaceProgram;
     string NamespaceCodeGeneration { get; set; } = namespaceCodeGeneration;
+    NotebookFunction? Notebook { get; set; } = notebook;
     Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
-
-    #region Virtual & Abstract Function
-
-    protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
-
-    #endregion
 
     /// <summary>
     /// Функція відкриває журнал
@@ -70,7 +65,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
             //Документ який потрібно виділити в списку
             journal.SelectPointerItem = unigueID;
-            CreateNotebookPage(typeJournal, () => journal);
+            
+            Notebook?.CreatePage(typeJournal, () => journal);
             journal.SetValue();
         }
     }
@@ -113,7 +109,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         if (directoryConst != null)
                             listName = directoryConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-                        CreateNotebookPage(listName, () => directory);
+                        Notebook?.CreatePage(listName, () => directory);
                         directory.SetValue();
                     }
                     break;
@@ -170,8 +166,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         if (!string.IsNullOrEmpty(keyForSetting))
                             document.KeyForSetting = keyForSetting;
 
-                        CreateNotebookPage(listName, () => document);
-
+                        Notebook?.CreatePage(listName, () => document);
                         document.SetValue();
                     }
                     break;
@@ -219,7 +214,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             if (documentConst != null)
                 listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-            CreateNotebookPage(listName, () => register);
+            Notebook?.CreatePage(listName, () => register);
             register.SetValue();
         }
     }
@@ -257,7 +252,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             if (documentConst != null)
                 listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-            CreateNotebookPage(listName, () => register);
+            Notebook?.CreatePage(listName, () => register);
             register.SetValue();
         }
     }
@@ -265,9 +260,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <summary>
     /// Список документів для журналу у спливаючому вікні
     /// </summary>
-    /// <param name="relative_to">Прив'язка Popover</param>
+    /// <param name="parent">Прив'язка Popover</param>
     /// <param name="allowDocument">Колекція</param>
-    public void OpenDocumentListForJournal(Widget relative_to, Dictionary<string, string> allowDocument)
+    public void OpenDocumentListForJournal(Widget parent, Dictionary<string, string> allowDocument)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -285,7 +280,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
 
         Popover popover = Popover.New();
-        popover.SetParent(relative_to);
+        popover.SetParent(parent);
         popover.Position = PositionType.Bottom;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
         popover.SetChild(vBox);

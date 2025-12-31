@@ -77,10 +77,10 @@ public abstract class DocumentJournal : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = new(true);
 
-    public DocumentJournal() : base()
+    public DocumentJournal(NotebookFunction? notebook) : base(notebook)
     {
         //Кнопки
-        HBoxTop.MarginBottom = 5;
+        HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
 
         //Період
@@ -256,7 +256,7 @@ public abstract class DocumentJournal : FormJournal
             {
                 CallBack_OnSelectPointer?.Invoke(row.UnigueID);
 
-                NotebookFunction.CloseNotebookPage(this.GetName());
+                Notebook?.ClosePage(this.GetName());
                 PopoverParent?.Hide();
             }
     }
@@ -267,7 +267,7 @@ public abstract class DocumentJournal : FormJournal
 
     void Toolbar()
     {
-        ToolbarTop.MarginBottom = 5;
+        ToolbarTop.MarginBottom = 6;
         Append(ToolbarTop);
 
         {

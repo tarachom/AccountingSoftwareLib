@@ -27,46 +27,31 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public static class NotebookFunction
+public class NotebookFunction
 {
     /// <summary>
     /// Історія переключення вкладок для блокнотів
     /// Ключ - назва блокноту
     /// Список - коди сторінок
     /// </summary>
-    static readonly Dictionary<string, List<string>> HistorySwitch = [];
+    readonly Dictionary<string, List<string>> HistorySwitch = [];
 
     /// <summary>
     /// Функції які будуть викликані після закриття сторінки блокнотів
     /// Ключ - назва блокноту
     /// Список - код сторінки і функція
     /// </summary>
-    static readonly Dictionary<string, Dictionary<string, Action>> AfterClosePageFunc = [];
+    readonly Dictionary<string, Dictionary<string, Action>> AfterClosePageFunc = [];
 
     /// <summary>
-    /// 
+    /// Функції для оновлення змінених об'єктів
     /// </summary>
-    static readonly Dictionary<GroupObjectChangeEvents, List<(string codePage, Action<List<ObjectChanged>> func, string[] pointersType)>> ObjectChangeEventsFunc = [];
+    readonly Dictionary<GroupObjectChangeEvents, List<(string codePage, Action<List<ObjectChanged>> action, string[] pointersType)>> ObjectChangeEventsFunc = [];
 
     /// <summary>
-    /// Основний блокнот для форми
-    /// Може бути тільки один основний блокнот на даний момент
+    /// Основний блокнот
     /// </summary>
-    static Notebook? generalNotebook;
-    public static Notebook? GeneralNotebook
-    {
-        get
-        {
-            return generalNotebook;
-        }
-        set
-        {
-            if (generalNotebook is null)
-                generalNotebook = value;
-            else
-                throw new Exception("Головний блокнот вже встановлений!");
-        }
-    }
+    public Notebook? Notebook { get; private set; }
 
     /// <summary>
     /// Функція створює блокнот з верхнім положенням вкладок
@@ -74,9 +59,9 @@ public static class NotebookFunction
     /// <param name="historySwitchList">Збереження історії переключення вкладок</param>
     /// <param name="isGeneralNotebook">Чи це головний блокнот?</param>
     /// <returns>Notebook</returns>
-    public static Notebook CreateNotebook(bool historySwitchList = true, bool isGeneralNotebook = false)
+    public void CreateNotebook(bool historySwitchList = true)
     {
-        Notebook notebook = new()
+        Notebook = new()
         {
             Scrollable = true,
             ShowBorder = false,
@@ -87,16 +72,16 @@ public static class NotebookFunction
         };
 
         EventControllerKey contrKey = EventControllerKey.New();
-        notebook.AddController(contrKey);
+        Notebook.AddController(contrKey);
         contrKey.OnKeyReleased += (sender, args) =>
         {
-            if (notebook.IsFocus())
+            if (Notebook.IsFocus())
                 if (args.Keyval == (uint)Key.Escape)
                 {
-                    Widget? wg = notebook.GetNthPage(notebook.GetCurrentPage());
+                    Widget? wg = Notebook.GetNthPage(Notebook.GetCurrentPage());
                     if (wg != null)
                     {
-                        Box? tabLabel = (Box?)notebook.GetTabLabel(wg);
+                        Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
                         if (tabLabel != null)
                         {
                             Widget? child = tabLabel.GetFirstChild();
@@ -112,7 +97,7 @@ public static class NotebookFunction
                                         string? codePage = bClose.Name;
 
                                         if (codePage != null)
-                                            CloseNotebookPage(notebook, codePage);
+                                            ClosePage(codePage);
                                     }
 
                                     break;
@@ -125,24 +110,18 @@ public static class NotebookFunction
                 }
         };
 
-        //Встановлення головного блокнота
-        if (isGeneralNotebook)
-        {
-            GeneralNotebook = notebook;
-
-            //Структура для функцій реакцій на зміни об'єктів, початкове заповнення
-            ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Directory, []);
-            ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Document, []);
-        }
+        //Структура для функцій реакцій на зміни об'єктів, початкове заповнення
+        ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Directory, []);
+        ObjectChangeEventsFunc.Add(GroupObjectChangeEvents.Document, []);
 
         //Обробка переключення вкладок
         if (historySwitchList)
         {
-            HistorySwitch.Add(notebook.Name, []);
+            HistorySwitch.Add(Notebook.Name, []);
 
-            notebook.OnSwitchPage += (_, args) =>
+            Notebook.OnSwitchPage += (_, args) =>
             {
-                string? currNotebookName = notebook.Name;
+                string? currNotebookName = Notebook.Name;
                 string? currPageName = args.Page.Name;
 
                 if (currNotebookName != null && currPageName != null && HistorySwitch.TryGetValue(currNotebookName, out List<string>? listPageName))
@@ -153,22 +132,10 @@ public static class NotebookFunction
             };
         }
 
-
         /*
-        //Структура для функцій реакцій на зміни об'єктів
-        notebook.Data.Add(DataKey_ObjectChangeEvents,
-            new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] pointersType)>>
-            {
-                    { GroupObjectChangeEvents.Directory, [] },
-                    { GroupObjectChangeEvents.Document, [] }
-            }
-        );
-
         //Структура для функцій розблокування об'єктів
         notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<ValueTask>>());
         */
-
-        return notebook;
     }
 
     /// <summary>
@@ -186,11 +153,11 @@ public static class NotebookFunction
     /// <param name="afterClosePageFunc">Функція яка викликається після закриття сторінки блокноту</param>
     /// <param name="noClosePage">Забрати можливість закривати сторінку</param>
     /// <returns>Код сторінки</returns>
-    public static string CreateNotebookPage(Notebook? notebook, string tabName, Func<Widget>? pageWidget, bool insertPage = false,
+    public string CreatePage(string tabName, Func<Widget>? pageWidget, bool insertPage = false,
         Action? beforeOpenPageFunc = null, Action? afterClosePageFunc = null, bool noClosePage = false)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо створити сторінку!");
-        string notebookName = notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо створити сторінку!");
+        string notebookName = Notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
 
         int numPage;
         string codePage = Guid.NewGuid().ToString();
@@ -198,12 +165,12 @@ public static class NotebookFunction
         ScrolledWindow scroll = new() { Name = codePage };
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
-        Box hBoxLabel = CreateTabLabelPageWidget(notebook, tabName, codePage, noClosePage);
+        Box hBoxLabel = CreateTabLabelPageWidget(tabName, codePage, noClosePage);
 
         if (insertPage)
-            numPage = notebook.InsertPage(scroll, hBoxLabel, notebook.GetCurrentPage());
+            numPage = Notebook.InsertPage(scroll, hBoxLabel, Notebook.GetCurrentPage());
         else
-            numPage = notebook.AppendPage(scroll, hBoxLabel);
+            numPage = Notebook.AppendPage(scroll, hBoxLabel);
 
         if (pageWidget != null)
         {
@@ -213,7 +180,7 @@ public static class NotebookFunction
         }
 
         //Переміщення сторінок
-        notebook.SetTabReorderable(scroll, true);
+        Notebook.SetTabReorderable(scroll, true);
 
         //Додаткова функція яка викликається зразу після відкриття сторінки блокноту
         beforeOpenPageFunc?.Invoke();
@@ -225,17 +192,13 @@ public static class NotebookFunction
             else
                 AfterClosePageFunc.Add(notebookName, new Dictionary<string, Action>() { { codePage, afterClosePageFunc } });
 
-        notebook.SetCurrentPage(numPage);
-        notebook.GrabFocus();
+        Notebook.SetCurrentPage(numPage);
+        Notebook.GrabFocus();
 
         return codePage;
     }
 
-    public static string CreateNotebookPage(string tabName, Func<Widget>? pageWidget, bool insertPage = false, Action? beforeOpenPageFunc = null, Action? afterClosePageFunc = null, bool notClosePage = false) =>
-        CreateNotebookPage(GeneralNotebook, tabName, pageWidget, insertPage, beforeOpenPageFunc, afterClosePageFunc, notClosePage);
-
-    public static string CreateNotebookPage(string tabName, Widget? pageWidget) =>
-        CreateNotebookPage(GeneralNotebook, tabName, pageWidget != null ? () => pageWidget : null);
+    public string CreatePage(string tabName, Widget? pageWidget) => CreatePage(tabName, pageWidget != null ? () => pageWidget : null);
 
     /// <summary>
     /// Заголовок сторінки блокноту з кнопкою для закриття самої сторінки
@@ -245,7 +208,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="noClosePage">Забрати можливість закривати сторінку</param>
     /// <returns>НBox</returns>
-    static Box CreateTabLabelPageWidget(Notebook notebook, string caption, string codePage, bool noClosePage = false)
+    Box CreateTabLabelPageWidget(string caption, string codePage, bool noClosePage = false)
     {
         Box hBox = Box.New(Orientation.Horizontal, 0);
 
@@ -277,7 +240,7 @@ public static class NotebookFunction
             button.Child = Image.NewFromIconName("window-close-symbolic");
             button.Name = codePage;
             button.TooltipText = "Закрити";
-            button.OnClicked += (sender, args) => CloseNotebookPage(notebook, codePage);
+            button.OnClicked += (sender, args) => ClosePage(codePage);
 
             vBoxClose.Append(button);
         }
@@ -290,14 +253,14 @@ public static class NotebookFunction
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="codePage">Код</param>
-    public static void CloseNotebookPage(Notebook? notebook, string codePage)
+    public void ClosePage(string codePage)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо закрити сторінку!");
-        string notebookName = notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо закрити сторінку!");
+        string notebookName = Notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
 
-        for (int i = 0; i < notebook.GetNPages(); i++)
+        for (int i = 0; i < Notebook.GetNPages(); i++)
         {
-            Widget? wg = notebook.GetNthPage(i);
+            Widget? wg = Notebook.GetNthPage(i);
             if (wg?.Name == codePage)
             {
                 //Історія переключення сторінок
@@ -307,7 +270,7 @@ public static class NotebookFunction
 
                     //Встановлення поточної сторінки, яка остання в списку
                     if (codePageList.Count > 0)
-                        CurrentNotebookPage(notebook, codePageList[^1]);
+                        CurrentPage(codePageList[^1]);
                 }
 
                 //Додаткова функція яка викликається після закриття сторінки блокноту
@@ -323,14 +286,6 @@ public static class NotebookFunction
                     item.RemoveAll(x => x.codePage == codePage);
 
                 /*
-                //Очищення вказівників на функції реакції на зміни об'єктів
-                var objectChangeEvents = GetDataObjectChangeEvents(notebook);
-                if (ObjectChangeEvents != null)
-                {
-                    foreach (var item in objectChangeEvents.Values)
-                        item.RemoveAll(x => x.codePage == codePage);
-                }
-
                 //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
                 var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
                 if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
@@ -340,7 +295,7 @@ public static class NotebookFunction
                 }
                 */
 
-                notebook.DetachTab(wg);
+                Notebook.DetachTab(wg);
                 GC.Collect();
 
                 break;
@@ -348,24 +303,22 @@ public static class NotebookFunction
         }
     }
 
-    public static void CloseNotebookPage(string codePage) => CloseNotebookPage(GeneralNotebook, codePage);
-
     /// <summary>
     /// Відображення спінера або іконки
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="active">Спінер якшо true, Іконка якщо false</param>
     /// <param name="codePage">Код сторінки</param>
-    public static void SpinnerNotebookPage(Notebook? notebook, bool active, string codePage)
+    public void SpinnerPage(bool active, string codePage)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити спінер!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити спінер!");
 
-        for (int i = 0; i < notebook.GetNPages(); i++)
+        for (int i = 0; i < Notebook.GetNPages(); i++)
         {
-            Widget? wg = notebook.GetNthPage(i);
+            Widget? wg = Notebook.GetNthPage(i);
             if (wg?.Name == codePage)
             {
-                Box? tabLabel = (Box?)notebook.GetTabLabel(wg);
+                Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
                 if (tabLabel != null)
                 {
                     Widget? child = tabLabel.GetFirstChild();
@@ -389,8 +342,7 @@ public static class NotebookFunction
         }
     }
 
-    public static void SpinnerNotebookPage(bool active, string codePage) => SpinnerNotebookPage(GeneralNotebook, active, codePage);
-    public static void SpinnerNotebookPage(string codePage, bool active = true) => SpinnerNotebookPage(GeneralNotebook, active, codePage);
+    public void SpinnerPage(string codePage, bool active = true) => SpinnerPage(active, codePage);
 
     /// <summary>
     /// Перейменувати сторінку по коду
@@ -398,16 +350,16 @@ public static class NotebookFunction
     /// <param name="notebook">Блокнот</param>
     /// <param name="caption">Нова назва</param>
     /// <param name="codePage">Код</param>
-    public static void RenameNotebookPage(Notebook? notebook, string caption, string codePage)
+    public void RenamePage(string caption, string codePage)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо перейменувати сторінку!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо перейменувати сторінку!");
 
-        for (int i = 0; i < notebook.GetNPages(); i++)
+        for (int i = 0; i < Notebook.GetNPages(); i++)
         {
-            Widget? wg = notebook.GetNthPage(i);
+            Widget? wg = Notebook.GetNthPage(i);
             if (wg?.Name == codePage)
             {
-                Box? tabLabel = (Box?)notebook.GetTabLabel(wg);
+                Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
                 if (tabLabel != null)
                 {
                     Widget? child = tabLabel.GetFirstChild();
@@ -429,23 +381,21 @@ public static class NotebookFunction
         }
     }
 
-    public static void RenameNotebookPage(string caption, string codePage) => RenameNotebookPage(GeneralNotebook, caption, codePage);
-
     /// <summary>
     /// Встановлення поточної сторінки по коду
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="codePage">Код</param>
-    public static void CurrentNotebookPage(Notebook? notebook, string codePage)
+    public void CurrentPage(string codePage)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити поточну сторінку!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити поточну сторінку!");
 
-        for (int i = 0; i < notebook.GetNPages(); i++)
+        for (int i = 0; i < Notebook.GetNPages(); i++)
         {
-            Widget? wg = notebook.GetNthPage(i);
+            Widget? wg = Notebook.GetNthPage(i);
             if (wg?.Name == codePage)
             {
-                notebook.SetCurrentPage(i);
+                Notebook.SetCurrentPage(i);
 
                 //Передати фокус
                 if (wg is ScrolledWindow scroll && scroll.Child is Viewport viewport)
@@ -454,21 +404,19 @@ public static class NotebookFunction
         }
     }
 
-    public static void CurrentNotebookPage(string codePage) => CurrentNotebookPage(GeneralNotebook, codePage);
-
     /// <summary>
     /// Блокування чи розблокування поточної сторінки по коду
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="codePage">Код</param>
     /// <param name="sensitive">Значення</param>
-    public static void SensitiveNotebookPage(Notebook? notebook, bool sensitive, string codePage)
+    public void SensitivePage(bool sensitive, string codePage)
     {
-        if (notebook is null) throw new Exception("Блокнот не заданий, неможливо заблокувати/розблокувати поточну сторінку!");
+        if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо заблокувати/розблокувати поточну сторінку!");
 
-        for (int i = 0; i < notebook.GetNPages(); i++)
+        for (int i = 0; i < Notebook.GetNPages(); i++)
         {
-            Widget? wg = notebook.GetNthPage(i);
+            Widget? wg = Notebook.GetNthPage(i);
             if (wg?.Name == codePage)
             {
                 wg.Sensitive = sensitive;
@@ -477,8 +425,7 @@ public static class NotebookFunction
         }
     }
 
-    public static void SensitiveNotebookPage(bool sensitive, string codePage) => SensitiveNotebookPage(GeneralNotebook, sensitive, codePage);
-    public static void SensitiveNotebookPage(string codePage, bool sensitive = true) => SensitiveNotebookPage(GeneralNotebook, sensitive, codePage);
+    public void SensitivePage(string codePage, bool sensitive = true) => SensitivePage(sensitive, codePage);
 
     /// <summary>
     /// Обрізати ім'я для сторінки
@@ -507,10 +454,10 @@ public static class NotebookFunction
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="kernel">Ядро</param>
-    public static void ConnectingToKernelObjectChangeEvents(Kernel kernel)
+    public void ConnectingToKernelEvent(Kernel kernel)
     {
         //Внутрішня функція для виклику функцій реакції на зміни об'єктів
-        static void InvokeObjectChangeEvents(GroupObjectChangeEvents group, Dictionary<string, List<ObjectChanged>> directoryOrDocument)
+        void InvokeObjectChangeEvents(GroupObjectChangeEvents group, Dictionary<string, List<ObjectChanged>> directoryOrDocument)
         {
             if (ObjectChangeEventsFunc[group].Count > 0)
                 try
@@ -543,7 +490,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="func">Функція</param>
     /// <param name="pointerPattern">Фільтр по типу даних</param>
-    public static void AddChangeFunc(string codePage, Action<List<ObjectChanged>> func, string pointerPattern)
+    public void AddChangeFunc(string codePage, Action<List<ObjectChanged>> func, string pointerPattern)
     {
         var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
 
@@ -564,7 +511,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="func">Функція</param>
     /// <param name="typeDocs">Типи документів які належать журналу</param>
-    public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Action<List<ObjectChanged>> func, string[] allowDocument)
+    public void AddChangeFuncJournal(Notebook? notebook, string codePage, Action<List<ObjectChanged>> func, string[] allowDocument)
     {
         ObjectChangeEventsFunc?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
     }

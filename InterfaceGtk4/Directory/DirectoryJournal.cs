@@ -72,10 +72,10 @@ public abstract class DirectoryJournal : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = new();
 
-    public DirectoryJournal() : base()
+    public DirectoryJournal(NotebookFunction? notebook) : base(notebook)
     {
         //Кнопки
-        HBoxTop.MarginBottom = 5;
+        HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
 
         //Пошук
@@ -227,7 +227,7 @@ public abstract class DirectoryJournal : FormJournal
             {
                 CallBack_OnSelectPointer?.Invoke(row.UnigueID);
 
-                NotebookFunction.CloseNotebookPage(this.GetName());
+                Notebook?.ClosePage(this.GetName());
                 PopoverParent?.Hide();
             }
     }
@@ -238,7 +238,7 @@ public abstract class DirectoryJournal : FormJournal
 
     void Toolbar()
     {
-        ToolbarTop.MarginBottom = 5;
+        ToolbarTop.MarginBottom = 6;
         Append(ToolbarTop);
 
         {

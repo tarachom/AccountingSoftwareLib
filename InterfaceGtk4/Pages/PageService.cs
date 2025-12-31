@@ -43,8 +43,9 @@ public abstract class PageService : Form
 
     protected PeriodControl Period = new();
     LogMessage Log = new();
+    protected const string KeyForSettings = "PageService";
 
-    public PageService(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration) : base()
+    public PageService(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebook) : base(notebook)
     {
         Kernel = kernel;
         NamespaceProgram = namespaceProgram;

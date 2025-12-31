@@ -30,10 +30,10 @@ namespace InterfaceGtk4;
 public abstract class FormGeneral : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
-    Kernel Kernel { get; set; }
+    public NotebookFunction Notebook { get; } = new();
 
-    protected Notebook Notebook;
-    protected Statusbar StatusBar;
+    Kernel Kernel { get; set; }
+    protected Statusbar StatusBar = Statusbar.New();
 
     public FormGeneral(Application? app, Kernel kernel) : base()
     {
@@ -47,7 +47,22 @@ public abstract class FormGeneral : Window
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
-            headerBar.TitleWidget = Label.New($"{Kernel.Conf.Name} - {Kernel.Conf.Subtitle}");
+
+            //Назва
+            {
+                Box box = Box.New(Orientation.Vertical, 0);
+
+                Label title = Label.New(Kernel.Conf.Name);
+                title.AddCssClass("title");
+                box.Append(title);
+
+                Label subtitle = Label.New(Kernel.Conf.Subtitle);
+                subtitle.AddCssClass("subtitle");
+                box.Append(subtitle);
+
+                headerBar.TitleWidget = box;
+            }
+
             Titlebar = headerBar;
 
             //Блок кнопок у шапці головного вікна
@@ -66,7 +81,7 @@ public abstract class FormGeneral : Window
                     Button button = Button.New();
                     button.Child = Image.NewFromIconName("edit-find");
                     button.TooltipText = "Пошук";
-                    button.OnClicked += OnButtonFindClicked;
+                    button.OnClicked += OnFindClicked;
                     headerBar.PackEnd(button);
                 }
             }
@@ -78,19 +93,18 @@ public abstract class FormGeneral : Window
 
         CreateLeftMenu(hBox);
 
-        hBox.Append(Notebook = NotebookFunction.CreateNotebook(true, true));
+        Notebook.CreateNotebook(true);
+        Notebook.ConnectingToKernelEvent(kernel); //Приєднання до подій ядра
+        hBox.Append(Notebook.Notebook ?? throw new Exception("Помилка створення блокноту"));
 
-        //Приєднання основвного блокноту до подій ядра
-        NotebookFunction.ConnectingToKernelObjectChangeEvents(kernel);
+        vBox.Append(StatusBar);
 
-        vBox.Append(StatusBar = Statusbar.New());
-
-        Child = vBox;
+        SetChild(vBox);
     }
 
     #region FullTextSearch
 
-    void OnButtonFindClicked(Button button, EventArgs args)
+    void OnFindClicked(Button button, EventArgs args)
     {
         Popover popover = Popover.New();
         popover.Position = PositionType.Bottom;
@@ -106,7 +120,7 @@ public abstract class FormGeneral : Window
                 ButtonFindClicked(entry.GetText());
         };
 
-        Box hBox = Box.New(Orientation.Horizontal, 10);
+        Box hBox = Box.New(Orientation.Horizontal, 0);
         hBox.Append(entry);
 
         popover.SetChild(hBox);
@@ -119,17 +133,20 @@ public abstract class FormGeneral : Window
 
     protected abstract void ButtonMessageClicked();
     protected abstract void ButtonFindClicked(string text);
-    protected abstract void ВідкритиДокументВідповідноДоВиду(string name);
-    protected abstract void ВідкритиДовідникВідповідноДоВиду(string name);
-    protected abstract void ВідкритиЖурналВідповідноДоВиду(string name);
-    protected abstract void ВідкритиРегістрВідомостейВідповідноДоВиду(string name);
-    protected abstract void ВідкритиРегістрНакопиченняВідповідноДоВиду(string name);
+    protected abstract void OpenDocumentByType(string name);
+    protected abstract void OpenDirectoryByType(string name);
+    protected abstract void OpenJournalByType(string name);
+    protected abstract void OpenRegisterInformationByType(string name);
+    protected abstract void OpenRegisterAccumulationByType(string name);
+    protected abstract void Settings(LinkButton link);
+    protected abstract void Service(LinkButton link);
+    protected abstract void Processing(LinkButton link);
 
-    protected virtual void МенюДокументи(Box vBox) { }
-    protected virtual void МенюДовідники(Box vBox) { }
-    protected virtual void МенюЖурнали(Box vBox) { }
-    protected virtual void МенюЗвіти(Box vBox) { }
-    protected virtual void МенюРегістри(Box vBox) { }
+    protected virtual void MenuDocuments(Box vBox) { }
+    protected virtual void MenuDirectory(Box vBox) { }
+    protected virtual void MenuJournals(Box vBox) { }
+    protected virtual void MenuReports(Box vBox) { }
+    protected virtual void MenuRegisters(Box vBox) { }
 
     #endregion
 
@@ -172,19 +189,19 @@ public abstract class FormGeneral : Window
             vBox.Append(link);
         }
 
-        Add("Документи", Документи, "documents.png");
-        Add("Журнали", Журнали, "journal.png");
-        Add("Звіти", Звіти, "report.png");
-        Add("Довідники", Довідники, "directory.png");
-        Add("Регістри", Регістри, "register.png");
-        Add("Сервіс", Сервіс, "service.png");
-        Add("Обробки", Обробки, "working.png");
-        Add("Налаштування", Налаштування, "preferences.png");
+        Add("Документи", Documents, "documents.png");
+        Add("Журнали", Journals, "journal.png");
+        Add("Звіти", Reports, "report.png");
+        Add("Довідники", Directory, "directory.png");
+        Add("Регістри", Registers, "register.png");
+        Add("Сервіс", Service, "service.png");
+        Add("Обробки", Processing, "working.png");
+        Add("Налаштування", Settings, "preferences.png");
 
         hbox.Append(scroll);
     }
 
-    void Документи(LinkButton link)
+    void Documents(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -213,7 +230,7 @@ public abstract class FormGeneral : Window
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
                     if (selectedRow != null && selectedRow.Name != null)
-                        ВідкритиДокументВідповідноДоВиду(selectedRow.Name);
+                        OpenDocumentByType(selectedRow.Name);
                 }
             };
 
@@ -235,7 +252,7 @@ public abstract class FormGeneral : Window
             }
         }
 
-        МенюДокументи(vBox);
+        MenuDocuments(vBox);
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
@@ -244,7 +261,7 @@ public abstract class FormGeneral : Window
         popover.Show();
     }
 
-    void Довідники(LinkButton link)
+    void Directory(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -273,7 +290,7 @@ public abstract class FormGeneral : Window
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
                     if (selectedRow != null && selectedRow.Name != null)
-                        ВідкритиДовідникВідповідноДоВиду(selectedRow.Name);
+                        OpenDirectoryByType(selectedRow.Name);
                 }
             };
 
@@ -295,7 +312,7 @@ public abstract class FormGeneral : Window
             }
         }
 
-        МенюДовідники(vBox);
+        MenuDirectory(vBox);
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
@@ -304,7 +321,7 @@ public abstract class FormGeneral : Window
         popover.Show();
     }
 
-    void Журнали(LinkButton link)
+    void Journals(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -333,7 +350,7 @@ public abstract class FormGeneral : Window
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
                     if (selectedRow != null && selectedRow.Name != null)
-                        ВідкритиЖурналВідповідноДоВиду(selectedRow.Name);
+                        OpenJournalByType(selectedRow.Name);
                 }
             };
 
@@ -355,7 +372,7 @@ public abstract class FormGeneral : Window
             }
         }
 
-        МенюЖурнали(vBox);
+        MenuJournals(vBox);
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
@@ -364,11 +381,11 @@ public abstract class FormGeneral : Window
         popover.Show();
     }
 
-    void Звіти(LinkButton link)
+    void Reports(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
-        МенюЗвіти(vBox);
+        MenuReports(vBox);
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
@@ -377,7 +394,7 @@ public abstract class FormGeneral : Window
         popover.Show();
     }
 
-    void Регістри(LinkButton link)
+    void Registers(LinkButton link)
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
@@ -412,7 +429,7 @@ public abstract class FormGeneral : Window
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
                         if (selectedRow != null && selectedRow.Name != null)
-                            ВідкритиРегістрВідомостейВідповідноДоВиду(selectedRow.Name);
+                            OpenRegisterInformationByType(selectedRow.Name);
                     }
                 };
 
@@ -453,7 +470,7 @@ public abstract class FormGeneral : Window
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
                         if (selectedRow != null && selectedRow.Name != null)
-                            ВідкритиРегістрНакопиченняВідповідноДоВиду(selectedRow.Name);
+                            OpenRegisterAccumulationByType(selectedRow.Name);
                     }
                 };
 
@@ -476,7 +493,7 @@ public abstract class FormGeneral : Window
             }
         }
 
-        МенюРегістри(vBox);
+        MenuRegisters(vBox);
 
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
@@ -484,10 +501,6 @@ public abstract class FormGeneral : Window
         popover.Child = vBox;
         popover.Show();
     }
-
-    protected abstract void Налаштування(LinkButton link);
-    protected abstract void Сервіс(LinkButton link);
-    protected abstract void Обробки(LinkButton link);
 
     #endregion
 

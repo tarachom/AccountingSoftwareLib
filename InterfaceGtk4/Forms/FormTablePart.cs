@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class FormTablePart : Form
 {
-    public FormTablePart()
+    public FormTablePart(NotebookFunction? notebook) : base(notebook)
     {
         
     }

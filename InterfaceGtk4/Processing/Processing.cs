@@ -28,5 +28,5 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class Processing : FormProcessing
 {
-    public Processing() { }
+    public Processing(NotebookFunction? notebook) : base(notebook) { }
 }

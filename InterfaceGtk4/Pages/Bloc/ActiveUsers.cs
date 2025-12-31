@@ -33,7 +33,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public partial class ActiveUsers : Form
+public partial class ActiveUsers : Box
 {
     [Subclass<GObject.Object>]
     partial class ItemRow
@@ -62,29 +62,30 @@ public partial class ActiveUsers : Form
 
     ColumnView Grid { get; }
 
-    public ActiveUsers(Kernel kernel, int widthRequest = 800, int heightRequest = 500) : base()
+    public ActiveUsers(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
     {
+        SetOrientation(Orientation.Vertical);
+
         Kernel = kernel;
         Kernel.UpdateSession += async (sender, args) => await LoadRecords();
 
         Box hBoxCaption = New(Orientation.Horizontal, 0);
-        hBoxCaption.MarginTop = hBoxCaption.MarginBottom = 5;
+        hBoxCaption.MarginBottom = 5;
+        Append(hBoxCaption);
 
         Label label = Label.New("<b>Сесії користувачів</b>");
         label.UseMarkup = true;
-        label.MarginBottom = 5;
         hBoxCaption.Append(label);
-        Append(hBoxCaption);
 
         Grid = ColumnView.New(SingleSelection.New(Store));
         Columns();
 
-        ScrolledWindow scroll = ScrolledWindow.New();
-        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        scroll.WidthRequest = widthRequest;
-        scroll.HeightRequest = heightRequest;
-        scroll.SetChild(Grid);
-        Append(scroll);
+        ScrolledWindow ScrollGrid = ScrolledWindow.New();
+        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+        ScrollGrid.WidthRequest = widthRequest;
+        ScrollGrid.HeightRequest = heightRequest;
+        ScrollGrid.SetChild(Grid);
+        Append(ScrollGrid);
     }
 
     async ValueTask LoadRecords()

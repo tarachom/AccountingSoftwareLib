@@ -30,8 +30,8 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Основа для класів:
 ///     DocumentJournal (ДокументЖурнал),
-/// 
-///     ДовідникЖурнал, 
+///     DirectoryJournal (ДовідникЖурнал),
+///     
 ///     ДовідникШвидкийВибір, 
 ///     Журнал, 
 ///     РегістриВідомостейЖурнал, 
@@ -105,7 +105,7 @@ public abstract class FormJournal : Form
         get => TypeName + (!string.IsNullOrEmpty(KeyForSetting) ? $".{KeyForSetting}" : "");
     }
 
-    public FormJournal()
+    public FormJournal(NotebookFunction? notebook) : base(notebook)
     {
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);
@@ -299,7 +299,7 @@ public abstract class FormJournal : Form
     /// </summary>
     protected void RunUpdateRecords()
     {
-        NotebookFunction.AddChangeFunc(GetName(),
+        Notebook?.AddChangeFunc(GetName(),
             //Записи які були змінені
             records =>
             {
@@ -496,7 +496,7 @@ public abstract class FormJournal : Form
                 {
                     Label labelPage = Label.New($"<b>{i}</b>");
                     labelPage.UseMarkup = true;
-                    labelPage.MarginStart = labelPage.MarginEnd = 19;
+                    labelPage.MarginStart = labelPage.MarginEnd = 20;
 
                     HBoxPages.Append(labelPage);
                 }
@@ -520,7 +520,7 @@ public abstract class FormJournal : Form
                 {
                     Label labeSpace = Label.New("..");
                     labeSpace.UseMarkup = true;
-                    labeSpace.MarginStart = labeSpace.MarginEnd = 19;
+                    labeSpace.MarginStart = labeSpace.MarginEnd = 20;
 
                     HBoxPages.Append(labeSpace);
                     writeSpace = true;
