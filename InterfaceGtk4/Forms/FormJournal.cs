@@ -144,7 +144,7 @@ public abstract class FormJournal : Form
         //Позиціювання на останньому елементі вибірки у випадку Pages.StartingPosition.End
         if (selectPosition == 0 && Store.GetNItems() > 0 && SelectPointerItem == null &&
             PageStartingPosition == Pages.StartingPosition.End && PagesSettings.CurrentPage == PagesSettings.Record.Pages)
-            selectPosition = Store.NItems;
+            selectPosition = Store.GetNItems();
 
         //Виділення рядка
         if (selectPosition > 0)
