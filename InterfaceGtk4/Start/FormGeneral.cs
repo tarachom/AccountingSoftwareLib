@@ -51,7 +51,7 @@ public abstract class FormGeneral : Window
             //Назва
             {
                 Box box = Box.New(Orientation.Vertical, 0);
-
+                box.Valign =  box.Halign = Align.Center;
                 Label title = Label.New(Kernel.Conf.Name);
                 title.AddCssClass("title");
                 box.Append(title);
