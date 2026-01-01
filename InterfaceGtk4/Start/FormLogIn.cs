@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -35,6 +36,7 @@ class FormLogIn : Window
 
     ComboBoxText comboBoxAllUsers;
     PasswordEntry passwordUser;
+    Button? buttonAuth;
 
     public FormLogIn(Application? app) : base()
     {
@@ -44,6 +46,14 @@ class FormLogIn : Window
         Modal = true;
 
         SetIconName("gtk");
+
+        EventControllerKey eventContrKey = EventControllerKey.New();
+        eventContrKey.OnKeyReleased += (_, args) =>
+        {
+            if (args.Keyval == (uint)Key.Escape)
+                OnCancel(null, new());
+        };
+        AddController(eventContrKey);
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         vBox.MarginStart = vBox.MarginEnd = vBox.MarginTop = vBox.MarginBottom = 10;
@@ -63,9 +73,9 @@ class FormLogIn : Window
             comboBoxAllUsers = new ComboBoxText() { WidthRequest = 200 };
 
             //Заборона прокрутки
-            EventControllerScroll controller = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
-            comboBoxAllUsers.AddController(controller);
-            controller.OnScroll += (sender, args) => true;
+            EventControllerScroll contr = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
+            comboBoxAllUsers.AddController(contr);
+            contr.OnScroll += (sender, args) => true;
 
             grid.Attach(comboBoxAllUsers, 1, row, 1, 1);
         }
@@ -80,16 +90,19 @@ class FormLogIn : Window
 
             passwordUser = new PasswordEntry() { WidthRequest = 200, ShowPeekIcon = true };
 
-            EventControllerKey controller = EventControllerKey.New();
-            passwordUser.AddController(controller);
-            controller.OnKeyReleased += (sender, args) =>
+            //Контролєр для поля пароль
+            EventControllerKey contr = EventControllerKey.New();
+            passwordUser.AddController(contr);
+            contr.OnKeyReleased += (_, args) =>
             {
-                /*
-                
-                */
+                if (args.Keyval == (uint)Key.KP_Enter || args.Keyval == (uint)Key.Return)
+                    OnLogIn(buttonAuth, new());
             };
 
             grid.Attach(passwordUser, 1, row, 1, 1);
+
+            //Фокус для поля
+            OnShow += (_, _) => passwordUser.GrabFocus();
         }
 
         Separator separator = Separator.New(Orientation.Vertical);
@@ -103,13 +116,10 @@ class FormLogIn : Window
             vBox.Append(hBox);
 
             {
-                Button button = Button.NewWithLabel("Авторизація");
-                button.MarginStart = button.MarginEnd = 3;
-                button.OnClicked += OnLogIn;
-                hBox.Append(button);
-
-                //Фокус для кнопки
-                OnShow += (_, _) => button.GrabFocus();
+                buttonAuth = Button.NewWithLabel("Авторизація");
+                buttonAuth.MarginStart = buttonAuth.MarginEnd = 3;
+                buttonAuth.OnClicked += OnLogIn;
+                hBox.Append(buttonAuth);
             }
 
             {
@@ -136,11 +146,11 @@ class FormLogIn : Window
         }
     }
 
-    async void OnLogIn(Button button, EventArgs args)
+    async void OnLogIn(Button? button, EventArgs args)
     {
         if (ProgramKernel != null && comboBoxAllUsers.ActiveId != null)
         {
-            button.Sensitive = false;
+            button?.Sensitive = false;
 
             if (await ProgramKernel.UserLogIn(comboBoxAllUsers.ActiveId, passwordUser.GetText(), TypeOpenForm))
             {
@@ -152,11 +162,11 @@ class FormLogIn : Window
             else
                 Message.Error(Application, this, "Помилка", "Невірний пароль");
 
-            button.Sensitive = true;
+            button?.Sensitive = true;
         }
     }
 
-    void OnCancel(Button button, EventArgs args)
+    void OnCancel(Button? button, EventArgs args)
     {
         CallBack_ResponseCancel?.Invoke();
         ThisClose();

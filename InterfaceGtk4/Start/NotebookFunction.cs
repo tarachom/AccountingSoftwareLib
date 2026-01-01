@@ -30,6 +30,16 @@ namespace InterfaceGtk4;
 public class NotebookFunction
 {
     /// <summary>
+    /// Основний блокнот
+    /// </summary>
+    public Notebook? Notebook { get; private set; }
+
+    /// <summary>
+    /// Основне вікно
+    /// </summary>
+    public Window? GenaralForm { get; private set; }
+
+    /// <summary>
     /// Історія переключення вкладок для блокнотів
     /// Ключ - назва блокноту
     /// Список - коди сторінок
@@ -49,18 +59,15 @@ public class NotebookFunction
     readonly Dictionary<GroupObjectChangeEvents, List<(string codePage, Action<List<ObjectChanged>> action, string[] pointersType)>> ObjectChangeEventsFunc = [];
 
     /// <summary>
-    /// Основний блокнот
-    /// </summary>
-    public Notebook? Notebook { get; private set; }
-
-    /// <summary>
     /// Функція створює блокнот з верхнім положенням вкладок
     /// </summary>
     /// <param name="historySwitchList">Збереження історії переключення вкладок</param>
     /// <param name="isGeneralNotebook">Чи це головний блокнот?</param>
     /// <returns>Notebook</returns>
-    public void CreateNotebook(bool historySwitchList = true)
+    public void CreateNotebook(Window? generalForm, bool historySwitchList = true)
     {
+        GenaralForm = generalForm;
+
         Notebook = new()
         {
             Scrollable = true,
@@ -452,7 +459,6 @@ public class NotebookFunction
     /// <summary>
     /// Підключення до подій зміни об’єкта
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="kernel">Ядро</param>
     public void ConnectingToKernelEvent(Kernel kernel)
     {
@@ -460,20 +466,16 @@ public class NotebookFunction
         void InvokeObjectChangeEvents(GroupObjectChangeEvents group, Dictionary<string, List<ObjectChanged>> directoryOrDocument)
         {
             if (ObjectChangeEventsFunc[group].Count > 0)
-                try
+                foreach (var (_, action, pointersType) in ObjectChangeEventsFunc[group])
                 {
-                    foreach (var (_, func, pointersType) in ObjectChangeEventsFunc[group])
-                    {
-                        List<ObjectChanged> listChanged = [];
-                        foreach (string pointerType in pointersType)
-                            if (directoryOrDocument.TryGetValue(pointerType, out var value))
-                                listChanged.AddRange(value);
+                    List<ObjectChanged> listChanged = [];
+                    foreach (string pointerType in pointersType)
+                        if (directoryOrDocument.TryGetValue(pointerType, out var value))
+                            listChanged.AddRange(value);
 
-                        if (listChanged.Count > 0)
-                            func.Invoke(listChanged);
-                    }
+                    if (listChanged.Count > 0)
+                        action.Invoke(listChanged);
                 }
-                catch (Exception) { }
         }
 
         //Зміни в довідниках

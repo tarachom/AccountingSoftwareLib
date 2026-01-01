@@ -175,6 +175,7 @@ public abstract class PageService : Form
 
                 ScrolledWindow scroll = ScrolledWindow.New();
                 scroll.HeightRequest = 500;
+                scroll.HasFrame = true;
                 scroll.SetPolicy(PolicyType.Never, PolicyType.Automatic);
                 scroll.SetChild(listBoxAllowDoc);
 

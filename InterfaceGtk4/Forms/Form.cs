@@ -34,7 +34,17 @@ public abstract class Form : Box
     /// <summary>
     /// Оновний блокнот
     /// </summary>
-    protected NotebookFunction? Notebook { get; }
+    protected NotebookFunction? Notebook { get; private set; }
+
+    /// <summary>
+    /// Основне вікно з блокнота
+    /// </summary>
+    protected Window? GeneralForm { get => Notebook?.GenaralForm; }
+
+    /// <summary>
+    /// Основна програма з вікна
+    /// </summary>
+    protected Application? GeneralApp { get => Notebook?.GenaralForm?.Application; }
 
     public Form(NotebookFunction? notebook)
     {

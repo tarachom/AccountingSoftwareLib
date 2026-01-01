@@ -53,14 +53,14 @@ public abstract class DirectoryJournal : FormJournal
     public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
-    /// Верхній набір меню
-    /// </summary>
-    protected Box ToolbarTop { get; } = New(Orientation.Horizontal, 0);
-
-    /// <summary>
     /// Верхній бок для додаткових кнопок
     /// </summary>
     protected Box HBoxTop { get; } = New(Orientation.Horizontal, 0);
+
+    /// <summary>
+    /// Верхній набір меню
+    /// </summary>
+    protected Box HBoxToolbarTop { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Пошук
@@ -83,7 +83,7 @@ public abstract class DirectoryJournal : FormJournal
             Search.MarginEnd = 2;
             Search.Select = async x =>
             {
-                Filter.IsFiltered = false;
+                TypeWhereState = TypeWhere.Search;
                 SetSearch(x);
 
                 PagesClear();
@@ -91,6 +91,7 @@ public abstract class DirectoryJournal : FormJournal
             };
             Search.Clear = async () =>
             {
+                TypeWhereState = TypeWhere.Standart;
                 WhereList = null;
 
                 PagesClear();
@@ -104,11 +105,14 @@ public abstract class DirectoryJournal : FormJournal
             Filter.MarginEnd = 2;
             Filter.Select = async () =>
             {
+                TypeWhereState = TypeWhere.Filter;
+
                 PagesClear();
                 await LoadRecords();
             };
             Filter.Clear = async () =>
             {
+                TypeWhereState = TypeWhere.Standart;
                 WhereList = null;
 
                 PagesClear();
@@ -119,6 +123,12 @@ public abstract class DirectoryJournal : FormJournal
 
         Toolbar();
 
+        //Інформування про стан відборів
+        TypeWhereStateInfo.MarginStart = 8;
+        TypeWhereStateInfo.MarginEnd = 10;
+        HBoxToolbarTop.Append(TypeWhereStateInfo);
+
+        //Модель
         MultiSelection model = MultiSelection.New(Store);
         model.OnSelectionChanged += GridOnSelectionChanged;
 
@@ -245,15 +255,15 @@ public abstract class DirectoryJournal : FormJournal
 
     void Toolbar()
     {
-        ToolbarTop.MarginBottom = 6;
-        Append(ToolbarTop);
+        HBoxToolbarTop.MarginBottom = 6;
+        Append(HBoxToolbarTop);
 
         {
             Button button = Button.NewFromIconName("new");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -261,7 +271,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -269,7 +279,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -277,7 +287,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -285,7 +295,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -293,7 +303,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -301,7 +311,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Друк";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetPrintMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -309,7 +319,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Експорт";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetExportMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -317,7 +327,7 @@ public abstract class DirectoryJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Версії";
             button.OnClicked += OnVersionsHistory;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
     }
 
@@ -339,16 +349,14 @@ public abstract class DirectoryJournal : FormJournal
 
     async void OnRefresh(Button sender, EventArgs args)
     {
-        PagesClear();
-        await LoadRecords();
+        await Refresh();
     }
 
     async void OnCopy(Button button, EventArgs args)
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            //!!! треба додати app and window і міняти курсор коли йде копіювання або вивести якесь вікно із статусом
-            Message.Request(null, null, "Копіювання", "Копіювати вибрані елементи?", async YN =>
+            Message.Request(GeneralApp, GeneralForm, "Копіювання", "Копіювати вибрані елементи?", async YN =>
             {
                 if (YN == Message.YesNo.Yes)
                 {
@@ -365,8 +373,7 @@ public abstract class DirectoryJournal : FormJournal
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            //!!! треба додати app and window і міняти курсор коли йде видалення або вивести якесь вікно із статусом
-            Message.Request(null, null, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
+            Message.Request(GeneralApp, GeneralForm, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
             {
                 if (YN == Message.YesNo.Yes)
                 {

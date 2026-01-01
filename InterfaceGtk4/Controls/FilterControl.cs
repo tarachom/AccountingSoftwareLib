@@ -68,19 +68,13 @@ public class FilterControl : Box
     public ListBox FilterList { get; private set; } = new ListBox() { SelectionMode = SelectionMode.None, Hexpand = true };
 
     /// <summary>
-    /// Період із журналу
-    /// </summary>
-    public PeriodControl? Період { get; set; } = null;
-
-    /// <summary>
     /// Галочка яка вказує на те що потрібно враховувати період у фільтрі
     /// </summary>
-    public CheckButton UsePeriod { get; private set; } = CheckButton.NewWithLabel("В межах періоду");
+    CheckButton UsePeriod { get; set; } = CheckButton.NewWithLabel("В межах періоду");
 
     public FilterControl(bool usePeriod = false)
     {
         SetOrientation(Orientation.Vertical);
-        //Hexpand = Vexpand = true;
 
         //В межах періоду
         if (usePeriod)
@@ -115,12 +109,11 @@ public class FilterControl : Box
                 if (FilterList.GetFirstChild() != null)
                 {
                     bool existFilter = GetWhere?.Invoke() ?? false;
-                    IsFiltered = existFilter;
 
                     if (existFilter)
                         Select?.Invoke();
                     //else
-                        //Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
+                    //Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
 
                     PopoverParent?.Hide();
                 }
@@ -137,9 +130,7 @@ public class FilterControl : Box
                 //Є хоть один елемент в списку
                 if (FilterList.GetFirstChild() != null)
                 {
-                    IsFiltered = false;
                     Clear?.Invoke();
-
                     PopoverParent?.Hide();
                 }
             };
@@ -148,9 +139,9 @@ public class FilterControl : Box
     }
 
     /// <summary>
-    /// Відфільтровано, є фільтр
+    /// Чи враховувати період для відборів (В межах періоду)
     /// </summary>
-    public bool IsFiltered { get; set; } = false;
+    public bool IsUsePeriod { get => UsePeriod.Active; }
 
     /// <summary>
     /// Створене спливаюче вікно

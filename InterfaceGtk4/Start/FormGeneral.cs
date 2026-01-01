@@ -51,7 +51,7 @@ public abstract class FormGeneral : Window
             //Назва
             {
                 Box box = Box.New(Orientation.Vertical, 0);
-                box.Valign =  box.Halign = Align.Center;
+                box.Valign = box.Halign = Align.Center;
                 Label title = Label.New(Kernel.Conf.Name);
                 title.AddCssClass("title");
                 box.Append(title);
@@ -93,12 +93,11 @@ public abstract class FormGeneral : Window
 
         CreateLeftMenu(hBox);
 
-        Notebook.CreateNotebook(true);
+        Notebook.CreateNotebook(this, true);
         Notebook.ConnectingToKernelEvent(kernel); //Приєднання до подій ядра
         hBox.Append(Notebook.Notebook ?? throw new Exception("Помилка створення блокноту"));
 
         vBox.Append(StatusBar);
-
         SetChild(vBox);
     }
 

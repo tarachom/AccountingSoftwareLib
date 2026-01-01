@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 using AccountingSoftware;
 using InterfaceGtkLib;
 
@@ -69,8 +70,16 @@ public abstract class FormConfigurationSelection : Window
             GestureClick gesture = GestureClick.New();
             gesture.OnPressed += (_, args) => { if (args.NPress >= 2) OnEdit(null, new EventArgs()); };
 
+            EventControllerKey contr = EventControllerKey.New();
+            contr.OnKeyReleased += (_, args) =>
+            {
+                if (args.Keyval == (uint)Key.KP_Enter || args.Keyval == (uint)Key.Return)
+                    OnOpen(null, new());
+            };
+
             listBox = new ListBox { SelectionMode = SelectionMode.Single };
             listBox.AddController(gesture);
+            listBox.AddController(contr);
             listBox.OnRowActivated += (_, args) => { };
             scroll.Child = listBox;
 
@@ -225,7 +234,7 @@ public abstract class FormConfigurationSelection : Window
         FillListBoxDataBase(itemConfigurationParam.ConfigurationKey);
     }
 
-    async void OnOpen(object? sender, EventArgs args)
+    async void OnOpen(Button? button, EventArgs args)
     {
         if (ProgramKernel == null) return;
 
@@ -279,7 +288,7 @@ public abstract class FormConfigurationSelection : Window
         SensitiveWidgets(true);
     }
 
-    void OnOpenConfigurator(object? sender, EventArgs args)
+    void OnOpenConfigurator(Button? button, EventArgs args)
     {
         /*
         if (ConfiguratorKernel == null) return;

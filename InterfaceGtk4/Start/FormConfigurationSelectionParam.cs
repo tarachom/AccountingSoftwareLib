@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 using AccountingSoftware;
 using InterfaceGtkLib;
 
@@ -48,9 +49,13 @@ class FormConfigurationSelectionParam : Window
 
         SetIconName("gtk");
 
-        EventControllerKey eventControllerKey = EventControllerKey.New();
-        eventControllerKey.OnKeyReleased += (_, args) => { if (args.Keycode == 9) OnCancel(this, new EventArgs()); };
-        AddController(eventControllerKey);
+        EventControllerKey eventContrKey = EventControllerKey.New();
+        eventContrKey.OnKeyReleased += (_, args) =>
+        {
+            if (args.Keyval == (uint)Key.Escape)
+                OnCancel(null, new());
+        };
+        AddController(eventContrKey);
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         vBox.MarginStart = vBox.MarginEnd = vBox.MarginTop = vBox.MarginBottom = 10;
@@ -253,7 +258,7 @@ class FormConfigurationSelectionParam : Window
         }
     }
 
-    void OnCancel(object? sender, EventArgs args)
+    void OnCancel(Button? button, EventArgs args)
     {
         ThisClose();
     }

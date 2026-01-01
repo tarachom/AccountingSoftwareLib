@@ -24,6 +24,7 @@ limitations under the License.
 using Gtk;
 using Gdk;
 using AccountingSoftware;
+using GObject;
 
 namespace InterfaceGtk4;
 
@@ -53,19 +54,19 @@ public abstract class DocumentJournal : FormJournal
     public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
-    /// Верхній набір меню
-    /// </summary>
-    protected Box ToolbarTop { get; } = New(Orientation.Horizontal, 0);
-
-    /// <summary>
     /// Верхній бок для додаткових кнопок
     /// </summary>
     protected Box HBoxTop { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
+    /// Верхній набір меню
+    /// </summary>
+    protected Box HBoxToolbarTop { get; } = New(Orientation.Horizontal, 0);
+
+    /// <summary>
     /// Період
     /// </summary>
-    protected PeriodControl Period { get; } = new();
+    public PeriodControl Period { get; } = new();
 
     /// <summary>
     /// Пошук
@@ -85,7 +86,15 @@ public abstract class DocumentJournal : FormJournal
 
         //Період
         Period.MarginEnd = 2;
-        Period.Changed = PeriodChanged;
+        Period.Changed = async () =>
+        {
+            //TypeWhereState = TypeWhere.Standart;
+
+            PagesClear();
+            await LoadRecords();
+
+            PeriodChanged();
+        };
         HBoxTop.Append(Period);
 
         //Пошук
@@ -93,7 +102,7 @@ public abstract class DocumentJournal : FormJournal
             Search.MarginEnd = 2;
             Search.Select = async x =>
             {
-                Filter.IsFiltered = false;
+                TypeWhereState = TypeWhere.Search;
                 SetSearch(x);
 
                 PagesClear();
@@ -101,6 +110,7 @@ public abstract class DocumentJournal : FormJournal
             };
             Search.Clear = async () =>
             {
+                TypeWhereState = TypeWhere.Standart;
                 WhereList = null;
 
                 PagesClear();
@@ -114,22 +124,30 @@ public abstract class DocumentJournal : FormJournal
             Filter.MarginEnd = 2;
             Filter.Select = async () =>
             {
+                TypeWhereState = TypeWhere.Filter;
+
                 PagesClear();
                 await LoadRecords();
             };
             Filter.Clear = async () =>
             {
+                TypeWhereState = TypeWhere.Standart;
                 WhereList = null;
 
                 PagesClear();
                 await LoadRecords();
             };
             Filter.FillFilterList = FillFilter;
-            Filter.Період = Period;
         }
 
         Toolbar();
 
+        //Інформування про стан відборів
+        TypeWhereStateInfo.MarginStart = 8;
+        TypeWhereStateInfo.MarginEnd = 10;
+        HBoxToolbarTop.Append(TypeWhereStateInfo);
+
+        //Модель
         MultiSelection model = MultiSelection.New(Store);
         model.OnSelectionChanged += GridOnSelectionChanged;
 
@@ -274,15 +292,15 @@ public abstract class DocumentJournal : FormJournal
 
     void Toolbar()
     {
-        ToolbarTop.MarginBottom = 6;
-        Append(ToolbarTop);
+        HBoxToolbarTop.MarginBottom = 6;
+        Append(HBoxToolbarTop);
 
         {
             Button button = Button.NewFromIconName("new");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -290,7 +308,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -298,7 +316,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -306,7 +324,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -314,7 +332,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -322,7 +340,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -340,7 +358,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Проводки";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -348,7 +366,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Ввести на основі";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetEnterDocumentBasedMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -356,7 +374,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Друк";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetPrintMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -364,7 +382,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Експорт";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetExportMenu());
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
 
         {
@@ -372,7 +390,7 @@ public abstract class DocumentJournal : FormJournal
             button.MarginEnd = 5;
             button.TooltipText = "Версії";
             button.OnClicked += OnVersionsHistory;
-            ToolbarTop.Append(button);
+            HBoxToolbarTop.Append(button);
         }
     }
 
@@ -394,16 +412,14 @@ public abstract class DocumentJournal : FormJournal
 
     async void OnRefresh(Button sender, EventArgs args)
     {
-        PagesClear();
-        await LoadRecords();
+        await Refresh();
     }
 
     async void OnCopy(Button button, EventArgs args)
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            //!!! треба додати app and window і міняти курсор коли йде копіювання або вивести якесь вікно із статусом
-            Message.Request(null, null, "Копіювання", "Копіювати вибрані елементи?", async YN =>
+            Message.Request(GeneralApp, GeneralForm, "Копіювання", "Копіювати вибрані елементи?", async YN =>
             {
                 if (YN == Message.YesNo.Yes)
                 {
@@ -420,8 +436,7 @@ public abstract class DocumentJournal : FormJournal
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            //!!! треба додати app and window і міняти курсор коли йде видалення або вивести якесь вікно із статусом
-            Message.Request(null, null, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
+            Message.Request(GeneralApp, GeneralForm, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
             {
                 if (YN == Message.YesNo.Yes)
                 {

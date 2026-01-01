@@ -81,6 +81,11 @@ public abstract class FormJournal : Form
     protected Box HBoxPages { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
+    /// Інформування про стан відборів
+    /// </summary>
+    protected Label TypeWhereStateInfo { get; } = Label.New(null);
+
+    /// <summary>
     /// Режим який вказує що форма використовується як елемент в іншій формі 
     /// (наприклад дерево використовується в ішому журналі)
     /// </summary>
@@ -114,12 +119,12 @@ public abstract class FormJournal : Form
             //Оновлення сторінки
             if (args.Keyval == (uint)Key.F5)
             {
-                PagesClear();
-                await LoadRecords();
+                await Refresh();
             }
         };
 
-        OnEnqueueRecordsChangedQueue += async (sender, args) => await UpdateRecords();
+        OnEnqueueRecordsChangedQueue += async (_, _) => await UpdateRecords();
+        OnTypeWhereStateChanged += (_, args) => TypeWhereStateChanged(args);
     }
 
     #region Func
@@ -274,6 +279,18 @@ public abstract class FormJournal : Form
         }
     }
 
+    /// <summary>
+    /// Оновлення таблиці
+    /// </summary>
+    protected async ValueTask Refresh()
+    {
+        TypeWhereState = TypeWhere.Standart;
+        WhereList = null;
+
+        PagesClear();
+        await LoadRecords();
+    }
+
     #endregion
 
     #region UpdateRecords
@@ -402,6 +419,20 @@ public abstract class FormJournal : Form
     /// </summary>
     public abstract ValueTask UpdateRecords();
 
+    /// <summary>
+    /// Відображення стану відборів у Label TypeWhereStateInfo
+    /// </summary>
+    protected virtual void TypeWhereStateChanged(TypeWhere typeWhereState)
+    {
+        TypeWhereStateInfo.SetText(typeWhereState switch
+        {
+            TypeWhere.Standart => "Звичайний",
+            TypeWhere.Filter => "Застосовано фільтр",
+            TypeWhere.Search => "Застосовано пошук",
+            _ => ""
+        });
+    }
+
     #endregion
 
     #region Pages
@@ -527,6 +558,53 @@ public abstract class FormJournal : Form
         }
 
         HBoxPages.Sensitive = true;
+    }
+
+    #endregion
+
+    #region TypeWhere
+
+    /// <summary>
+    /// Стан відбору
+    /// </summary>
+    public TypeWhere TypeWhereState
+    {
+        get => typeWhereState;
+        protected set
+        {
+            TypeWhere oldTypeWhereState = typeWhereState;
+            typeWhereState = value;
+
+            if (oldTypeWhereState != typeWhereState)
+                OnTypeWhereStateChanged?.Invoke(null, typeWhereState);
+        }
+    }
+    TypeWhere typeWhereState = TypeWhere.Standart;
+
+    /// <summary>
+    /// Подія яка виникає після зміни стану відбору
+    /// </summary>
+    protected event EventHandler<TypeWhere>? OnTypeWhereStateChanged;
+
+    /// <summary>
+    /// Типи відборів
+    /// </summary>
+    public enum TypeWhere
+    {
+        /// <summary>
+        /// Стандартний
+        /// </summary>
+        Standart,
+
+        /// <summary>
+        /// Фільтрування
+        /// </summary>
+        Filter,
+
+        /// <summary>
+        /// Пошук
+        /// </summary>
+        Search
     }
 
     #endregion
