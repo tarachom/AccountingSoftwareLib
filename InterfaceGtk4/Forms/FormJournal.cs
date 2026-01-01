@@ -43,7 +43,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Вспливаюче вікно власник даної форми
     /// </summary>
-    public Popover? PopoverParent { get; set; }
+    public Popover? PopoverParent { get; set; } //Може треба запхати в Form !!!
 
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
@@ -91,25 +91,6 @@ public abstract class FormJournal : Form
     /// </summary>
     public bool CompositeMode { get; set; } = false;
 
-    /// <summary>
-    /// Назва типу як задано в конфігураторі
-    /// </summary>
-    public string TypeName { get; set; } = "";
-
-    /// <summary>
-    /// Додатковий ключ форми журналу для налаштувань
-    /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
-    /// </summary>
-    public string? KeyForSetting { get; set; }
-
-    /// <summary>
-    /// Ключ форми - текстовий ключ з типу та додаткового ключа
-    /// </summary>
-    public string FormKey
-    {
-        get => TypeName + (!string.IsNullOrEmpty(KeyForSetting) ? $".{KeyForSetting}" : "");
-    }
-
     public FormJournal(NotebookFunction? notebook) : base(notebook)
     {
         EventControllerKey contrKey = EventControllerKey.New();
@@ -118,19 +99,20 @@ public abstract class FormJournal : Form
         {
             //Оновлення сторінки
             if (args.Keyval == (uint)Key.F5)
-            {
                 await Refresh();
-            }
         };
 
+        //Оновлення даних в таблиці
         OnEnqueueRecordsChangedQueue += async (_, _) => await UpdateRecords();
+
+        //Відображення поточного стану відборів (пошук, фільт і т.д)
         OnTypeWhereStateChanged += (_, args) => TypeWhereStateChanged(args);
     }
 
-    #region Func
+    #region Function
 
     /// <summary>
-    /// Перед початком завантаження даних в Store
+    /// Перед початком завантаження даних в Store (на початку LoadRecords)
     /// </summary>
     public void BeforeLoadRecords()
     {
@@ -138,7 +120,7 @@ public abstract class FormJournal : Form
     }
 
     /// <summary>
-    /// Функція викликається після завантаження даних в Store
+    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords)
     /// </summary>
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
     public void AfterLoadRecords(uint selectPosition = 0)
@@ -155,7 +137,7 @@ public abstract class FormJournal : Form
         if (selectPosition > 0)
         {
             Grid.Model.SelectItem(selectPosition - 1, false);
-            Grid.Vadjustment?.Upper += 0.01;
+            Grid.Vadjustment?.Upper += 0.1;
         }
     }
 
@@ -168,19 +150,30 @@ public abstract class FormJournal : Form
         uint rowCount = Store.GetNItems();
         if (rowCount > 0 && Grid.Vadjustment != null)
         {
+            //Видима частина
             double pageSize = Grid.Vadjustment.PageSize;
+
+            //Максимальне значення
             double upper = Grid.Vadjustment.Upper;
 
             if (pageSize > 0 && upper > 0 && upper >= pageSize)
             {
+                //Висота одного рядка
                 double rowHeidth = upper / rowCount;
+
+                //Висота для потрібної позиції
                 double value = rowHeidth * selectPosition;
+
+                //Розмір половини видимої частини
                 double pageSizePart = pageSize / 2;
 
                 if (value > pageSizePart)
                     Task.Run(async () =>
                     {
+                        //Вимушена затримка, щоб все промалювалося
                         await Task.Delay(100);
+
+                        //Позиціювання потрібного рядка посередині
                         Grid.Vadjustment.SetValue(value - pageSizePart);
                     });
             }
@@ -280,7 +273,7 @@ public abstract class FormJournal : Form
     }
 
     /// <summary>
-    /// Оновлення таблиці
+    /// Оновлення таблиці і скидання всіх відборів
     /// </summary>
     protected async ValueTask Refresh()
     {
@@ -296,7 +289,7 @@ public abstract class FormJournal : Form
     #region UpdateRecords
 
     /// <summary>
-    /// Черга для змінених об'єктів
+    /// Черга для змінених об'єктів. Сюди поміщаються списки порцій List<ObjectChanged> змінених об'єктів
     /// </summary>
     public Queue<List<ObjectChanged>> RecordsChangedQueue { get; } = [];
 
@@ -386,7 +379,7 @@ public abstract class FormJournal : Form
                     OnEnqueueRecordsChangedQueue?.Invoke(null, new());
                 }
             },
-            //Відбір по типу
+            //Відбір по типу як задано в конфігураторі Довідники.<Назва> або Документи.<Назва>
             TypeName);
     }
 
@@ -562,6 +555,29 @@ public abstract class FormJournal : Form
 
     #endregion
 
+    #region Key
+
+    /// <summary>
+    /// Назва типу як задано в конфігураторі
+    /// </summary>
+    public string TypeName { get; set; } = "";
+
+    /// <summary>
+    /// Додатковий ключ форми журналу для налаштувань
+    /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
+    /// </summary>
+    public string? KeyForSetting { get; set; }
+
+    /// <summary>
+    /// Ключ форми - текстовий ключ з типу та додаткового ключа
+    /// </summary>
+    public string FormKey
+    {
+        get => TypeName + (!string.IsNullOrEmpty(KeyForSetting) ? $".{KeyForSetting}" : "");
+    }
+
+    #endregion
+
     #region TypeWhere
 
     /// <summary>
@@ -584,7 +600,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Подія яка виникає після зміни стану відбору
     /// </summary>
-    protected event EventHandler<TypeWhere>? OnTypeWhereStateChanged;
+    event EventHandler<TypeWhere>? OnTypeWhereStateChanged;
 
     /// <summary>
     /// Типи відборів

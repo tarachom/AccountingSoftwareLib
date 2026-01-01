@@ -1,7 +1,7 @@
 
 /*
 
-Цей код видертий звідси https://github.com/GtkSharp/GtkSharp
+Цей код був взятий звідси https://github.com/GtkSharp/GtkSharp
 
 */
 

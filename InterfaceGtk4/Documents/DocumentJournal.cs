@@ -24,7 +24,6 @@ limitations under the License.
 using Gtk;
 using Gdk;
 using AccountingSoftware;
-using GObject;
 
 namespace InterfaceGtk4;
 
@@ -202,8 +201,26 @@ public abstract class DocumentJournal : FormJournal
 
     #region Virtual & Abstract Function
 
+    /// <summary>
+    /// При відкритті
+    /// </summary>
+    /// <param name="IsNew">Чи це новий?</param>
+    /// <param name="unigueID">Ід об'єкту</param>
+    /// <returns></returns>
     protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+
+    /// <summary>
+    /// При встановленні помітки на видалення
+    /// </summary>
+    /// <param name="unigueID">Ід об'єкту</param>
+    /// <returns></returns>
     protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+
+    /// <summary>
+    /// При копіюванні об'єкту
+    /// </summary>
+    /// <param name="unigueID">Ід об'єкту</param>
+    /// <returns></returns>
     protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
 
     /// <summary>
@@ -227,6 +244,10 @@ public abstract class DocumentJournal : FormJournal
     /// </summary>
     /// <param name="filterControl">Контрол Фільтр</param>
     protected virtual void FillFilter(FilterControl filterControl) { }
+
+    /// <summary>
+    /// При зміні періоду в контролі Period
+    /// </summary>
     protected abstract void PeriodChanged();
 
     /// <summary>
@@ -281,7 +302,7 @@ public abstract class DocumentJournal : FormJournal
             {
                 CallBack_OnSelectPointer?.Invoke(row.UnigueID);
 
-                Notebook?.ClosePage(this.GetName());
+                Notebook?.ClosePage(GetName());
                 PopoverParent?.Hide();
             }
     }

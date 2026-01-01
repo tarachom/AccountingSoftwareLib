@@ -38,9 +38,6 @@ public partial class ActiveUsers : Box
     [Subclass<GObject.Object>]
     partial class ItemRow
     {
-        /// <summary>
-        /// Унікальний ідентифікатор
-        /// </summary>
         public UnigueID UnigueID { get; set; } = new();
 
         public Guid UserUID { get; set; } = Guid.Empty;
