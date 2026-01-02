@@ -239,7 +239,7 @@ public abstract class FormJournal : Form
 
             popover.SetChild(list);
 
-            foreach (var link in links)
+            foreach (var lnk in links)
             {
                 ListBoxRow row = ListBoxRow.New();
 
@@ -251,17 +251,17 @@ public abstract class FormJournal : Form
                 hBox.Append(image);
 
                 //Лінк
-                LinkButton linkButton = LinkButton.New("");
-                linkButton.TooltipText = link.Name;
-                linkButton.Label = link.Name;
-                linkButton.Halign = Align.Start;
-                linkButton.Hexpand = true;
-                linkButton.OnActivateLink += (_, _) =>
+                LinkButton link = LinkButton.New("");
+                link.TooltipText = link.Name;
+                link.Label = link.Name;
+                link.Halign = Align.Start;
+                link.Hexpand = true;
+                link.OnActivateLink += (_, _) =>
                 {
-                    link.Value?.Invoke(GetGetSelectionUnigueID());
+                    lnk.Value?.Invoke(GetGetSelectionUnigueID());
                     return true;
                 };
-                hBox.Append(linkButton);
+                hBox.Append(link);
 
                 row.SetChild(hBox);
                 list.Append(row);
@@ -321,7 +321,7 @@ public abstract class FormJournal : Form
                     records.RemoveAll(x => x.Type == TypeObjectChanged.Add);
 
                     //Додатково треба буде перерахувати сторінки
-                    PagesClear();
+                    //PagesClear();
                 }
 
                 //Видалення записів із Store які були видалені
