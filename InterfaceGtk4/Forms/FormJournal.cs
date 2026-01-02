@@ -29,10 +29,9 @@ namespace InterfaceGtk4;
 
 /// <summary>
 /// Основа для класів:
-///     DocumentJournal (ДокументЖурнал),
-///     DirectoryJournal (ДовідникЖурнал),
+///     DocumentJournalBase (ДокументЖурналБазовий),
+///     DirectoryJournalBase (ДовідникЖурналБазовий),
 ///     
-///     ДовідникШвидкийВибір, 
 ///     Журнал, 
 ///     РегістриВідомостейЖурнал, 
 ///     РегістриНакопиченняЖурнал,
@@ -91,7 +90,7 @@ public abstract class FormJournal : Form
     /// </summary>
     public bool CompositeMode { get; set; } = false;
 
-    public FormJournal(NotebookFunction? notebook) : base(notebook)
+    public FormJournal(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);
@@ -308,7 +307,7 @@ public abstract class FormJournal : Form
     /// </summary>
     protected void RunUpdateRecords()
     {
-        Notebook?.AddChangeFunc(GetName(),
+        NotebookFunc?.AddChangeFunc(GetName(),
             //Записи які були змінені
             records =>
             {

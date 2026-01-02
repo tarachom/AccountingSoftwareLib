@@ -28,24 +28,28 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Основа для журналів довідників певного виду
+/// ДокументЖурналБазовий
+/// 
+/// Основа для класів:
+///     DocumentJournalFull (ДокументЖурналПовний),
+///     DocumentJournalSmall (ДокументЖурналМіні)
 /// </summary>
-public abstract class DirectoryJournal : FormJournal
+public abstract class DocumentJournalBase : FormJournal
 {
     /// <summary>
     /// Для вибору і позиціювання
     /// </summary>
-    public UnigueID? DirectoryPointerItem
+    public UnigueID? DocumentPointerItem
     {
-        get => directoryPointerItem;
-        set => SelectPointerItem = directoryPointerItem = value;
+        get => documentPointerItem;
+        set => SelectPointerItem = documentPointerItem = value;
     }
-    UnigueID? directoryPointerItem;
+    UnigueID? documentPointerItem;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
     /// </summary>
-    public override Gio.ListStore Store { get; } = Gio.ListStore.New(DirectoryRow.GetGType());
+    public override Gio.ListStore Store { get; } = Gio.ListStore.New(DocumentRow.GetGType());
 
     /// <summary>
     /// Функція зворотнього виклику при виборі
@@ -63,6 +67,11 @@ public abstract class DirectoryJournal : FormJournal
     protected Box HBoxToolbarTop { get; } = New(Orientation.Horizontal, 0);
 
     /// <summary>
+    /// Період
+    /// </summary>
+    public PeriodControl Period { get; } = new();
+
+    /// <summary>
     /// Пошук
     /// </summary>
     protected SearchControl Search { get; } = new();
@@ -70,13 +79,26 @@ public abstract class DirectoryJournal : FormJournal
     /// <summary>
     /// Фільтр
     /// </summary>
-    public FilterControl Filter { get; } = new();
+    public FilterControl Filter { get; } = new(true);
 
-    public DirectoryJournal(NotebookFunction? notebook) : base(notebook)
+    public DocumentJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
+
+        //Період
+        Period.MarginEnd = 2;
+        Period.Changed = async () =>
+        {
+            //TypeWhereState = TypeWhere.Standart;
+
+            PagesClear();
+            await LoadRecords();
+
+            PeriodChanged();
+        };
+        HBoxTop.Append(Period);
 
         //Пошук
         {
@@ -100,6 +122,11 @@ public abstract class DirectoryJournal : FormJournal
             HBoxTop.Append(Search);
         }
 
+        //Інформування про стан відборів
+        TypeWhereStateInfo.MarginStart = 8;
+        TypeWhereStateInfo.MarginEnd = 10;
+        HBoxTop.Append(TypeWhereStateInfo);
+
         //Фільтр
         {
             Filter.MarginEnd = 2;
@@ -121,12 +148,7 @@ public abstract class DirectoryJournal : FormJournal
             Filter.FillFilterList = FillFilter;
         }
 
-        Toolbar();
-
-        //Інформування про стан відборів
-        TypeWhereStateInfo.MarginStart = 8;
-        TypeWhereStateInfo.MarginEnd = 10;
-        HBoxToolbarTop.Append(TypeWhereStateInfo);
+        CreateToolbar();
 
         //Модель
         MultiSelection model = MultiSelection.New(Store);
@@ -144,7 +166,7 @@ public abstract class DirectoryJournal : FormJournal
                 //Помітка на видалення
                 case (uint)Key.Delete:
                     {
-                        Delete();
+                        await Delete();
                         break;
                     }
                 //Новий
@@ -178,7 +200,6 @@ public abstract class DirectoryJournal : FormJournal
         DefaultGrabFocus();
         await BeforeSetValue();
 
-        await LoadRecords();
         RunUpdateRecords();
     }
 
@@ -229,20 +250,22 @@ public abstract class DirectoryJournal : FormJournal
     protected virtual void FillFilter(FilterControl filterControl) { }
 
     /// <summary>
-    /// Меню друк
+    /// При зміні періоду в контролі Period
     /// </summary>
-    protected virtual NameValue<Action<UnigueID[]>>[]? SetPrintMenu() { return null; }
+    protected abstract void PeriodChanged();
 
     /// <summary>
-    /// Меню експорт
-    /// </summary>
-    protected virtual NameValue<Action<UnigueID[]>>[]? SetExportMenu() { return null; }
-
-    /// <summary>
-    /// Історія версій
+    /// Провести / відмінити проведення документів
     /// </summary>
     /// <param name="unigueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
+    /// <param name="spendDoc">Провести / відмінити</param>
+    protected virtual async ValueTask SpendTheDocument(UnigueID[] unigueID, bool spendDoc) { await ValueTask.FromResult(true); }
+
+    /// <summary>
+    /// Друк проводок
+    /// </summary>
+    /// <param name="unigueID">Вибрані елементи</param>
+    protected virtual void ReportSpendTheDocument(UnigueID[] unigueID) { }
 
     #endregion
 
@@ -256,13 +279,13 @@ public abstract class DirectoryJournal : FormJournal
     {
         MultiSelection model = (MultiSelection)Grid.Model;
         if (model.GetObject(position) is Row row)
-            if (DirectoryPointerItem == null)
+            if (DocumentPointerItem == null)
                 await OpenPageElement(false, row.UnigueID);
             else
             {
                 CallBack_OnSelectPointer?.Invoke(row.UnigueID);
 
-                Notebook?.ClosePage(GetName());
+                NotebookFunc?.ClosePage(GetName());
                 PopoverParent?.Hide();
             }
     }
@@ -271,7 +294,7 @@ public abstract class DirectoryJournal : FormJournal
 
     #region Toolbar
 
-    void Toolbar()
+    void CreateToolbar()
     {
         HBoxToolbarTop.MarginBottom = 6;
         Append(HBoxToolbarTop);
@@ -325,27 +348,28 @@ public abstract class DirectoryJournal : FormJournal
         }
 
         {
-            Button button = Button.NewFromIconName("document-print");
+            NameValue<Action<UnigueID[]>>[]? SubMenu()
+            {
+                return
+                [
+                    new ("Відкрити проводки", ReportSpendTheDocument),
+                    new ("Провести", async x=> await SpendTheDocument(x, true)),
+                    new ("Відмінити проведення", async x=> await SpendTheDocument(x, false)),
+                ];
+            }
+
+            Button button = Button.NewFromIconName("edit-find");
             button.MarginEnd = 5;
-            button.TooltipText = "Друк";
-            button.OnClicked += (_, _) => CreatePopoverMenu(button, SetPrintMenu());
+            button.TooltipText = "Проводки";
+            button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());
             HBoxToolbarTop.Append(button);
         }
 
         {
-            Button button = Button.NewFromIconName("process-working");
-            button.MarginEnd = 5;
-            button.TooltipText = "Експорт";
-            button.OnClicked += (_, _) => CreatePopoverMenu(button, SetExportMenu());
-            HBoxToolbarTop.Append(button);
-        }
-
-        {
-            Button button = Button.NewFromIconName("zoom-in");
-            button.MarginEnd = 5;
-            button.TooltipText = "Версії";
-            button.OnClicked += OnVersionsHistory;
-            HBoxToolbarTop.Append(button);
+            Separator separator = Separator.New(Orientation.Vertical);
+            separator.MarginStart = 5;
+            separator.MarginEnd = 10;
+            HBoxToolbarTop.Append(separator);
         }
     }
 
@@ -374,36 +398,53 @@ public abstract class DirectoryJournal : FormJournal
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            Message.Request(GeneralApp, GeneralForm, "Копіювання", "Копіювати вибрані елементи?", async YN =>
-            {
-                if (YN == Message.YesNo.Yes)
-                {
-                    foreach (Row row in rows)
-                        SelectPointerItem = await Copy(row.UnigueID);
+        {
+            foreach (Row row in rows)
+                SelectPointerItem = await Copy(row.UnigueID);
 
-                    PagesClear();
-                    await LoadRecords();
-                }
-            });
+            PagesClear();
+            await LoadRecords();
+        }
+
+        /*
+        Message.Request(BasicApp, BasicForm, "Копіювання", "Копіювати вибрані елементи?", async YN =>
+        {
+            if (YN == Message.YesNo.Yes)
+            {
+                foreach (Row row in rows)
+                    SelectPointerItem = await Copy(row.UnigueID);
+
+                PagesClear();
+                await LoadRecords();
+            }
+        });
+        */
     }
 
-    void Delete()
+    async ValueTask Delete()
     {
         List<Row> rows = GetSelection();
         if (rows.Count > 0)
-            Message.Request(GeneralApp, GeneralForm, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
+        {
+            foreach (Row row in rows)
+                await SetDeletionLabel(row.UnigueID);
+        }
+
+        /*
+        Message.Request(BasicApp, BasicForm, "Відмітка для видалення", "Встановити або зняти відмітку для видалення для вибраних елементів?", async YN =>
+        {
+            if (YN == Message.YesNo.Yes)
             {
-                if (YN == Message.YesNo.Yes)
-                {
-                    foreach (Row row in rows)
-                        await SetDeletionLabel(row.UnigueID);
-                }
-            });
+                foreach (Row row in rows)
+                    await SetDeletionLabel(row.UnigueID);
+            }
+        });
+        */
     }
 
     async void OnDelete(Button button, EventArgs args)
     {
-        Delete();
+        await Delete();
     }
 
     void OnFilter(Button button, EventArgs args)
@@ -412,11 +453,6 @@ public abstract class DirectoryJournal : FormJournal
             Filter.CreatePopover(button);
 
         Filter.PopoverParent?.Show();
-    }
-
-    async void OnVersionsHistory(Button button, EventArgs args)
-    {
-        await VersionsHistory(GetGetSelectionUnigueID());
     }
 
     #endregion

@@ -48,7 +48,7 @@ public class SearchControl : Box
                 Search();
         };
 
-        entrySearch.WidthRequest = 300;
+        entrySearch.WidthRequest = 200;
         entrySearch.MarginEnd = 2;
         Append(entrySearch);
 

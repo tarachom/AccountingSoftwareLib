@@ -32,12 +32,12 @@ public class NotebookFunction
     /// <summary>
     /// Основний блокнот
     /// </summary>
-    public Notebook? Notebook { get; private set; }
+    Notebook? Notebook { get; set; }
 
     /// <summary>
     /// Основне вікно
     /// </summary>
-    public Window? GenaralForm { get; private set; }
+    public Window? BasicForm { get; private set; }
 
     /// <summary>
     /// Історія переключення вкладок для блокнотів
@@ -62,11 +62,11 @@ public class NotebookFunction
     /// Функція створює блокнот з верхнім положенням вкладок
     /// </summary>
     /// <param name="historySwitchList">Збереження історії переключення вкладок</param>
-    /// <param name="isGeneralNotebook">Чи це головний блокнот?</param>
+    /// <param name="isNotebook">Чи це головний блокнот?</param>
     /// <returns>Notebook</returns>
-    public void CreateNotebook(Window? generalForm, bool historySwitchList = true)
+    public Notebook CreateNotebook(Window? basicForm, bool historySwitchList = true)
     {
-        GenaralForm = generalForm;
+        BasicForm = basicForm;
 
         Notebook = new()
         {
@@ -143,6 +143,8 @@ public class NotebookFunction
         //Структура для функцій розблокування об'єктів
         notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<ValueTask>>());
         */
+
+        return Notebook;
     }
 
     /// <summary>
@@ -169,7 +171,9 @@ public class NotebookFunction
         int numPage;
         string codePage = Guid.NewGuid().ToString();
 
-        ScrolledWindow scroll = new() { Name = codePage };
+        ScrolledWindow scroll = ScrolledWindow.New();
+        scroll.Name = codePage;
+        scroll.MarginStart = scroll.MarginTop = scroll.MarginBottom = scroll.MarginEnd = 5;
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
 
         Box hBoxLabel = CreateTabLabelPageWidget(tabName, codePage, noClosePage);

@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 public abstract class FormGeneral : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
-    public NotebookFunction Notebook { get; } = new();
+    public NotebookFunction NotebookFunc { get; } = new();
 
     Kernel Kernel { get; set; }
     protected Statusbar StatusBar = Statusbar.New();
@@ -93,9 +93,11 @@ public abstract class FormGeneral : Window
 
         CreateLeftMenu(hBox);
 
-        Notebook.CreateNotebook(this, true);
-        Notebook.ConnectingToKernelEvent(kernel); //Приєднання до подій ядра
-        hBox.Append(Notebook.Notebook ?? throw new Exception("Помилка створення блокноту"));
+        //Створення блокноту
+        hBox.Append(NotebookFunc.CreateNotebook(this, true));
+
+        //Приєднання до подій ядра
+        NotebookFunc.ConnectingToKernelEvent(kernel);
 
         vBox.Append(StatusBar);
         SetChild(vBox);

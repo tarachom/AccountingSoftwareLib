@@ -72,7 +72,7 @@ public class PeriodControl : Box
 
         comboBoxPeriod = PeriodForJournal.СписокВідбірПоПеріоду();
         comboBoxPeriod.MarginEnd = 2;
-        comboBoxPeriod.OnChanged += (sender, args) =>
+        comboBoxPeriod.OnChanged += (_, _) =>
         {
             if (Period == PeriodForJournal.TypePeriod.AllPeriod)
             {

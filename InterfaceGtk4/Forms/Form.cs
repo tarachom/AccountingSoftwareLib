@@ -34,24 +34,23 @@ public abstract class Form : Box
     /// <summary>
     /// Оновний блокнот
     /// </summary>
-    protected NotebookFunction? Notebook { get; private set; }
+    protected NotebookFunction? NotebookFunc { get; private set; }
 
     /// <summary>
     /// Основне вікно
     /// </summary>
-    protected Window? GeneralForm { get => Notebook?.GenaralForm; }
+    protected Window? BasicForm { get => NotebookFunc?.BasicForm; }
 
     /// <summary>
     /// Основна програма з вікна
     /// </summary>
-    protected Application? GeneralApp { get => Notebook?.GenaralForm?.Application; }
+    protected Application? BasicApp { get => NotebookFunc?.BasicForm?.Application; }
 
-    public Form(NotebookFunction? notebook)
+    public Form(NotebookFunction? notebookFunc)
     {
         SetOrientation(Orientation.Vertical);
-        MarginStart = MarginTop = MarginBottom = MarginEnd = 5;
-
-        Notebook = notebook;
+        
+        NotebookFunc = notebookFunc;
     }
 
     #region Link
@@ -275,9 +274,9 @@ public abstract class Form : Box
 
     #region Spinner
 
-    public void SpinnerOn() => Notebook?.SpinnerPage(GetName());
+    public void SpinnerOn() => NotebookFunc?.SpinnerPage(GetName());
 
-    public void SpinnerOff() => Notebook?.SpinnerPage(GetName(), false);
+    public void SpinnerOff() => NotebookFunc?.SpinnerPage(GetName(), false);
 
     #endregion
 }

@@ -70,6 +70,9 @@ public class DateTimeControl : Box
         {
             mValue = value;
 
+            if (OnlyDate) 
+                entryDateTimeValue.SetMaxWidthChars(10);
+
             if (HideMinValue && mValue.Date == DateTime.MinValue.Date)
                 entryDateTimeValue.Text_ = "";
             else if (OnlyDate)

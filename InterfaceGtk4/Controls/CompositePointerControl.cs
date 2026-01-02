@@ -32,16 +32,16 @@ public abstract class CompositePointerControl : PointerControl
     Kernel Kernel { get; set; }
     string NameSpageProgram { get; set; }
     string NameSpageCodeGeneration { get; set; }
-    NotebookFunction? Notebook { get; set; }
+    NotebookFunction? NotebookFunc { get; set; }
     Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
     event EventHandler<UuidAndText>? PointerChanged;
 
-    public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration, NotebookFunction? notebook)
+    public CompositePointerControl(Kernel kernel, string nameSpageProgram, string nameSpageCodeGeneration, NotebookFunction? notebookFunc)
     {
         Kernel = kernel;
         NameSpageProgram = nameSpageProgram;
         NameSpageCodeGeneration = nameSpageCodeGeneration;
-        Notebook = notebook;
+        NotebookFunc = notebookFunc;
 
         PointerChanged += OnPointerChanged;
 
@@ -147,7 +147,7 @@ public abstract class CompositePointerControl : PointerControl
                         listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
                 }
 
-                Notebook?.CreatePage(listName, () => (Widget)listPage);
+                NotebookFunc?.CreatePage(listName, () => (Widget)listPage);
 
                 listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
             }

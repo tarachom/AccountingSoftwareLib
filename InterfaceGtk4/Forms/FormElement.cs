@@ -53,7 +53,7 @@ public abstract class FormElement : Form
     /// </summary>
     public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
 
-    public FormElement(NotebookFunction? notebook) : base(notebook) { }
+    public FormElement(NotebookFunction? notebookFunc) : base(notebookFunc) { }
 
     #region Event Function
 
