@@ -100,11 +100,18 @@ public abstract class DocumentElement : FormElement
         bSave.OnClicked += (_, _) => BeforeAndAfterSave(false);
         HBoxTop.Append(bSave);
 
-        //Проводки
-        CreateLink(HBoxTop, "Проводки", () => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); });
+        //Лінки: Проводки та В журналі
+        CreateLinks(HBoxTop, [
+            new("Проводки", () =>
+            {
+                if (UnigueID != null) ReportSpendTheDocument(UnigueID);
+            }),
 
-        //В журналі
-        CreateLink(HBoxTop, "В журналі", async () => { if (UnigueID != null) await InJournal(UnigueID); });
+            new("В журналі", async () =>
+            {
+                if (UnigueID != null) await InJournal(UnigueID);
+            })
+        ]);
 
         //Інформація про блокування
         {

@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
@@ -49,7 +50,7 @@ public abstract class Form : Box
     public Form(NotebookFunction? notebookFunc)
     {
         SetOrientation(Orientation.Vertical);
-        
+
         NotebookFunc = notebookFunc;
     }
 
@@ -81,6 +82,17 @@ public abstract class Form : Box
             func?.Invoke();
             return true;
         };
+    }
+
+    /// <summary>
+    /// Добавити колекцію лінків
+    /// </summary>
+    /// <param name="parent">Бокс куди буде додано лінки</param>
+    /// <param name="captionAndFunc">Назва та процедура, колекція</param>
+    public static void CreateLinks(Box parent, NameValue<Action?>[] captionAndFunc)
+    {
+        foreach (var item in captionAndFunc)
+            CreateLink(parent, item.Name, item.Value);
     }
 
     /// <summary>
