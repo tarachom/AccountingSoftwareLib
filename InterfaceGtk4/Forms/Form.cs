@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2026 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -269,14 +269,6 @@ public abstract class Form : Box
 
         return txt;
     }
-
-    #endregion
-
-    #region Spinner
-
-    public void SpinnerOn() => NotebookFunc?.SpinnerPage(GetName());
-
-    public void SpinnerOff() => NotebookFunc?.SpinnerPage(GetName(), false);
 
     #endregion
 }

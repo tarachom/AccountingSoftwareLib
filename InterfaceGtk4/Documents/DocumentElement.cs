@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2026 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -276,12 +276,12 @@ public abstract class DocumentElement : FormElement
         GetValue();
 
         NotebookFunc?.SensitivePage(GetName(), false);
-        SpinnerOn();
+        NotebookFunc?.SpinnerOn(GetName());
 
         bool isSave = await Save();
         bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
 
-        SpinnerOff();
+        NotebookFunc?.SpinnerOff(GetName());
         NotebookFunc?.SensitivePage(GetName(), true);
 
         if (isSave)

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2026 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ namespace InterfaceGtk4;
 public abstract class FormJournal : Form
 {
     /// <summary>
-    /// Вспливаюче вікно власник даної форми
+    /// Вспливаюче вікно власник даної форми (у випадку якщо форма поміщена у Popover)
     /// </summary>
     public Popover? PopoverParent { get; set; } //Може треба запхати в Form !!!
 
@@ -84,6 +84,8 @@ public abstract class FormJournal : Form
     /// </summary>
     protected Label TypeWhereStateInfo { get; } = Label.New(null);
 
+    //protected ProgressBar Progress { get; } = ProgressBar.New(); //На майбтнє зробити відображення стану копіювання чи іншого процесу
+
     /// <summary>
     /// Режим який вказує що форма використовується як елемент в іншій формі 
     /// (наприклад дерево використовується в ішому журналі)
@@ -115,7 +117,8 @@ public abstract class FormJournal : Form
     /// </summary>
     public void BeforeLoadRecords()
     {
-        SpinnerOn();
+        if (PopoverParent == null)
+            NotebookFunc?.SpinnerOn(GetName());
     }
 
     /// <summary>
@@ -124,8 +127,10 @@ public abstract class FormJournal : Form
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
     public void AfterLoadRecords(uint selectPosition = 0)
     {
+        if (PopoverParent == null)
+            NotebookFunc?.SpinnerOff(GetName());
+
         PagesShow();
-        SpinnerOff();
 
         //Позиціювання на останньому елементі вибірки у випадку Pages.StartingPosition.End
         if (selectPosition == 0 && Store.GetNItems() > 0 && SelectPointerItem == null &&
@@ -307,7 +312,16 @@ public abstract class FormJournal : Form
     /// </summary>
     protected void RunUpdateRecords()
     {
-        NotebookFunc?.AddChangeFunc(GetName(),
+        string codePage = PopoverParent != null ? Guid.NewGuid().ToString() : GetName();
+
+        //При закритті PopoverParent
+        PopoverParent?.OnHide += (_, _) => 
+        {
+            NotebookFunc?.RemoveChangeFunc(codePage);
+            GC.Collect();
+        };
+
+        NotebookFunc?.AddChangeFunc(codePage,
             //Записи які були змінені
             records =>
             {

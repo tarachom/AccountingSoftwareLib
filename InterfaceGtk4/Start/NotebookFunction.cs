@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2019-2025 TARAKHOMYN YURIY IVANOVYCH
+Copyright (C) 2019-2026 TARAKHOMYN YURIY IVANOVYCH
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -269,49 +269,49 @@ public class NotebookFunction
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо закрити сторінку!");
         string notebookName = Notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
 
-        for (int i = 0; i < Notebook.GetNPages(); i++)
-        {
-            Widget? wg = Notebook.GetNthPage(i);
-            if (wg?.Name == codePage)
+        if (IsCodePage(codePage))
+            for (int i = 0; i < Notebook.GetNPages(); i++)
             {
-                //Історія переключення сторінок
-                if (HistorySwitch.TryGetValue(notebookName, out List<string>? codePageList))
+                Widget? wg = Notebook.GetNthPage(i);
+                if (wg?.Name == codePage)
                 {
-                    codePageList.Remove(codePage);
-
-                    //Встановлення поточної сторінки, яка остання в списку
-                    if (codePageList.Count > 0)
-                        CurrentPage(codePageList[^1]);
-                }
-
-                //Додаткова функція яка викликається після закриття сторінки блокноту
-                if (AfterClosePageFunc.TryGetValue(notebookName, out Dictionary<string, Action>? codePageAndFunc))
-                    if (codePageAndFunc.TryGetValue(codePage, out Action? func))
+                    //Історія переключення сторінок
+                    if (HistorySwitch.TryGetValue(notebookName, out List<string>? codePageList))
                     {
-                        func?.Invoke();
-                        codePageAndFunc.Remove(codePage);
+                        codePageList.Remove(codePage);
+
+                        //Встановлення поточної сторінки, яка остання в списку
+                        if (codePageList.Count > 0)
+                            CurrentPage(codePageList[^1]);
                     }
 
-                //Очищення вказівників на функції реакції на зміни об'єктів
-                foreach (var item in ObjectChangeEventsFunc.Values)
-                    item.RemoveAll(x => x.codePage == codePage);
+                    //Додаткова функція яка викликається після закриття сторінки блокноту
+                    if (AfterClosePageFunc.TryGetValue(notebookName, out Dictionary<string, Action>? codePageAndFunc))
+                        if (codePageAndFunc.TryGetValue(codePage, out Action? func))
+                        {
+                            func?.Invoke();
+                            codePageAndFunc.Remove(codePage);
+                        }
 
-                /*
-                //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
-                var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
-                if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
-                {
-                    await unlockFunc.Invoke();
-                    lockObjectPageFunc.Remove(codePage);
+                    //Очищення вказівників на функції реакції на зміни об'єктів
+                    RemoveChangeFunc(codePage);
+
+                    /*
+                    //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
+                    var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
+                    if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                    {
+                        await unlockFunc.Invoke();
+                        lockObjectPageFunc.Remove(codePage);
+                    }
+                    */
+
+                    Notebook.DetachTab(wg);
+                    GC.Collect();
+
+                    break;
                 }
-                */
-
-                Notebook.DetachTab(wg);
-                GC.Collect();
-
-                break;
             }
-        }
     }
 
     /// <summary>
@@ -324,36 +324,38 @@ public class NotebookFunction
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити спінер!");
 
-        for (int i = 0; i < Notebook.GetNPages(); i++)
-        {
-            Widget? wg = Notebook.GetNthPage(i);
-            if (wg?.Name == codePage)
+        if (IsCodePage(codePage))
+            for (int i = 0; i < Notebook.GetNPages(); i++)
             {
-                Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
-                if (tabLabel != null)
+                Widget? wg = Notebook.GetNthPage(i);
+                if (wg?.Name == codePage)
                 {
-                    Widget? child = tabLabel.GetFirstChild();
-                    while (child != null)
+                    Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
+                    if (tabLabel != null)
                     {
-                        if (child is Box BoxIconOrSpinner && BoxIconOrSpinner.Name == "BoxIconOrSpinner")
+                        Widget? child = tabLabel.GetFirstChild();
+                        while (child != null)
                         {
-                            Widget? firstChild = BoxIconOrSpinner.GetFirstChild();
-                            if (firstChild != null) BoxIconOrSpinner.Remove(firstChild);
+                            if (child is Box BoxIconOrSpinner && BoxIconOrSpinner.Name == "BoxIconOrSpinner")
+                            {
+                                Widget? firstChild = BoxIconOrSpinner.GetFirstChild();
+                                if (firstChild != null) BoxIconOrSpinner.Remove(firstChild);
 
-                            BoxIconOrSpinner.Append(active ? new Spinner() { Spinning = true } : Image.NewFromIconName("doc"));
-                            break;
+                                BoxIconOrSpinner.Append(active ? new Spinner() { Spinning = true } : Image.NewFromIconName("doc"));
+                                break;
+                            }
+
+                            child = child.GetNextSibling();
                         }
-
-                        child = child.GetNextSibling();
                     }
+
+                    break;
                 }
-
-                break;
             }
-        }
     }
-
     public void SpinnerPage(string codePage, bool active = true) => SpinnerPage(active, codePage);
+    public void SpinnerOn(string codePage) => SpinnerPage(codePage);
+    public void SpinnerOff(string codePage) => SpinnerPage(codePage, false);
 
     /// <summary>
     /// Перейменувати сторінку по коду
@@ -365,31 +367,32 @@ public class NotebookFunction
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо перейменувати сторінку!");
 
-        for (int i = 0; i < Notebook.GetNPages(); i++)
-        {
-            Widget? wg = Notebook.GetNthPage(i);
-            if (wg?.Name == codePage)
+        if (IsCodePage(codePage))
+            for (int i = 0; i < Notebook.GetNPages(); i++)
             {
-                Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
-                if (tabLabel != null)
+                Widget? wg = Notebook.GetNthPage(i);
+                if (wg?.Name == codePage)
                 {
-                    Widget? child = tabLabel.GetFirstChild();
-                    while (child != null)
+                    Box? tabLabel = (Box?)Notebook.GetTabLabel(wg);
+                    if (tabLabel != null)
                     {
-                        if (child is Label label && label.Name == "Caption")
+                        Widget? child = tabLabel.GetFirstChild();
+                        while (child != null)
                         {
-                            label.SetText(SubstringPageName(caption));
-                            label.TooltipText = caption;
-                            break;
+                            if (child is Label label && label.Name == "Caption")
+                            {
+                                label.SetText(SubstringPageName(caption));
+                                label.TooltipText = caption;
+                                break;
+                            }
+
+                            child = child.GetNextSibling();
                         }
-
-                        child = child.GetNextSibling();
                     }
-                }
 
-                break;
+                    break;
+                }
             }
-        }
     }
 
     /// <summary>
@@ -401,18 +404,19 @@ public class NotebookFunction
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо встановити поточну сторінку!");
 
-        for (int i = 0; i < Notebook.GetNPages(); i++)
-        {
-            Widget? wg = Notebook.GetNthPage(i);
-            if (wg?.Name == codePage)
+        if (IsCodePage(codePage))
+            for (int i = 0; i < Notebook.GetNPages(); i++)
             {
-                Notebook.SetCurrentPage(i);
+                Widget? wg = Notebook.GetNthPage(i);
+                if (wg?.Name == codePage)
+                {
+                    Notebook.SetCurrentPage(i);
 
-                //Передати фокус
-                if (wg is ScrolledWindow scroll && scroll.Child is Viewport viewport)
-                    viewport.Child?.GetType().GetMethod("DefaultGrabFocus")?.Invoke(viewport.Child, null);
+                    //Передати фокус
+                    if (wg is ScrolledWindow scroll && scroll.Child is Viewport viewport)
+                        viewport.Child?.GetType().GetMethod("DefaultGrabFocus")?.Invoke(viewport.Child, null);
+                }
             }
-        }
     }
 
     /// <summary>
@@ -425,15 +429,16 @@ public class NotebookFunction
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо заблокувати/розблокувати поточну сторінку!");
 
-        for (int i = 0; i < Notebook.GetNPages(); i++)
-        {
-            Widget? wg = Notebook.GetNthPage(i);
-            if (wg?.Name == codePage)
+        if (IsCodePage(codePage))
+            for (int i = 0; i < Notebook.GetNPages(); i++)
             {
-                wg.Sensitive = sensitive;
-                break;
+                Widget? wg = Notebook.GetNthPage(i);
+                if (wg?.Name == codePage)
+                {
+                    wg.Sensitive = sensitive;
+                    break;
+                }
             }
-        }
     }
 
     public void SensitivePage(string codePage, bool sensitive = true) => SensitivePage(sensitive, codePage);
@@ -444,6 +449,13 @@ public class NotebookFunction
     /// <param name="pageName">Назва</param>
     /// <returns>Обрізана назва</returns>
     public static string SubstringPageName(string pageName) => pageName.Length >= 23 ? pageName[..19] + " ..." : pageName;
+
+    /// <summary>
+    /// Перевіряє чи код сторінки є Guid
+    /// </summary>
+    /// <param name="codePage">Код сторінки</param>
+    /// <returns>true якщо код сторінки є Guid</returns>
+    static bool IsCodePage(string codePage) => Guid.TryParse(codePage, out _);
 
     #region ObjectChangeEvents
 
@@ -498,16 +510,19 @@ public class NotebookFunction
     /// <param name="pointerPattern">Фільтр по типу даних</param>
     public void AddChangeFunc(string codePage, Action<List<ObjectChanged>> func, string pointerPattern)
     {
-        var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
-
-        GroupObjectChangeEvents group = pointerGroup switch
+        if (IsCodePage(codePage))
         {
-            "Довідники" => GroupObjectChangeEvents.Directory,
-            "Документи" => GroupObjectChangeEvents.Document,
-            _ => throw ex ?? new Exception("Тільки 'Довідники' або 'Документи'")
-        };
+            var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
 
-        ObjectChangeEventsFunc[group].Add((codePage, func, [pointerType]));
+            GroupObjectChangeEvents group = pointerGroup switch
+            {
+                "Довідники" => GroupObjectChangeEvents.Directory,
+                "Документи" => GroupObjectChangeEvents.Document,
+                _ => throw ex ?? new Exception("Тільки 'Довідники' або 'Документи'")
+            };
+
+            ObjectChangeEventsFunc[group].Add((codePage, func, [pointerType]));
+        }
     }
 
     /// <summary>
@@ -517,9 +532,21 @@ public class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="func">Функція</param>
     /// <param name="typeDocs">Типи документів які належать журналу</param>
-    public void AddChangeFuncJournal(Notebook? notebook, string codePage, Action<List<ObjectChanged>> func, string[] allowDocument)
+    public void AddChangeFuncJournal(string codePage, Action<List<ObjectChanged>> func, string[] allowDocument)
     {
-        ObjectChangeEventsFunc?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
+        if (IsCodePage(codePage))
+            ObjectChangeEventsFunc?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
+    }
+
+    /// <summary>
+    /// Видалити підключення до подій зміни об’єкта
+    /// </summary>
+    /// <param name="codePage">Код сторінки</param>
+    public void RemoveChangeFunc(string codePage)
+    {
+        if (IsCodePage(codePage))
+            foreach (var item in ObjectChangeEventsFunc.Values)
+                item.RemoveAll(x => x.codePage == codePage);
     }
 
     enum GroupObjectChangeEvents
