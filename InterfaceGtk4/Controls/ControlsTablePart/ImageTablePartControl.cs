@@ -44,7 +44,7 @@ public class ImageTablePartControl : Box
 
     public void SetImage(Pixbuf? pixbuf)
     {
-        Picture img = Picture.NewForPixbuf(pixbuf);
+        Image img = Image.NewFromPixbuf(pixbuf);
         hBox.Append(img);
     }
 
