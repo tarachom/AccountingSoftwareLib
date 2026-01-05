@@ -60,8 +60,12 @@ public abstract class PointerControl : Box
     /// </summary>
     public UnigueID? OpenFolder { get; set; }
 
+    #region Virtual Function
+
     protected virtual void OpenSelect(Button button, EventArgs args) { }
     protected virtual void OnClear(Button button, EventArgs args) { }
+
+    #endregion
 
     /// <summary>
     /// Функція яка викликається перед відкриттям вибору

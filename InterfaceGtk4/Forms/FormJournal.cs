@@ -57,7 +57,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    public virtual Gio.ListStore Store { get; } = Gio.ListStore.New(Row.GetGType());
+    public virtual Gio.ListStore Store { get; } = Gio.ListStore.New(RowJournal.GetGType());
 
     /// <summary>
     /// Відбори
@@ -94,6 +94,9 @@ public abstract class FormJournal : Form
 
     public FormJournal(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
+        //Не переміщати стовпчики
+        Grid.Reorderable = false;
+
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);
         contrKey.OnKeyReleased += async (sender, args) =>
@@ -195,7 +198,7 @@ public abstract class FormJournal : Form
         if (selection.GetMinimum() == selection.GetMaximum())
         {
             uint position = selection.GetMaximum();
-            Row? row = (Row?)Store.GetObject(position);
+            RowJournal? row = (RowJournal?)Store.GetObject(position);
             if (row != null) SelectPointerItem = row.UnigueID;
         }
     }
@@ -204,15 +207,15 @@ public abstract class FormJournal : Form
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public List<Row> GetSelection()
+    public List<RowJournal> GetSelection()
     {
-        List<Row> rows = [];
+        List<RowJournal> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i) && model.GetObject(i) is Row row)
+            if (model.IsSelected(i) && model.GetObject(i) is RowJournal row)
                 rows.Add(row);
 
         return rows;
@@ -315,7 +318,7 @@ public abstract class FormJournal : Form
         string codePage = PopoverParent != null ? Guid.NewGuid().ToString() : GetName();
 
         //При закритті PopoverParent
-        PopoverParent?.OnHide += (_, _) => 
+        PopoverParent?.OnHide += (_, _) =>
         {
             NotebookFunc?.RemoveChangeFunc(codePage);
             GC.Collect();
@@ -347,7 +350,7 @@ public abstract class FormJournal : Form
                         foreach (var record in delete)
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
-                                Row? row = (Row?)Store.GetObject(i);
+                                RowJournal? row = (RowJournal?)Store.GetObject(i);
                                 if (row != null && row.UnigueID.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
@@ -369,7 +372,7 @@ public abstract class FormJournal : Form
                         if (records.Count == 0)
                             break;
 
-                        Row? row = (Row?)Store.GetObject(i);
+                        RowJournal? row = (RowJournal?)Store.GetObject(i);
                         if (row != null)
                         {
                             ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UnigueID.UGuid));

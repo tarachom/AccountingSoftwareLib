@@ -21,22 +21,38 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using GObject;
-using AccountingSoftware;
+using GdkPixbuf;
+using Gtk;
 
 namespace InterfaceGtk4;
 
-/// <summary>
-/// Базовий клас для рядка табличного списку журналів чи табличної частини
-/// 
-/// Основа для класів:
-///      RowJournal
-/// </summary>
-[Subclass<GObject.Object>]
-public partial class Row
+public class ImageTablePartControl : Box
 {
-    /// <summary>
-    /// Унікальний ідентифікатор
-    /// </summary>
-    public UnigueID UnigueID { get; set; } = new();
+    Box hBox;
+
+    public ImageTablePartControl()
+    {
+        SetOrientation(Orientation.Vertical);
+
+        hBox = New(Orientation.Horizontal, 0);
+        hBox.Valign = hBox.Halign = Align.Center;
+        hBox.Vexpand = true;
+        
+        Append(hBox);
+        AddCssClass("base");
+    }
+
+    public void SetImage(Pixbuf? pixbuf)
+    {
+        Picture img = Picture.NewForPixbuf(pixbuf);
+        hBox.Append(img);
+    }
+
+    public static ImageTablePartControl NewForPixbuf(Pixbuf? pixbuf)
+    {
+        ImageTablePartControl img = new();
+        img.SetImage(pixbuf);
+
+        return img;
+    }
 }

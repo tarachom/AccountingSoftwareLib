@@ -24,12 +24,17 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Рядок для табличного списку журналу довідника
+/// Рядок для табличного списку журналу документу
 /// </summary>
-public partial class DirectoryRow : Row
+public partial class DocumentRowJournal : RowJournal
 {
     /// <summary>
     /// Помітка на видалення
     /// </summary>
     public bool DeletionLabel { get; set; } = false;
+
+    /// <summary>
+    /// Проведений
+    /// </summary>
+    public bool Spend { get; set; } = false;
 }

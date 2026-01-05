@@ -49,7 +49,7 @@ public abstract class DocumentJournalBase : FormJournal
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
     /// </summary>
-    public override Gio.ListStore Store { get; } = Gio.ListStore.New(DocumentRow.GetGType());
+    public override Gio.ListStore Store { get; } = Gio.ListStore.New(DocumentRowJournal.GetGType());
 
     /// <summary>
     /// Функція зворотнього виклику при виборі
@@ -278,7 +278,7 @@ public abstract class DocumentJournalBase : FormJournal
     async ValueTask GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
-        if (model.GetObject(position) is Row row)
+        if (model.GetObject(position) is RowJournal row)
             if (DocumentPointerItem == null)
                 await OpenPageElement(false, row.UnigueID);
             else
@@ -380,7 +380,7 @@ public abstract class DocumentJournalBase : FormJournal
 
     async void Edit()
     {
-        foreach (Row row in GetSelection())
+        foreach (RowJournal row in GetSelection())
             await OpenPageElement(false, row.UnigueID);
     }
 
@@ -396,10 +396,10 @@ public abstract class DocumentJournalBase : FormJournal
 
     async void OnCopy(Button button, EventArgs args)
     {
-        List<Row> rows = GetSelection();
+        List<RowJournal> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (Row row in rows)
+            foreach (RowJournal row in rows)
                 SelectPointerItem = await Copy(row.UnigueID);
 
             PagesClear();
@@ -411,7 +411,7 @@ public abstract class DocumentJournalBase : FormJournal
         {
             if (YN == Message.YesNo.Yes)
             {
-                foreach (Row row in rows)
+                foreach (RowJournal row in rows)
                     SelectPointerItem = await Copy(row.UnigueID);
 
                 PagesClear();
@@ -423,10 +423,10 @@ public abstract class DocumentJournalBase : FormJournal
 
     async ValueTask Delete()
     {
-        List<Row> rows = GetSelection();
+        List<RowJournal> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (Row row in rows)
+            foreach (RowJournal row in rows)
                 await SetDeletionLabel(row.UnigueID);
         }
 
@@ -435,7 +435,7 @@ public abstract class DocumentJournalBase : FormJournal
         {
             if (YN == Message.YesNo.Yes)
             {
-                foreach (Row row in rows)
+                foreach (RowJournal row in rows)
                     await SetDeletionLabel(row.UnigueID);
             }
         });
