@@ -25,15 +25,17 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class PointerTablePartControl : Box
+/// <summary>
+/// 
+/// </summary>
+public class PointerTablePartCell : Box
 {
     Box hBox;
-    Entry entryText;
-
+    Entry entryPresentation;
     Button buttonSelect;
     Button buttonClear;
 
-    public PointerTablePartControl()
+    public PointerTablePartCell()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -43,12 +45,34 @@ public class PointerTablePartControl : Box
         Append(hBox);
         AddCssClass("pointer");
 
-        entryText = Entry.New();
-        entryText.Editable = false;
-        entryText.Hexpand = true;
-        entryText.AddCssClass("entry");
+        entryPresentation = Entry.New();
+        entryPresentation.Editable = false;
+        entryPresentation.Hexpand = true;
+        entryPresentation.AddCssClass("entry");
+        hBox.Append(entryPresentation);
 
-        /*entryText.OnNotify += (_, args) =>
+        //Select
+        {
+            buttonSelect = Button.New();
+            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
+            buttonSelect.OnClicked += Select;
+            buttonSelect.AddCssClass("button");
+            //buttonSelect.Visible = false;
+            hBox.Append(buttonSelect);
+        }
+
+        //Clear
+        {
+            buttonClear = Button.New();
+            buttonClear.Child = Image.NewFromPixbuf(Icon.ForButton.Clean);
+            buttonClear.OnClicked += Clear;
+            buttonClear.AddCssClass("button");
+            //buttonClear.Visible = false;
+            hBox.Append(buttonClear);
+        }
+
+        /*
+        entryPresentation.OnNotify += (_, args) =>
         {
             string name = args.Pspec.GetName();
             Console.WriteLine(name);
@@ -63,63 +87,32 @@ public class PointerTablePartControl : Box
                 buttonSelect?.Visible = true;
                 buttonClear?.Visible = true;
             }
-        };*/
-
-        hBox.Append(entryText);
-
-        //Select
-        {
-            buttonSelect = Button.New();
-            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
-            buttonSelect.OnClicked += OpenSelect;
-            buttonSelect.AddCssClass("button");
-            //buttonSelect.Visible = false;
-            hBox.Append(buttonSelect);
-        }
-
-        //Clear
-        {
-            buttonClear = Button.New();
-            buttonClear.Child = Image.NewFromPixbuf(Icon.ForButton.Clean);
-            buttonClear.OnClicked += OnClear;
-            buttonClear.AddCssClass("button");
-            //buttonClear.Visible = false;
-            hBox.Append(buttonClear);
-        }
+        };
+        */
     }
 
     #region Virtual Function
 
-    protected virtual void OpenSelect(Button button, EventArgs args) { }
-    protected virtual void OnClear(Button button, EventArgs args) { }
+    protected virtual void Select(Button button, EventArgs args) { }
+    protected virtual void Clear(Button button, EventArgs args) { }
 
     #endregion
 
     /// <summary>
-    /// Функція яка викликається перед відкриттям вибору
+    /// Функція яка викликається після вибору
     /// </summary>
-    public Action? BeforeClickOpenFunc { get; set; }
+    public Action? OnSelect { get; set; }
 
     /// <summary>
-    /// Функція яка викликається після вибору.
-    /// </summary>
-    public Action? AfterSelectFunc { get; set; }
-
-    /// <summary>
-    /// Функція яка викликається після очищення.
-    /// </summary>
-    public Action? AfterClearFunc { get; set; }
-
-    /// <summary>
-    /// 
+    /// Відображення
     /// </summary>
     protected string Presentation
     {
-        get => entryText.GetText();
+        get => entryPresentation.GetText();
         set
         {
-            entryText.SetText(value);
-            entryText.TooltipText = value;
+            entryPresentation.SetText(value);
+            entryPresentation.TooltipText = value;
         }
     }
 }

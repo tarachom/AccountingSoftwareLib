@@ -21,57 +21,41 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using GdkPixbuf;
 using Gtk;
 
 namespace InterfaceGtk4;
 
-public class LabelTablePartControl : Box
+/// <summary>
+/// 
+/// </summary>
+public class ImageTablePartCell : Box
 {
     Box hBox;
-    Label label;
 
-    public LabelTablePartControl()
+    public ImageTablePartCell()
     {
         SetOrientation(Orientation.Vertical);
 
         hBox = New(Orientation.Horizontal, 0);
-        hBox.Valign = Align.Center;
+        hBox.Valign = hBox.Halign = Align.Center;
         hBox.Vexpand = true;
-
+        
         Append(hBox);
         AddCssClass("base");
-
-        label = Label.New(null);
-        hBox.Append(label);
     }
 
-    public void SetText(string? text)
+    public void SetImage(Pixbuf? pixbuf)
     {
-        label.SetText(text ?? "");
+        Image img = Image.NewFromPixbuf(pixbuf);
+        hBox.Append(img);
     }
 
-    public void SetType(string type)
+    public static ImageTablePartCell NewForPixbuf(Pixbuf? pixbuf)
     {
-        if (type == "integer" || type == "numeric")
-        {
-            hBox.Halign = Align.End;
-            AddCssClass("numeric");
-        }
-    }
+        ImageTablePartCell img = new();
+        img.SetImage(pixbuf);
 
-    public static LabelTablePartControl New(string? text)
-    {
-        LabelTablePartControl lbl = new();
-        lbl.SetText(text);
-
-        return lbl;
-    }
-
-    public static LabelTablePartControl NewFromType(string type)
-    {
-        LabelTablePartControl lbl = new();
-        lbl.SetType(type);
-
-        return lbl;
+        return img;
     }
 }

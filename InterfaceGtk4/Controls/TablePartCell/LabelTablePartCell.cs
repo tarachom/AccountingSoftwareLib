@@ -21,38 +21,71 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using GdkPixbuf;
 using Gtk;
 
 namespace InterfaceGtk4;
 
-public class ImageTablePartControl : Box
+/// <summary>
+/// 
+/// </summary>
+public class LabelTablePartCell : Box
 {
     Box hBox;
+    Label label;
 
-    public ImageTablePartControl()
+    public LabelTablePartCell()
     {
         SetOrientation(Orientation.Vertical);
 
         hBox = New(Orientation.Horizontal, 0);
-        hBox.Valign = hBox.Halign = Align.Center;
+        hBox.Valign = Align.Center;
         hBox.Vexpand = true;
-        
+
         Append(hBox);
         AddCssClass("base");
+
+        label = Label.New(null);
+        hBox.Append(label);
     }
 
-    public void SetImage(Pixbuf? pixbuf)
+    public string Text
     {
-        Image img = Image.NewFromPixbuf(pixbuf);
-        hBox.Append(img);
+        get => label.GetText();
+        set => label.SetText(value);
     }
 
-    public static ImageTablePartControl NewForPixbuf(Pixbuf? pixbuf)
+    public void SetText(string? text)
     {
-        ImageTablePartControl img = new();
-        img.SetImage(pixbuf);
+        label.SetText(text ?? "");
+    }
 
-        return img;
+    public void SetText(object? text)
+    {
+        label.SetText(text?.ToString() ?? "");
+    }
+
+    public void SetType(string type)
+    {
+        if (type == "integer" || type == "numeric")
+        {
+            hBox.Halign = Align.End;
+            AddCssClass("numeric");
+        }
+    }
+
+    public static LabelTablePartCell New(string? text)
+    {
+        LabelTablePartCell lbl = new();
+        lbl.SetText(text);
+
+        return lbl;
+    }
+
+    public static LabelTablePartCell NewFromType(string type)
+    {
+        LabelTablePartCell lbl = new();
+        lbl.SetType(type);
+
+        return lbl;
     }
 }

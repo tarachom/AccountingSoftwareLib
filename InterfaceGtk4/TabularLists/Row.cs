@@ -23,6 +23,7 @@ limitations under the License.
 
 using GObject;
 using AccountingSoftware;
+using System.ComponentModel;
 
 namespace InterfaceGtk4;
 

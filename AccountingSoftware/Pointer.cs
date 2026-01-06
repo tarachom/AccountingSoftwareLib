@@ -101,5 +101,15 @@ namespace AccountingSoftware
         {
             return UnigueID.UGuid.ToString();
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(UnigueID.UGuid);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj != null && UnigueID.UGuid == ((Pointer)obj).UnigueID.UGuid;
+        }
     }
 }

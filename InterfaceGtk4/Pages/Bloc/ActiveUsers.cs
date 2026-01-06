@@ -174,8 +174,7 @@ public partial class ActiveUsers : Box
     void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        Label label = Label.New(null);
-        label.Halign = Align.Start;
+        LabelTablePartCell label = LabelTablePartCell.New(null);
         listItem.Child = label;
     }
 
@@ -186,7 +185,7 @@ public partial class ActiveUsers : Box
     void OnBind_UserName(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        Label? label = (Label?)listItem.Child;
+        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
             label.SetText(itemrow.UserName.ToString());
@@ -195,7 +194,7 @@ public partial class ActiveUsers : Box
     void OnBind_DateLogin(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        Label? label = (Label?)listItem.Child;
+        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
             label.SetText(itemrow.DateLogin.ToString("dd.MM.yy HH:mm"));
@@ -204,7 +203,7 @@ public partial class ActiveUsers : Box
     void OnBind_DateUp(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        Label? label = (Label?)listItem.Child;
+        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
             label.SetText(itemrow.DateUp.ToString("HH:mm:ss"));
@@ -214,13 +213,13 @@ public partial class ActiveUsers : Box
     {
         ListItem listItem = (ListItem)args.Object;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
-        listItem.SetChild(Picture.NewForPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
+        listItem.SetChild(ImageTablePartCell.NewForPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
     }
 
     void OnBind_TypeForm(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        Label? label = (Label?)listItem.Child;
+        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
             label.SetText(itemrow.TypeForm.ToString());

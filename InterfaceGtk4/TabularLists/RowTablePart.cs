@@ -28,6 +28,8 @@ namespace InterfaceGtk4;
 /// </summary>
 public class RowTablePart : Row
 {
+    public Action<string>? Changed;
+    
     /// <summary>
     /// Порядковий номер рядка
     /// </summary>

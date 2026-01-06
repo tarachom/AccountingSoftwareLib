@@ -149,5 +149,15 @@ namespace AccountingSoftware
         }
 
         #endregion
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(UnigueID.UGuid);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj != null && UnigueID.UGuid == ((Object)obj).UnigueID.UGuid;
+        }
     }
 }
