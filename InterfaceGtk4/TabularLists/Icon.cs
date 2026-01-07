@@ -58,6 +58,7 @@ public static class ForInformation
     public static Pixbuf? Synchronizing = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/synchronizing.png");
 
     public static Pixbuf? Check = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/check.png");
+    public static Pixbuf? Grid = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/grid.png");
 }
 
 /// <summary>

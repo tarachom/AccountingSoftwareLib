@@ -22,18 +22,18 @@ limitations under the License.
 */
 
 using Gtk;
+using Gdk;
 
 namespace InterfaceGtk4;
 
 /// <summary>
 /// 
 /// </summary>
-public class PointerTablePartCell : Box
+public abstract class PointerTablePartCell : Box
 {
     Box hBox;
     Entry entryPresentation;
     Button buttonSelect;
-    Button buttonClear;
 
     public PointerTablePartCell()
     {
@@ -49,52 +49,61 @@ public class PointerTablePartCell : Box
         entryPresentation.Editable = false;
         entryPresentation.Hexpand = true;
         entryPresentation.AddCssClass("entry");
+
+        /*GestureClick gesture = GestureClick.New();
+        entryPresentation.AddController(gesture);
+        gesture.OnPressed += (_, args) =>
+        {
+            if (args.NPress >= 1)
+                OnActivate?.Invoke();
+            //else if (buttonSelect != null && args.NPress >= 2)
+                //Select(buttonSelect, new());
+        };*/
+
+        EventControllerKey contrKey = EventControllerKey.New();
+        entryPresentation.AddController(contrKey);
+        contrKey.OnKeyReleased += (_, args) =>
+        {
+            if (buttonSelect != null && (args.Keyval == (uint)Key.KP_Enter || args.Keyval == (uint)Key.Return))
+                Select(buttonSelect, new());
+            else if (args.Keyval == (uint)Key.Delete)
+                Clear();
+        };
+
         hBox.Append(entryPresentation);
 
         //Select
         {
             buttonSelect = Button.New();
-            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
+            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
+            buttonSelect.OnClicked += (_, _) => OnActivate?.Invoke();
             buttonSelect.OnClicked += Select;
+            buttonSelect.TooltipText = "Вибрати";
             buttonSelect.AddCssClass("button");
-            //buttonSelect.Visible = false;
             hBox.Append(buttonSelect);
         }
 
         //Clear
-        {
+        /*{
             buttonClear = Button.New();
             buttonClear.Child = Image.NewFromPixbuf(Icon.ForButton.Clean);
             buttonClear.OnClicked += Clear;
             buttonClear.AddCssClass("button");
             //buttonClear.Visible = false;
             hBox.Append(buttonClear);
-        }
+        }*/
 
-        /*
-        entryPresentation.OnNotify += (_, args) =>
+        /*entryPresentation.OnNotify += (_, args) =>
         {
-            string name = args.Pspec.GetName();
-            Console.WriteLine(name);
-            if (name == "has-focus")
-            {
-                //buttonSelect?.Visible = false;
-                //buttonClear?.Visible = false;
-            }
-
-            if (name == "cursor-position")
-            {
-                buttonSelect?.Visible = true;
-                buttonClear?.Visible = true;
-            }
-        };
-        */
+            if (args.Pspec.GetName() == "cursor-position")
+                OnActivate?.Invoke();
+        };*/
     }
 
     #region Virtual Function
 
-    protected virtual void Select(Button button, EventArgs args) { }
-    protected virtual void Clear(Button button, EventArgs args) { }
+    protected abstract void Select(Button button, EventArgs args);
+    protected abstract void Clear();
 
     #endregion
 
@@ -102,6 +111,11 @@ public class PointerTablePartCell : Box
     /// Функція яка викликається після вибору
     /// </summary>
     public Action? OnSelect { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Action? OnActivate { get; set; }
 
     /// <summary>
     /// Відображення
