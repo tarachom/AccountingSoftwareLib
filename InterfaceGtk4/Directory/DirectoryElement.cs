@@ -124,6 +124,11 @@ public abstract class DirectoryElement : FormElement
         Box vBoxEnd = New(Orientation.Vertical, 0);
         HPanedTop.SetEndChild(vBoxEnd);
         CreateEndBloc(vBoxEnd);
+
+        HPanedTop.SetShrinkStartChild(false);
+        HPanedTop.SetShrinkEndChild(false);
+        HPanedTop.Position = 500;
+        Append(HPanedTop);
     }
 
     #region Virtual Function

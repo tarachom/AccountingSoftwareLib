@@ -80,12 +80,12 @@ public partial class ActiveUsers : Box
         Grid = ColumnView.New(model);
         Columns();
 
-        ScrolledWindow ScrollGrid = ScrolledWindow.New();
-        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        ScrollGrid.WidthRequest = widthRequest;
-        ScrollGrid.HeightRequest = heightRequest;
-        ScrollGrid.SetChild(Grid);
-        Append(ScrollGrid);
+        ScrolledWindow scroll = ScrolledWindow.New();
+        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+        scroll.WidthRequest = widthRequest;
+        scroll.HeightRequest = heightRequest;
+        scroll.SetChild(Grid);
+        Append(scroll);
     }
 
     async ValueTask LoadRecords()

@@ -63,9 +63,9 @@ public class FilterControl : Box
     public Func<bool>? GetWhere { get; set; }
 
     /// <summary>
-    /// Список фільтрів
+    /// Таблиця для фільтрів
     /// </summary>
-    public ListBox FilterList { get; private set; } = new ListBox() { SelectionMode = SelectionMode.None, Hexpand = true };
+    Grid FilterGrid = Grid.New();
 
     /// <summary>
     /// Галочка яка вказує на те що потрібно враховувати період у фільтрі
@@ -91,7 +91,10 @@ public class FilterControl : Box
             Box hBox = New(Orientation.Horizontal, 0);
             Append(hBox);
 
-            hBox.Append(FilterList);
+            FilterGrid.Hexpand = true;
+            FilterGrid.ColumnSpacing = FilterGrid.RowSpacing = 10;
+
+            hBox.Append(FilterGrid);
         }
 
         //Кнопки
@@ -106,20 +109,13 @@ public class FilterControl : Box
             buttonFilter.OnClicked += (_, _) =>
             {
                 //Є хоть один елемент в списку
-                if (FilterList.GetFirstChild() != null)
+                if (GridCountRows > 0)
                 {
                     bool existFilter = GetWhere?.Invoke() ?? false;
-
                     if (existFilter)
                         Select?.Invoke();
-                    //else
-                    //Message.Info(null, null, "Повідомлення", "Відсутні фільтри"); //!!!
 
                     PopoverParent?.Hide();
-                }
-                else
-                {
-                    //Якось попередити що фільтри відсутні
                 }
             };
             hBox.Append(buttonFilter);
@@ -128,7 +124,7 @@ public class FilterControl : Box
             buttonClear.OnClicked += (_, _) =>
             {
                 //Є хоть один елемент в списку
-                if (FilterList.GetFirstChild() != null)
+                if (GridCountRows > 0)
                 {
                     Clear?.Invoke();
                     PopoverParent?.Hide();
@@ -152,6 +148,21 @@ public class FilterControl : Box
     /// Вспливаюче вікно власник
     /// </summary>
     public Popover? PopoverParent { get; private set; }
+
+    /// <summary>
+    /// Кількість рядків в таблиці
+    /// </summary>
+    int GridCountRows = 0;
+
+    /// <summary>
+    /// Колонки для таблиці фільтрів
+    /// </summary>
+    enum GridColumn
+    {
+        Name,
+        Widget,
+        Sw
+    }
 
     /// <summary>
     /// Створити спливаюче вікно фільтру
@@ -180,7 +191,28 @@ public class FilterControl : Box
     /// <param name="sw">Включено / Виключено</param>
     public void Append(string caption, Widget widget, Switch sw)
     {
-        Box hBox = New(Orientation.Horizontal, 0);
+        Label label = Label.New(caption);
+        label.Halign = Align.End;
+        FilterGrid.Attach(label, (int)GridColumn.Name, GridCountRows, 1, 1);
+
+        //widget.Hexpand = true;
+        FilterGrid.Attach(widget, (int)GridColumn.Widget, GridCountRows, 1, 1);
+
+        //Включено / Виключено
+        {
+            Box vBox = New(Orientation.Vertical, 0);
+            Box hBox = New(Orientation.Horizontal, 0);
+            hBox.Vexpand = hBox.Hexpand = true;
+            hBox.Valign = Align.Center;
+            hBox.Append(sw);
+            vBox.Append(hBox);
+
+            FilterGrid.Attach(vBox, (int)GridColumn.Sw, GridCountRows, 1, 1);
+        }
+
+        GridCountRows++;
+
+        /*Box hBox = New(Orientation.Horizontal, 0);
         hBox.MarginStart = hBox.MarginEnd = hBox.MarginTop = hBox.MarginBottom = 5;
         hBox.Hexpand = true;
 
@@ -207,6 +239,6 @@ public class FilterControl : Box
             vBoxSw.Append(hBoxSw);
         }
 
-        FilterList.Append(new ListBoxRow() { Child = vBox });
+        FilterList.Append(new ListBoxRow() { Child = vBox });*/
     }
 }

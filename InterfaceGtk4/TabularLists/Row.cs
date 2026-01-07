@@ -23,7 +23,6 @@ limitations under the License.
 
 using GObject;
 using AccountingSoftware;
-using System.ComponentModel;
 
 namespace InterfaceGtk4;
 
@@ -39,5 +38,15 @@ public partial class Row
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
-    public UnigueID UnigueID { get; set; } = new();
+    public UnigueID UnigueID
+    {
+        get => UnigueID_;
+        set
+        {
+            UnigueID_ = value;
+            Сhanged_UnigueID?.Invoke();
+        }
+    }
+    UnigueID UnigueID_ = new();
+    public Action? Сhanged_UnigueID;
 }

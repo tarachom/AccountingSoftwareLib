@@ -172,6 +172,9 @@ public abstract class DocumentElement : FormElement
         HPanedTop.SetEndChild(vBoxBottom);
         CreateBottomBloc(vBoxBottom);
 
+        HPanedTop.SetShrinkStartChild(false);
+        HPanedTop.SetShrinkEndChild(false);
+        HPanedTop.Position = 0;
         Append(HPanedTop);
     }
 
@@ -188,20 +191,19 @@ public abstract class DocumentElement : FormElement
 
         vBox.Append(expanderHead);
 
-        //Container1
-        Box vBoxContainer1 = New(Orientation.Vertical, 0);
-        vBoxContainer1.WidthRequest = 500;
-        HBoxTopContainer.Append(vBoxContainer1);
+        //StarBloc
+        Box vBoxStart = New(Orientation.Vertical, 0);
+        vBoxStart.WidthRequest = 500;
+        HBoxTopContainer.Append(vBoxStart);
 
-        CreateContainer1(vBoxContainer1);
+        CreateTopStartBloc(vBoxStart);
 
-        //Container2
-        Box vBoxContainer2 = New(Orientation.Vertical, 0);
-        vBoxContainer2.WidthRequest = 500;
-        HBoxTopContainer.Append(vBoxContainer2);
+        //EndBloc
+        Box vBoxEnd = New(Orientation.Vertical, 0);
+        vBoxEnd.WidthRequest = 500;
+        HBoxTopContainer.Append(vBoxEnd);
 
-        CreateContainer2(vBoxContainer2);
-        // <--
+        CreateTopEndBloc(vBoxEnd);
 
         vBox.Append(HBoxComment);
     }
@@ -211,7 +213,7 @@ public abstract class DocumentElement : FormElement
     /// </summary>
     protected virtual void CreateBottomBloc(Box vBox)
     {
-        NotebookTablePart.Vexpand = NotebookTablePart.Hexpand = true;
+        NotebookTablePart.Vexpand = /*NotebookTablePart.Hexpand=*/ true; 
         vBox.Append(NotebookTablePart);
 
         Box vBoxPage = New(Orientation.Vertical, 0);
@@ -222,27 +224,27 @@ public abstract class DocumentElement : FormElement
 
         NotebookTablePart.AppendPage(scroll, Label.New("Додаткові реквізити"));
 
-        //Два блоки для полів -->
         vBoxPage.Append(HBoxOtherContainer);
 
-        Box vBoxContainer1 = New(Orientation.Vertical, 0);
-        vBoxContainer1.WidthRequest = 500;
-        HBoxOtherContainer.Append(vBoxContainer1);
+        //StarBloc
+        Box vBoxStart = New(Orientation.Vertical, 0);
+        vBoxStart.WidthRequest = 500;
+        HBoxOtherContainer.Append(vBoxStart);
 
-        CreateContainer3(vBoxContainer1);
+        CreateBottomStartBloc(vBoxStart);
 
-        Box vBoxContainer2 = New(Orientation.Vertical, 0);
-        vBoxContainer2.WidthRequest = 500;
-        HBoxOtherContainer.Append(vBoxContainer2);
+        //EndBloc
+        Box vBoxEnd = New(Orientation.Vertical, 0);
+        vBoxEnd.WidthRequest = 500;
+        HBoxOtherContainer.Append(vBoxEnd);
 
-        CreateContainer4(vBoxContainer2);
-        // <--
+        CreateBottomEndBloc(vBoxEnd);
     }
 
-    protected virtual void CreateContainer1(Box vBox) { }
-    protected virtual void CreateContainer2(Box vBox) { }
-    protected virtual void CreateContainer3(Box vBox) { }
-    protected virtual void CreateContainer4(Box vBox) { }
+    protected virtual void CreateTopStartBloc(Box vBox) { }
+    protected virtual void CreateTopEndBloc(Box vBox) { }
+    protected virtual void CreateBottomStartBloc(Box vBox) { }
+    protected virtual void CreateBottomEndBloc(Box vBox) { }
 
     /// <summary>
     /// Назва документу

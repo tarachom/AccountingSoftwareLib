@@ -77,6 +77,11 @@ namespace AccountingSoftware
         public const string DefaultDictTSearch = "simple";
 
         /// <summary>
+        /// Версія Gtk
+        /// </summary>
+        public GtkVersion GtkLibVersion { get; set; } = GtkVersion.Gtk3;
+
+        /// <summary>
         /// Варіант завантаження конфігурації
         /// </summary>
         public VariantLoadConf VariantLoadConfiguration { get; private set; } = VariantLoadConf.Full;
@@ -1157,6 +1162,7 @@ namespace AccountingSoftware
                 Conf.Author = rootNodeConfiguration.SelectSingleNode("Author")?.Value ?? "";
                 Conf.Desc = rootNodeConfiguration.SelectSingleNode("Desc")?.Value ?? "";
                 Conf.DictTSearch = rootNodeConfiguration.SelectSingleNode("DictTSearch")?.Value ?? DefaultDictTSearch;
+                Conf.GtkLibVersion = Enum.TryParse(rootNodeConfiguration.SelectSingleNode("GtkVersion")?.Value, out GtkVersion gtkversion) ? gtkversion : GtkVersion.Gtk3;
             }
         }
 
@@ -2009,6 +2015,10 @@ namespace AccountingSoftware
             XmlElement nodeDictTSearch = xmlConfDocument.CreateElement("DictTSearch");
             nodeDictTSearch.InnerText = !string.IsNullOrEmpty(Conf.DictTSearch) ? Conf.DictTSearch : DefaultDictTSearch;
             rootNode.AppendChild(nodeDictTSearch);
+
+            XmlElement nodeGtkVersion = xmlConfDocument.CreateElement("GtkVersion");
+            nodeGtkVersion.InnerText = Conf.GtkLibVersion.ToString();
+            rootNode.AppendChild(nodeGtkVersion);
         }
 
         /// <summary>
@@ -3732,6 +3742,16 @@ namespace AccountingSoftware
             /// Тільки необхідні компоненти (для готової програми)
             /// </summary>
             Small
+        }
+
+        /// <summary>
+        /// Версія Gtk
+        /// </summary>
+        public enum GtkVersion
+        {
+            Gtk3,
+
+            Gtk4
         }
 
         #endregion
