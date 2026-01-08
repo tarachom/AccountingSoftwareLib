@@ -64,9 +64,42 @@ namespace AccountingSoftware
         protected Dictionary<string, object> FieldValue { get; private set; } = [];
 
         /// <summary>
+        /// Подія яка виникає при зміні UnigueID
+        /// </summary>
+        public event EventHandler<UnigueID>? OnUnigueIDChanged;
+
+        /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; protected set; } = new();
+        public UnigueID UnigueID
+        {
+            get => unigueID;
+            protected set
+            {
+                unigueID = value;
+                OnUnigueIDChanged?.Invoke(this, value);
+            }
+        }
+        UnigueID unigueID = new();
+
+        /// <summary>
+        /// Подія яка виникає при зміні Caption
+        /// </summary>
+        public event EventHandler<string>? OnCaptionChanged;
+
+        /// <summary>
+        /// Назва яка потрібна для форм
+        /// </summary>
+        public string Caption
+        {
+            get => caption;
+            protected set
+            {
+                caption = value;
+                OnCaptionChanged?.Invoke(this, value);
+            }
+        }
+        string caption = "";
 
         /// <summary>
         /// Чи вже записаний

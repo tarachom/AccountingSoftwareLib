@@ -59,10 +59,15 @@ public class NotebookFunction
     readonly Dictionary<GroupObjectChangeEvents, List<(string codePage, Action<List<ObjectChanged>> action, string[] pointersType)>> ObjectChangeEventsFunc = [];
 
     /// <summary>
+    /// 
+    /// </summary>
+    readonly Dictionary<string, Func<ValueTask>> LockObjectPageFunc = [];
+
+    /// <summary>
     /// Функція створює блокнот з верхнім положенням вкладок
     /// </summary>
+    /// <param name="basicForm">Основне вікно</param>
     /// <param name="historySwitchList">Збереження історії переключення вкладок</param>
-    /// <param name="isNotebook">Чи це головний блокнот?</param>
     /// <returns>Notebook</returns>
     public Notebook CreateNotebook(Window? basicForm, bool historySwitchList = true)
     {
@@ -80,7 +85,7 @@ public class NotebookFunction
 
         EventControllerKey contrKey = EventControllerKey.New();
         Notebook.AddController(contrKey);
-        contrKey.OnKeyReleased += (sender, args) =>
+        contrKey.OnKeyReleased += async (sender, args) =>
         {
             if (Notebook.IsFocus())
                 if (args.Keyval == (uint)Key.Escape)
@@ -134,15 +139,10 @@ public class NotebookFunction
                 if (currNotebookName != null && currPageName != null && HistorySwitch.TryGetValue(currNotebookName, out List<string>? listPageName))
                 {
                     listPageName.Remove(currPageName); // Поточна сторінка видаляється із списку, якщо вона там є
-                    listPageName.Add(currPageName); // Поточна сторінка ставиться у кінець списку
+                    listPageName.Add(currPageName);    // Поточна сторінка ставиться у кінець списку
                 }
             };
         }
-
-        /*
-        //Структура для функцій розблокування об'єктів
-        notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<ValueTask>>());
-        */
 
         return Notebook;
     }
@@ -154,7 +154,6 @@ public class NotebookFunction
     /// Також код сторінки вкладається в назву основної прокрутки сторінки - scroll.Name = codePage;
     /// Функція повертає код сторінки.
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="tabName">Назва сторінки, заголовок</param>
     /// <param name="pageWidget">Віджет для сторінки</param>
     /// <param name="insertPage">Вставити сторінку перед поточною</param>
@@ -214,7 +213,6 @@ public class NotebookFunction
     /// <summary>
     /// Заголовок сторінки блокноту з кнопкою для закриття самої сторінки
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="caption">Заголовок</param>
     /// <param name="codePage">Код сторінки</param>
     /// <param name="noClosePage">Забрати можливість закривати сторінку</param>
@@ -262,9 +260,8 @@ public class NotebookFunction
     /// <summary>
     /// Закрити сторінку блокноту по коду
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="codePage">Код</param>
-    public void ClosePage(string codePage)
+    public async void ClosePage(string codePage)
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо закрити сторінку!");
         string notebookName = Notebook.Name ?? throw new Exception("Для блокноту не задана назва!");
@@ -296,15 +293,9 @@ public class NotebookFunction
                     //Очищення вказівників на функції реакції на зміни об'єктів
                     RemoveChangeFunc(codePage);
 
-                    /*
                     //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
-                    var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
-                    if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
-                    {
-                        await unlockFunc.Invoke();
-                        lockObjectPageFunc.Remove(codePage);
-                    }
-                    */
+                    if (LockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                        RemoveLockObjectFunc(codePage, unlockFunc);
 
                     Notebook.DetachTab(wg);
                     GC.Collect();
@@ -317,7 +308,6 @@ public class NotebookFunction
     /// <summary>
     /// Відображення спінера або іконки
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="active">Спінер якшо true, Іконка якщо false</param>
     /// <param name="codePage">Код сторінки</param>
     public void SpinnerPage(bool active, string codePage)
@@ -360,7 +350,6 @@ public class NotebookFunction
     /// <summary>
     /// Перейменувати сторінку по коду
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="caption">Нова назва</param>
     /// <param name="codePage">Код</param>
     public void RenamePage(string caption, string codePage)
@@ -398,7 +387,6 @@ public class NotebookFunction
     /// <summary>
     /// Встановлення поточної сторінки по коду
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
     /// <param name="codePage">Код</param>
     public void CurrentPage(string codePage)
     {
@@ -422,9 +410,8 @@ public class NotebookFunction
     /// <summary>
     /// Блокування чи розблокування поточної сторінки по коду
     /// </summary>
-    /// <param name="notebook">Блокнот</param>
-    /// <param name="codePage">Код</param>
     /// <param name="sensitive">Значення</param>
+    /// <param name="codePage">Код</param>
     public void SensitivePage(bool sensitive, string codePage)
     {
         if (Notebook is null) throw new Exception("Блокнот не заданий, неможливо заблокувати/розблокувати поточну сторінку!");
@@ -553,6 +540,30 @@ public class NotebookFunction
     {
         Directory,
         Document
+    }
+
+    #endregion
+
+    #region Lock Element
+
+    /// <summary>
+    /// Додати функцію блокування та розблокування об'єкта
+    /// </summary>
+    /// <param name="codePage">Код сторінки</param>
+    /// <param name="accountingObject">Об'єкт</param>
+    public async ValueTask AddLockObjectFunc(string codePage, AccountingSoftware.Object accountingObject)
+    {
+        //Функція розблокування після закриття сторінки
+        LockObjectPageFunc.Add(codePage, accountingObject.UnLock);
+
+        //Блокування
+        await accountingObject.Lock();
+    }
+
+    public async void RemoveLockObjectFunc(string codePage, Func<ValueTask> unlockFunc)
+    {
+        await unlockFunc.Invoke();
+        LockObjectPageFunc.Remove(codePage);
     }
 
     #endregion

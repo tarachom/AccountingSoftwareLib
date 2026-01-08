@@ -76,16 +76,6 @@ public abstract class DocumentElement : FormElement
     Button bSpend = Button.NewWithLabel("Провести");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    /// <summary>
-    /// Індикатор стану блокування
-    /// </summary>
-    Label LabelLock = Label.New(null);
-
-    /// <summary>
-    /// Функція для отримання інформації про блокування
-    /// </summary>
-    Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
-
     public DocumentElement(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         bSaveAndSpend.MarginEnd = 10;
@@ -113,48 +103,9 @@ public abstract class DocumentElement : FormElement
             })
         ]);
 
-        //Інформація про блокування
-        {
-            Button bLock = Button.NewFromIconName("doc");
-            bLock.OnClicked += async (_, _) =>
-            {
-                if (FuncLockInfo != null)
-                {
-                    LockedObject_Record recordResult = await FuncLockInfo.Invoke();
-
-                    Popover popover = Popover.New();
-                    popover.MarginStart = popover.MarginEnd = popover.MarginTop = popover.MarginBottom = 5;
-                    popover.SetParent(bLock);
-                    popover.Position = PositionType.Left;
-
-                    Box vBox = New(Orientation.Vertical, 0);
-                    Box hBox = New(Orientation.Horizontal, 0);
-                    vBox.Append(hBox);
-
-                    string info = "";
-                    if (recordResult.Result)
-                    {
-                        info += "Заблоковано" + "\n\n" +
-                            "Користувач: " + recordResult.UserName + "\n" +
-                            "Дата: " + recordResult.DateLock.ToString("HH:mm:ss");
-                    }
-                    else
-                        info += "Не заблоковано";
-
-                    hBox.Append(Label.New(info));
-
-                    popover.SetChild(vBox);
-                    popover.Show();
-                }
-            };
-
-            HBoxTop.Append(bLock);
-
-            //Індикатор стану блокування
-            LabelLock.UseMarkup = true;
-            LabelLock.UseUnderline = false;
-            HBoxTop.Append(LabelLock);
-        }
+        //Індикатор стану блокування
+        HBoxTop.Append(LabelLockInfo);
+        HBoxTop.Append(ButtonLock);
 
         Append(HBoxTop);
 
@@ -176,6 +127,23 @@ public abstract class DocumentElement : FormElement
         HPanedTop.SetShrinkEndChild(false);
         HPanedTop.Position = 0;
         Append(HPanedTop);
+    }
+
+    public override async ValueTask SetValue()
+    {
+        //Блокування
+        if (NotebookFunc != null && Element != null)
+            await NotebookFunc.AddLockObjectFunc(GetName(), Element);
+
+        await LockInfo();
+
+        if (Element != null && !await Element.IsLock())
+        {
+            bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = false;
+        }
+
+        DefaultGrabFocus();
+        await BeforeSetValue();
     }
 
     /// <summary>
@@ -213,7 +181,7 @@ public abstract class DocumentElement : FormElement
     /// </summary>
     protected virtual void CreateBottomBloc(Box vBox)
     {
-        NotebookTablePart.Vexpand = /*NotebookTablePart.Hexpand=*/ true; 
+        NotebookTablePart.Vexpand = /*NotebookTablePart.Hexpand=*/ true;
         vBox.Append(NotebookTablePart);
 
         Box vBoxPage = New(Orientation.Vertical, 0);
@@ -258,22 +226,6 @@ public abstract class DocumentElement : FormElement
         HBoxName.Append(НомерДок);
         HBoxName.Append(Label.New("від:"));
         HBoxName.Append(ДатаДок);
-    }
-
-    /// <summary>
-    /// Функція для відображення інформації про блокування
-    /// </summary>
-    /// <param name="accountingObject">Обєкт</param>
-    public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
-    {
-        bool isLock = await accountingObject.IsLock();
-        bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = isLock;
-
-        string color = isLock ? "green" : "red";
-        string text = isLock ? "Заблоковано" : "Тільки для читання";
-        LabelLock.SetMarkup($"<span color='{color}'>{text}</span>");
-
-        FuncLockInfo = accountingObject.LockInfo;
     }
 
     /// <summary>

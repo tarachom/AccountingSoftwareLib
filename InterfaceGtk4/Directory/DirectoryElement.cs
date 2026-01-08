@@ -50,16 +50,6 @@ public abstract class DirectoryElement : FormElement
     Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    /// <summary>
-    /// Індикатор стану блокування
-    /// </summary>
-    Label LabelLock = Label.New(null);
-
-    /// <summary>
-    /// Функція для отримання інформації про блокування
-    /// </summary>
-    Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
-
     public DirectoryElement(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         bSaveAndClose.MarginEnd = 10;
@@ -70,48 +60,9 @@ public abstract class DirectoryElement : FormElement
         bSave.OnClicked += (_, _) => BeforeAndAfterSave();
         HBoxTop.Append(bSave);
 
-        //Інформація про блокування
-        {
-            Button bLock = Button.NewFromIconName("doc");
-            bLock.OnClicked += async (_, _) =>
-            {
-                if (FuncLockInfo != null)
-                {
-                    LockedObject_Record recordResult = await FuncLockInfo.Invoke();
-
-                    Popover popover = Popover.New();
-                    popover.MarginStart = popover.MarginEnd = popover.MarginTop = popover.MarginBottom = 5;
-                    popover.SetParent(bLock);
-                    popover.Position = PositionType.Left;
-
-                    Box vBox = New(Orientation.Vertical, 0);
-                    Box hBox = New(Orientation.Horizontal, 0);
-                    vBox.Append(hBox);
-
-                    string info = "";
-                    if (recordResult.Result)
-                    {
-                        info += "Заблоковано" + "\n\n" +
-                            "Користувач: " + recordResult.UserName + "\n" +
-                            "Дата: " + recordResult.DateLock.ToString("HH:mm:ss");
-                    }
-                    else
-                        info += "Не заблоковано";
-
-                    hBox.Append(Label.New(info));
-
-                    popover.SetChild(vBox);
-                    popover.Show();
-                }
-            };
-
-            HBoxTop.Append(bLock);
-
-            //Індикатор стану блокування
-            LabelLock.UseMarkup = true;
-            LabelLock.UseUnderline = false;
-            HBoxTop.Append(LabelLock);
-        }
+        //Індикатор стану блокування
+        HBoxTop.Append(LabelLockInfo);
+        HBoxTop.Append(ButtonLock);
 
         Append(HBoxTop);
 
@@ -131,6 +82,23 @@ public abstract class DirectoryElement : FormElement
         Append(HPanedTop);
     }
 
+    public override async ValueTask SetValue()
+    {
+        //Блокування
+        if (NotebookFunc != null && Element != null)
+            await NotebookFunc.AddLockObjectFunc(GetName(), Element);
+
+        await LockInfo();
+
+        if (Element != null && !await Element.IsLock())
+        {
+            bSaveAndClose.Sensitive = bSave.Sensitive = false;
+        }
+
+        DefaultGrabFocus();
+        await BeforeSetValue();
+    }
+
     #region Virtual Function
 
     /// <summary>
@@ -144,22 +112,6 @@ public abstract class DirectoryElement : FormElement
     protected virtual void CreateEndBloc(Box vBox) { }
 
     #endregion
-
-    /// <summary>
-    /// Функція для відображення інформації про блокування
-    /// </summary>
-    /// <param name="accountingObject">Обєкт</param>
-    public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
-    {
-        bool isLock = await accountingObject.IsLock();
-        bSaveAndClose.Sensitive = bSave.Sensitive = isLock;
-
-        string color = isLock ? "green" : "red";
-        string text = isLock ? "Заблоковано" : "Тільки для читання";
-        LabelLock.SetMarkup($"<span color='{color}'>{text}</span>");
-
-        FuncLockInfo = accountingObject.LockInfo;
-    }
 
     /// <summary>
     /// Функція обробки перед збереження та після збереження
