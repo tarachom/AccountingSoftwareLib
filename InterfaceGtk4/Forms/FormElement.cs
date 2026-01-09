@@ -42,7 +42,7 @@ public abstract class FormElement : Form
     /// <summary>
     /// Чи це новий елемент
     /// </summary>
-    public bool IsNew { get => Element?.IsNew ?? throw new NullReferenceException("Element null"); }
+    public bool IsNew { get => Element?.IsNew ?? throw new NullReferenceException("Element is null"); }
 
     /// <summary>
     /// ІД елементу
@@ -60,74 +60,11 @@ public abstract class FormElement : Form
     public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
 
     /// <summary>
-    /// Індикатор стану блокування
+    /// Інформація про блокування
     /// </summary>
-    protected Label LabelLockInfo = Label.New(null);
+    protected LockControl LockInfo = new();
 
-    /// <summary>
-    /// Детальна інформація про блокування
-    /// </summary>
-    protected Button ButtonLock = Button.NewFromIconName("go-down");
-
-    public FormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
-    {
-        ButtonLock.OnClicked += async (_, _) =>
-        {
-            if (Element != null)
-            {
-                LockedObject_Record recordResult = await Element.LockInfo();
-
-                Box vBox = New(Orientation.Vertical, 0);
-                Box hBox = New(Orientation.Horizontal, 0);
-                vBox.Append(hBox);
-
-                string info = "";
-                if (recordResult.Result)
-                {
-                    info += "Заблоковано" + "\n\n" +
-                        "Користувач: " + recordResult.UserName + "\n" +
-                        "Дата: " + recordResult.DateLock.ToString("HH:mm:ss");
-                }
-                else
-                    info += "Не заблоковано";
-
-                hBox.Append(Label.New(info));
-
-                Popover popover = Popover.New();
-                popover.MarginStart = popover.MarginEnd = popover.MarginTop = popover.MarginBottom = 5;
-                popover.SetParent(ButtonLock);
-                popover.SetChild(vBox);
-                popover.Show();
-            }
-        };
-    }
-
-    /// <summary>
-    /// Функція для відображення інформації про блокування
-    /// </summary>
-    /// <param name="accountingObject">Об'єкт</param>
-    public async ValueTask LockInfo()
-    {
-        if (Element != null)
-        {
-            bool isLock = await Element.IsLock();
-
-            string color = isLock ? "green" : "red";
-            string text = isLock ? "Заблоковано" : "Тільки для читання";
-
-            LabelLockInfo.MarginStart = LabelLockInfo.MarginEnd = 10;
-            LabelLockInfo.SetMarkup($"<span color='{color}'>{text}</span>");
-        }
-    }
-
-    #region Event Function
-
-    /// <summary>
-    /// Обробка зміни Caption
-    /// </summary>
-    //public void CaptionChanged(object? _, string caption) => Caption = caption;
-
-    #endregion
+    public FormElement(NotebookFunction? notebookFunc) : base(notebookFunc) { }
 
     #region Abstract Function
 

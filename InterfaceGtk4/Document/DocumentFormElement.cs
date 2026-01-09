@@ -26,7 +26,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class DocumentElement : FormElement
+public abstract class DocumentFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
@@ -76,7 +76,7 @@ public abstract class DocumentElement : FormElement
     Button bSpend = Button.NewWithLabel("Провести");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    public DocumentElement(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DocumentFormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         bSaveAndSpend.MarginEnd = 10;
         bSaveAndSpend.OnClicked += (_, _) => BeforeAndAfterSave(true, true);
@@ -104,12 +104,13 @@ public abstract class DocumentElement : FormElement
         ]);
 
         //Індикатор стану блокування
-        HBoxTop.Append(LabelLockInfo);
-        HBoxTop.Append(ButtonLock);
+        HBoxTop.Append(LockInfo);
 
+        HBoxTop.MarginBottom = 10;
         Append(HBoxTop);
 
         NotebookTablePart.Scrollable = true;
+        NotebookTablePart.ShowBorder = false;
         NotebookTablePart.TabPos = PositionType.Top;
         NotebookTablePart.EnablePopup = true;
 
@@ -135,12 +136,12 @@ public abstract class DocumentElement : FormElement
         if (NotebookFunc != null && Element != null)
             await NotebookFunc.AddLockObjectFunc(GetName(), Element);
 
-        await LockInfo();
+        //Інформація про блокування
+        LockInfo.Element = Element;
+        await LockInfo.LockInfo();
 
         if (Element != null && !await Element.IsLock())
-        {
             bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = false;
-        }
 
         DefaultGrabFocus();
         await BeforeSetValue();
@@ -155,8 +156,8 @@ public abstract class DocumentElement : FormElement
 
         Expander expanderHead = Expander.New("Реквізити шапки");
         expanderHead.Expanded = true;
+        expanderHead.MarginBottom = 5;
         expanderHead.SetChild(HBoxTopContainer);
-
         vBox.Append(expanderHead);
 
         //StarBloc
@@ -173,6 +174,7 @@ public abstract class DocumentElement : FormElement
 
         CreateTopEndBloc(vBoxEnd);
 
+        HBoxComment.MarginBottom = 10;
         vBox.Append(HBoxComment);
     }
 
@@ -181,7 +183,7 @@ public abstract class DocumentElement : FormElement
     /// </summary>
     protected virtual void CreateBottomBloc(Box vBox)
     {
-        NotebookTablePart.Vexpand = /*NotebookTablePart.Hexpand=*/ true;
+        NotebookTablePart.Vexpand = true;
         vBox.Append(NotebookTablePart);
 
         Box vBoxPage = New(Orientation.Vertical, 0);
@@ -222,10 +224,23 @@ public abstract class DocumentElement : FormElement
     /// <param name="ДатаДок">Дата</param>
     protected void CreateDocName(string НазваДок, Widget НомерДок, Widget ДатаДок)
     {
-        HBoxName.Append(Label.New($"{НазваДок} №:"));
-        HBoxName.Append(НомерДок);
-        HBoxName.Append(Label.New("від:"));
-        HBoxName.Append(ДатаДок);
+        {
+            Label label = Label.New($"{НазваДок} №:");
+            label.MarginEnd = 5;
+            HBoxName.Append(label);
+
+            НомерДок.MarginEnd = 5;
+            HBoxName.Append(НомерДок);
+        }
+
+        {
+            Label label = Label.New("від:");
+            label.MarginEnd = 5;
+            HBoxName.Append(label);
+
+            ДатаДок.MarginEnd = 5;
+            HBoxName.Append(ДатаДок);
+        }
     }
 
     /// <summary>

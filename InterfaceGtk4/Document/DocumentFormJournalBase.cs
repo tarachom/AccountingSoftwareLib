@@ -34,7 +34,7 @@ namespace InterfaceGtk4;
 ///     DocumentJournalFull (ДокументЖурналПовний),
 ///     DocumentJournalSmall (ДокументЖурналМіні)
 /// </summary>
-public abstract class DocumentJournalBase : FormJournal
+public abstract class DocumentFormJournalBase : FormJournal
 {
     /// <summary>
     /// Для вибору і позиціювання
@@ -81,7 +81,7 @@ public abstract class DocumentJournalBase : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = new(true);
 
-    public DocumentJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DocumentFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         //Кнопки
         HBoxTop.MarginBottom = 6;

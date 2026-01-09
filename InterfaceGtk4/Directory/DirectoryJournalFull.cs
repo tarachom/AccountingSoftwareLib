@@ -31,9 +31,9 @@ namespace InterfaceGtk4;
 /// 
 /// Основа для журналів довідників певного виду (Повний)
 /// </summary>
-public abstract class DirectoryJournalFull : DirectoryJournalBase
+public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
 {
-    public DirectoryJournalFull(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DirectoryFormJournalFull(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         AddToolbar();
     }

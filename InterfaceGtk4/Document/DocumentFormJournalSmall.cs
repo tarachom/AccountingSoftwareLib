@@ -27,13 +27,13 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналМіні
+/// ДокументЖурналМіні
 /// 
-/// Основа для журналів довідників певного виду (Міні)
+/// Основа для журналів документів певного виду (Міні)
 /// </summary>
-public abstract class DirectoryJournalSmall : DirectoryJournalBase
+public abstract class DocumentFormJournalSmall : DocumentFormJournalBase
 {
-    public DirectoryJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DocumentFormJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         AddToolbar();
     }
@@ -46,13 +46,12 @@ public abstract class DirectoryJournalSmall : DirectoryJournalBase
 
     #region Grid
 
+
+
     #endregion
 
     #region Toolbar
 
-    /// <summary>
-    /// Доповнити набір кнопок
-    /// </summary>
     void AddToolbar()
     {
         {

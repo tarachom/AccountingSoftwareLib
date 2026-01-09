@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 public abstract class PointerTablePartCell : Box
 {
     Box hBox;
-    Entry entryPresentation;
+    Label entryPresentation;
     Button buttonSelect;
 
     public PointerTablePartCell()
@@ -45,22 +45,28 @@ public abstract class PointerTablePartCell : Box
         Append(hBox);
         AddCssClass("pointer");
 
-        entryPresentation = Entry.New();
-        entryPresentation.Editable = false;
-        entryPresentation.Hexpand = true;
-        entryPresentation.AddCssClass("entry");
+        entryPresentation = Label.New(null);
+        //entryPresentation.Selectable = true;
+        entryPresentation.Halign = Align.Start;
+        entryPresentation.AddCssClass("text");
 
-        /*GestureClick gesture = GestureClick.New();
+        ScrolledWindow scroll = ScrolledWindow.New();
+        scroll.SetPolicy(PolicyType.External, PolicyType.Never);
+        scroll.Hexpand = true;
+        scroll.SetChild(entryPresentation);
+        hBox.Append(scroll);
+
+        /*
+        GestureClick gesture = GestureClick.New();
         entryPresentation.AddController(gesture);
         gesture.OnPressed += (_, args) =>
         {
-            if (args.NPress >= 1)
-                OnActivate?.Invoke();
-            //else if (buttonSelect != null && args.NPress >= 2)
-                //Select(buttonSelect, new());
-        };*/
+            if (buttonSelect != null && args.NPress >= 2)
+                Select(buttonSelect, new());
+        };
+        */
 
-        EventControllerKey contrKey = EventControllerKey.New();
+        /*EventControllerKey contrKey = EventControllerKey.New();
         entryPresentation.AddController(contrKey);
         contrKey.OnKeyReleased += (_, args) =>
         {
@@ -68,36 +74,17 @@ public abstract class PointerTablePartCell : Box
                 Select(buttonSelect, new());
             else if (args.Keyval == (uint)Key.Delete)
                 Clear();
-        };
-
-        hBox.Append(entryPresentation);
+        };*/
 
         //Select
         {
             buttonSelect = Button.New();
             buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
-            buttonSelect.OnClicked += (_, _) => OnActivate?.Invoke();
             buttonSelect.OnClicked += Select;
             buttonSelect.TooltipText = "Вибрати";
             buttonSelect.AddCssClass("button");
             hBox.Append(buttonSelect);
         }
-
-        //Clear
-        /*{
-            buttonClear = Button.New();
-            buttonClear.Child = Image.NewFromPixbuf(Icon.ForButton.Clean);
-            buttonClear.OnClicked += Clear;
-            buttonClear.AddCssClass("button");
-            //buttonClear.Visible = false;
-            hBox.Append(buttonClear);
-        }*/
-
-        /*entryPresentation.OnNotify += (_, args) =>
-        {
-            if (args.Pspec.GetName() == "cursor-position")
-                OnActivate?.Invoke();
-        };*/
     }
 
     #region Virtual Function
@@ -111,11 +98,6 @@ public abstract class PointerTablePartCell : Box
     /// Функція яка викликається після вибору
     /// </summary>
     public Action? OnSelect { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public Action? OnActivate { get; set; }
 
     /// <summary>
     /// Відображення

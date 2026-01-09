@@ -57,7 +57,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    public virtual Gio.ListStore Store { get; } = Gio.ListStore.New(RowJournal.GetGType());
+    public abstract Gio.ListStore Store { get; }
 
     /// <summary>
     /// Відбори
@@ -96,6 +96,7 @@ public abstract class FormJournal : Form
     {
         //Не переміщати стовпчики
         Grid.Reorderable = false;
+        Grid.AccessibleRole = AccessibleRole.Table;
 
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);

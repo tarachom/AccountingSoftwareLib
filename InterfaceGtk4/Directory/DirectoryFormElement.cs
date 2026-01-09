@@ -26,7 +26,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class DirectoryElement : FormElement
+public abstract class DirectoryFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
@@ -50,7 +50,7 @@ public abstract class DirectoryElement : FormElement
     Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    public DirectoryElement(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DirectoryFormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
@@ -61,8 +61,7 @@ public abstract class DirectoryElement : FormElement
         HBoxTop.Append(bSave);
 
         //Індикатор стану блокування
-        HBoxTop.Append(LabelLockInfo);
-        HBoxTop.Append(ButtonLock);
+        HBoxTop.Append(LockInfo);
 
         Append(HBoxTop);
 
@@ -88,12 +87,12 @@ public abstract class DirectoryElement : FormElement
         if (NotebookFunc != null && Element != null)
             await NotebookFunc.AddLockObjectFunc(GetName(), Element);
 
-        await LockInfo();
+        //Інформація про блокування
+        LockInfo.Element = Element;
+        await LockInfo.LockInfo();
 
         if (Element != null && !await Element.IsLock())
-        {
             bSaveAndClose.Sensitive = bSave.Sensitive = false;
-        }
 
         DefaultGrabFocus();
         await BeforeSetValue();

@@ -24,9 +24,9 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Константа таблична частина
+/// Документ форма таблична частина
 /// </summary>
-public abstract class ConstantTablePart : FormTablePart
+public abstract class DocumentFormTablePart : FormTablePart
 {
-    public ConstantTablePart(NotebookFunction? notebook) : base(notebook) { }
+    public DocumentFormTablePart(NotebookFunction? notebook) : base(notebook) { }
 }

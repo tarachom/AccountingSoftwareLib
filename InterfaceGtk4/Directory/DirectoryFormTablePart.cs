@@ -24,32 +24,9 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Базовий клас для рядка табличної частини
+/// Довідник форма таблична частина
 /// </summary>
-public class RowTablePart : Row
+public abstract class DirectoryFormTablePart : FormTablePart
 {
-    /// <summary>
-    /// Порядковий номер рядка
-    /// </summary>
-    public int NumberRow
-    {
-        get => NumberRow_;
-        set
-        {
-            NumberRow_ = value;
-            Сhanged_NumberRow?.Invoke();
-        }
-    }
-    int NumberRow_ = 0;
-    public Action? Сhanged_NumberRow;
-
-
-    /*
-    Функції
-    */
-
-    /// <summary>
-    /// Копіювання рядка
-    /// </summary>
-    public virtual RowTablePart Copy() => new();
+    public DirectoryFormTablePart(NotebookFunction? notebook) : base(notebook) { }
 }
