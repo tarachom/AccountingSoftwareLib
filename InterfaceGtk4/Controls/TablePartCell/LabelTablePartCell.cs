@@ -26,7 +26,7 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Клітинка табличної частини - Текст
 /// </summary>
 public class LabelTablePartCell : Box
 {
@@ -41,11 +41,11 @@ public class LabelTablePartCell : Box
         hBox.Valign = Align.Center;
         hBox.Vexpand = true;
 
-        Append(hBox);
-        AddCssClass("base");
-
         label = Label.New(null);
         hBox.Append(label);
+
+        Append(hBox);
+        AddCssClass("base");
     }
 
     public string Text

@@ -27,7 +27,7 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Клітинка табличної частини - Іконка
 /// </summary>
 public class ImageTablePartCell : Box
 {

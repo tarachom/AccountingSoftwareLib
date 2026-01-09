@@ -41,7 +41,7 @@ public class IntegerControl : Box
 
         //Entry
         entryInteger.OnChanged += (_, _) => IsValidValue();
-        entryInteger.MarginEnd = 2;
+        //entryInteger.MarginEnd = 2;
         Append(entryInteger);
     }
 
@@ -52,8 +52,8 @@ public class IntegerControl : Box
         set
         {
             mValue = value;
-            entryInteger.Text_ = mValue.ToString();
-            entryInteger.TooltipText = entryInteger.Text_;
+            entryInteger.SetText( mValue.ToString());
+            entryInteger.TooltipText = entryInteger.GetText();
         }
     }
 

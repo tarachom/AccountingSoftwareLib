@@ -33,7 +33,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public partial class ActiveUsers : Box
+public partial class ActiveUsersView : Box
 {
     [Subclass<GObject.Object>]
     partial class ItemRow
@@ -59,7 +59,7 @@ public partial class ActiveUsers : Box
 
     ColumnView Grid { get; }
 
-    public ActiveUsers(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
+    public ActiveUsersView(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
     {
         SetOrientation(Orientation.Vertical);
 

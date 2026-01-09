@@ -27,6 +27,9 @@ using System.Reflection;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// 
+/// </summary>
 public abstract class CompositePointerControl : PointerControl
 {
     Kernel Kernel { get; set; }
@@ -333,9 +336,15 @@ public abstract class CompositePointerControl : PointerControl
         //Внутрішня функція - обробка вибору
         void Select(string p, string t)
         {
+            //Спроба зберегти значення якщо при виборі не змінився тип
+            Guid uuid = Guid.Empty;
+            if (p == PointerName && t == TypeCaption && Pointer.Uuid != Guid.Empty)
+                uuid = Pointer.Uuid;
+
             PointerName = p;
             TypeCaption = t;
-            Pointer = new UuidAndText(GetBasisName());
+
+            Pointer = new UuidAndText(uuid, GetBasisName());
 
             CallBackSelect?.Invoke();
         }

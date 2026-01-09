@@ -27,12 +27,12 @@ using Gdk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Клітинка табличної частини - Вказівник
 /// </summary>
 public abstract class PointerTablePartCell : Box
 {
     Box hBox;
-    Label entryPresentation;
+    Label label;
     Button buttonSelect;
 
     public PointerTablePartCell()
@@ -42,18 +42,14 @@ public abstract class PointerTablePartCell : Box
         hBox = New(Orientation.Horizontal, 0);
         hBox.Hexpand = hBox.Vexpand = true;
 
-        Append(hBox);
-        AddCssClass("pointer");
-
-        entryPresentation = Label.New(null);
-        //entryPresentation.Selectable = true;
-        entryPresentation.Halign = Align.Start;
-        entryPresentation.AddCssClass("text");
+        label = Label.New(null);
+        label.Halign = Align.Start;
+        label.AddCssClass("text");
 
         ScrolledWindow scroll = ScrolledWindow.New();
         scroll.SetPolicy(PolicyType.External, PolicyType.Never);
         scroll.Hexpand = true;
-        scroll.SetChild(entryPresentation);
+        scroll.SetChild(label);
         hBox.Append(scroll);
 
         /*
@@ -85,6 +81,9 @@ public abstract class PointerTablePartCell : Box
             buttonSelect.AddCssClass("button");
             hBox.Append(buttonSelect);
         }
+
+        Append(hBox);
+        AddCssClass("pointer");
     }
 
     #region Virtual Function
@@ -104,11 +103,11 @@ public abstract class PointerTablePartCell : Box
     /// </summary>
     protected string Presentation
     {
-        get => entryPresentation.GetText();
+        get => label.GetText();
         set
         {
-            entryPresentation.SetText(value);
-            entryPresentation.TooltipText = value;
+            label.SetText(value);
+            label.TooltipText = value;
         }
     }
 }

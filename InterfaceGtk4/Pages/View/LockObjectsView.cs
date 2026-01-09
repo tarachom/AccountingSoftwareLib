@@ -33,7 +33,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract partial class LockObjects : Box
+public abstract partial class LockObjectsView : Box
 {
     [Subclass<GObject.Object>]
     partial class ItemRow
@@ -56,7 +56,7 @@ public abstract partial class LockObjects : Box
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
     ColumnView Grid { get; }
 
-    public LockObjects(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
+    public LockObjectsView(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
     {
         SetOrientation(Orientation.Vertical);
 

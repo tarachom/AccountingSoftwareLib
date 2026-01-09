@@ -46,7 +46,7 @@ public class NumericControl : Box
 
         //Entry
         entryNumeric.OnChanged += (_, _) => IsValidValue();
-        entryNumeric.MarginEnd = 2;
+        //entryNumeric.MarginEnd = 2;
         Append(entryNumeric);
     }
 
@@ -57,8 +57,8 @@ public class NumericControl : Box
         set
         {
             mValue = value;
-            entryNumeric.Text_ = mValue.ToString("N", numberFormatUA);
-            entryNumeric.TooltipText = entryNumeric.Text_;
+            entryNumeric.SetText(mValue.ToString("N", numberFormatUA));
+            entryNumeric.TooltipText = entryNumeric.GetText();
         }
     }
 
