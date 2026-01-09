@@ -240,7 +240,7 @@ public abstract class FormJournal : Form
             Popover popover = Popover.New();
             popover.SetParent(widget);
             popover.Position = PositionType.Bottom;
-            popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
+            //popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
 
             ListBox list = ListBox.New();
             list.SelectionMode = SelectionMode.None;
@@ -248,10 +248,9 @@ public abstract class FormJournal : Form
 
             popover.SetChild(list);
 
-            foreach (var lnk in links)
+            foreach (var item in links)
             {
                 ListBoxRow row = ListBoxRow.New();
-
                 Box hBox = New(Orientation.Horizontal, 0);
 
                 //Картинка на початку елемента меню
@@ -261,13 +260,13 @@ public abstract class FormJournal : Form
 
                 //Лінк
                 LinkButton link = LinkButton.New("");
-                link.TooltipText = link.Name;
-                link.Label = link.Name;
+                link.Label = item.Name;
+                link.TooltipText = link.Label;
                 link.Halign = Align.Start;
                 link.Hexpand = true;
                 link.OnActivateLink += (_, _) =>
                 {
-                    lnk.Value?.Invoke(GetGetSelectionUnigueID());
+                    item.Value?.Invoke(GetGetSelectionUnigueID());
                     return true;
                 };
                 hBox.Append(link);
