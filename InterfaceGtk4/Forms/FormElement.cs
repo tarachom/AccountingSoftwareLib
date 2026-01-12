@@ -76,7 +76,7 @@ public abstract class FormElement : Form
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+    public virtual async ValueTask AssignValue() { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Фокус за стандартом

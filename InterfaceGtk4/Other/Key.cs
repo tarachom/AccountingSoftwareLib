@@ -5,7 +5,6 @@
 
 */
 
-
 namespace Gdk;
 
 public enum Key

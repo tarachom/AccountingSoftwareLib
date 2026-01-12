@@ -42,7 +42,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Вспливаюче вікно власник даної форми (у випадку якщо форма поміщена у Popover)
     /// </summary>
-    public Popover? PopoverParent { get; set; } //Може треба запхати в Form !!!
+    public Popover? PopoverParent { get; set; }
 
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
@@ -83,8 +83,6 @@ public abstract class FormJournal : Form
     /// Інформування про стан відборів
     /// </summary>
     protected Label TypeWhereStateInfo { get; } = Label.New(null);
-
-    //protected ProgressBar Progress { get; } = ProgressBar.New(); //На майбтнє зробити відображення стану копіювання чи іншого процесу
 
     /// <summary>
     /// Режим який вказує що форма використовується як елемент в іншій формі 
@@ -240,7 +238,6 @@ public abstract class FormJournal : Form
             Popover popover = Popover.New();
             popover.SetParent(widget);
             popover.Position = PositionType.Bottom;
-            //popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
 
             ListBox list = ListBox.New();
             list.SelectionMode = SelectionMode.None;

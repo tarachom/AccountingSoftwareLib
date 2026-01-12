@@ -38,7 +38,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="name">Назва</param>
         /// <param name="caption">Заголовок</param>
-        public ConfigurationFormsElementField(string name, string caption = "", uint size = 0, uint height = 0, int sortNum = 100, bool multipleSelect = false)
+        public ConfigurationFormsElementField(string name, string caption = "", uint size = 0, uint height = 0, int sortNum = 100, bool multipleSelect = false, bool readOnly = false)
         {
             Name = name;
             Caption = caption;
@@ -46,6 +46,7 @@ namespace AccountingSoftware
             Height = height;
             SortNum = sortNum;
             MultipleSelect = multipleSelect;
+            ReadOnly = readOnly;
         }
 
         /// <summary>
@@ -77,5 +78,10 @@ namespace AccountingSoftware
         /// Підбір по полю
         /// </summary>
         public bool MultipleSelect { get; set; }
+
+        /// <summary>
+        /// Тільки читання
+        /// </summary>
+        public bool ReadOnly { get; set; }
     }
 }

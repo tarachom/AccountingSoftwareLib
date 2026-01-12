@@ -23,7 +23,7 @@ limitations under the License.
 
 /*
 
-Функції для журналів
+Функції для динамічного відкриття
 
 */
 
@@ -33,11 +33,17 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class FunctionForDynamicOpen(string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebook)
+/// <summary>
+/// Динамічне відкриття довідників, документів, журналів і регістрів
+/// </summary>
+/// <param name="namespaceProgram">Простір імен програми</param>
+/// <param name="namespaceCodeGeneration">Простір імен згенерованого коду</param>
+/// <param name="notebookFunc">Функції управління блокнотом</param>
+public abstract class FunctionForDynamicOpen(string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebookFunc)
 {
     string NamespaceProgram { get; set; } = namespaceProgram;
     string NamespaceCodeGeneration { get; set; } = namespaceCodeGeneration;
-    NotebookFunction? Notebook { get; set; } = notebook;
+    NotebookFunction? NotebookFunc { get; set; } = notebookFunc;
     Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
     /// <summary>
@@ -45,7 +51,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeJournal">Тип</param>
     /// <param name="unigueID">Елемент для позиціювання</param>
-    public void OpenJournalByType(string typeJournal, UnigueID? unigueID)
+    public bool OpenJournalByType(string typeJournal, UnigueID? unigueID)
     {
         object? journalInstance;
 
@@ -55,8 +61,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(null, null, ex.Message);
-            return;
+            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            return false;
         }
 
         if (journalInstance != null)
@@ -65,10 +71,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
             //Документ який потрібно виділити в списку
             journal.SelectPointerItem = unigueID;
-            
-            Notebook?.CreatePage(typeJournal, () => journal);
+
+            NotebookFunc?.CreatePage(typeJournal, journal);
             journal.SetValue();
+            return true;
         }
+        else
+            return false;
     }
 
     /// <summary>
@@ -77,22 +86,22 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="typeDir">Тип</param>
     /// <param name="unigueID">Елемент для позиціонування</param>
     /// <param name="typeForm">Тип форми</param>
-    public void OpenDirectoryByType(string typeDir, UnigueID? unigueID, TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDirectoryByType(string typeDir, UnigueID? unigueID, TypeForm typeForm = TypeForm.Journal)
     {
-        object? directoryInstance;
-
         switch (typeForm)
         {
             case TypeForm.Journal:
                 {
+                    object? directoryInstance;
+
                     try
                     {
-                        directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}");
+                        directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}_Список");
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(null, null, ex.Message);
-                        return;
+                        Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                        return false;
                     }
 
                     if (directoryInstance != null)
@@ -109,19 +118,24 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         if (directoryConst != null)
                             listName = directoryConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-                        Notebook?.CreatePage(listName, () => directory);
+                        NotebookFunc?.CreatePage(listName, directory);
                         directory.SetValue();
+
+                        return true;
                     }
-                    break;
+                    else
+                        return false;
                 }
             case TypeForm.Element:
                 {
                     Type? directoryFunction = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Функції");
                     directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, unigueID, null, null]);
 
-                    break;
+                    return true;
                 }
         }
+
+        return false;
     }
 
     /// <summary>
@@ -131,22 +145,22 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="unigueID">Елемент для позиціювання</param>
     /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
     /// <param name="typeForm">Тип форми</param>
-    public void OpenDocumentByType(string typeDoc, UnigueID? unigueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDocumentByType(string typeDoc, UnigueID? unigueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
     {
-        object? documentInstance;
-
         switch (typeForm)
         {
             case TypeForm.Journal:
                 {
+                    object? documentInstance;
+
                     try
                     {
-                        documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}");
+                        documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}_Список");
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(null, null, ex.Message);
-                        return;
+                        Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                        return false;
                     }
 
                     if (documentInstance != null)
@@ -166,19 +180,24 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         if (!string.IsNullOrEmpty(keyForSetting))
                             document.KeyForSetting = keyForSetting;
 
-                        Notebook?.CreatePage(listName, () => document);
+                        NotebookFunc?.CreatePage(listName, document);
                         document.SetValue();
+
+                        return true;
                     }
-                    break;
+                    else
+                        return false;
                 }
             case TypeForm.Element:
                 {
                     Type? documentFunction = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Функції");
                     documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, unigueID, null]);
 
-                    break;
+                    return true;
                 }
         }
+
+        return false;
     }
 
     /// <summary>
@@ -186,18 +205,18 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="unigueID">Елемент який потрібно виділити в списку</param>
-    public void OpenRegisterInformationByType(string typeReg, UnigueID? unigueID)
+    public bool OpenRegisterInformationByType(string typeReg, UnigueID? unigueID)
     {
         object? registerInstance;
 
         try
         {
-            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриВідомостей.{typeReg}");
+            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриВідомостей.{typeReg}_Список");
         }
         catch (Exception ex)
         {
-            Message.Error(null, null, ex.Message);
-            return;
+            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            return false;
         }
 
         if (registerInstance != null)
@@ -214,9 +233,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             if (documentConst != null)
                 listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-            Notebook?.CreatePage(listName, () => register);
+            NotebookFunc?.CreatePage(listName, () => register);
             register.SetValue();
+
+            return true;
         }
+        else
+            return false;
     }
 
     /// <summary>
@@ -224,18 +247,18 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="unigueID">Елемент який потрібно виділити в списку</param>
-    public void OpenRegisterAccumulationByType(string typeReg, UnigueID? unigueID)
+    public bool OpenRegisterAccumulationByType(string typeReg, UnigueID? unigueID)
     {
         object? registerInstance;
 
         try
         {
-            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриНакопичення.{typeReg}");
+            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриНакопичення.{typeReg}_Список");
         }
         catch (Exception ex)
         {
-            Message.Error(null, null, ex.Message);
-            return;
+            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            return false;
         }
 
         if (registerInstance != null)
@@ -252,9 +275,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             if (documentConst != null)
                 listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
-            Notebook?.CreatePage(listName, () => register);
+            NotebookFunc?.CreatePage(listName, () => register);
             register.SetValue();
+
+            return true;
         }
+        else
+            return false;
     }
 
     /// <summary>
@@ -281,7 +308,6 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
         Popover popover = Popover.New();
         popover.SetParent(parent);
-        popover.Position = PositionType.Bottom;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
         popover.SetChild(vBox);
 

@@ -144,7 +144,7 @@ public abstract class DocumentFormElement : FormElement
             bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = false;
 
         DefaultGrabFocus();
-        await BeforeSetValue();
+        await AssignValue();
     }
 
     /// <summary>
@@ -165,14 +165,14 @@ public abstract class DocumentFormElement : FormElement
         vBoxStart.WidthRequest = 500;
         HBoxTopContainer.Append(vBoxStart);
 
-        CreateTopStartBloc(vBoxStart);
+        CreateTopStart(vBoxStart);
 
         //EndBloc
         Box vBoxEnd = New(Orientation.Vertical, 0);
         vBoxEnd.WidthRequest = 500;
         HBoxTopContainer.Append(vBoxEnd);
 
-        CreateTopEndBloc(vBoxEnd);
+        CreateTopEnd(vBoxEnd);
 
         HBoxComment.MarginBottom = 10;
         vBox.Append(HBoxComment);
@@ -201,20 +201,20 @@ public abstract class DocumentFormElement : FormElement
         vBoxStart.WidthRequest = 500;
         HBoxOtherContainer.Append(vBoxStart);
 
-        CreateBottomStartBloc(vBoxStart);
+        CreateBottomStart(vBoxStart);
 
         //EndBloc
         Box vBoxEnd = New(Orientation.Vertical, 0);
         vBoxEnd.WidthRequest = 500;
         HBoxOtherContainer.Append(vBoxEnd);
 
-        CreateBottomEndBloc(vBoxEnd);
+        CreateBottomEnd(vBoxEnd);
     }
 
-    protected virtual void CreateTopStartBloc(Box vBox) { }
-    protected virtual void CreateTopEndBloc(Box vBox) { }
-    protected virtual void CreateBottomStartBloc(Box vBox) { }
-    protected virtual void CreateBottomEndBloc(Box vBox) { }
+    protected virtual void CreateTopStart(Box vBox) { }
+    protected virtual void CreateTopEnd(Box vBox) { }
+    protected virtual void CreateBottomStart(Box vBox) { }
+    protected virtual void CreateBottomEnd(Box vBox) { }
 
     /// <summary>
     /// Назва документу

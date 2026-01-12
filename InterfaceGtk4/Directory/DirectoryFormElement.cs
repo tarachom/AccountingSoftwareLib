@@ -68,12 +68,12 @@ public abstract class DirectoryFormElement : FormElement
         //StarBloc
         Box vBoxStart = New(Orientation.Vertical, 0);
         HPanedTop.SetStartChild(vBoxStart);
-        CreateStartBloc(vBoxStart);
+        CreateStart(vBoxStart);
 
         //EndBloc
         Box vBoxEnd = New(Orientation.Vertical, 0);
         HPanedTop.SetEndChild(vBoxEnd);
-        CreateEndBloc(vBoxEnd);
+        CreateEnd(vBoxEnd);
 
         HPanedTop.SetShrinkStartChild(false);
         HPanedTop.SetShrinkEndChild(false);
@@ -95,7 +95,7 @@ public abstract class DirectoryFormElement : FormElement
             bSaveAndClose.Sensitive = bSave.Sensitive = false;
 
         DefaultGrabFocus();
-        await BeforeSetValue();
+        await AssignValue();
     }
 
     #region Virtual Function
@@ -103,12 +103,12 @@ public abstract class DirectoryFormElement : FormElement
     /// <summary>
     /// Лівий Блок
     /// </summary>
-    protected virtual void CreateStartBloc(Box vBox) { }
+    protected virtual void CreateStart(Box vBox) { }
 
     /// <summary>
     /// Правий Блок
     /// </summary>
-    protected virtual void CreateEndBloc(Box vBox) { }
+    protected virtual void CreateEnd(Box vBox) { }
 
     #endregion
 

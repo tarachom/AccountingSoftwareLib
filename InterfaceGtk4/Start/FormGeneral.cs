@@ -134,11 +134,11 @@ public abstract class FormGeneral : Window
 
     protected abstract void ButtonMessageClicked();
     protected abstract void ButtonFindClicked(string text);
-    protected abstract void OpenDocumentByType(string name);
-    protected abstract void OpenDirectoryByType(string name);
-    protected abstract void OpenJournalByType(string name);
-    protected abstract void OpenRegisterInformationByType(string name);
-    protected abstract void OpenRegisterAccumulationByType(string name);
+    protected abstract bool OpenDocumentByType(string name);
+    protected abstract bool OpenDirectoryByType(string name);
+    protected abstract bool OpenJournalByType(string name);
+    protected abstract bool OpenRegisterInformationByType(string name);
+    protected abstract bool OpenRegisterAccumulationByType(string name);
     protected abstract void Settings(LinkButton link);
     protected abstract void Service(LinkButton link);
     protected abstract void Processing(LinkButton link);
@@ -202,9 +202,14 @@ public abstract class FormGeneral : Window
         hbox.Append(scroll);
     }
 
-    void Documents(LinkButton link)
+    void Documents(LinkButton linkButton)
     {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
         Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
 
         //Всі Документи
         {
@@ -230,8 +235,8 @@ public abstract class FormGeneral : Window
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && selectedRow.Name != null)
-                        OpenDocumentByType(selectedRow.Name);
+                    if (selectedRow != null && OpenDocumentByType(selectedRow.GetName()))
+                        popover.Hide();
                 }
             };
 
@@ -255,16 +260,17 @@ public abstract class FormGeneral : Window
 
         MenuDocuments(vBox);
 
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(link);
-        popover.Child = vBox;
         popover.Show();
     }
 
-    void Directory(LinkButton link)
+    void Directory(LinkButton linkButton)
     {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
         Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
 
         //Всі Довідники
         {
@@ -290,8 +296,8 @@ public abstract class FormGeneral : Window
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && selectedRow.Name != null)
-                        OpenDirectoryByType(selectedRow.Name);
+                    if (selectedRow != null && OpenDirectoryByType(selectedRow.GetName()))
+                        popover.Hide();
                 }
             };
 
@@ -315,16 +321,17 @@ public abstract class FormGeneral : Window
 
         MenuDirectory(vBox);
 
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(link);
-        popover.Child = vBox;
         popover.Show();
     }
 
-    void Journals(LinkButton link)
+    void Journals(LinkButton linkButton)
     {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
         Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
 
         //Всі Журнали
         {
@@ -350,8 +357,8 @@ public abstract class FormGeneral : Window
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && selectedRow.Name != null)
-                        OpenJournalByType(selectedRow.Name);
+                    if (selectedRow != null && OpenJournalByType(selectedRow.GetName()))
+                        popover.Hide();
                 }
             };
 
@@ -375,29 +382,31 @@ public abstract class FormGeneral : Window
 
         MenuJournals(vBox);
 
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(link);
-        popover.Child = vBox;
         popover.Show();
     }
 
-    void Reports(LinkButton link)
+    void Reports(LinkButton linkButton)
     {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
         Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
 
         MenuReports(vBox);
 
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(link);
-        popover.Child = vBox;
         popover.Show();
     }
 
-    void Registers(LinkButton link)
+    void Registers(LinkButton linkButton)
     {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
         Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
 
         //Всі Регістри
         {
@@ -429,8 +438,8 @@ public abstract class FormGeneral : Window
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && selectedRow.Name != null)
-                            OpenRegisterInformationByType(selectedRow.Name);
+                        if (selectedRow != null && OpenRegisterInformationByType(selectedRow.GetName()))
+                            popover.Hide();
                     }
                 };
 
@@ -470,8 +479,8 @@ public abstract class FormGeneral : Window
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && selectedRow.Name != null)
-                            OpenRegisterAccumulationByType(selectedRow.Name);
+                        if (selectedRow != null && OpenRegisterAccumulationByType(selectedRow.GetName()))
+                            popover.Hide();
                     }
                 };
 
@@ -496,10 +505,6 @@ public abstract class FormGeneral : Window
 
         MenuRegisters(vBox);
 
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(link);
-        popover.Child = vBox;
         popover.Show();
     }
 

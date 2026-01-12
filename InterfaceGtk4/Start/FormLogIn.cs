@@ -75,7 +75,7 @@ class FormLogIn : Window
             //Заборона прокрутки
             EventControllerScroll contr = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
             comboBoxAllUsers.AddController(contr);
-            contr.OnScroll += (sender, args) => true;
+            contr.OnScroll += (_, _) => true;
 
             grid.Attach(comboBoxAllUsers, 1, row, 1, 1);
         }

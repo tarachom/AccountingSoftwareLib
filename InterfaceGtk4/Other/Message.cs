@@ -31,6 +31,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Повідомлення
+/// </summary>
 public class Message
 {
     /// <summary>
@@ -68,8 +71,6 @@ public class Message
 
         message.Show();
     }
-
-    public static void Info(string text, string? secondaryText = null) => Info(null, null, text, secondaryText);
 
     public static void Error(Application? app, Window? win, string text, string? secondaryText = null)
     {

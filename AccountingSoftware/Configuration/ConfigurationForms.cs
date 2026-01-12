@@ -174,6 +174,11 @@ namespace AccountingSoftware
             PointerControl,
 
             /// <summary>
+            /// Контрол вибору для клітинки табличної частини
+            /// </summary>
+            PointerTablePartCell,
+
+            /// <summary>
             /// Контрол вибору масиву
             /// </summary>
             MultiplePointerControl,

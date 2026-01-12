@@ -1542,8 +1542,9 @@ namespace AccountingSoftware
                     uint heightField = uint.Parse(elementFieldNodes.Current?.SelectSingleNode("Height")?.Value ?? "0");
                     int sortNumField = int.Parse(elementFieldNodes.Current?.SelectSingleNode("SortNum")?.Value ?? "100");
                     bool multipleSelectField = (elementFieldNodes.Current?.SelectSingleNode("MultipleSelect")?.Value ?? "0") == "1";
+                    bool readOnly = (elementFieldNodes.Current?.SelectSingleNode("ReadOnly")?.Value ?? "0") == "1";
 
-                    elementFields.Add(name, new ConfigurationFormsElementField(name, caption, sizeField, heightField, sortNumField, multipleSelectField));
+                    elementFields.Add(name, new ConfigurationFormsElementField(name, caption, sizeField, heightField, sortNumField, multipleSelectField, readOnly));
                 }
         }
 
@@ -2736,6 +2737,10 @@ namespace AccountingSoftware
                     XmlElement nodeSortNum = xmlConfDocument.CreateElement("SortNum");
                     nodeSortNum.InnerText = elementField.Value.SortNum.ToString();
                     nodeElementField.AppendChild(nodeSortNum);
+
+                    XmlElement nodeReadOnly = xmlConfDocument.CreateElement("ReadOnly");
+                    nodeReadOnly.InnerText = elementField.Value.ReadOnly ? "1" : "0";
+                    nodeElementField.AppendChild(nodeReadOnly);
 
                     #region Додаткова інформація для полегшення генерування коду
 

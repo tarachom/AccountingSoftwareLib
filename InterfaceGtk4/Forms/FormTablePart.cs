@@ -22,13 +22,14 @@ limitations under the License.
 */
 
 using Gtk;
-using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
 /// Основа для класів:
-///        ConstantTablePart (Константа таблична частина) 
+///         ConstantTablePart (Константа таблична частина) 
+///         DocumentFormTablePart (Документ таблична частина)
+///         DirectoryFormTablePart (Довідник таблична частина)
 /// </summary>
 public abstract class FormTablePart : Form
 {

@@ -125,7 +125,7 @@ public abstract class CompositePointerControl : PointerControl
 
             try
             {
-                listPage = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}");
+                listPage = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_Список");
             }
             catch (Exception ex)
             {
