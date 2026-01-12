@@ -21,38 +21,51 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using Gtk;
+
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Базовий клас для рядка табличної частини
+/// Клітинка табличної частини - Ціле число
 /// </summary>
-public class RowTablePart : Row
+public class CheckTablePartCell : Box
 {
-    /// <summary>
-    /// Порядковий номер рядка
-    /// </summary>
-    
-    /*
-    public int NumberRow
+    Box hBox;
+   public CheckButton Check { get; } = CheckButton.New();
+
+    public CheckTablePartCell()
     {
-        get => NumberRow_;
+        SetOrientation(Orientation.Vertical);
+
+        hBox = New(Orientation.Horizontal, 0);
+        hBox.Vexpand = true;
+
+        Check.OnToggled += (_, _) => OnСhanged?.Invoke();
+        hBox.Append(Check);
+
+        Append(hBox);
+        AddCssClass("combotext");
+    }
+
+    public bool Value
+    {
+        get
+        {
+            return Value_;
+        }
         set
         {
-            NumberRow_ = value;
-            Сhanged_NumberRow?.Invoke();
+            if (Value_ != value)
+            {
+                Value_ = value;
+                Check.Active = Value_;
+            }
         }
     }
-    int NumberRow_ = 0;
-    public Action? Сhanged_NumberRow;
-    */
-
-
-    /*
-    Функції
-    */
+    bool Value_;
 
     /// <summary>
-    /// Копіювання рядка
+    /// Функція яка викликається після зміни
     /// </summary>
-    public virtual RowTablePart Copy() => new();
+    public Action? OnСhanged { get; set; }
 }
