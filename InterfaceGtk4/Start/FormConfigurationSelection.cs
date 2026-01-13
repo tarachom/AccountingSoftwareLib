@@ -137,7 +137,7 @@ public abstract class FormConfigurationSelection : Window
 
     #region Virtual Functions
 
-    public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
+    public abstract ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam);
     public abstract ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
 
     #endregion
@@ -241,12 +241,12 @@ public abstract class FormConfigurationSelection : Window
         SensitiveWidgets(false);
 
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-        if (selectedRow != null && selectedRow.Name != null)
+        if (selectedRow != null)
         {
-            ConfigurationParam? OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name);
+            ConfigurationParam? OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName());
             if (OpenConfigurationParam != null)
             {
-                ConfigurationParamCollection.SelectConfigurationParam(selectedRow.Name);
+                ConfigurationParamCollection.SelectConfigurationParam(selectedRow.GetName());
                 ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
 
                 string PathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
@@ -270,7 +270,7 @@ public abstract class FormConfigurationSelection : Window
                             TransientFor = this,
                             CallBack_ResponseOk = async () =>
                             {
-                                await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name));
+                                await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
                                 Close();
                             },
                             CallBack_ResponseCancel = ProgramKernel.Close
@@ -288,83 +288,62 @@ public abstract class FormConfigurationSelection : Window
         SensitiveWidgets(true);
     }
 
-    void OnOpenConfigurator(Button? button, EventArgs args)
+    async void OnOpenConfigurator(Button? button, EventArgs args)
     {
-        /*
         if (ConfiguratorKernel == null) return;
 
         SensitiveWidgets(false);
 
-        ListBoxRow[] selectedRows = listBox.SelectedRows;
-        if (selectedRows.Length == 0)
+        ListBoxRow? selectedRow = listBox.GetSelectedRow();
+        if (selectedRow != null)
         {
-            SensitiveWidgets(true);
-            return;
-        }
-
-        ConfigurationParam? OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRows[0].Name);
-        if (OpenConfigurationParam == null)
-        {
-            SensitiveWidgets(true);
-            return;
-        }
-
-        ConfigurationParamCollection.SelectConfigurationParam(selectedRows[0].Name);
-        ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
-
-        string PathToConfXML = System.IO.Path.Combine(AppContext.BaseDirectory, "Confa.xml");
-
-        bool result = await ConfiguratorKernel.Open(PathToConfXML,
-            OpenConfigurationParam.DataBaseServer,
-            OpenConfigurationParam.DataBaseLogin,
-            OpenConfigurationParam.DataBasePassword,
-            OpenConfigurationParam.DataBasePort,
-            OpenConfigurationParam.DataBaseBaseName
-        );
-
-        if (result)
-        {
-            //Перевірка і створення системних таблиць
-            await ConfiguratorKernel.DataBase.CreateSpecialTables();
-
-            // Авторизація
-            ResponseType ModalResult = ResponseType.None;
-
-            using (FormLogIn windowFormLogIn = new()
+            ConfigurationParam? OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName());
+            if (OpenConfigurationParam != null)
             {
-                TypeOpenForm = TypeForm.Configurator,
-                ProgramKernel = ConfiguratorKernel,
-                TransientFor = this,
-                Modal = true,
-                Resizable = false,
-                TypeHint = Gdk.WindowTypeHint.Dialog
-            })
-            {
-                await windowFormLogIn.SetValue();
-                windowFormLogIn.Show();
+                ConfigurationParamCollection.SelectConfigurationParam(selectedRow.GetName());
+                ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
 
-                while (ModalResult == ResponseType.None)
+                string PathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
+
+                bool result = await ConfiguratorKernel.Open(PathToConfXML,
+                    OpenConfigurationParam.DataBaseServer,
+                    OpenConfigurationParam.DataBaseLogin,
+                    OpenConfigurationParam.DataBasePassword,
+                    OpenConfigurationParam.DataBasePort,
+                    OpenConfigurationParam.DataBaseBaseName
+                );
+
+                if (result)
                 {
-                    ModalResult = windowFormLogIn.ModalResult;
-                    Application.RunIteration(true);
+                    //Перевірка і створення системних таблиць
+                    await ConfiguratorKernel.DataBase.CreateSpecialTables();
+
+                    //Перевірка наявності системних таблиць
+                    if (await CheckSystemTables(ConfiguratorKernel))
+                    {
+                        FormLogIn windowFormLogIn = new(Application)
+                        {
+                            TypeOpenForm = TypeForm.WorkingProgram,
+                            ProgramKernel = ConfiguratorKernel,
+                            TransientFor = this,
+                            CallBack_ResponseOk = async () =>
+                            {
+                                await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
+                                Close();
+                            },
+                            CallBack_ResponseCancel = ConfiguratorKernel.Close
+                        };
+
+                        await windowFormLogIn.SetValue();
+                        windowFormLogIn.Show();
+                    }
                 }
+                else
+                    Message.Error(Application, this, "Помилка", ConfiguratorKernel.Exception?.Message);
             }
-
-            if (ModalResult == ResponseType.Cancel)
-            {
-                ConfiguratorKernel.Close();
-                SensitiveWidgets(true);
-                return;
-            }
-
-            if (await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRows[0].Name)))
-                Hide();
         }
-        else
-            Message.Error(this, "Error: " + ConfiguratorKernel.Exception?.Message);
 
         SensitiveWidgets(true);
-        */
     }
 
     /// <summary>
