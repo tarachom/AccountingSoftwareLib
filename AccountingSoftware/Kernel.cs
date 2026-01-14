@@ -172,18 +172,29 @@ namespace AccountingSoftware
         public Guid Session { get; private set; } = Guid.Empty;
 
         /// <summary>
+        /// Поточний тип форми вже авторизованого користувача
+        /// </summary>
+        public TypeForm? CurrentTypeForm { get; private set; } = null;
+
+        /// <summary>
+        /// Представлення поточного типу форми
+        /// </summary>
+        public string GetCurrentTypeForm() => TypeForm_Alias(CurrentTypeForm);
+
+        /// <summary>
         /// Авторизація 
         /// </summary>
         /// <param name="user">Користувач</param>
         /// <param name="password">Пароль</param>
         /// <returns></returns>
-        public async Task<bool> UserLogIn(string user, string password, TypeForm typeForm)
+        public async ValueTask<bool> UserLogIn(string user, string password, TypeForm typeForm)
         {
             (Guid User, Guid Session)? userSession = await DataBase.SpetialTableUsersLogIn(user, password, typeForm);
             if (userSession != null)
             {
                 User = userSession.Value.User;
                 Session = userSession.Value.Session;
+                CurrentTypeForm = typeForm;
                 return true;
             }
             else
@@ -281,7 +292,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="typeForm">Тип форми</param>
         /// <returns>Псевдонім</returns>
-        public static string TypeForm_Alias(TypeForm typeForm)
+        public static string TypeForm_Alias(TypeForm? typeForm)
         {
             return typeForm switch
             {

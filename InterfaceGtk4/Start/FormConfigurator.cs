@@ -27,7 +27,7 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk4;
 
-public abstract class FormGeneral : Window
+public abstract class FormConfigurator : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
     public NotebookFunction NotebookFunc { get; } = new();
@@ -35,7 +35,7 @@ public abstract class FormGeneral : Window
     Kernel Kernel { get; set; }
     protected Statusbar StatusBar = Statusbar.New();
 
-    public FormGeneral(Application? app, Kernel kernel) : base()
+    public FormConfigurator(Application? app, Kernel kernel) : base()
     {
         Application = app;
         Kernel = kernel;
@@ -52,11 +52,11 @@ public abstract class FormGeneral : Window
             {
                 Box box = Box.New(Orientation.Vertical, 0);
                 box.Valign = box.Halign = Align.Center;
-                Label title = Label.New(Kernel.Conf.Name);
+                Label title = Label.New("КОНФІГУРАТОР");
                 title.AddCssClass("title");
                 box.Append(title);
 
-                Label subtitle = Label.New(Kernel.Conf.Subtitle);
+                Label subtitle = Label.New(Kernel.Conf.Name + " / " + Kernel.Conf.Subtitle);
                 subtitle.AddCssClass("subtitle");
                 box.Append(subtitle);
 
@@ -64,27 +64,6 @@ public abstract class FormGeneral : Window
             }
 
             Titlebar = headerBar;
-
-            //Блок кнопок у шапці головного вікна
-            {
-                //Повідомлення
-                {
-                    Button button = Button.New();
-                    button.Child = Image.NewFromIconName("dialog-information");
-                    button.TooltipText = "Повідомлення";
-                    button.OnClicked += (sender, args) => ButtonMessageClicked();
-                    headerBar.PackEnd(button);
-                }
-
-                //Повнотекстовий пошук
-                {
-                    Button button = Button.New();
-                    button.Child = Image.NewFromIconName("edit-find");
-                    button.TooltipText = "Пошук";
-                    button.OnClicked += OnFindClicked;
-                    headerBar.PackEnd(button);
-                }
-            }
         }
 
         Box vBox = Box.New(Orientation.Vertical, 0);
@@ -96,58 +75,12 @@ public abstract class FormGeneral : Window
         //Створення блокноту
         hBox.Append(NotebookFunc.CreateNotebook(this, true));
 
-        //Приєднання до подій ядра
-        NotebookFunc.ConnectingToKernelEvent(kernel);
-
         vBox.Append(StatusBar);
         SetChild(vBox);
     }
 
-    #region FullTextSearch
-
-    void OnFindClicked(Button button, EventArgs args)
-    {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Bottom;
-        popover.SetParent(button);
-
-        SearchEntry entry = new() { WidthRequest = 500 };
-
-        EventControllerKey contrKey = EventControllerKey.New();
-        entry.AddController(contrKey);
-        contrKey.OnKeyReleased += (sender, args) =>
-        {
-            if (args.Keyval == (uint)Gdk.Key.Return || args.Keyval == (uint)Gdk.Key.KP_Enter)
-                ButtonFindClicked(entry.GetText());
-        };
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        hBox.Append(entry);
-
-        popover.SetChild(hBox);
-        popover.Popup();
-    }
-
-    #endregion
-
     #region Virtual & Abstract Function
 
-    protected abstract void ButtonMessageClicked();
-    protected abstract void ButtonFindClicked(string text);
-    protected abstract bool OpenDocumentByType(string name);
-    protected abstract bool OpenDirectoryByType(string name);
-    protected abstract bool OpenJournalByType(string name);
-    protected abstract bool OpenRegisterInformationByType(string name);
-    protected abstract bool OpenRegisterAccumulationByType(string name);
-    protected abstract void Settings(LinkButton link);
-    protected abstract void Service(LinkButton link);
-    protected abstract void Processing(LinkButton link);
-
-    protected virtual void MenuDocuments(Box vBox) { }
-    protected virtual void MenuDirectory(Box vBox) { }
-    protected virtual void MenuJournals(Box vBox) { }
-    protected virtual void MenuReports(Box vBox) { }
-    protected virtual void MenuRegisters(Box vBox) { }
 
     #endregion
 
@@ -191,78 +124,15 @@ public abstract class FormGeneral : Window
             vBox.Append(link);
         }
 
+        Add("Довідники", Directory, "directory.png");
         Add("Документи", Documents, "documents.png");
         Add("Журнали", Journals, "journal.png");
-        Add("Звіти", Reports, "report.png");
-        Add("Довідники", Directory, "directory.png");
         Add("Регістри", Registers, "register.png");
-        Add("Сервіс", Service, "service.png");
-        Add("Обробки", Processing, "working.png");
-        Add("Налаштування", Settings, "preferences.png");
 
         hbox.Append(scroll);
     }
 
-    void Documents(LinkButton linkButton)
-    {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        //Всі Документи
-        {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
-            vBox.Append(hBox);
-
-            Expander expander = Expander.New("Всі документи");
-            hBox.Append(expander);
-
-            Box vBoxList = Box.New(Orientation.Vertical, 0);
-            expander.Child = vBoxList;
-
-            Label labelCaption = Label.New("Документи");
-            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-            vBoxList.Append(labelCaption);
-
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-            GestureClick gesture = GestureClick.New();
-            listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
-            {
-                if (args.NPress >= 2)
-                {
-                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenDocumentByType(selectedRow.GetName()))
-                        popover.Hide();
-                }
-            };
-
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Child = listBox;
-
-            vBoxList.Append(scroll);
-
-            foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents.OrderBy(x => x.Value.Name))
-            {
-                string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
-
-                Label label = Label.New(title);
-                label.Halign = Align.Start;
-
-                ListBoxRow row = new() { Name = documents.Key, Child = label };
-                listBox.Append(row);
-            }
-        }
-
-        MenuDocuments(vBox);
-
-        popover.Show();
-    }
+    const int WidthList = 300, HeightList = 500;
 
     void Directory(LinkButton linkButton)
     {
@@ -279,6 +149,7 @@ public abstract class FormGeneral : Window
             vBox.Append(hBox);
 
             Expander expander = Expander.New("Всі довідники");
+            expander.Expanded = true;
             hBox.Append(expander);
 
             Box vBoxList = Box.New(Orientation.Vertical, 0);
@@ -297,12 +168,12 @@ public abstract class FormGeneral : Window
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenDirectoryByType(selectedRow.GetName()))
+                    if (selectedRow != null)
                         popover.Hide();
                 }
             };
 
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Child = listBox;
 
@@ -320,7 +191,65 @@ public abstract class FormGeneral : Window
             }
         }
 
-        MenuDirectory(vBox);
+        popover.Show();
+    }
+
+    void Documents(LinkButton linkButton)
+    {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+
+        Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
+
+        //Всі Документи
+        {
+            Box hBox = Box.New(Orientation.Horizontal, 0);
+            vBox.Append(hBox);
+
+            Expander expander = Expander.New("Всі документи");
+            expander.Expanded = true;
+            hBox.Append(expander);
+
+            Box vBoxList = Box.New(Orientation.Vertical, 0);
+            expander.Child = vBoxList;
+
+            Label labelCaption = Label.New("Документи");
+            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
+            vBoxList.Append(labelCaption);
+
+            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+
+            GestureClick gesture = GestureClick.New();
+            listBox.AddController(gesture);
+            gesture.OnPressed += (_, args) =>
+            {
+                if (args.NPress >= 2)
+                {
+                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
+                    if (selectedRow != null)
+                        popover.Hide();
+                }
+            };
+
+            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
+            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            scroll.Child = listBox;
+
+            vBoxList.Append(scroll);
+
+            foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents.OrderBy(x => x.Value.Name))
+            {
+                string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
+
+                Label label = Label.New(title);
+                label.Halign = Align.Start;
+
+                ListBoxRow row = new() { Name = documents.Key, Child = label };
+                listBox.Append(row);
+            }
+        }
 
         popover.Show();
     }
@@ -340,6 +269,7 @@ public abstract class FormGeneral : Window
             vBox.Append(hBox);
 
             Expander expander = Expander.New("Всі журнали");
+            expander.Expanded = true;
             hBox.Append(expander);
 
             Box vBoxList = Box.New(Orientation.Vertical, 0);
@@ -358,12 +288,12 @@ public abstract class FormGeneral : Window
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenJournalByType(selectedRow.GetName()))
+                    if (selectedRow != null)
                         popover.Hide();
                 }
             };
 
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Child = listBox;
 
@@ -380,22 +310,6 @@ public abstract class FormGeneral : Window
                 listBox.Append(row);
             }
         }
-
-        MenuJournals(vBox);
-
-        popover.Show();
-    }
-
-    void Reports(LinkButton linkButton)
-    {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        MenuReports(vBox);
 
         popover.Show();
     }
@@ -415,6 +329,7 @@ public abstract class FormGeneral : Window
             vBox.Append(hBox);
 
             Expander expanderAll = Expander.New("Всі регістри");
+            expanderAll.Expanded = true;
             hBox.Append(expanderAll);
 
             Box hBoxList = Box.New(Orientation.Horizontal, 0);
@@ -439,12 +354,12 @@ public abstract class FormGeneral : Window
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && OpenRegisterInformationByType(selectedRow.GetName()))
+                        if (selectedRow != null)
                             popover.Hide();
                     }
                 };
 
-                ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
                 scroll.Child = listBox;
 
@@ -480,12 +395,12 @@ public abstract class FormGeneral : Window
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && OpenRegisterAccumulationByType(selectedRow.GetName()))
+                        if (selectedRow != null)
                             popover.Hide();
                     }
                 };
 
-                ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
                 scroll.Child = listBox;
 
@@ -503,8 +418,6 @@ public abstract class FormGeneral : Window
                 }
             }
         }
-
-        MenuRegisters(vBox);
 
         popover.Show();
     }

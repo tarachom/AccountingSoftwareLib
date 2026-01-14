@@ -137,7 +137,7 @@ public abstract class FormConfigurationSelection : Window
 
     #region Virtual Functions
 
-    public abstract ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam);
+    public virtual ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) => ValueTask.FromResult(true);
     public abstract ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
 
     #endregion
@@ -323,7 +323,7 @@ public abstract class FormConfigurationSelection : Window
                     {
                         FormLogIn windowFormLogIn = new(Application)
                         {
-                            TypeOpenForm = TypeForm.WorkingProgram,
+                            TypeOpenForm = TypeForm.Configurator,
                             ProgramKernel = ConfiguratorKernel,
                             TransientFor = this,
                             CallBack_ResponseOk = async () =>
