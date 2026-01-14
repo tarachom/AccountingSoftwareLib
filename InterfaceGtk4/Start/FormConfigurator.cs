@@ -81,6 +81,8 @@ public abstract class FormConfigurator : Window
 
     #region Virtual & Abstract Function
 
+    protected abstract void Service(LinkButton link);
+    protected abstract void Settings(LinkButton link);
 
     #endregion
 
@@ -124,15 +126,29 @@ public abstract class FormConfigurator : Window
             vBox.Append(link);
         }
 
+        Add("Константи", Constants, "directory.png");
         Add("Довідники", Directory, "directory.png");
         Add("Документи", Documents, "documents.png");
+        Add("Перелічення", Enums, "directory.png");
         Add("Журнали", Journals, "journal.png");
         Add("Регістри", Registers, "register.png");
+        Add("Сервіс", Service, "service.png");
+        Add("Налаштування", Settings, "preferences.png");
 
         hbox.Append(scroll);
     }
 
     const int WidthList = 300, HeightList = 500;
+
+    void Enums(LinkButton linkButton)
+    {
+
+    }
+
+    void Constants(LinkButton linkButton)
+    {
+        
+    }
 
     void Directory(LinkButton linkButton)
     {
