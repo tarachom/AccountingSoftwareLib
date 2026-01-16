@@ -110,7 +110,11 @@ public abstract class FormConfigurator : Window
 
             Box vBoxItem = Box.New(Orientation.Vertical, 0);
             vBoxItem.Append(hBoxPic);
-            vBoxItem.Append(Label.New(name));
+
+            Label label = Label.New(name);
+            label.Wrap = true;
+            label.WrapMode = Pango.WrapMode.Word;
+            vBoxItem.Append(label);
 
             LinkButton link = LinkButton.New("");
             link.Child = vBoxItem;
@@ -131,23 +135,54 @@ public abstract class FormConfigurator : Window
         Add("Документи", Documents, "documents.png");
         Add("Перелічення", Enums, "directory.png");
         Add("Журнали", Journals, "journal.png");
-        Add("Регістри", Registers, "register.png");
+        Add("Регістри інформації", RegistersInformation, "register.png");
+        Add("Регістри накопичення", RegistersAccumulation, "register.png");
         Add("Сервіс", Service, "service.png");
         Add("Налаштування", Settings, "preferences.png");
 
         hbox.Append(scroll);
     }
 
-    const int WidthList = 300, HeightList = 500;
-
-    void Enums(LinkButton linkButton)
-    {
-
-    }
+    const int WidthList = 800, HeightList = 600;
 
     void Constants(LinkButton linkButton)
     {
-        
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
+
+        Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
+
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
+        {
+
+        }
+
+        Box GetBox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Константи", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        vBox.Append(GetBox());
+        popover.Show();
     }
 
     void Directory(LinkButton linkButton)
@@ -155,119 +190,88 @@ public abstract class FormConfigurator : Window
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         popover.Child = vBox;
 
-        //Всі Довідники
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
         {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
-            vBox.Append(hBox);
 
-            Expander expander = Expander.New("Всі довідники");
-            expander.Expanded = true;
-            hBox.Append(expander);
-
-            Box vBoxList = Box.New(Orientation.Vertical, 0);
-            expander.Child = vBoxList;
-
-            Label labelCaption = Label.New("Довідники");
-            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-            vBoxList.Append(labelCaption);
-
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-            GestureClick gesture = GestureClick.New();
-            listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
-            {
-                if (args.NPress >= 2)
-                {
-                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null)
-                        popover.Hide();
-                }
-            };
-
-            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Child = listBox;
-
-            vBoxList.Append(scroll);
-
-            foreach (KeyValuePair<string, ConfigurationDirectories> directories in Kernel.Conf.Directories.OrderBy(x => x.Value.Name))
-            {
-                string title = string.IsNullOrEmpty(directories.Value.FullName) ? directories.Value.Name : directories.Value.FullName;
-
-                Label label = Label.New(title);
-                label.Halign = Align.Start;
-
-                ListBoxRow row = new() { Name = directories.Key, Child = label };
-                listBox.Append(row);
-            }
         }
 
+        Box GetBox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Довідники", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        vBox.Append(GetBox());
         popover.Show();
     }
 
     void Documents(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
+        static void Activate(string group, string name)
+        {
+
+        }
+
+        Box GetBox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate).Fill();
+
+        NotebookFunc.CreatePage("Документи", GetBox());
+
+        /*Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         popover.Child = vBox;
 
-        //Всі Документи
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
         {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
-            vBox.Append(hBox);
 
-            Expander expander = Expander.New("Всі документи");
-            expander.Expanded = true;
-            hBox.Append(expander);
-
-            Box vBoxList = Box.New(Orientation.Vertical, 0);
-            expander.Child = vBoxList;
-
-            Label labelCaption = Label.New("Документи");
-            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-            vBoxList.Append(labelCaption);
-
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-            GestureClick gesture = GestureClick.New();
-            listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
-            {
-                if (args.NPress >= 2)
-                {
-                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null)
-                        popover.Hide();
-                }
-            };
-
-            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Child = listBox;
-
-            vBoxList.Append(scroll);
-
-            foreach (KeyValuePair<string, ConfigurationDocuments> documents in Kernel.Conf.Documents.OrderBy(x => x.Value.Name))
-            {
-                string title = string.IsNullOrEmpty(documents.Value.FullName) ? documents.Value.Name : documents.Value.FullName;
-
-                Label label = Label.New(title);
-                label.Halign = Align.Start;
-
-                ListBoxRow row = new() { Name = documents.Key, Child = label };
-                listBox.Append(row);
-            }
         }
 
-        popover.Show();
+        Box GetBox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Документи", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        //vBox.Append(GetBox());
+        popover.Show();*/
     }
 
     void Journals(LinkButton linkButton)
@@ -330,111 +334,123 @@ public abstract class FormConfigurator : Window
         popover.Show();
     }
 
-    void Registers(LinkButton linkButton)
+    void Enums(LinkButton linkButton)
     {
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         popover.Child = vBox;
 
-        //Всі Регістри
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
         {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
-            vBox.Append(hBox);
 
-            Expander expanderAll = Expander.New("Всі регістри");
-            expanderAll.Expanded = true;
-            hBox.Append(expanderAll);
-
-            Box hBoxList = Box.New(Orientation.Horizontal, 0);
-            expanderAll.Child = hBoxList;
-
-            //Регістри відомостей
-            {
-                Box vBoxBlock = Box.New(Orientation.Vertical, 0);
-                vBoxBlock.MarginEnd = 5;
-                hBoxList.Append(vBoxBlock);
-
-                Label labelCaption = Label.New("Регістри відомостей");
-                labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-                vBoxBlock.Append(labelCaption);
-
-                ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-                GestureClick gesture = GestureClick.New();
-                listBox.AddController(gesture);
-                gesture.OnPressed += (_, args) =>
-                {
-                    if (args.NPress >= 2)
-                    {
-                        ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null)
-                            popover.Hide();
-                    }
-                };
-
-                ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
-                scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                scroll.Child = listBox;
-
-                vBoxBlock.Append(scroll);
-
-                foreach (KeyValuePair<string, ConfigurationRegistersInformation> register in Kernel.Conf.RegistersInformation.OrderBy(x => x.Value.Name))
-                {
-                    string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
-
-                    Label label = Label.New(title);
-                    label.Halign = Align.Start;
-
-                    ListBoxRow row = new() { Name = register.Key, Child = label };
-                    listBox.Append(row);
-                }
-            }
-
-            //Регістри накопичення
-            {
-                Box vBoxBlock = Box.New(Orientation.Vertical, 0);
-                hBoxList.Append(vBoxBlock);
-
-                Label labelCaption = Label.New("Регістри накопичення");
-                labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-                vBoxBlock.Append(labelCaption);
-
-                ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-                GestureClick gesture = GestureClick.New();
-                listBox.AddController(gesture);
-                gesture.OnPressed += (_, args) =>
-                {
-                    if (args.NPress >= 2)
-                    {
-                        ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null)
-                            popover.Hide();
-                    }
-                };
-
-                ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
-                scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-                scroll.Child = listBox;
-
-                vBoxBlock.Append(scroll);
-
-                foreach (KeyValuePair<string, ConfigurationRegistersAccumulation> register in Kernel.Conf.RegistersAccumulation.OrderBy(x => x.Value.Name))
-                {
-                    string title = string.IsNullOrEmpty(register.Value.FullName) ? register.Value.Name : register.Value.FullName;
-
-                    Label label = Label.New(title);
-                    label.Halign = Align.Start;
-
-                    ListBoxRow row = new() { Name = register.Key, Child = label };
-                    listBox.Append(row);
-                }
-            }
         }
 
+        Box GetBox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Перелічення", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        vBox.Append(GetBox());
+        popover.Show();
+    }
+
+    void RegistersInformation(LinkButton linkButton)
+    {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
+
+        Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
+
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
+        {
+
+        }
+
+        Box GetBox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Регістри інформації", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        vBox.Append(GetBox());
+        popover.Show();
+    }
+
+    void RegistersAccumulation(LinkButton linkButton)
+    {
+        Popover popover = Popover.New();
+        popover.Position = PositionType.Right;
+        popover.SetParent(linkButton);
+        popover.WidthRequest = WidthList;
+        popover.HeightRequest = HeightList;
+
+        Box vBox = Box.New(Orientation.Vertical, 0);
+        popover.Child = vBox;
+
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        static void Activate(string group, string name)
+        {
+
+        }
+
+        Box GetBox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate).Fill();
+
+        {
+            LinkButton link = LinkButton.New("");
+            link.Halign = Align.Start;
+            link.Label = "Відкрити в окремому вікні";
+            link.OnActivateLink += (_, _) =>
+            {
+                NotebookFunc.CreatePage("Регістри накопичення", GetBox());
+                popover.Hide();
+
+                return true;
+            };
+
+            hBox.Append(link);
+        }
+
+        vBox.Append(GetBox());
         popover.Show();
     }
 
