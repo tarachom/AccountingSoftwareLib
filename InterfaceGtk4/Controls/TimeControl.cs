@@ -43,6 +43,7 @@ public class TimeControl : Box
         //Entry
         entryTime.OnChanged += (_, _) => IsValidValue();
         entryTime.MarginEnd = 2;
+        entryTime.SetMaxWidthChars(10);
         Append(entryTime);
 
         //Button
@@ -59,7 +60,12 @@ public class TimeControl : Box
         set
         {
             mValue = value;
-            entryTime.Text_ = mValue.ToString();
+
+            if (mValue == DateTime.MinValue.TimeOfDay)
+                entryTime.SetText("");
+            else
+                entryTime.SetText(mValue.ToString());
+
             entryTime.TooltipText = entryTime.Text_;
         }
     }
