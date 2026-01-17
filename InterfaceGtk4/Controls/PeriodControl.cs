@@ -34,7 +34,7 @@ namespace InterfaceGtk4;
 public class PeriodControl : Box
 {
     ComboBoxText comboBoxPeriod; //Набір варіантів періодів
-    DateTimeControl dateStart = new() { OnlyDate = true, HideMinValue = true };
+    DateTimeControl dateStart = new() { OnlyDate = true };
     DateTimeControl dateStop = new() { OnlyDate = true, Value = DateTime.Now };
     Button bSelect = Button.NewFromIconName("go-next");
     public Action? Changed { get; set; }

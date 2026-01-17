@@ -25,79 +25,104 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class TimeControl : Box
+/// <summary>
+/// Клітинка табличної частини - Час
+/// </summary>
+public class TimeTablePartCell : Box
 {
-    Entry entryTime = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
-    Button bOpenPopover;
+    Box hBox;
+    Entry entry = Entry.New();
+    Button buttonSelect;
 
-    public TimeControl()
+    public TimeTablePartCell()
     {
-        SetOrientation(Orientation.Horizontal);
+        SetOrientation(Orientation.Vertical);
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
+        hBox = New(Orientation.Horizontal, 0);
+        hBox.Vexpand = true;
 
-        //Entry
-        entryTime.OnChanged += (_, _) => IsValidValue();
-        entryTime.MarginEnd = 2;
-        Append(entryTime);
+        entry.OnChanged += (_, _) => IsValid();
+        entry.Vexpand = entry.Hexpand = true;
+        hBox.Append(entry);
 
-        //Button
-        bOpenPopover = Button.New();
-        bOpenPopover.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
-        bOpenPopover.OnClicked += OnOpenPopover;
-        Append(bOpenPopover);
+        //Select
+        {
+            buttonSelect = Button.New();
+            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
+            buttonSelect.OnClicked += OnOpenSelect;
+            buttonSelect.TooltipText = "Вибрати";
+            buttonSelect.AddCssClass("button");
+            hBox.Append(buttonSelect);
+        }
+
+        Append(hBox);
+        AddCssClass("time");
     }
 
-    TimeSpan mValue;
     public TimeSpan Value
     {
-        get => mValue;
+        get
+        {
+            return Value_;
+        }
         set
         {
-            mValue = value;
-            entryTime.Text_ = mValue.ToString();
-            entryTime.TooltipText = entryTime.Text_;
+            if (Value_ != value)
+            {
+                Value_ = value;
+
+                if (Value_ == DateTime.MinValue.TimeOfDay)
+                    entry.SetText("");
+                else
+                    entry.SetText(Value_.ToString());
+
+                entry.TooltipText = entry.GetText();
+            }
         }
     }
+    TimeSpan Value_ = DateTime.MinValue.TimeOfDay;
 
-    void ClearHBoxInfoValid()
+    /// <summary>
+    /// Функція яка викликається після зміни
+    /// </summary>
+    public Action? OnСhanged { get; set; }
+
+    void IsValid()
     {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
 
-    public bool IsValidValue()
-    {
-        ClearHBoxInfoValid();
-
-        if (string.IsNullOrEmpty(entryTime.Text_))
+        if (string.IsNullOrEmpty(entry.Text_))
         {
-            mValue = DateTime.MinValue.TimeOfDay;
-            return true;
+            Value_ = DateTime.MinValue.TimeOfDay;
+            OnСhanged?.Invoke();
+            return;
         }
 
-        if (TimeSpan.TryParse(entryTime.Text_, out TimeSpan value))
+        if (TimeSpan.TryParse(entry.Text_, out TimeSpan value))
         {
-            mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
-            return true;
+            Value_ = value;
+            OnСhanged?.Invoke();
         }
         else
-        {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
-            return false;
-        }
+            entry.AddCssClass("error");
     }
 
-    void OnOpenPopover(object? sender, EventArgs args)
+    /// <summary>
+    /// Не відображати мінімальне значення дати DateTime.MinValue
+    /// </summary>
+    public bool HideMinValue { get; set; } = false;
+
+    public static TimeTablePartCell New(TimeSpan? ts)
+    {
+        TimeTablePartCell cell = new() { Value = ts ?? DateTime.MinValue.TimeOfDay };
+        return cell;
+    }
+
+    void OnOpenSelect(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
-        popover.SetParent(bOpenPopover);
+        popover.SetParent(buttonSelect);
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
         Box vBox = New(Orientation.Vertical, 0);

@@ -227,16 +227,16 @@ public abstract class FormConfigurator : Window
 
     void Documents(LinkButton linkButton)
     {
-        static void Activate(string group, string name)
+        /*static void Activate(string group, string name)
         {
 
         }
 
         Box GetBox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate).Fill();
 
-        NotebookFunc.CreatePage("Документи", GetBox());
+        NotebookFunc.CreatePage("Документи", GetBox());*/
 
-        /*Popover popover = Popover.New();
+        Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
         popover.WidthRequest = WidthList;
@@ -270,8 +270,8 @@ public abstract class FormConfigurator : Window
             hBox.Append(link);
         }
 
-        //vBox.Append(GetBox());
-        popover.Show();*/
+        vBox.Append(GetBox());
+        popover.Show();
     }
 
     void Journals(LinkButton linkButton)

@@ -25,110 +25,108 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class DateTimeControl : Box
+/// <summary>
+/// Клітинка табличної частини - Дата час
+/// </summary>
+public class DateTimeTablePartCell : Box
 {
-    Entry entryDateTimeValue = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
-    Button bOpenCalendar;
+    Box hBox;
+    Entry entry = Entry.New();
+    Button buttonSelect;
 
-    public DateTimeControl()
+    public DateTimeTablePartCell()
     {
-        SetOrientation(Orientation.Horizontal);
+        SetOrientation(Orientation.Vertical);
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
+        hBox = New(Orientation.Horizontal, 0);
+        hBox.Vexpand = true;
 
-        //Entry
-        entryDateTimeValue.OnChanged += (_, _) => IsValidValue();
-        entryDateTimeValue.MarginEnd = 2;
-        Append(entryDateTimeValue);
+        entry.OnChanged += (_, _) => IsValid();
+        entry.Vexpand = entry.Hexpand = true;
+        hBox.Append(entry);
 
-        //Button
-        bOpenCalendar = Button.New();
-        bOpenCalendar.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
-        bOpenCalendar.OnClicked += OnOpenCalendar;
-        Append(bOpenCalendar);
+        //Select
+        {
+            buttonSelect = Button.New();
+            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
+            buttonSelect.OnClicked += OnOpenSelect;
+            buttonSelect.TooltipText = "Вибрати";
+            buttonSelect.AddCssClass("button");
+            hBox.Append(buttonSelect);
+        }
+
+        Append(hBox);
+        AddCssClass("datetime");
+    }
+
+    public DateTime Value
+    {
+        get
+        {
+            return Value_;
+        }
+        set
+        {
+            if (Value_ != value)
+            {
+                Value_ = value;
+
+                if (OnlyDate)
+                    entry.SetMaxWidthChars(10);
+
+                if (Value_.Date == DateTime.MinValue.Date)
+                    entry.SetText("");
+                else if (OnlyDate)
+                {
+                    Value_ = Value_.Date;
+                    entry.SetText(Value_.ToString("dd.MM.yyyy"));
+                }
+                else
+                    entry.SetText(Value_.ToString("dd.MM.yyyy HH:mm:ss"));
+
+                //Підказка
+                entry.TooltipText = entry.GetText();
+            }
+        }
+    }
+    DateTime Value_ = DateTime.MinValue;
+
+    /// <summary>
+    /// Функція яка викликається після зміни
+    /// </summary>
+    public Action? OnСhanged { get; set; }
+
+    void IsValid()
+    {
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
+
+        if (string.IsNullOrEmpty(entry.Text_))
+        {
+            Value_ = DateTime.MinValue;
+            OnСhanged?.Invoke();
+            return;
+        }
+
+        if (DateTime.TryParse(entry.Text_, out DateTime value))
+        {
+            Value_ = value;
+            OnСhanged?.Invoke();
+        }
+        else
+            entry.AddCssClass("error");
+    }
+
+    public static DateTimeTablePartCell New(DateTime? dt)
+    {
+        DateTimeTablePartCell cell = new() { Value = dt ?? DateTime.MinValue };
+        return cell;
     }
 
     /// <summary>
     /// Тільки дата, без часу
     /// </summary>
     public bool OnlyDate { get; set; } = false;
-
-    /// <summary>
-    /// Не відображати мінімальне значення дати DateTime.MinValue
-    /// </summary>
-    //public bool HideMinValue { get; set; } = false;
-
-    DateTime mValue;
-    public DateTime Value
-    {
-        get => mValue;
-        set
-        {
-            mValue = value;
-
-            if (OnlyDate) 
-                entryDateTimeValue.SetMaxWidthChars(10);
-
-            if (/*HideMinValue && */mValue.Date == DateTime.MinValue.Date)
-                entryDateTimeValue.Text_ = "";
-            else if (OnlyDate)
-            {
-                mValue = mValue.Date;
-                entryDateTimeValue.Text_ = mValue.ToString("dd.MM.yyyy");
-            }
-            else
-                entryDateTimeValue.Text_ = mValue.ToString("dd.MM.yyyy HH:mm:ss");
-
-            //Підказка
-            entryDateTimeValue.TooltipText = entryDateTimeValue.Text_;
-        }
-    }
-
-    /// <summary>
-    /// Початок дня
-    /// </summary>
-    /// <returns>Дата початку дня</returns>
-    public DateTime DayBeginning() => new(Value.Year, Value.Month, Value.Day, 0, 0, 0);
-
-    /// <summary>
-    /// Кінець дня
-    /// </summary>
-    /// <returns>Дата кінця дня</returns>
-    public DateTime DayEnd() => new(Value.Year, Value.Month, Value.Day, 23, 59, 59);
-
-    void ClearHBoxInfoValid()
-    {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
-
-    public bool IsValidValue()
-    {
-        ClearHBoxInfoValid();
-
-        if (string.IsNullOrEmpty(entryDateTimeValue.Text_))
-        {
-            mValue = DateTime.MinValue;
-            return true;
-        }
-
-        if (DateTime.TryParse(entryDateTimeValue.Text_, out DateTime value))
-        {
-            mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
-            return true;
-        }
-        else
-        {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
-            return false;
-        }
-    }
 
     /// <summary>
     /// Нова дата із поля Value 
@@ -138,10 +136,10 @@ public class DateTimeControl : Box
     /// <returns>GLib.DateTime?</returns>
     GLib.DateTime? GetGLibDateTime() => GLib.DateTime.NewLocal(Value.Year, Value.Month, Value.Day, Value.Hour, Value.Minute, Value.Second);
 
-    void OnOpenCalendar(object? sender, EventArgs args)
+    void OnOpenSelect(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
-        popover.SetParent(bOpenCalendar);
+        popover.SetParent(buttonSelect);
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
         Box vBox = New(Orientation.Vertical, 0);

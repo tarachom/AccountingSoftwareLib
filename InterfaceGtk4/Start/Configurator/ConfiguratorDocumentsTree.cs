@@ -27,7 +27,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public partial class ConfiguratorDocumentsTree(Configuration conf, Action<string, string>? activate)
+public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string>? activate)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -46,7 +46,7 @@ public partial class ConfiguratorDocumentsTree(Configuration conf, Action<string
             {
                 Group = "Documents",
                 Name = documents.Name,
-                Obj = documents
+                Key = documents.Name
             });
 
         TreeListModel list = TreeListModel.New(Store, false, false, CreateFunc);
@@ -183,9 +183,12 @@ public partial class ConfiguratorDocumentsTree(Configuration conf, Action<string
 
     Gio.ListModel? CreateFunc(GObject.Object item)
     {
+        if (item is not ConfiguratorItemRow) return null;
         ConfiguratorItemRow itemRow = (ConfiguratorItemRow)item;
 
         string group = itemRow.Group;
+        string key = itemRow.Key;
+        string key2 = itemRow.Key2;
         object? obj = itemRow.Obj;
 
         Console.WriteLine($"group {group}, obj {obj}");
@@ -194,54 +197,65 @@ public partial class ConfiguratorDocumentsTree(Configuration conf, Action<string
 
         switch (group)
         {
-            case "Documents" when obj is ConfigurationDocuments documents && documents.Fields.Count > 0:
+            case "Documents":
                 {
-                    //Для документу заповнюю поля
-                    foreach (ConfigurationField field in documents.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "Field",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    if (Conf.Documents.TryGetValue(key, out ConfigurationDocuments? document))
+                    {
+                        //Для документу заповнюю поля
+                        foreach (ConfigurationField field in document.Fields.Values)
+                            Store.Append(new ConfiguratorItemRow()
+                            {
+                                Group = "Field",
+                                Name = field.Name,
+                                Key = field.Name,
+                                //Obj = field,
+                                Type = field.Type,
+                                Desc = field.Pointer
+                            });
 
-                    if (documents.TabularParts.Count > 0)
-                        Store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartGroup",
-                            Name = "[ Табличні частини ]",
-                            Obj = documents
-                        });
-
-                    return Store;
-                }
-            case "TablePartGroup" when obj is ConfigurationDocuments documents:
-                {
-                    //Для групи Табличні частини заповнюю саме табличні частини
-                    foreach (ConfigurationTablePart tablePart in documents.TabularParts.Values)
-                        Store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePart",
-                            Name = tablePart.Name,
-                            Obj = tablePart
-                        });
+                        if (document.TabularParts.Count > 0)
+                            Store.Append(new ConfiguratorItemRow()
+                            {
+                                Group = "TablePartGroup",
+                                Name = "[ Табличні частини ]",
+                                Key = key
+                                //Obj = documents
+                            });
+                    }
 
                     return Store;
                 }
-            case "TablePart" when obj is ConfigurationTablePart tablePart:
+            case "TablePartGroup":
                 {
-                    //Для табличної частини заповнюю поля
-                    foreach (ConfigurationField field in tablePart.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    if (Conf.Documents.TryGetValue(key, out ConfigurationDocuments? document))
+                        //Для групи Табличні частини заповнюю саме табличні частини
+                        foreach (ConfigurationTablePart tablePart in document.TabularParts.Values)
+                            Store.Append(new ConfiguratorItemRow()
+                            {
+                                Group = "TablePart",
+                                Name = tablePart.Name,
+                                //Obj = tablePart,
+                                Key = key,
+                                Key2 = tablePart.Name
+                            });
+
+                    return Store;
+                }
+            case "TablePart":
+                {
+                    if (Conf.Documents.TryGetValue(key, out ConfigurationDocuments? document))
+                        if (document.TabularParts.TryGetValue(key2, out ConfigurationTablePart? tablePart))
+                            //Для табличної частини заповнюю поля
+                            foreach (ConfigurationField field in tablePart.Fields.Values)
+                                Store.Append(new ConfiguratorItemRow()
+                                {
+                                    Group = "TablePartField",
+                                    Name = field.Name,
+                                    Key = field.Name,
+                                    //Obj = field,
+                                    Type = field.Type,
+                                    Desc = field.Pointer
+                                });
 
                     return Store;
                 }

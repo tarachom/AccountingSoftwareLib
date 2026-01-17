@@ -17,6 +17,16 @@ partial class ConfiguratorItemRow
     public string Name { get; set; } = "";
 
     /// <summary>
+    /// Ключ
+    /// </summary>
+    public string Key { get; set; } = "";
+
+    /// <summary>
+    /// Ключ 2
+    /// </summary>
+    public string Key2 { get; set; } = "";
+
+    /// <summary>
     /// Об'єкт
     /// </summary>
     public object? Obj { get; set; } = null;

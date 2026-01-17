@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 public abstract class PointerTablePartCell : Box
 {
     Box hBox;
-    Label label;
+    Label label = Label.New(null);
     Button buttonSelect;
 
     public PointerTablePartCell()
@@ -42,7 +42,6 @@ public abstract class PointerTablePartCell : Box
         hBox = New(Orientation.Horizontal, 0);
         hBox.Hexpand = hBox.Vexpand = true;
 
-        label = Label.New(null);
         label.Halign = Align.Start;
         label.AddCssClass("text");
 
