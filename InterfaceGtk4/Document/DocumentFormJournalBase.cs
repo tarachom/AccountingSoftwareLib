@@ -91,8 +91,6 @@ public abstract class DocumentFormJournalBase : FormJournal
         Period.MarginEnd = 2;
         Period.Changed = async () =>
         {
-            //TypeWhereState = TypeWhere.Standart;
-
             PagesClear();
             await LoadRecords();
 

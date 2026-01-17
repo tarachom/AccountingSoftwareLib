@@ -160,7 +160,6 @@ public abstract class Form : Box
             Box hBox = New(Orientation.Horizontal, 0);
             hBox.MarginStart = hBox.MarginTop = hBox.MarginBottom = 5;
             hBox.Halign = halign;
-
             parent.Append(hBox);
 
             box = hBox;
@@ -171,13 +170,11 @@ public abstract class Form : Box
         {
             Box vBox = New(Orientation.Vertical, 0);
             vBox.Valign = Align.Center;
-
             parent.Append(vBox);
 
             Box hBox = New(Orientation.Horizontal, 0);
             hBox.MarginStart = hBox.MarginTop = hBox.MarginBottom = 5;
             hBox.Halign = halign;
-
             vBox.Append(hBox);
 
             box = hBox;
@@ -187,14 +184,12 @@ public abstract class Form : Box
         {
             Label label = Label.New(AddColon(caption));
             label.MarginEnd = 5;
-
             box.Append(label);
         }
 
         if (field != null)
         {
             field.MarginEnd = 5;
-
             box.Append(field);
         }
 

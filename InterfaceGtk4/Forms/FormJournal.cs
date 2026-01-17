@@ -423,7 +423,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Оновлення списку
     /// </summary>
-    public abstract ValueTask UpdateRecords();
+    public virtual async ValueTask UpdateRecords() { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Відображення стану відборів у Label TypeWhereStateInfo

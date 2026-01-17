@@ -560,6 +560,11 @@ public class NotebookFunction
         await accountingObject.Lock();
     }
 
+    /// <summary>
+    /// Розблокування об'єкта та видалення функції блокування
+    /// </summary>
+    /// <param name="codePage">Код сторінки</param>
+    /// <param name="unlockFunc">Функція розблокування</param>
     public async void RemoveLockObjectFunc(string codePage, Func<ValueTask> unlockFunc)
     {
         await unlockFunc.Invoke();
