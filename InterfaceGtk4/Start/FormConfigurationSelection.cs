@@ -46,7 +46,7 @@ public abstract class FormConfigurationSelection : Window
         Title = "Вибір бази даних";
         Resizable = false;
 
-        SetIconName("gtk");
+        SetIconName("program_logo");
 
         ProgramKernel = programKernel;
         ConfiguratorKernel = configuratorKernel;

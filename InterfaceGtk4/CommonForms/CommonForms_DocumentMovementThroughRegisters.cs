@@ -41,7 +41,7 @@ public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunct
 
     protected void AddDocumentToForm(DocumentPointer documentPointer)
     {
-        CreateField(this, null, Document_PointerControl(documentPointer));
+        CreateField(this, null, Document_PointerControl(documentPointer), Align.Start);
     }
 
     /*protected virtual void ДодатиБлокНаФорму(string blockName, TreeView treeView)

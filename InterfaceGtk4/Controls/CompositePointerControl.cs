@@ -28,7 +28,8 @@ using System.Reflection;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Контрол для вибору з типом який потрібно вибрати.
+/// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
 /// </summary>
 public abstract class CompositePointerControl : PointerControl
 {
@@ -81,9 +82,7 @@ public abstract class CompositePointerControl : PointerControl
     /// <summary>
     /// При зміні вказівника
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="pointer"></param>
-    protected async void OnPointerChanged(object? sender, UuidAndText pointer)
+    protected async void OnPointerChanged(object? _, UuidAndText pointer)
     {
         if (pointer != null)
         {
@@ -121,11 +120,11 @@ public abstract class CompositePointerControl : PointerControl
         //Якщо вибраний тип тоді відкриваю журнал
         if (PointerName == "Документи" || PointerName == "Довідники")
         {
-            object? listPage;
+            object? page;
 
             try
             {
-                listPage = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_Список");
+                page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
             }
             catch (Exception ex)
             {
@@ -133,34 +132,43 @@ public abstract class CompositePointerControl : PointerControl
                 return;
             }
 
-            if (listPage != null)
+            if (page != null)
             {
+                Popover popover = Popover.New();
+                popover.SetParent(button);
+                popover.WidthRequest = 800;
+                popover.HeightRequest = 400;
+                BeforeClickOpenFunc?.Invoke();
+                popover.SetChild((Widget)page);
+
+                //Прив'язка popover до сторінки
+                page.GetType().GetProperty("PopoverParent")?.SetValue(page, popover);
+
                 //Елемент який потрібно виділити в списку
-                listPage.GetType().GetProperty("SelectPointerItem")?.SetValue(listPage, pointer.UnigueID());
+                page.GetType().GetProperty("SelectPointerItem")?.SetValue(page, pointer.UnigueID());
 
                 //Вибір дозволено коли TypeSelectSensetive == true
                 if (TypeSelectSensetive)
                 {
-                    string propertyName = PointerName switch { "Документи" => "DocumentPointerItem", "Довідники" => "DirectoryPointerItem", _ => throw new Exception("Error property name") };
+                    string propertyName = PointerName switch { "Документи" => "DocumentPointerItem", "Довідники" => "DirectoryPointerItem", _ => "" };
 
                     //Елемент для вибору
-                    listPage.GetType().GetProperty(propertyName)?.SetValue(listPage, pointer.UnigueID());
+                    page.GetType().GetProperty(propertyName)?.SetValue(page, pointer.UnigueID());
 
                     //Функція зворотнього виклику при виборі
-                    Action<UnigueID>? callBackAction = x => Pointer = new UuidAndText(x.UGuid, GetBasisName());
-                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, callBackAction);
+                    Action<UnigueID>? callBackAction = x =>
+                    {
+                        Pointer = new UuidAndText(x.UGuid, GetBasisName());
+                        AfterSelectFunc?.Invoke();
+                    };
+
+                    page.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(page, callBackAction);
                 }
 
-                //Заголовок журналу з константи конфігурації
-                string listName = "Список";
-                {
-                    Type? documentConst = CallingAssembly.GetType($"{NamespaceCodeGeneration}.{PointerName}.{TypeCaption}_Const");
-                    if (documentConst != null)
-                        listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
-                }
+                popover.Show();
 
-                NotebookFunc?.CreatePage(listName, () => (Widget)listPage);
-                listPage.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, listPage, null);
+                //Заповнення сторінки даними після відкриття
+                page.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, page, null);
             }
         }
         else if (TypeSelectSensetive)
@@ -393,7 +401,7 @@ public abstract class CompositePointerControl : PointerControl
             ScrolledWindow scroll = ScrolledWindow.New();
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.WidthRequest = 300;
-            scroll.HeightRequest = 400;
+            scroll.HeightRequest = 250;
             scroll.HasFrame = true;
             scroll.SetChild(list);
 
@@ -438,7 +446,7 @@ public abstract class CompositePointerControl : PointerControl
             ScrolledWindow scroll = ScrolledWindow.New();
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.WidthRequest = 300;
-            scroll.HeightRequest = 400;
+            scroll.HeightRequest = 250;
             scroll.HasFrame = true;
             scroll.SetChild(list);
 

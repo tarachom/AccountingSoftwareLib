@@ -25,6 +25,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Сторінки
+/// </summary>
 public class Pages
 {
     /// <summary>

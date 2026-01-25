@@ -41,7 +41,7 @@ public abstract class FormGeneral : Window
         Kernel = kernel;
 
         SetDefaultSize(1200, 900);
-        SetIconName("gtk");
+        SetIconName("program_logo");
         Maximized = true;
 
         //HeaderBar

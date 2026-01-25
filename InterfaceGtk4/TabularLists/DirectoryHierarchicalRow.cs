@@ -23,17 +23,7 @@ limitations under the License.
 
 namespace InterfaceGtk4;
 
-/// <summary>
-/// Базовий клас для рядка табличної частини
-/// </summary>
-public class RowTablePart : Row
+public class DirectoryHierarchicalRow : DirectoryRowJournal
 {
-    /*
-    Функції
-    */
-
-    /// <summary>
-    /// Копіювання рядка
-    /// </summary>
-    public virtual RowTablePart Copy() => new();
+    public List<DirectoryHierarchicalRow> Sub { get; set; } = [];
 }

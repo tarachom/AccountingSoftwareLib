@@ -47,7 +47,7 @@ class FormConfigurationSelectionParam : Window
         Resizable = false;
         Modal = true;
 
-        SetIconName("gtk");
+        SetIconName("program_logo");
 
         EventControllerKey eventContrKey = EventControllerKey.New();
         eventContrKey.OnKeyReleased += (_, args) =>
