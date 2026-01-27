@@ -32,6 +32,7 @@ namespace InterfaceGtk4;
 public class ImageTablePartCell : Box
 {
     Box hBox;
+    Image img = Image.NewFromPixbuf(null);
 
     public ImageTablePartCell()
     {
@@ -40,15 +41,15 @@ public class ImageTablePartCell : Box
         hBox = New(Orientation.Horizontal, 0);
         hBox.Valign = hBox.Halign = Align.Center;
         hBox.Vexpand = true;
-        
+        hBox.Append(img);
+
         Append(hBox);
         AddCssClass("base");
     }
 
     public void SetImage(Pixbuf? pixbuf)
     {
-        Image img = Image.NewFromPixbuf(pixbuf);
-        hBox.Append(img);
+        img.SetFromPixbuf(pixbuf);
     }
 
     public static ImageTablePartCell NewForPixbuf(Pixbuf? pixbuf)
