@@ -33,7 +33,15 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     public override Gio.ListStore Store { get; } = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
 
+    /// <summary>
+    /// Модель для дерева
+    /// </summary>
     TreeListModel? TreeList { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Action<UnigueID>? CallBack_Activate { get; set; }
 
     public DirectoryFormJournalBaseTree(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
@@ -44,6 +52,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
     protected override void GridModel()
     {
+        //Модель для дерева
         TreeList = TreeListModel.New(Store, false, false, CreateFunc);
 
         //Модель
@@ -62,6 +71,11 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         //RunUpdateRecords();
     }
 
+    /// <summary>
+    /// Функція заповнення дерева
+    /// </summary>
+    /// <param name="item">Поточний об'єкт для якого викликається функція</param>
+    /// <returns></returns>
     private static Gio.ListModel? CreateFunc(GObject.Object item)
     {
         var itemRow = (DirectoryHierarchicalRow)item;
@@ -134,7 +148,11 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         {
             TreeListRow? row = TreeList?.GetRow(selection.GetMaximum());
             DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
-            if (rowItem != null) SelectPointerItem = rowItem.UnigueID;
+            if (rowItem != null)
+            {
+                SelectPointerItem = rowItem.UnigueID;
+                CallBack_Activate?.Invoke(SelectPointerItem);
+            }
 
             /*nint handle = model.GetItem(selection.GetMaximum());
             if (handle != nint.Zero)
@@ -146,6 +164,10 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
+    /// <summary>
+    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UnigueID
+    /// </summary>
+    /// <param name="select">UnigueID елемента який треба виділити</param>
     public override void AfterLoadRecords(UnigueID? select = null)
     {
         if (PopoverParent == null)
@@ -153,6 +175,12 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         if (TreeList != null && select != null)
         {
+            /*
+            Принцип роботи:
+                Рекусивно обходяться всі вітки дерева і якщо знайдений
+                елемент то обробка припиняється і вітки залишаються відкритими.
+                Вітки де не знайдено закриваються після обробки.
+            */
             for (uint i = 0; i < TreeList.GetNItems(); i++)
             {
                 TreeListRow? row = TreeList.GetRow(i);
@@ -166,12 +194,12 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 }
             }
 
-            bool RecursionFind(TreeListRow row, uint counter)
+            bool RecursionFind(TreeListRow row, uint position)
             {
                 DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
                 if (rowItem != null && rowItem.UnigueID.Equals(select))
                 {
-                    Grid.Model.SelectItem(counter, false);
+                    Grid.Model.SelectItem(position, false);
                     return true;
                 }
 
@@ -182,7 +210,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     if (childRow != null)
                     {
                         childRow.Expanded = true;
-                        if (RecursionFind(childRow, ++counter))
+                        if (RecursionFind(childRow, ++position))
                             return true;
                         else
                             childRow.Expanded = false;
@@ -193,4 +221,5 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             }
         }
     }
+
 }

@@ -52,6 +52,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
     public override Gio.ListStore Store { get; } = Gio.ListStore.New(DirectoryRowJournal.GetGType());
 
     /// <summary>
+    /// Відбори по родичу або інший постійний відбір
+    /// </summary>
+    public List<Where>? ParentWhereList { get; set; }
+
+    /// <summary>
     /// Функція зворотнього виклику при виборі
     /// </summary>
     public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
@@ -75,6 +80,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Фільтр
     /// </summary>
     public FilterControl Filter { get; } = new();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected Paned HPanedTable = Paned.New(Orientation.Horizontal);
 
     public DirectoryFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
@@ -156,14 +166,23 @@ public abstract class DirectoryFormJournalBase : FormJournal
             }
         };
 
+        Box vBoxStart = New(Orientation.Vertical, 0);
+        vBoxStart.MarginEnd = 5;
+
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
-        Append(ScrollGrid);
+        vBoxStart.Append(ScrollGrid);
 
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
-        Append(ScrollPages);
+        vBoxStart.Append(ScrollPages);
+
+        HPanedTable.SetStartChild(vBoxStart);
+        HPanedTable.SetShrinkStartChild(false);
+        HPanedTable.SetShrinkEndChild(false);
+
+        Append(HPanedTable);
 
         //Прокрутка до виділеного рядка
         Grid.Vadjustment?.OnChanged += (sender, args) =>
@@ -187,7 +206,10 @@ public abstract class DirectoryFormJournalBase : FormJournal
         DefaultGrabFocus();
         await BeforeSetValue();
 
-        await LoadRecords();
+        //Для композитного режиму дані не загружаються
+        if (!CompositeMode)
+            await LoadRecords();
+
         RunUpdateRecords();
     }
 

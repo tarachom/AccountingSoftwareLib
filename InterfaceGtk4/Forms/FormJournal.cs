@@ -125,7 +125,7 @@ public abstract class FormJournal : Form
     }
 
     /// <summary>
-    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords)
+    /// Для таблиці. Функція викликається після завантаження даних в Store (в кінці LoadRecords)
     /// </summary>
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
     public void AfterLoadRecords(uint selectPosition = 0)
@@ -144,6 +144,8 @@ public abstract class FormJournal : Form
         if (selectPosition > 0)
         {
             Grid.Model.SelectItem(selectPosition - 1, false);
+
+            //Це для того щоб активувати подію Grid.Vadjustment?.OnChanged 
             Grid.Vadjustment?.Upper += 0.1;
         }
     }
@@ -313,12 +315,12 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Подія яка виникає після поміщення змінених об'єктів у чергу
     /// </summary>
-    event EventHandler? OnEnqueueRecordsChangedQueue;
+    protected event EventHandler? OnEnqueueRecordsChangedQueue;
 
     /// <summary>
     /// Привязка функції для відслідковування зміни об'єктів
     /// </summary>
-    protected void RunUpdateRecords()
+    protected virtual void RunUpdateRecords()
     {
         string codePage = PopoverParent != null ? Guid.NewGuid().ToString() : GetName();
 
