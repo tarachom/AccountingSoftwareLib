@@ -147,12 +147,8 @@ public abstract class DocumentFormJournalBase : FormJournal
         }
 
         CreateToolbar();
-
-        //Модель
-        MultiSelection model = MultiSelection.New(Store);
-        model.OnSelectionChanged += GridOnSelectionChanged;
-
-        Grid.Model = model;
+        GridModel();
+        
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
 
         EventControllerKey contrKey = EventControllerKey.New();
@@ -191,6 +187,15 @@ public abstract class DocumentFormJournalBase : FormJournal
             Bitset selection = Grid.Model.GetSelection();
             if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
         };
+    }
+
+    protected override void GridModel()
+    {
+        //Модель
+        MultiSelection model = MultiSelection.New(Store);
+        model.OnSelectionChanged += GridOnSelectionChanged;
+
+        Grid.Model = model;
     }
 
     public override async ValueTask SetValue()

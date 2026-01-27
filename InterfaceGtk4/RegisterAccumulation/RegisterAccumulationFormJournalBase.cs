@@ -39,9 +39,9 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     /// Перевизначення сховища для нового типу даних 
     /// </summary>
     public override Gio.ListStore Store { get; } = Gio.ListStore.New(RegisterAccumulationRowJournal.GetGType());
-    
+
     /// <summary>
-    /// Верхній бок для додаткових кнопок
+    /// Верхній бокс для додаткових кнопок
     /// </summary>
     protected Box HBoxTop { get; } = New(Orientation.Horizontal, 0);
 
@@ -104,12 +104,7 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
         }
 
         CreateToolbar();
-
-        //Модель
-        MultiSelection model = MultiSelection.New(Store);
-        model.OnSelectionChanged += GridOnSelectionChanged;
-
-        Grid.Model = model;
+        GridModel();
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
@@ -126,6 +121,15 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
             Bitset selection = Grid.Model.GetSelection();
             if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
         };
+    }
+
+    protected override void GridModel()
+    {
+        //Модель
+        MultiSelection model = MultiSelection.New(Store);
+        model.OnSelectionChanged += GridOnSelectionChanged;
+
+        Grid.Model = model;
     }
 
     public override async ValueTask SetValue()

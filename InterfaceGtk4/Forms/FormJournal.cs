@@ -31,7 +31,8 @@ namespace InterfaceGtk4;
 /// Основа для класів:
 ///     DocumentJournalBase (ДокументЖурналБазовий),
 ///     DirectoryJournalBase (ДовідникЖурналБазовий),
-///     
+///     ... дописати
+/// 
 ///     Журнал, 
 ///     РегістриВідомостейЖурнал, 
 ///     РегістриНакопиченняЖурнал,
@@ -94,7 +95,7 @@ public abstract class FormJournal : Form
     {
         //Не переміщати стовпчики
         Grid.Reorderable = false;
-        Grid.AccessibleRole = AccessibleRole.Table;
+        Grid.AccessibleRole = AccessibleRole.Table; //Уточнити для чого це, на що впливає і чи потрібно
 
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);
@@ -214,8 +215,13 @@ public abstract class FormJournal : Form
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i) && model.GetObject(i) is RowJournal row)
-                rows.Add(row);
+            if (model.IsSelected(i))
+                //Для звичайного табличного списку
+                if (model.GetObject(i) is RowJournal row)
+                    rows.Add(row);
+                //Для дерева
+                else if (model.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow itemRow)
+                    if (itemRow != null) rows.Add(itemRow);
 
         return rows;
     }
@@ -347,7 +353,12 @@ public abstract class FormJournal : Form
                         foreach (var record in delete)
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
-                                RowJournal? row = (RowJournal?)Store.GetObject(i);
+                                RowJournal? row = null;
+                                if (Store.GetObject(i) is RowJournal)
+                                    row = (RowJournal?)Store.GetObject(i);
+                                else if (Store.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow)
+                                    row = (DirectoryHierarchicalRow?)Store.GetObject(i);
+
                                 if (row != null && row.UnigueID.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
@@ -369,7 +380,12 @@ public abstract class FormJournal : Form
                         if (records.Count == 0)
                             break;
 
-                        RowJournal? row = (RowJournal?)Store.GetObject(i);
+                        RowJournal? row = null;
+                        if (Store.GetObject(i) is RowJournal)
+                            row = (RowJournal?)Store.GetObject(i);
+                        else if (Store.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow)
+                            row = (DirectoryHierarchicalRow?)Store.GetObject(i);
+
                         if (row != null)
                         {
                             ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UnigueID.UGuid));
@@ -399,6 +415,8 @@ public abstract class FormJournal : Form
     #endregion
 
     #region Virtual & Abstract Function
+
+    protected abstract void GridModel();
 
     /// <summary>
     /// Присвоєння значень
