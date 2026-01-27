@@ -33,6 +33,8 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     public override Gio.ListStore Store { get; } = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
 
+    TreeListModel? TreeList { get; set; }
+
     public DirectoryFormJournalBaseTree(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         GridModel();
@@ -42,10 +44,10 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
     protected override void GridModel()
     {
-        TreeListModel list = TreeListModel.New(Store, false, false, CreateFunc);
+        TreeList = TreeListModel.New(Store, false, false, CreateFunc);
 
         //Модель
-        MultiSelection model = MultiSelection.New(list);
+        MultiSelection model = MultiSelection.New(TreeList);
         model.OnSelectionChanged += GridOnSelectionChanged;
 
         Grid.Model = model;
@@ -73,5 +75,122 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
 
         return store;
+    }
+
+    /// <summary>
+    /// При активації
+    /// </summary>
+    /// <param name="position">Позиція</param>
+    protected override async ValueTask GridOnActivate(uint position)
+    {
+        TreeListRow? row = TreeList?.GetRow(position);
+        DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
+        if (rowItem != null)
+        {
+            if (DirectoryPointerItem == null)
+                await OpenPageElement(false, rowItem.UnigueID);
+            else
+            {
+                CallBack_OnSelectPointer?.Invoke(rowItem.UnigueID);
+
+                NotebookFunc?.ClosePage(GetName());
+                PopoverParent?.Hide();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Функція повертає список вибраних елементів
+    /// </summary>
+    /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
+    public override List<RowJournal> GetSelection()
+    {
+        List<RowJournal> rows = [];
+
+        MultiSelection model = (MultiSelection)Grid.Model;
+        Bitset selection = model.GetSelection();
+
+        for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
+            if (model.IsSelected(i))
+            {
+                TreeListRow? row = TreeList?.GetRow(i);
+                DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
+                if (rowItem != null) rows.Add(rowItem);
+            }
+
+        return rows;
+    }
+
+    /// <summary>
+    /// При виділенні елементів в таблиці
+    /// </summary>
+    protected override void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
+    {
+        MultiSelection model = (MultiSelection)Grid.Model;
+        Bitset selection = model.GetSelection();
+
+        //Коли виділений один рядок
+        if (selection.GetMinimum() == selection.GetMaximum())
+        {
+            TreeListRow? row = TreeList?.GetRow(selection.GetMaximum());
+            DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
+            if (rowItem != null) SelectPointerItem = rowItem.UnigueID;
+
+            /*nint handle = model.GetItem(selection.GetMaximum());
+            if (handle != nint.Zero)
+            {
+                TreeListRow treeListRow = new(new Gtk.Internal.TreeListRowHandle(handle, false));
+                DirectoryHierarchicalRow? row = (DirectoryHierarchicalRow?)treeListRow.GetItem();
+                if (row != null) SelectPointerItem = row.UnigueID;
+            }*/
+        }
+    }
+
+    public override void AfterLoadRecords(UnigueID? select = null)
+    {
+        if (PopoverParent == null)
+            NotebookFunc?.SpinnerOff(GetName());
+
+        if (TreeList != null && select != null)
+        {
+            for (uint i = 0; i < TreeList.GetNItems(); i++)
+            {
+                TreeListRow? row = TreeList.GetRow(i);
+                if (row != null)
+                {
+                    row.Expanded = true;
+                    if (RecursionFind(row, i))
+                        break;
+                    else
+                        row.Expanded = false;
+                }
+            }
+
+            bool RecursionFind(TreeListRow row, uint counter)
+            {
+                DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                if (rowItem != null && rowItem.UnigueID.Equals(select))
+                {
+                    Grid.Model.SelectItem(counter, false);
+                    return true;
+                }
+
+                Gio.ListModel? children = row.GetChildren();
+                for (uint j = 0; j < children?.GetNItems(); ++j)
+                {
+                    TreeListRow? childRow = row.GetChildRow(j);
+                    if (childRow != null)
+                    {
+                        childRow.Expanded = true;
+                        if (RecursionFind(childRow, ++counter))
+                            return true;
+                        else
+                            childRow.Expanded = false;
+                    }
+                }
+
+                return false;
+            }
+        }
     }
 }

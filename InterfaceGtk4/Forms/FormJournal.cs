@@ -149,6 +149,13 @@ public abstract class FormJournal : Form
     }
 
     /// <summary>
+    /// Для дерева. Саме тіло функції реалізується у класі який відповідає за дерево (наприклад клас DirectoryFormJournalBaseTree)
+    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UnigueID
+    /// </summary>
+    /// <param name="select">UnigueID елемента який треба виділити</param>
+    public virtual void AfterLoadRecords(UnigueID? select = null) { }
+
+    /// <summary>
     /// Прокрутка
     /// </summary>
     /// <param name="selectPosition"></param>
@@ -190,7 +197,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// При виділенні елементів в таблиці
     /// </summary>
-    protected void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
+    protected virtual void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
     {
         Bitset selection = Grid.Model.GetSelection();
 
@@ -207,7 +214,7 @@ public abstract class FormJournal : Form
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public List<RowJournal> GetSelection()
+    public virtual List<RowJournal> GetSelection()
     {
         List<RowJournal> rows = [];
 
@@ -215,13 +222,8 @@ public abstract class FormJournal : Form
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i))
-                //Для звичайного табличного списку
-                if (model.GetObject(i) is RowJournal row)
-                    rows.Add(row);
-                //Для дерева
-                else if (model.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow itemRow)
-                    if (itemRow != null) rows.Add(itemRow);
+            if (model.IsSelected(i) && model.GetObject(i) is RowJournal row)
+                rows.Add(row);
 
         return rows;
     }
@@ -337,12 +339,7 @@ public abstract class FormJournal : Form
 
                 //та видаляються
                 if (added.Count > 0)
-                {
                     records.RemoveAll(x => x.Type == TypeObjectChanged.Add);
-
-                    //Додатково треба буде перерахувати сторінки
-                    //PagesClear();
-                }
 
                 //Видалення записів із Store які були видалені
                 if (records.Count > 0)
@@ -353,12 +350,7 @@ public abstract class FormJournal : Form
                         foreach (var record in delete)
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
-                                RowJournal? row = null;
-                                if (Store.GetObject(i) is RowJournal)
-                                    row = (RowJournal?)Store.GetObject(i);
-                                else if (Store.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow)
-                                    row = (DirectoryHierarchicalRow?)Store.GetObject(i);
-
+                                RowJournal? row = (RowJournal?)Store.GetObject(i);
                                 if (row != null && row.UnigueID.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
@@ -380,12 +372,7 @@ public abstract class FormJournal : Form
                         if (records.Count == 0)
                             break;
 
-                        RowJournal? row = null;
-                        if (Store.GetObject(i) is RowJournal)
-                            row = (RowJournal?)Store.GetObject(i);
-                        else if (Store.GetObject(i) is TreeListRow treeRow && treeRow.Item is DirectoryHierarchicalRow)
-                            row = (DirectoryHierarchicalRow?)Store.GetObject(i);
-
+                        RowJournal? row = (RowJournal?)Store.GetObject(i);
                         if (row != null)
                         {
                             ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UnigueID.UGuid));
