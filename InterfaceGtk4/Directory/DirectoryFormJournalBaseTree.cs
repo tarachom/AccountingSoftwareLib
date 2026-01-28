@@ -39,7 +39,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     TreeListModel? TreeList { get; set; }
 
     /// <summary>
-    /// 
+    /// Функція вибору рядка в дереві
     /// </summary>
     public Action<UnigueID>? CallBack_Activate { get; set; }
 
@@ -172,6 +172,13 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     {
         if (PopoverParent == null)
             NotebookFunc?.SpinnerOff(GetName());
+
+        //Якщо є перший пустий рядок і нічого не вибрано тоді зразу його виділяю
+        if (InsertEmptyFirstRow && select == null)
+        {
+            Grid.Model.SelectItem(0, false);
+            return;
+        }
 
         if (TreeList != null && select != null)
         {

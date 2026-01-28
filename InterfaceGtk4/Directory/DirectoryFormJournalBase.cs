@@ -82,7 +82,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     public FilterControl Filter { get; } = new();
 
     /// <summary>
-    /// 
+    /// Панель з двох блоків
     /// </summary>
     protected Paned HPanedTable = Paned.New(Orientation.Horizontal);
 
@@ -167,7 +167,6 @@ public abstract class DirectoryFormJournalBase : FormJournal
         };
 
         Box vBoxStart = New(Orientation.Vertical, 0);
-        vBoxStart.MarginEnd = 5;
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
@@ -430,6 +429,23 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
         Filter.PopoverParent?.Show();
     }
+
+    #endregion
+
+    #region ForTree
+
+    /// <summary>
+    /// Відкрита папка.
+    /// Використовується при загрузці дерева щоб приховати вітку.
+    /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
+    /// </summary>
+    public UnigueID? OpenFolder { get; set; }
+
+    /// <summary>
+    /// Вставити пустий рядок в дерево
+    /// Потрібно для композитного типу, коли дерево вкладається у інший довідник і слугує для відбору по родичу.
+    /// </summary>
+    public bool InsertEmptyFirstRow { get; set; }
 
     #endregion
 }
