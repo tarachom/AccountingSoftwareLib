@@ -30,6 +30,7 @@ limitations under the License.
 using Gtk;
 using GObject;
 using AccountingSoftware;
+using GObject.Internal;
 
 namespace InterfaceGtk4;
 

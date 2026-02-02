@@ -179,40 +179,41 @@ public partial class ConfiguratorRegistersInformationTree(Configuration conf, Ac
         string group = itemRow.Group;
         object? obj = itemRow.Obj;
 
-        Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        store.Ref();
 
         switch (group)
         {
             case "RegistersInformation" when obj is ConfigurationRegistersInformation registers:
                 {
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "DimensionFields",
                         Name = "Виміри",
                         Obj = registers
                     });
 
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "ResourcesFields",
                         Name = "Ресурси",
                         Obj = registers
                     });
 
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "PropertyFields",
                         Name = "Реквізити",
                         Obj = registers
                     });
 
-                    return Store;
+                    return store;
                 }
             case "DimensionFields" when obj is ConfigurationRegistersInformation registers:
                 {
                     //Виміри
                     foreach (ConfigurationField field in registers.DimensionFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "DimensionField",
                             Name = field.Name,
@@ -221,13 +222,13 @@ public partial class ConfiguratorRegistersInformationTree(Configuration conf, Ac
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             case "ResourcesFields" when obj is ConfigurationRegistersInformation registers:
                 {
                     //Русурси
                     foreach (ConfigurationField field in registers.ResourcesFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "ResourcesField",
                             Name = field.Name,
@@ -236,13 +237,13 @@ public partial class ConfiguratorRegistersInformationTree(Configuration conf, Ac
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             case "PropertyFields" when obj is ConfigurationRegistersInformation registers:
                 {
                     //Реквізити
                     foreach (ConfigurationField field in registers.PropertyFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "PropertyField",
                             Name = field.Name,
@@ -251,7 +252,7 @@ public partial class ConfiguratorRegistersInformationTree(Configuration conf, Ac
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             default:
                 return null;

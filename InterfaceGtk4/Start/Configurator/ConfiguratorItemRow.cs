@@ -1,8 +1,12 @@
 
 using GObject;
+using GObject.Internal;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// 
+/// </summary>
 [Subclass<GObject.Object>]
 partial class ConfiguratorItemRow
 {

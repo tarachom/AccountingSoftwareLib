@@ -179,7 +179,8 @@ public partial class ConfiguratorDirectoriesTree(Configuration conf, Action<stri
         string group = itemRow.Group;
         object? obj = itemRow.Obj;
 
-        Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        store.Ref();
 
         switch (group)
         {
@@ -187,7 +188,7 @@ public partial class ConfiguratorDirectoriesTree(Configuration conf, Action<stri
                 {
                     //Для довідника заповнюю поля
                     foreach (ConfigurationField field in directory.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "Field",
                             Name = field.Name,
@@ -197,33 +198,33 @@ public partial class ConfiguratorDirectoriesTree(Configuration conf, Action<stri
                         });
 
                     if (directory.TabularParts.Count > 0)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePartGroup",
                             Name = "[ Табличні частини ]",
                             Obj = directory
                         });
 
-                    return Store;
+                    return store;
                 }
             case "TablePartGroup" when obj is ConfigurationDirectories directory:
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
                     foreach (ConfigurationTablePart tablePart in directory.TabularParts.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePart",
                             Name = tablePart.Name,
                             Obj = tablePart
                         });
 
-                    return Store;
+                    return store;
                 }
             case "TablePart" when obj is ConfigurationTablePart tablePart:
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePartField",
                             Name = field.Name,
@@ -232,7 +233,7 @@ public partial class ConfiguratorDirectoriesTree(Configuration conf, Action<stri
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             default:
                 return null;

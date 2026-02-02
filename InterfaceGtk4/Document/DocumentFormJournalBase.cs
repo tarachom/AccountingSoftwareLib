@@ -180,13 +180,6 @@ public abstract class DocumentFormJournalBase : FormJournal
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         Append(ScrollPages);
-
-        //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
     }
 
     protected override void GridModel()
@@ -204,6 +197,13 @@ public abstract class DocumentFormJournalBase : FormJournal
         await BeforeSetValue();
 
         RunUpdateRecords();
+
+        //Прокрутка до виділеного рядка
+        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        {
+            Bitset selection = Grid.Model.GetSelection();
+            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
+        };
     }
 
     #region Virtual & Abstract Function

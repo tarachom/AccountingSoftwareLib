@@ -135,7 +135,7 @@ public partial class ConfiguratorEnumsTree(Configuration conf, Action<string, st
             }
         };
 
-        ScrolledWindow scroll = new() ;
+        ScrolledWindow scroll = new();
         scroll.Vexpand = scroll.Hexpand = true;
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         scroll.Child = columnView;
@@ -152,7 +152,8 @@ public partial class ConfiguratorEnumsTree(Configuration conf, Action<string, st
         string group = itemRow.Group;
         object? obj = itemRow.Obj;
 
-        Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        store.Ref();
 
         switch (group)
         {
@@ -160,7 +161,7 @@ public partial class ConfiguratorEnumsTree(Configuration conf, Action<string, st
                 {
                     //Для перелічення заповнюю поля
                     foreach (ConfigurationEnumField field in enums.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "Field",
                             Name = field.Name,
@@ -168,7 +169,7 @@ public partial class ConfiguratorEnumsTree(Configuration conf, Action<string, st
                             Desc = field.Value.ToString()
                         });
 
-                    return Store;
+                    return store;
                 }
             default:
                 return null;

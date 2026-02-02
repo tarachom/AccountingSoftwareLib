@@ -26,6 +26,13 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// ДовідникЖурналБазовийДерево
+/// 
+/// Основа для класів:
+///     DirectoryFormJournalFullTree (ДовідникЖурналПовнийДерево),
+///     DirectoryFormJournalSmallTree (ДовідникЖурналМініДерево),
+/// </summary>
 public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 {
     /// <summary>
@@ -84,6 +91,8 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         if (itemRow.Sub.Count > 0)
         {
             store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
+            store.Ref();
+            
             foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
                 store.Append(subRow);
         }
@@ -207,6 +216,10 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 if (rowItem != null && rowItem.UnigueID.Equals(select))
                 {
                     Grid.Model.SelectItem(position, false);
+
+                    //Прокрутка
+                    ScrollTo(position);
+
                     return true;
                 }
 

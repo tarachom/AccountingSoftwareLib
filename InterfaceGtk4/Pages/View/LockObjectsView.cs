@@ -30,13 +30,14 @@ limitations under the License.
 using Gtk;
 using GObject;
 using AccountingSoftware;
+using GObject.Internal;
 
 namespace InterfaceGtk4;
 
 public abstract partial class LockObjectsView : Box
 {
     [Subclass<GObject.Object>]
-    partial class ItemRow
+    partial class ItemRow 
     {
         public UnigueID Session { get; set; } = new();
 

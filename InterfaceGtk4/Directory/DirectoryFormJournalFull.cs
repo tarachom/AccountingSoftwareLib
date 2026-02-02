@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// ДовідникЖурналПовний
 /// 
-/// Основа для журналів довідників певного виду (Повний)
+/// Журнал довідників певного виду (Повний)
 /// </summary>
 public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
 {

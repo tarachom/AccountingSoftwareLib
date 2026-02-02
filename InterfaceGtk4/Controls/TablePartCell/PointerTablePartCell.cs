@@ -97,6 +97,21 @@ public abstract class PointerTablePartCell : Box
     /// </summary>
     public Action? OnSelect { get; set; }
 
+     /// <summary>
+    /// Функція яка викликається перед відкриттям вибору
+    /// </summary>
+    public Action? BeforeClickOpenFunc { get; set; }
+
+    /// <summary>
+    /// Функція яка викликається після вибору.
+    /// </summary>
+    public Action? AfterSelectFunc { get; set; }
+
+    /// <summary>
+    /// Функція яка викликається після очищення.
+    /// </summary>
+    public Action? AfterClearFunc { get; set; }
+
     /// <summary>
     /// Відображення
     /// </summary>

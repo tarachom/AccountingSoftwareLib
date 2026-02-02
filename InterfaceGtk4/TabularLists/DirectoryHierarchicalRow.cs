@@ -23,6 +23,9 @@ limitations under the License.
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// 
+/// </summary>
 public class DirectoryHierarchicalRow : DirectoryRowJournal
 {
     public List<DirectoryHierarchicalRow> Sub { get; set; } = [];

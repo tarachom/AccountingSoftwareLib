@@ -27,49 +27,49 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналМіні
+/// ДовідникЖурналПовнийДерево
 /// 
-/// Журнал довідників певного виду (Міні)
+/// Журнал довідників певного виду (Повний)
 /// </summary>
-public abstract class DirectoryFormJournalSmall : DirectoryFormJournalBase
+public abstract class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTree
 {
-    public DirectoryFormJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public DirectoryFormJournalFullTree(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         AddToolbar();
     }
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UnigueID? unigueID = null);
+    /// <summary>
+    /// Історія версій
+    /// </summary>
+    /// <param name="unigueID">Вибрані елементи</param>
+    protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
 
     #endregion
 
     #region Grid
 
+
+
     #endregion
 
     #region Toolbar
 
-    /// <summary>
-    /// Доповнити набір кнопок
-    /// </summary>
     void AddToolbar()
     {
         {
-            //Відкрити в блокноті
-            {
-                Button button = Button.NewFromIconName("go-up");
-                button.MarginEnd = 5;
-                button.TooltipText = "Відкрити";
-                button.OnClicked += OnOpenPageList;
-                HBoxToolbarTop.Append(button);
-            }
+            Button button = Button.NewFromIconName("zoom-in");
+            button.MarginEnd = 5;
+            button.TooltipText = "Версії";
+            button.OnClicked += OnVersionsHistory;
+            HBoxToolbarTop.Append(button);
         }
     }
 
-    async void OnOpenPageList(Button button, EventArgs args)
+    async void OnVersionsHistory(Button button, EventArgs args)
     {
-        await OpenPageList(SelectPointerItem);
+        await VersionsHistory(GetGetSelectionUnigueID());
     }
 
     #endregion

@@ -31,8 +31,9 @@ namespace InterfaceGtk4;
 /// ДовідникЖурналБазовий
 /// 
 /// Основа для класів:
-///     DirectoryJournalFull (ДовідникЖурналПовний),
-///     DirectoryJournalSmall (ДовідникЖурналМіні)
+///     DirectoryFormJournalFull (ДовідникЖурналПовний),
+///     DirectoryFormJournalSmall (ДовідникЖурналМіні),
+///     DirectoryFormJournalBaseTree (ДовідникЖурналБазовийДерево)
 /// </summary>
 public abstract class DirectoryFormJournalBase : FormJournal
 {
@@ -55,6 +56,12 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Відбори по родичу або інший постійний відбір
     /// </summary>
     public List<Where>? ParentWhereList { get; set; }
+
+    /// <summary>
+    /// Відбори по власнику або інший постійний відбір.
+    /// Використовується функція яка повертає список для відбору щоб відбір був актуальний
+    /// </summary>
+    public Func<List<Where>>? OwnerWhereListFunc { get; set; }
 
     /// <summary>
     /// Функція зворотнього виклику при виборі
@@ -182,13 +189,6 @@ public abstract class DirectoryFormJournalBase : FormJournal
         HPanedTable.SetShrinkEndChild(false);
 
         Append(HPanedTable);
-
-        //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
     }
 
     protected override void GridModel()
@@ -210,6 +210,13 @@ public abstract class DirectoryFormJournalBase : FormJournal
             await LoadRecords();
 
         RunUpdateRecords();
+
+        //Прокрутка до виділеного рядка
+        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        {
+            Bitset selection = Grid.Model.GetSelection();
+            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
+        };
     }
 
     #region Virtual & Abstract Function

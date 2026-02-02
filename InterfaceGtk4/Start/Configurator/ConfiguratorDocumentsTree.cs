@@ -193,7 +193,8 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
 
         Console.WriteLine($"group {group}, obj {obj}");
 
-        Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        store.Ref();
 
         switch (group)
         {
@@ -203,7 +204,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                     {
                         //Для документу заповнюю поля
                         foreach (ConfigurationField field in document.Fields.Values)
-                            Store.Append(new ConfiguratorItemRow()
+                            store.Append(new ConfiguratorItemRow()
                             {
                                 Group = "Field",
                                 Name = field.Name,
@@ -214,7 +215,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                             });
 
                         if (document.TabularParts.Count > 0)
-                            Store.Append(new ConfiguratorItemRow()
+                            store.Append(new ConfiguratorItemRow()
                             {
                                 Group = "TablePartGroup",
                                 Name = "[ Табличні частини ]",
@@ -223,7 +224,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                             });
                     }
 
-                    return Store;
+                    return store;
                 }
             case "TablePartGroup":
                 {
@@ -239,7 +240,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                                 Key2 = tablePart.Name
                             });
 
-                    return Store;
+                    return store;
                 }
             case "TablePart":
                 {
@@ -247,7 +248,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                         if (document.TabularParts.TryGetValue(key2, out ConfigurationTablePart? tablePart))
                             //Для табличної частини заповнюю поля
                             foreach (ConfigurationField field in tablePart.Fields.Values)
-                                Store.Append(new ConfiguratorItemRow()
+                                store.Append(new ConfiguratorItemRow()
                                 {
                                     Group = "TablePartField",
                                     Name = field.Name,
@@ -257,7 +258,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                                     Desc = field.Pointer
                                 });
 
-                    return Store;
+                    return store;
                 }
             default:
                 return null;

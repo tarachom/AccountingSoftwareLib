@@ -179,27 +179,28 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
         string group = itemRow.Group;
         object? obj = itemRow.Obj;
 
-        Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
+        store.Ref();
 
         switch (group)
         {
             case "RegistersAccumulation" when obj is ConfigurationRegistersAccumulation registers:
                 {
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "DimensionFields",
                         Name = "Виміри",
                         Obj = registers
                     });
 
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "ResourcesFields",
                         Name = "Ресурси",
                         Obj = registers
                     });
 
-                    Store.Append(new ConfiguratorItemRow()
+                    store.Append(new ConfiguratorItemRow()
                     {
                         Group = "PropertyFields",
                         Name = "Реквізити",
@@ -207,20 +208,20 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
                     });
 
                     if (registers.TabularParts.Count > 0)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePartGroup",
                             Name = "[ Табличні частини ]",
                             Obj = registers
                         });
 
-                    return Store;
+                    return store;
                 }
             case "DimensionFields" when obj is ConfigurationRegistersAccumulation registers:
                 {
                     //Виміри
                     foreach (ConfigurationField field in registers.DimensionFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "DimensionField",
                             Name = field.Name,
@@ -229,13 +230,13 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             case "ResourcesFields" when obj is ConfigurationRegistersAccumulation registers:
                 {
                     //Русурси
                     foreach (ConfigurationField field in registers.ResourcesFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "ResourcesField",
                             Name = field.Name,
@@ -244,13 +245,13 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             case "PropertyFields" when obj is ConfigurationRegistersAccumulation registers:
                 {
                     //Реквізити
                     foreach (ConfigurationField field in registers.PropertyFields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "PropertyField",
                             Name = field.Name,
@@ -259,26 +260,26 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             case "TablePartGroup" when obj is ConfigurationRegistersAccumulation registers:
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
                     foreach (ConfigurationTablePart tablePart in registers.TabularParts.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePart",
                             Name = tablePart.Name,
                             Obj = tablePart
                         });
 
-                    return Store;
+                    return store;
                 }
             case "TablePart" when obj is ConfigurationTablePart tablePart:
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)
-                        Store.Append(new ConfiguratorItemRow()
+                        store.Append(new ConfiguratorItemRow()
                         {
                             Group = "TablePartField",
                             Name = field.Name,
@@ -287,7 +288,7 @@ public partial class ConfiguratorRegistersAccumulationTree(Configuration conf, A
                             Desc = field.Pointer
                         });
 
-                    return Store;
+                    return store;
                 }
             default:
                 return null;

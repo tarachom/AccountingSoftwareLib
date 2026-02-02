@@ -2772,7 +2772,17 @@ namespace AccountingSoftware
                                 if (PointerGroup == "Довідники")
                                 {
                                     if (Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? configurationDirectories))
+                                    {
                                         presetntationFields = configurationDirectories.GetPresentationFields();
+
+                                        //Інформація про власника
+                                        if (!string.IsNullOrEmpty(configurationDirectories.DirectoryOwner_Subordination))
+                                        {
+                                            XmlElement nodeDirectoryOwner = xmlConfDocument.CreateElement("DirectoryOwner");
+                                            nodeDirectoryOwner.InnerText = configurationDirectories.DirectoryOwner_Subordination;
+                                            nodeElementField.AppendChild(nodeDirectoryOwner);
+                                        }
+                                    }
                                 }
                                 else if (PointerGroup == "Документи")
                                     if (Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? configurationDocuments))
