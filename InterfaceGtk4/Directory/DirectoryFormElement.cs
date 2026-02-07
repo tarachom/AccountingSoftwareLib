@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЕлемент
+/// ДовідникФормаЕлемент
 /// </summary>
 public abstract class DirectoryFormElement : FormElement
 {

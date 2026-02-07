@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДокументЖурналПовний
+/// ДокументФормаЖурналПовний
 /// 
 /// Основа для журналів документів певного виду (Повний)
 /// </summary>

@@ -23,15 +23,11 @@ limitations under the License.
 
 using Gtk;
 using Gdk;
-using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДокументЖурналБазовий
-/// 
-/// Основа для класів:
-/// 
+/// РегістриВідомостейФормаЖурналБазовий
 /// </summary>
 public abstract class RegisterAccumulationFormJournalBase : FormJournal
 {
@@ -114,13 +110,6 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         Append(ScrollPages);
-
-        //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
     }
 
     protected override void GridModel()
@@ -136,6 +125,13 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     {
         DefaultGrabFocus();
         await BeforeSetValue();
+
+        //Прокрутка до виділеного рядка
+        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        {
+            Bitset selection = Grid.Model.GetSelection();
+            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
+        };
     }
 
     #region Virtual & Abstract Function

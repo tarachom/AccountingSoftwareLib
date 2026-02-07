@@ -28,11 +28,11 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДокументЖурналБазовий
+/// ДокументФормаЖурналБазовий
 /// 
 /// Основа для класів:
-///     DocumentJournalFull (ДокументЖурналПовний),
-///     DocumentJournalSmall (ДокументЖурналМіні)
+///     DocumentFormJournalFull (ДокументФормаЖурналПовний),
+///     DocumentFormJournalSmall (ДокументФормаЖурналМіні)
 /// </summary>
 public abstract class DocumentFormJournalBase : FormJournal
 {

@@ -91,6 +91,11 @@ namespace AccountingSoftware
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
         /// <summary>
+        /// Табличні списки для друку проводок
+        /// </summary>
+        public Dictionary<string, ConfigurationTabularList> TabularListPrintBalances { get; set; } = [];
+
+        /// <summary>
         /// Форми
         /// </summary>
         public Dictionary<string, ConfigurationForms> Forms { get; } = [];
@@ -187,6 +192,11 @@ namespace AccountingSoftware
         public void AppendTableList(ConfigurationTabularList tabularList)
         {
             TabularList.Add(tabularList.Name, tabularList);
+        }
+
+        public void AppendTableListPrintBalances(ConfigurationTabularList tabularPrint)
+        {
+            TabularListPrintBalances.Add(tabularPrint.Name, tabularPrint);
         }
 
         #endregion

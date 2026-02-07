@@ -23,15 +23,11 @@ limitations under the License.
 
 using Gtk;
 using Gdk;
-using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДокументЖурналБазовий
-/// 
-/// Основа для класів:
-/// 
+/// РегістриВідомостейФормаЖурналМіні
 /// </summary>
 public abstract class RegisterAccumulationFormJournalSmall : FormJournal
 {
@@ -42,9 +38,7 @@ public abstract class RegisterAccumulationFormJournalSmall : FormJournal
 
     public RegisterAccumulationFormJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
-        //Модель
-        MultiSelection model = MultiSelection.New(Store);
-        Grid.Model = model;
+        GridModel();
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
@@ -56,9 +50,18 @@ public abstract class RegisterAccumulationFormJournalSmall : FormJournal
         Append(ScrollPages);
     }
 
+    protected override void GridModel()
+    {
+        //Модель
+        MultiSelection model = MultiSelection.New(Store);
+
+        Grid.Model = model;
+    }
+
     public override async ValueTask SetValue()
     {
-        
+        await BeforeSetValue();
+        await LoadRecords();
     }
 
     #region Virtual & Abstract Function

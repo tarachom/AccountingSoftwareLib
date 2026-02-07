@@ -85,7 +85,13 @@ public abstract class PointerControl : Box
     public string Caption
     {
         get => labelCaption.GetText();
-        set => labelCaption.SetText(value);
+        set
+        {
+            string txt = value.Trim();
+            if (!string.IsNullOrEmpty(txt) && !txt.EndsWith(':')) txt += ":";
+
+            labelCaption.SetText(txt);
+        }
     }
 
     public int WidthPresentation

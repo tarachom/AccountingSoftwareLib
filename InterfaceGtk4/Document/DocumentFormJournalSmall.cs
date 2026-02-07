@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДокументЖурналМіні
+/// ДокументФормаЖурналМіні
 /// 
 /// Основа для журналів документів певного виду (Міні)
 /// </summary>

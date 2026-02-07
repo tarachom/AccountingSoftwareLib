@@ -25,6 +25,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
+using System.IO.Compression;
 
 namespace AccountingSoftware
 {
@@ -1102,6 +1103,52 @@ namespace AccountingSoftware
             return fullName;
         }
 
+        /// <summary>
+        /// Стиснення та кодування тексту у формат Base64
+        /// </summary>
+        /// <param name="text">Текст</param>
+        /// <returns>Заархівований текст</returns>
+        public static string ZipAndBase64Text(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            var bytes = Encoding.UTF8.GetBytes(text);
+
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(mso, CompressionMode.Compress))
+            {
+                gs.Write(bytes, 0, bytes.Length);
+            }
+
+            return Convert.ToBase64String(mso.ToArray());
+        }
+
+        /// <summary>
+        /// Розкодування тексту з Base64 та розархівування
+        /// </summary>
+        /// <param name="text">Текст у форматі Base64</param>
+        /// <returns>Звичайний текст</returns>
+        public static string UnZipAndBase64Text(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            try
+            {
+                var bytes = Convert.FromBase64String(text);
+
+                using var msi = new MemoryStream(bytes);
+                using var gs = new GZipStream(msi, CompressionMode.Decompress);
+                using var mso = new MemoryStream();
+                gs.CopyTo(mso);
+
+                return Encoding.UTF8.GetString(mso.ToArray());
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
         #endregion
 
         #region Load (завантаження конфігурації з ХМЛ файлу)
@@ -1492,7 +1539,11 @@ namespace AccountingSoftware
                     string? name = tableForm.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва форми");
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
-                    string generatedCode = tableForm.Current?.SelectSingleNode("GeneratedCode")?.Value ?? "";
+
+                    XPathNavigator? generatedCodeNode = tableForm.Current?.SelectSingleNode("GeneratedCode");
+                    string genCode = generatedCodeNode?.Value.Trim() ?? "";
+                    string genCodeZip = generatedCodeNode?.GetAttribute("Zip", "") ?? "";
+
                     string notSaveToFile = tableForm.Current?.SelectSingleNode("NotSaveToFile")?.Value ?? "";
 
                     if (!Enum.TryParse(type, out ConfigurationForms.TypeForms typeForms))
@@ -1500,8 +1551,8 @@ namespace AccountingSoftware
 
                     ConfigurationForms form = new(name, desc, typeForms)
                     {
-                        GeneratedCode = generatedCode,
-                        NotSaveToFile = notSaveToFile == "1"
+                        NotSaveToFile = notSaveToFile == "1",
+                        GeneratedCode = genCodeZip == "1" ? UnZipAndBase64Text(genCode) : genCode
                     };
 
                     //Поля які залежать від типу форми
@@ -1893,15 +1944,19 @@ namespace AccountingSoftware
                     if (propertyFieldsNode != null)
                         LoadFields(configurationRegistersAccumulation.PropertyFields, propertyFieldsNode, "RegisterAccumulation");
 
-                    LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode?.Current);
+                    LoadAllowDocumentSpendRegisterAccumulation(configurationRegistersAccumulation.AllowDocumentSpend, registerAccumulationNode.Current);
 
-                    LoadTabularParts(Conf, configurationRegistersAccumulation.TabularParts, registerAccumulationNode?.Current);
+                    LoadTabularParts(Conf, configurationRegistersAccumulation.TabularParts, registerAccumulationNode.Current);
 
                     if (Conf.VariantLoadConfiguration == VariantLoadConf.Full)
                     {
-                        LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode?.Current);
-                        LoadTabularList(configurationRegistersAccumulation.TabularList, registerAccumulationNode?.Current);
-                        LoadForms(configurationRegistersAccumulation.Forms, registerAccumulationNode?.Current);
+                        LoadQueryList(configurationRegistersAccumulation.QueryBlockList, registerAccumulationNode.Current);
+                        LoadTabularList(configurationRegistersAccumulation.TabularList, registerAccumulationNode.Current);
+                        LoadForms(configurationRegistersAccumulation.Forms, registerAccumulationNode.Current);
+
+                        XPathNavigator? printBalancesNode = registerAccumulationNode.Current?.SelectSingleNode("PrintBalances");
+                        if (printBalancesNode != null)
+                            LoadTabularList(configurationRegistersAccumulation.TabularListPrintBalances, printBalancesNode);
                     }
                 }
         }
@@ -2667,8 +2722,13 @@ namespace AccountingSoftware
                 nodeForm.AppendChild(nodeType);
 
                 XmlElement nodeGeneratedCode = xmlConfDocument.CreateElement("GeneratedCode");
-                nodeGeneratedCode.AppendChild(xmlConfDocument.CreateCDataSection(form.Value.GeneratedCode));
+                nodeGeneratedCode.InnerText = ZipAndBase64Text(form.Value.GeneratedCode);
                 nodeForm.AppendChild(nodeGeneratedCode);
+
+                //Атрибут який вказує що код стиснений
+                XmlAttribute zipAttr = xmlConfDocument.CreateAttribute("Zip");
+                zipAttr.Value = "1";
+                nodeGeneratedCode.Attributes.Append(zipAttr);
 
                 XmlElement nodeNotSaveToFile = xmlConfDocument.CreateElement("NotSaveToFile");
                 nodeNotSaveToFile.InnerText = form.Value.NotSaveToFile ? "1" : "0";
@@ -3353,6 +3413,11 @@ namespace AccountingSoftware
                     ConfRegisterAccml.Value.PropertyFields.Values);
 
                 SaveTabularList(AllFields, ConfRegisterAccml.Value.TabularList, xmlConfDocument, nodeRegister);
+
+                XmlElement nodePrintBalances = xmlConfDocument.CreateElement("PrintBalances");
+                nodeRegister.AppendChild(nodePrintBalances);
+
+                SaveTabularList(AllFields, ConfRegisterAccml.Value.TabularListPrintBalances, xmlConfDocument, nodePrintBalances);
 
                 SaveForms(Conf, AllFields, null, ConfRegisterAccml.Value.Forms, xmlConfDocument, nodeRegister);
             }

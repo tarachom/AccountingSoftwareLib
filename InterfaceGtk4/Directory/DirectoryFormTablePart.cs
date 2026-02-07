@@ -24,7 +24,7 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Довідник форма таблична частина
+/// ДовідникФормаТабличнаЧастина
 /// </summary>
 public abstract class DirectoryFormTablePart : FormTablePart
 {

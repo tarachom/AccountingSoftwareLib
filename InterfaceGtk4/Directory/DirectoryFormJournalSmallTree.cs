@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналМініДерево
+/// ДовідникФормаЖурналМініДерево
 /// 
 /// Журнал довідників певного виду (Міні)
 /// </summary>

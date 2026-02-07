@@ -28,12 +28,12 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналБазовий
+/// ДовідникФормаЖурналБазовий
 /// 
 /// Основа для класів:
-///     DirectoryFormJournalFull (ДовідникЖурналПовний),
-///     DirectoryFormJournalSmall (ДовідникЖурналМіні),
-///     DirectoryFormJournalBaseTree (ДовідникЖурналБазовийДерево)
+///     DirectoryFormJournalFull (ДовідникФормаЖурналПовний),
+///     DirectoryFormJournalSmall (ДовідникФормаЖурналМіні),
+///     DirectoryFormJournalBaseTree (ДовідникФормаЖурналБазовийДерево)
 /// </summary>
 public abstract class DirectoryFormJournalBase : FormJournal
 {
@@ -92,6 +92,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Панель з двох блоків
     /// </summary>
     protected Paned HPanedTable = Paned.New(Orientation.Horizontal);
+
+    /// <summary>
+    /// Переключатель використання ієрархії для довідника з деревом
+    /// </summary>
+    public Switch UseHierarchy { get; } = Switch.New();
 
     public DirectoryFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
@@ -455,4 +460,41 @@ public abstract class DirectoryFormJournalBase : FormJournal
     public bool InsertEmptyFirstRow { get; set; }
 
     #endregion
+
+    #region ForCompositeMode
+
+    /// <summary>
+    /// Додати переключатель використання ієрархії на форму
+    /// </summary>
+    protected void AddSwitchUseHierarchy()
+    {
+        Box vBox = Box.New(Orientation.Vertical, 0);
+        vBox.MarginStart = 20;
+        vBox.Valign = Align.Center;
+        HBoxToolbarTop.Append(vBox);
+
+        Box hBox = Box.New(Orientation.Horizontal, 0);
+        vBox.Append(hBox);
+
+        Label label = Label.New("Без ієрархії");
+        label.MarginEnd = 5;
+
+        hBox.Append(label);
+        hBox.Append(UseHierarchy);
+
+        UseHierarchy.OnStateSet += (_, args) =>
+        {
+            async void reloadFunc()
+            {
+                PagesClear();
+                await LoadRecords();
+            }
+            reloadFunc();
+
+            return false;
+        };
+    }
+
+    #endregion
+
 }

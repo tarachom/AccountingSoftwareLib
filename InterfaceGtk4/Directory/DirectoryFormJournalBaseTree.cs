@@ -27,11 +27,11 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналБазовийДерево
+/// ДовідникФормаЖурналБазовийДерево
 /// 
 /// Основа для класів:
-///     DirectoryFormJournalFullTree (ДовідникЖурналПовнийДерево),
-///     DirectoryFormJournalSmallTree (ДовідникЖурналМініДерево),
+///     DirectoryFormJournalFullTree (ДовідникФормаЖурналПовнийДерево),
+///     DirectoryFormJournalSmallTree (ДовідникФормаЖурналМініДерево),
 /// </summary>
 public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 {

@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникЖурналПовнийДерево
+/// ДовідникФормаЖурналПовнийДерево
 /// 
 /// Журнал довідників певного виду (Повний)
 /// </summary>
