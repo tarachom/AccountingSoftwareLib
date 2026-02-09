@@ -159,6 +159,11 @@ namespace AccountingSoftware
             List,
 
             /// <summary>
+            /// Список мінімальний
+            /// </summary>
+            ListSmall,
+
+            /// <summary>
             /// Елемент
             /// </summary>
             Element,

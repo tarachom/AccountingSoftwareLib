@@ -52,5 +52,10 @@ namespace AccountingSoftware
 		/// Назва власника запису
 		/// </summary>
 		public string OwnerName { get; set; } = "";
+
+		/// <summary>
+		/// Колекція додаткових полів FieldAndAlias із запиту
+		/// </summary>
+		public Dictionary<string, string> JoinItemValue { get; set; } = [];
 	}
 }

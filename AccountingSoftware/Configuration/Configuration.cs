@@ -1149,6 +1149,37 @@ namespace AccountingSoftware
             }
         }
 
+        /// <summary>
+        /// Створює вітку із стисненим вмістом
+        /// </summary>
+        /// <param name="xmlConfDocument">ХМЛ документ</param>
+        /// <param name="nodeName">Назва вітки</param>
+        /// <param name="nodeValue">Значення</param>
+        /// <returns>Повертає створену вітку</returns>
+        static XmlElement SetZipAndBase64TextToNode(XmlDocument xmlConfDocument, string nodeName, string nodeValue)
+        {
+            XmlElement node = xmlConfDocument.CreateElement(nodeName);
+            node.InnerText = ZipAndBase64Text(nodeValue);
+
+            XmlAttribute attrZip = xmlConfDocument.CreateAttribute("Zip");
+            attrZip.Value = "1";
+            node.Attributes.Append(attrZip);
+
+            return node;
+        }
+
+        /// <summary>
+        /// Отримує значення із вітки і за потреби розархівовує вміст
+        /// </summary>
+        /// <param name="node">Вітка</param>
+        /// <returns>Вміст вітки</returns>
+        static string GetUnZipAndBase64TextFromNode(XPathNavigator node)
+        {
+            string value = node.Value;
+            string attrZip = node.GetAttribute("Zip", "");
+            return attrZip == "1" ? UnZipAndBase64Text(value) : value;
+        }
+
         #endregion
 
         #region Load (завантаження конфігурації з ХМЛ файлу)
@@ -1539,10 +1570,7 @@ namespace AccountingSoftware
                     string? name = tableForm.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва форми");
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
-
-                    XPathNavigator? generatedCodeNode = tableForm.Current?.SelectSingleNode("GeneratedCode");
-                    string genCode = generatedCodeNode?.Value.Trim() ?? "";
-                    string genCodeZip = generatedCodeNode?.GetAttribute("Zip", "") ?? "";
+                    string genCode = GetUnZipAndBase64TextFromNode(tableForm.Current?.SelectSingleNode("GeneratedCode"));
 
                     string notSaveToFile = tableForm.Current?.SelectSingleNode("NotSaveToFile")?.Value ?? "";
 
@@ -1552,7 +1580,7 @@ namespace AccountingSoftware
                     ConfigurationForms form = new(name, desc, typeForms)
                     {
                         NotSaveToFile = notSaveToFile == "1",
-                        GeneratedCode = genCodeZip == "1" ? UnZipAndBase64Text(genCode) : genCode
+                        GeneratedCode = genCode
                     };
 
                     //Поля які залежать від типу форми
@@ -2721,14 +2749,8 @@ namespace AccountingSoftware
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
 
-                XmlElement nodeGeneratedCode = xmlConfDocument.CreateElement("GeneratedCode");
-                nodeGeneratedCode.InnerText = ZipAndBase64Text(form.Value.GeneratedCode);
+                XmlElement nodeGeneratedCode = SetZipAndBase64TextToNode(xmlConfDocument, "GeneratedCode", form.Value.GeneratedCode);
                 nodeForm.AppendChild(nodeGeneratedCode);
-
-                //Атрибут який вказує що код стиснений
-                XmlAttribute zipAttr = xmlConfDocument.CreateAttribute("Zip");
-                zipAttr.Value = "1";
-                nodeGeneratedCode.Attributes.Append(zipAttr);
 
                 XmlElement nodeNotSaveToFile = xmlConfDocument.CreateElement("NotSaveToFile");
                 nodeNotSaveToFile.InnerText = form.Value.NotSaveToFile ? "1" : "0";

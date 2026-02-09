@@ -64,7 +64,24 @@ public abstract class RegisterAccumulationFormJournalSmall : FormJournal
         await LoadRecords();
     }
 
+    public override void BeforeLoadRecords()
+    {
+        
+    }
+
+    public override void AfterLoadRecords(uint selectPosition = 0)
+    {
+        PagesShow();
+    }
+
+    public void SetHeight(int height)
+    {
+        ScrollGrid.Vexpand = false;
+        ScrollGrid.HeightRequest = height;
+    }
+
     #region Virtual & Abstract Function
+
 
     #endregion
 }

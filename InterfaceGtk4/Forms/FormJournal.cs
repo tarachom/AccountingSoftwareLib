@@ -118,7 +118,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Перед початком завантаження даних в Store (на початку LoadRecords)
     /// </summary>
-    public void BeforeLoadRecords()
+    public virtual void BeforeLoadRecords()
     {
         if (PopoverParent == null)
             NotebookFunc?.SpinnerOn(GetName());
@@ -128,7 +128,7 @@ public abstract class FormJournal : Form
     /// Для таблиці. Функція викликається після завантаження даних в Store (в кінці LoadRecords)
     /// </summary>
     /// <param name="selectPosition">Позиція елемента який треба виділити</param>
-    public void AfterLoadRecords(uint selectPosition = 0)
+    public virtual void AfterLoadRecords(uint selectPosition = 0)
     {
         if (PopoverParent == null)
             NotebookFunc?.SpinnerOff(GetName());

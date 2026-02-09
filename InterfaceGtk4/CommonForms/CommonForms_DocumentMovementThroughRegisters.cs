@@ -44,32 +44,15 @@ public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunct
         CreateField(this, null, Document_PointerControl(documentPointer), Align.Start);
     }
 
-    /*protected virtual void ДодатиБлокНаФорму(string blockName, TreeView treeView)
-    {
-        Box vBox = new Box(Orientation.Vertical, 0);
-
-        Expander expander = new Expander(blockName) { Expanded = true };
-        expander.Add(vBox);
-
-        ScrolledWindow scrollTree = new ScrolledWindow();
-        scrollTree.SetPolicy(PolicyType.Automatic, PolicyType.Never);
-        scrollTree.Add(treeView);
-
-        Box hBox = new Box(Orientation.Horizontal, 0);
-        hBox.PackStart(scrollTree, true, true, 5);
-        vBox.PackStart(hBox, false, false, 5);
-
-        PackStart(expander, false, false, 10);
-
-        ShowAll();
-    }*/
-
     protected virtual void ДодатиБлокНаФорму(string blockName, Widget form)
     {
         Box vBox = New(Orientation.Vertical, 0);
+        vBox.MarginTop = vBox.MarginBottom = 10;
+        vBox.MarginStart = vBox.MarginEnd = 20;
 
         Expander expander = Expander.New(blockName);
         expander.Expanded = true;
+        expander.MarginTop = expander.MarginBottom = 5;
         expander.SetChild(vBox);
 
         Box hBox = New(Orientation.Horizontal, 0);
