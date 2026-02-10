@@ -78,7 +78,7 @@ namespace AccountingSoftware
 
         public override string ToString()
         {
-            return $"{Name}:{Text}";
+            return $"{Name}.{Text}";
         }
     }
 }

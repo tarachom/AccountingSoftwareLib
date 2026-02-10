@@ -37,20 +37,34 @@ namespace InterfaceGtk4;
 /// </summary>
 public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunction? notebookFunc) : Form(notebookFunc)
 {
+    /// <summary>
+    /// Повертає віджет для відображення документу
+    /// </summary>
+    /// <param name="documentPointer">Вказівник на документ</param>
+    /// <returns>Віджет</returns>
     protected abstract Widget Document_PointerControl(DocumentPointer documentPointer);
 
+    /// <summary>
+    /// Додає контрол віджет для відображення документу
+    /// </summary>
+    /// <param name="documentPointer">Вказівник на документ</param>
     protected void AddDocumentToForm(DocumentPointer documentPointer)
     {
         CreateField(this, null, Document_PointerControl(documentPointer), Align.Start);
     }
 
-    protected virtual void ДодатиБлокНаФорму(string blockName, Widget form)
+    /// <summary>
+    /// Добавляє блок даних на форму
+    /// </summary>
+    /// <param name="name">Назва</param>
+    /// <param name="form">Віджет</param>
+    protected virtual void AddBlockToForm(string name, Widget form)
     {
         Box vBox = New(Orientation.Vertical, 0);
         vBox.MarginTop = vBox.MarginBottom = 10;
         vBox.MarginStart = vBox.MarginEnd = 20;
 
-        Expander expander = Expander.New(blockName);
+        Expander expander = Expander.New(name);
         expander.Expanded = true;
         expander.MarginTop = expander.MarginBottom = 5;
         expander.SetChild(vBox);
