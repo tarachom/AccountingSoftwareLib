@@ -248,31 +248,7 @@ public abstract class PageService : Form
 
         return vBox;
     }
-
-    #region Функції
-
-    /*
-    Widget? CreateCompositControl(string caption, UuidAndText uuidAndText)
-    {
-        object? compositControlInstance = ExecutingAssembly.CreateInstance($"{NameSpageProgram}.CompositePointerControl");
-        if (compositControlInstance != null)
-        {
-            dynamic compositControl = compositControlInstance;
-
-            compositControl.Caption = caption;
-            compositControl.ClearSensetive = false;
-            compositControl.TypeSelectSensetive = false;
-            compositControl.Pointer = uuidAndText;
-
-            return compositControl;
-        }
-        else
-            return null;
-    }
-    */
-
-    #endregion
-
+    
     #region Virtual & Abstract Function
 
     protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);

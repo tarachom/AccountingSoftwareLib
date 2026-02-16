@@ -26,17 +26,17 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField) : Select(kernel, table, parentField)
+	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField, string isFolder) : Select(kernel, table, parentField, isFolder)
 	{
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected (UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;
+		protected (UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;
 
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> BaseSelectListHierarchical { get; private set; } = [];
+		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> BaseSelectListHierarchical { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці

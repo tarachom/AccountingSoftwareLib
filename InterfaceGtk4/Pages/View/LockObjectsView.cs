@@ -28,19 +28,14 @@ limitations under the License.
 */
 
 using Gtk;
-using GObject;
 using AccountingSoftware;
-using GObject.Internal;
 
 namespace InterfaceGtk4;
 
-public abstract partial class LockObjectsView : Box
+public abstract class LockObjectsView : Box
 {
-    [Subclass<GObject.Object>]
-    partial class ItemRow 
+    class ItemRow : Row
     {
-        public UnigueID Session { get; set; } = new();
-
         public Guid UserUID { get; set; } = Guid.Empty;
 
         public string UserName { get; set; } = "";
@@ -116,7 +111,7 @@ public abstract partial class LockObjectsView : Box
 
             ItemRow itemRow = new()
             {
-                Session = new UnigueID(record["session"]),
+                UnigueID = new UnigueID(record["session"]),
                 UserUID = (Guid)record["users"],
                 UserName = record["username"].ToString() ?? "",
                 ObjValue = obj,

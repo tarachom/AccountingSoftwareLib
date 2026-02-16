@@ -211,34 +211,5 @@ public class FilterControl : Box
         }
 
         GridCountRows++;
-
-        /*Box hBox = New(Orientation.Horizontal, 0);
-        hBox.MarginStart = hBox.MarginEnd = hBox.MarginTop = hBox.MarginBottom = 5;
-        hBox.Hexpand = true;
-
-        Box vBox = New(Orientation.Vertical, 0);
-        vBox.Hexpand = true;
-        vBox.Append(hBox);
-
-        //Заголовок
-        Label label = Label.New(caption);
-        label.MarginEnd = 5;
-        hBox.Append(label);
-
-        //Віджет
-        widget.MarginEnd = 5;
-        hBox.Append(widget);
-
-        //Включено / Виключено
-        {
-            Box vBoxSw = New(Orientation.Vertical, 0);
-            hBox.Append(vBoxSw);
-
-            Box hBoxSw = New(Orientation.Horizontal, 0);
-            hBoxSw.Append(sw);
-            vBoxSw.Append(hBoxSw);
-        }
-
-        FilterList.Append(new ListBoxRow() { Child = vBox });*/
     }
 }

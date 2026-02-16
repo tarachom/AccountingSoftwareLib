@@ -162,7 +162,7 @@ namespace AccountingSoftware
         ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0);
 
         ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers);
-        ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> listPointers);
+        ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers);
         ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect);
         ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
         ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);

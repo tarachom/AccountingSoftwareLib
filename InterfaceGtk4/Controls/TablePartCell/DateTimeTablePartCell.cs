@@ -63,33 +63,33 @@ public class DateTimeTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
+                value_ = value;
 
                 if (OnlyDate)
                     entry.SetMaxWidthChars(10);
 
-                if (Value_.Date == DateTime.MinValue.Date)
+                if (value_.Date == DateTime.MinValue.Date)
                     entry.SetText("");
                 else if (OnlyDate)
                 {
-                    Value_ = Value_.Date;
-                    entry.SetText(Value_.ToString("dd.MM.yyyy"));
+                    value_ = value_.Date;
+                    entry.SetText(value_.ToString("dd.MM.yyyy"));
                 }
                 else
-                    entry.SetText(Value_.ToString("dd.MM.yyyy HH:mm:ss"));
+                    entry.SetText(value_.ToString("dd.MM.yyyy HH:mm:ss"));
 
                 //Підказка
                 entry.TooltipText = entry.GetText();
             }
         }
     }
-    DateTime Value_ = DateTime.MinValue;
+    DateTime value_ = DateTime.MinValue;
 
     /// <summary>
     /// Функція яка викликається після зміни
@@ -103,14 +103,14 @@ public class DateTimeTablePartCell : Box
 
         if (string.IsNullOrEmpty(entry.Text_))
         {
-            Value_ = DateTime.MinValue;
+            value_ = DateTime.MinValue;
             OnСhanged?.Invoke();
             return;
         }
 
         if (DateTime.TryParse(entry.Text_, out DateTime value))
         {
-            Value_ = value;
+            value_ = value;
             OnСhanged?.Invoke();
         }
         else

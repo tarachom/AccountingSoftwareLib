@@ -1316,13 +1316,28 @@ namespace AccountingSoftware
 
                 string parentField_Hierarchical = "";
                 string iconTree_Hierarchical = "";
+                string isFolderField_Hierarchical = "";
                 string pointerFolders_HierarchyInAnotherDirectory = "";
+                ConfigurationDirectories.HierarchicalContentType allowedContent_Hierarchical = ConfigurationDirectories.HierarchicalContentType.Folders;
 
                 //Поля для ієрархічного довідника
                 if (typeDirectory == ConfigurationDirectories.TypeDirectories.Hierarchical)
                 {
                     parentField_Hierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? ""; //Поле родич. Тобто поле яке буде містити вказівник на родича чи папку
                     iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? ""; //Тип іконки в дереві
+
+                    //Тип вмісту ієрархічного довідника
+                    string allowedContent = directoryNodes.Current?.SelectSingleNode("AllowedContent")?.Value ?? "";
+                    allowedContent_Hierarchical = allowedContent switch
+                    {
+                        "Folders" => ConfigurationDirectories.HierarchicalContentType.Folders,
+                        "Elements" => ConfigurationDirectories.HierarchicalContentType.Elements,
+                        "FoldersAndElements" => ConfigurationDirectories.HierarchicalContentType.FoldersAndElements,
+                        _ => ConfigurationDirectories.HierarchicalContentType.Folders
+                    };
+
+                    if (allowedContent_Hierarchical == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements)
+                        isFolderField_Hierarchical = directoryNodes.Current?.SelectSingleNode("IsFolderField")?.Value ?? ""; //Поле ЦеПапка
                 }
                 //Для типу ієрархія в окремому довіднику
                 else if (typeDirectory == ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory)
@@ -1336,6 +1351,8 @@ namespace AccountingSoftware
                     //Для типу Hierarchical
                     ParentField_Hierarchical = parentField_Hierarchical,
                     IconTree_Hierarchical = iconTree_Hierarchical,
+                    IsFolderField_Hierarchical = isFolderField_Hierarchical,
+                    AllowedContent_Hierarchical = allowedContent_Hierarchical,
 
                     //Для типу HierarchyInAnotherDirectory
                     PointerFolders_HierarchyInAnotherDirectory = pointerFolders_HierarchyInAnotherDirectory,
@@ -2247,6 +2264,18 @@ namespace AccountingSoftware
                     XmlElement nodeDirectoryIconTree = xmlConfDocument.CreateElement("IconTree");
                     nodeDirectoryIconTree.InnerText = ConfDirectory.Value.IconTree_Hierarchical;
                     nodeDirectory.AppendChild(nodeDirectoryIconTree);
+
+                    XmlElement nodeDirectoryAllowedContent = xmlConfDocument.CreateElement("AllowedContent");
+                    nodeDirectoryAllowedContent.InnerText = ConfDirectory.Value.AllowedContent_Hierarchical.ToString();
+                    nodeDirectory.AppendChild(nodeDirectoryAllowedContent);
+
+                    //Для типу вмісту Папки та елементи потрібне поле ЦеПапка
+                    if (ConfDirectory.Value.AllowedContent_Hierarchical == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements)
+                    {
+                        XmlElement nodeDirectoryIsFolderField = xmlConfDocument.CreateElement("IsFolderField");
+                        nodeDirectoryIsFolderField.InnerText = ConfDirectory.Value.IsFolderField_Hierarchical;
+                        nodeDirectory.AppendChild(nodeDirectoryIsFolderField);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(ConfDirectory.Value.DirectoryOwner_Subordination))

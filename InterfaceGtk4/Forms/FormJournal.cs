@@ -473,8 +473,16 @@ public abstract class FormJournal : Form
         set => PagesSettings.Position = value;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     protected void PagesClear() => PagesSettings.Clear();
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="size"></param>
+    /// <param name="position"></param>
     public void SetPagesSettings(int size, Pages.StartingPosition position = Pages.StartingPosition.Start)
     {
         PageSize = size;

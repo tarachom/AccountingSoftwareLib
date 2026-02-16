@@ -51,18 +51,18 @@ public class CheckTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
-                Check.Active = Value_;
+                value_ = value;
+                Check.Active = value_;
             }
         }
     }
-    bool Value_;
+    bool value_;
 
     /// <summary>
     /// Функція яка викликається після зміни

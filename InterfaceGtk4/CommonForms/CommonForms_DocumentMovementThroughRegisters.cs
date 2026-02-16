@@ -48,7 +48,7 @@ public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunct
     /// Додає контрол віджет для відображення документу
     /// </summary>
     /// <param name="documentPointer">Вказівник на документ</param>
-    protected void AddDocumentToForm(DocumentPointer documentPointer)
+    protected void AddDocument(DocumentPointer documentPointer)
     {
         CreateField(this, null, Document_PointerControl(documentPointer), Align.Start);
     }
@@ -57,21 +57,34 @@ public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunct
     /// Добавляє блок даних на форму
     /// </summary>
     /// <param name="name">Назва</param>
-    /// <param name="form">Віджет</param>
-    protected virtual void AddBlockToForm(string name, Widget form)
+    /// <param name="getForm">Функція яка повертає віджет</param>
+    protected virtual async ValueTask AddForm(string name, Func<bool, ValueTask<Widget>> getForm)
     {
         Box vBox = New(Orientation.Vertical, 0);
         vBox.MarginTop = vBox.MarginBottom = 10;
         vBox.MarginStart = vBox.MarginEnd = 20;
 
         Expander expander = Expander.New(name);
-        expander.Expanded = true;
+        expander.Expanded = false;
         expander.MarginTop = expander.MarginBottom = 5;
         expander.SetChild(vBox);
 
-        Box hBox = New(Orientation.Horizontal, 0);
-        hBox.Append(form);
-        vBox.Append(hBox);
+        //Add link
+        {
+            Box hBox = New(Orientation.Horizontal, 0);
+            hBox.MarginBottom = 5;
+            vBox.Append(hBox);
+
+            //Відкрити в новій вкладці
+            CreateLink(hBox, "Відкрити окремо", async () => NotebookFunc?.CreatePage(name, await getForm.Invoke(false)));
+        }
+
+        //Add form
+        {
+            Box hBox = New(Orientation.Horizontal, 0);
+            hBox.Append(await getForm.Invoke(true));
+            vBox.Append(hBox);
+        }
 
         Append(expander);
     }

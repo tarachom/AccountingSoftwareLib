@@ -53,19 +53,19 @@ public class IntegerTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
-                entry.SetText(Value_ == 0 ? "" : Value_.ToString());
+                value_ = value;
+                entry.SetText(value_ == 0 ? "" : value_.ToString());
                 entry.TooltipText = entry.GetText();
             }
         }
     }
-    int Value_ = 0;
+    int value_ = 0;
 
     /// <summary>
     /// Функція яка викликається після зміни
@@ -79,14 +79,14 @@ public class IntegerTablePartCell : Box
 
         if (string.IsNullOrEmpty(entry.Text_))
         {
-            Value_ = 0;
+            value_ = 0;
             OnСhanged?.Invoke();
             return;
         }
 
         if (int.TryParse(entry.Text_, out int value))
         {
-            Value_ = value;
+            value_ = value;
             OnСhanged?.Invoke();
         }
         else

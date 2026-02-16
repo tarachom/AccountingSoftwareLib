@@ -136,15 +136,17 @@ public abstract class DocumentFormElement : FormElement
     public override async ValueTask SetValue()
     {
         //Блокування
-        if (NotebookFunc != null && Element != null)
-            await NotebookFunc.AddLockObjectFunc(GetName(), Element);
+        {
+            if (NotebookFunc != null && Element != null)
+                await NotebookFunc.AddLockObjectFunc(GetName(), Element);
 
-        //Інформація про блокування
-        LockInfo.Element = Element;
-        await LockInfo.LockInfo();
+            //Інформування
+            LockInfo.Element = Element;
+            await LockInfo.LockInfo();
 
-        if (Element != null && !await Element.IsLock())
-            bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = false;
+            if (Element != null && !await Element.IsLock())
+                bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = false;
+        }
 
         DefaultGrabFocus();
         await AssignValue();

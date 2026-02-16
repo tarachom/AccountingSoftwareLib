@@ -46,7 +46,6 @@ public class NumericControl : Box
 
         //Entry
         entryNumeric.OnChanged += (_, _) => IsValidValue();
-        //entryNumeric.MarginEnd = 2;
         Append(entryNumeric);
     }
 

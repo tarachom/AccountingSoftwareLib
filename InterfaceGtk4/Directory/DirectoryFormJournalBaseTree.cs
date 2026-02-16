@@ -76,6 +76,12 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         await LoadRecords();
         //RunUpdateRecords();
+
+        /*PopoverParent?.OnHide += (_, _) =>
+        {
+            Console.WriteLine("Exit");
+            GC.Collect();
+        };*/
     }
 
     /// <summary>
@@ -92,7 +98,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         {
             store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
             store.Ref();
-            
+
             foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
                 store.Append(subRow);
         }
@@ -100,12 +106,24 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         return store;
     }
 
+    long LastTicksActivate = 0;
+
     /// <summary>
     /// При активації
     /// </summary>
     /// <param name="position">Позиція</param>
     protected override async ValueTask GridOnActivate(uint position)
     {
+        //!!! Тимчасове рішення, бо відбувається двойна активація.
+        //Можливо це повязано із глюком дерева яке мають виправити у версії 0.8.0
+        {
+            var ticks = DateTime.Now.Ticks;
+            var exit = false;
+            if (ticks - LastTicksActivate <= TimeSpan.TicksPerSecond) exit = true;
+            LastTicksActivate = ticks;
+            if (exit) return;
+        }
+
         TreeListRow? row = TreeList?.GetRow(position);
         DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
         if (rowItem != null)

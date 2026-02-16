@@ -53,19 +53,19 @@ public class NumericTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
-                entry.SetText(Value_ == 0 ? "" : Value_.ToString());
+                value_ = value;
+                entry.SetText(value_ == 0 ? "" : value_.ToString());
                 entry.TooltipText = entry.GetText();
             }
         }
     }
-    decimal Value_ = 0;
+    decimal value_ = 0;
 
     /// <summary>
     /// Функція яка викликається після зміни
@@ -79,14 +79,14 @@ public class NumericTablePartCell : Box
 
         if (string.IsNullOrEmpty(entry.Text_))
         {
-            Value_ = 0;
+            value_ = 0;
             OnСhanged?.Invoke();
             return;
         }
 
         if (decimal.TryParse(entry.Text_, out decimal value))
         {
-            Value_ = value;
+            value_ = value;
             OnСhanged?.Invoke();
         }
         else

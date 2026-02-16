@@ -34,7 +34,7 @@ namespace AccountingSoftware
     /// <param name="kernel">Ядро</param>
     /// <param name="table">Таблиця</param>
     /// <param name="parentField">Батьківське поле</param>
-    public abstract class Select(Kernel kernel, string table, string parentField = "")
+    public abstract class Select(Kernel kernel, string table, string parentField = "", string isFolderField = "")
     {
         /// <summary>
         /// Ядро
@@ -49,7 +49,7 @@ namespace AccountingSoftware
         /// <summary>
 		/// Запит SELECT
 		/// </summary>
-		public Query QuerySelect { get; set; } = new(table) { ParentField = parentField };
+		public Query QuerySelect { get; set; } = new(table) { ParentField = parentField, IsFolderField = isFolderField };
 
         /// <summary>
         /// Поточна позиція

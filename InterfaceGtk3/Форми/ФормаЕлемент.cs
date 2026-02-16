@@ -34,19 +34,24 @@ namespace InterfaceGtk3;
 public abstract class ФормаЕлемент : Форма
 {
     /// <summary>
+    /// Об'єкт який привязується до форми
+    /// </summary>
+    protected AccountingSoftware.Object? Element { get; init; }
+
+    /// <summary>
     /// Чи це новий елемент
     /// </summary>
-    public bool IsNew { get; set; } = false;
+    public bool IsNew { get => Element?.IsNew ?? throw new NullReferenceException("Element is null"); }
 
     /// <summary>
     /// ІД елементу
     /// </summary>
-    public UnigueID? UnigueID { get; set; }
+    public UnigueID? UnigueID { get => Element?.UnigueID; }
 
     /// <summary>
     /// Назва         
     /// </summary>
-    public string Caption { get; set; } = "";
+    public string Caption { get => Element?.Caption ?? ""; }
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -54,26 +59,6 @@ public abstract class ФормаЕлемент : Форма
     public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
 
     public ФормаЕлемент() { }
-
-    #region Event Function
-
-    /// <summary>
-    /// Обробка зміни UnigueID
-    /// </summary>
-    public void UnigueIDChanged(object? _, UnigueID unigueID)
-    {
-        UnigueID = unigueID;
-    }
-
-    /// <summary>
-    /// Обробка зміни Caption
-    /// </summary>
-    public void CaptionChanged(object? _, string caption)
-    {
-        Caption = caption;
-    }
-
-    #endregion
 
     #region Abstract Function
 

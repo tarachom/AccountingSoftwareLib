@@ -74,6 +74,11 @@ namespace AccountingSoftware
         public string ParentField { get; set; } = "";
 
         /// <summary>
+        /// Поле ЦеПапка для ієрархічного довідника
+        /// </summary>
+        public string IsFolderField { get; set; } = "";
+
+        /// <summary>
         /// Які поля вибирати
         /// </summary>
         public List<string> Field { get; set; } = [];
@@ -337,6 +342,16 @@ namespace AccountingSoftware
                 FieldAndAlias.Add(new("1", "level"));
             }
 
+            //Додаткове поле ЦеПапка
+            {
+                FieldAndAlias.RemoveAll((x) => x.Name == "isfolder");
+
+                if (string.IsNullOrEmpty(IsFolderField))
+                    FieldAndAlias.Add(new("false", "isfolder"));
+                else
+                    FieldAndAlias.Add(new($"{Table}.{IsFolderField}", "isfolder"));
+            }
+
             //Відбір по пустому родичу, тобто верхній рівень
             {
                 Where whereEmpty = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
@@ -367,6 +382,16 @@ namespace AccountingSoftware
                 FieldAndAlias.Add(new("r.level + 1", "level"));
             }
 
+            //Додаткове поле ЦеПапка
+            {
+                FieldAndAlias.RemoveAll((x) => x.Name == "isfolder");
+                
+                if (string.IsNullOrEmpty(IsFolderField))
+                    FieldAndAlias.Add(new("false", "isfolder"));
+                else
+                    FieldAndAlias.Add(new($"{Table}.{IsFolderField}", "isfolder"));
+            }
+
             //Приєднання рекурсії
             {
                 Join join = new("r", ParentField, Table, "", JoinType.INNER);
@@ -376,7 +401,7 @@ namespace AccountingSoftware
             }
 
             //Очистка
-            FieldAndAlias.RemoveAll((x) => x.Name == "parent" || x.Name == "level");
+            FieldAndAlias.RemoveAll((x) => x.Name == "parent" || x.Name == "level" || x.Name == "isfolder");
 
             string query = @$"
 WITH RECURSIVE r AS

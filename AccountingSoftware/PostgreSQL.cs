@@ -2892,7 +2892,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, Dictionary<string, object>? Fields)> listPointers)
+        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -2910,6 +2910,7 @@ FROM
                     UnigueID unigueID = new(reader["uid"]);
                     UnigueID parent = new(reader["parent"]);
                     int level = (int)reader["level"];
+                    bool isFolder = (bool)reader["isfolder"];
 
                     Dictionary<string, object>? fields = null;
 
@@ -2924,7 +2925,7 @@ FROM
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
-                    listPointers.Add((unigueID, parent, level, fields));
+                    listPointers.Add((unigueID, parent, level, isFolder, fields));
                 }
                 await reader.CloseAsync();
             }

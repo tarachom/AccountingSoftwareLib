@@ -63,24 +63,24 @@ public class TimeTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
+                value_ = value;
 
-                if (Value_ == DateTime.MinValue.TimeOfDay)
+                if (value_ == DateTime.MinValue.TimeOfDay)
                     entry.SetText("");
                 else
-                    entry.SetText(Value_.ToString());
+                    entry.SetText(value_.ToString());
 
                 entry.TooltipText = entry.GetText();
             }
         }
     }
-    TimeSpan Value_ = DateTime.MinValue.TimeOfDay;
+    TimeSpan value_ = DateTime.MinValue.TimeOfDay;
 
     /// <summary>
     /// Функція яка викликається після зміни
@@ -94,14 +94,14 @@ public class TimeTablePartCell : Box
 
         if (string.IsNullOrEmpty(entry.Text_))
         {
-            Value_ = DateTime.MinValue.TimeOfDay;
+            value_ = DateTime.MinValue.TimeOfDay;
             OnСhanged?.Invoke();
             return;
         }
 
         if (TimeSpan.TryParse(entry.Text_, out TimeSpan value))
         {
-            Value_ = value;
+            value_ = value;
             OnСhanged?.Invoke();
         }
         else

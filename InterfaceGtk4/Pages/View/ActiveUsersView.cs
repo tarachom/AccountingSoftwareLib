@@ -28,19 +28,14 @@ limitations under the License.
 */
 
 using Gtk;
-using GObject;
 using AccountingSoftware;
-using GObject.Internal;
 
 namespace InterfaceGtk4;
 
-public partial class ActiveUsersView : Box
+public class ActiveUsersView : Box
 {
-    [Subclass<GObject.Object>]
-    partial class ItemRow
+    class ItemRow: Row
     {
-        public UnigueID UnigueID { get; set; } = new();
-
         public Guid UserUID { get; set; } = Guid.Empty;
 
         public string UserName { get; set; } = "";

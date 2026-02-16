@@ -111,6 +111,16 @@ namespace AccountingSoftware
         /// </summary>
         public string IconTree_Hierarchical { get; set; } = "";
 
+        /// <summary>
+        /// Тип вмісту ієрархічного довідника
+        /// </summary>
+        public HierarchicalContentType AllowedContent_Hierarchical { get; set; } = HierarchicalContentType.Folders;
+
+        /// <summary>
+        /// Поле ЦеПапка для ієрархічного довідника (для AllowedContent_Hierarchical = HierarchicalContentType.FoldersAndElements)
+        /// </summary>
+        public string IsFolderField_Hierarchical { get; set; } = "";
+
         #endregion
 
         #region Subordination
@@ -237,6 +247,27 @@ namespace AccountingSoftware
             /// Ієрархія в іншому довіднику
             /// </summary>
             HierarchyInAnotherDirectory = 3
+        }
+
+        /// <summary>
+        /// Тип вмісту ієрархічного довідника
+        /// </summary>
+        public enum HierarchicalContentType
+        {
+            /// <summary>
+            /// Папки
+            /// </summary>
+            Folders,
+
+            /// <summary>
+            /// Елементи
+            /// </summary>
+            Elements,
+
+            /// <summary>
+            /// І папки і елементи
+            /// </summary>
+            FoldersAndElements
         }
     }
 }

@@ -52,18 +52,18 @@ public class ComboTextTablePartCell : Box
     {
         get
         {
-            return Value_;
+            return value_;
         }
         set
         {
-            if (Value_ != value)
+            if (value_ != value)
             {
-                Value_ = value;
-                Combo.ActiveId = Value_;
+                value_ = value;
+                Combo.ActiveId = value_;
             }
         }
     }
-    string Value_ = "";
+    string value_ = "";
 
     /// <summary>
     /// Функція яка викликається після зміни

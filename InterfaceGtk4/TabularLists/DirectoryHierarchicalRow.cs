@@ -24,9 +24,17 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Ієрархічний рядок
 /// </summary>
 public class DirectoryHierarchicalRow : DirectoryRowJournal
 {
+    /// <summary>
+    /// Це папка
+    /// </summary>
+    public bool IsFolder { get; set; }
+
+    /// <summary>
+    /// Колекція елементів
+    /// </summary>
     public List<DirectoryHierarchicalRow> Sub { get; set; } = [];
 }
