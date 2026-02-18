@@ -108,7 +108,7 @@ public abstract class DocumentFormJournalFull : DocumentFormJournalBase
 
     async void OnVersionsHistory(Button button, EventArgs args)
     {
-        await VersionsHistory(GetGetSelectionUnigueID());
+        await VersionsHistory(GetSelectionUnigueID());
     }
 
     #endregion

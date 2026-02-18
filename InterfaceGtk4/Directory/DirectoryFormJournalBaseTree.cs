@@ -57,6 +57,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
     }
 
+    /// <summary>
+    /// Встановлення моделі
+    /// </summary>
     protected override void GridModel()
     {
         //Модель для дерева
@@ -69,6 +72,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         Grid.Model = model;
     }
 
+    /// <summary>
+    /// Перша функція яка викликається після створення форми
+    /// </summary>
     public override async ValueTask SetValue()
     {
         DefaultGrabFocus();
@@ -76,12 +82,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         await LoadRecords();
         //RunUpdateRecords();
-
-        /*PopoverParent?.OnHide += (_, _) =>
-        {
-            Console.WriteLine("Exit");
-            GC.Collect();
-        };*/
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         if (itemRow.Sub.Count > 0)
         {
             store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
-            store.Ref();
+            _ = store.Ref();
 
             foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
                 store.Append(subRow);
@@ -228,6 +228,17 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 }
             }
 
+            uint CountNItems(TreeListRow? row)
+            {
+                if (row != null)
+                {
+                    uint count = row.GetChildren()?.GetNItems() ?? 0;
+                    return count + CountNItems(row.GetParent());
+                }
+                else
+                    return 0;
+            }
+
             bool RecursionFind(TreeListRow row, uint position)
             {
                 DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
@@ -235,8 +246,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 {
                     Grid.Model.SelectItem(position, false);
 
-                    //Прокрутка
-                    ScrollTo(position);
+                    //Це для того щоб активувати подію Grid.Vadjustment?.OnChanged
+                    ScrollToEnable = true;
+                    Grid.Vadjustment?.Upper += 0.1;
 
                     return true;
                 }
@@ -260,4 +272,51 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
+    /// <summary>
+    /// Переоприділення функції прокрутки
+    /// </summary>
+    /// <param name="selectPosition">Позиція</param>
+    protected override void ScrollTo(uint selectPosition)
+    {
+        if (TreeList != null)
+        {
+            uint rowCount = TreeList.GetNItems();
+            if (rowCount > 0 && Grid.Vadjustment != null)
+            {
+                //Видима частина
+                double pageSize = Grid.Vadjustment.PageSize;
+                //Console.WriteLine($"pageSize {pageSize}");
+
+                //Максимальне значення
+                double upper = Math.Round(Grid.Vadjustment.Upper);
+                //Console.WriteLine($"upper {upper}");
+
+                if (pageSize > 0 && upper > 0 && upper > pageSize)
+                {
+                    //Висота одного рядка
+                    double rowHeidth = upper / rowCount;
+                    //Console.WriteLine($"rowHeidth {rowHeidth}");
+
+                    //Висота для потрібної позиції
+                    double value = rowHeidth * selectPosition;
+
+                    //Розмір половини видимої частини
+                    double pageSizePart = pageSize / 2;
+
+                    if (value > pageSizePart)
+                        Task.Run(async () =>
+                        {
+                            //Вимушена затримка, щоб все промалювалося
+                            await Task.Delay(100);
+
+                            //Позиціювання потрібного рядка посередині
+                            Grid.Vadjustment.SetValue(value - pageSizePart);
+
+                            //Закрити дозвіл на прокрутку до виділеного рядка
+                            ScrollToEnable = false;
+                        });
+                }
+            }
+        }
+    }
 }

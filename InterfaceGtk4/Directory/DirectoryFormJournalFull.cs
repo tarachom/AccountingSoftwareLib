@@ -95,7 +95,7 @@ public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
 
     async void OnVersionsHistory(Button button, EventArgs args)
     {
-        await VersionsHistory(GetGetSelectionUnigueID());
+        await VersionsHistory(GetSelectionUnigueID());
     }
 
     #endregion

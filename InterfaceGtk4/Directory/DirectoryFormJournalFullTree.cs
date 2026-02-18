@@ -69,7 +69,7 @@ public abstract class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTre
 
     async void OnVersionsHistory(Button button, EventArgs args)
     {
-        await VersionsHistory(GetGetSelectionUnigueID());
+        await VersionsHistory(GetSelectionUnigueID());
     }
 
     #endregion

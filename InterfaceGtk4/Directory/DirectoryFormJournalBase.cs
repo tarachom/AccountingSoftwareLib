@@ -194,8 +194,19 @@ public abstract class DirectoryFormJournalBase : FormJournal
         HPanedTable.SetShrinkEndChild(false);
 
         Append(HPanedTable);
+
+        //Прокрутка до виділеного рядка
+        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        {
+            Bitset selection = Grid.Model.GetSelection();
+            if (selection.GetSize() > 0 && ScrollToEnable)
+                ScrollTo(selection.GetMaximum());
+        };
     }
 
+    /// <summary>
+    /// Встановлення моделі
+    /// </summary>
     protected override void GridModel()
     {
         //Модель
@@ -205,6 +216,9 @@ public abstract class DirectoryFormJournalBase : FormJournal
         Grid.Model = model;
     }
 
+    /// <summary>
+    /// Перша функція яка викликається після створення форми
+    /// </summary>
     public override async ValueTask SetValue()
     {
         DefaultGrabFocus();
@@ -215,13 +229,6 @@ public abstract class DirectoryFormJournalBase : FormJournal
             await LoadRecords();
 
         RunUpdateRecords();
-
-        //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
     }
 
     #region Virtual & Abstract Function
@@ -501,5 +508,4 @@ public abstract class DirectoryFormJournalBase : FormJournal
     }
 
     #endregion
-
 }

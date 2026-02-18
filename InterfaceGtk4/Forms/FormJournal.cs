@@ -145,7 +145,8 @@ public abstract class FormJournal : Form
         {
             Grid.Model.SelectItem(selectPosition - 1, false);
 
-            //Це для того щоб активувати подію Grid.Vadjustment?.OnChanged 
+            //Це для того щоб активувати подію Grid.Vadjustment?.OnChanged
+            ScrollToEnable = true;
             Grid.Vadjustment?.Upper += 0.1;
         }
     }
@@ -161,7 +162,7 @@ public abstract class FormJournal : Form
     /// Прокрутка
     /// </summary>
     /// <param name="selectPosition"></param>
-    protected void ScrollTo(uint selectPosition)
+    protected virtual void ScrollTo(uint selectPosition)
     {
         uint rowCount = Store.GetNItems();
         if (rowCount > 0 && Grid.Vadjustment != null)
@@ -170,9 +171,9 @@ public abstract class FormJournal : Form
             double pageSize = Grid.Vadjustment.PageSize;
 
             //Максимальне значення
-            double upper = Grid.Vadjustment.Upper;
+            double upper = Math.Round(Grid.Vadjustment.Upper);
 
-            if (pageSize > 0 && upper > 0 && upper >= pageSize)
+            if (pageSize > 0 && upper > 0 && upper > pageSize)
             {
                 //Висота одного рядка
                 double rowHeidth = upper / rowCount;
@@ -195,6 +196,13 @@ public abstract class FormJournal : Form
             }
         }
     }
+
+    /// <summary>
+    /// Дозвіл на прокрутку до виділеного рядка.
+    /// Це потрібно тільки для дерева, тому що при вікритті вітки спрацьовує подія Grid.Vadjustment?.OnChanged
+    /// так як змінюється значення Grid.Vadjustment.Upper
+    /// </summary>
+    protected bool ScrollToEnable { get; set; } = false;
 
     /// <summary>
     /// При виділенні елементів в таблиці
@@ -234,7 +242,7 @@ public abstract class FormJournal : Form
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
     /// <returns>Масив ІД виділених рядків</returns>
-    public UnigueID[] GetGetSelectionUnigueID() => [.. GetSelection().Select(x => x.UnigueID)];
+    public UnigueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UnigueID)];
 
     /// <summary>
     /// Відкриває Popover із списком лінків. Використовується для меню
@@ -273,7 +281,7 @@ public abstract class FormJournal : Form
                 link.Hexpand = true;
                 link.OnActivateLink += (_, _) =>
                 {
-                    item.Value?.Invoke(GetGetSelectionUnigueID());
+                    item.Value?.Invoke(GetSelectionUnigueID());
                     return true;
                 };
                 hBox.Append(link);
