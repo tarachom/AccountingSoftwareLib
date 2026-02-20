@@ -1,6 +1,5 @@
 
 using GObject;
-using GObject.Internal;
 
 namespace InterfaceGtk4;
 
@@ -19,16 +18,6 @@ partial class ConfiguratorItemRow
     /// Назва
     /// </summary>
     public string Name { get; set; } = "";
-
-    /// <summary>
-    /// Ключ
-    /// </summary>
-    public string Key { get; set; } = "";
-
-    /// <summary>
-    /// Ключ 2
-    /// </summary>
-    public string Key2 { get; set; } = "";
 
     /// <summary>
     /// Об'єкт

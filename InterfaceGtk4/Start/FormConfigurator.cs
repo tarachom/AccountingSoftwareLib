@@ -137,321 +137,329 @@ public abstract class FormConfigurator : Window
         Add("Журнали", Journals, "journal.png");
         Add("Регістри інформації", RegistersInformation, "register.png");
         Add("Регістри накопичення", RegistersAccumulation, "register.png");
-        Add("Сервіс", Service, "service.png");
-        Add("Налаштування", Settings, "preferences.png");
 
         hbox.Append(scroll);
     }
 
-    const int WidthList = 800, HeightList = 600;
-
-    void Constants(LinkButton linkButton)
+    Popover CreatePopover(LinkButton linkButton, out Box vBox)
     {
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
+        popover.WidthRequest = 800;
+        popover.HeightRequest = 600;
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
+        vBox = Box.New(Orientation.Vertical, 0);
         popover.Child = vBox;
 
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
+        return popover;
+    }
 
-        static void Activate(string group, string name)
+    void Constants(LinkButton linkButton)
+    {
+        Popover popover = CreatePopover(linkButton, out Box vBox);
+
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Константи", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Константи", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "Block":
+                    {
+
+                        return;
+                    }
+                case "Const":
+                    {
+
+                        return;
+                    }
+                case "TablePart":
+                    {
+
+                        return;
+                    }
+                case "TablePartField":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void Directory(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
+        Popover popover = CreatePopover(linkButton, out Box vBox);
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
-
-        static void Activate(string group, string name)
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Довідники", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Довідники", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "Directories":
+                    {
+
+                        return;
+                    }
+                case "Field":
+                    {
+
+                        return;
+                    }
+                case "TablePart":
+                    {
+
+                        return;
+                    }
+                case "TablePartField":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void Documents(LinkButton linkButton)
     {
-        /*static void Activate(string group, string name)
+        Popover popover = CreatePopover(linkButton, out Box vBox);
+
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Документи", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate).Fill();
-
-        NotebookFunc.CreatePage("Документи", GetBox());*/
-
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
-
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
-
-        static void Activate(string group, string name)
-        {
-
-        }
-
-        Box GetBox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Документи", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "Documents":
+                    {
+
+                        return;
+                    }
+                case "Field":
+                    {
+
+                        return;
+                    }
+                case "TablePart":
+                    {
+
+                        return;
+                    }
+                case "TablePartField":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void Journals(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
+        Popover popover = CreatePopover(linkButton, out Box vBox);
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        //Всі Журнали
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
-            Box hBox = Box.New(Orientation.Horizontal, 0);
-            vBox.Append(hBox);
+            NotebookFunc.CreatePage("Журнали", getbox());
+            popover.Hide();
+        });
 
-            Expander expander = Expander.New("Всі журнали");
-            expander.Expanded = true;
-            hBox.Append(expander);
-
-            Box vBoxList = Box.New(Orientation.Vertical, 0);
-            expander.Child = vBoxList;
-
-            Label labelCaption = Label.New("Журнали");
-            labelCaption.MarginTop = labelCaption.MarginBottom = 5;
-            vBoxList.Append(labelCaption);
-
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
-
-            GestureClick gesture = GestureClick.New();
-            listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
-            {
-                if (args.NPress >= 2)
-                {
-                    ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null)
-                        popover.Hide();
-                }
-            };
-
-            ScrolledWindow scroll = new() { WidthRequest = WidthList, HeightRequest = HeightList, HasFrame = true };
-            scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scroll.Child = listBox;
-
-            vBoxList.Append(scroll);
-
-            foreach (KeyValuePair<string, ConfigurationJournals> journal in Kernel.Conf.Journals.OrderBy(x => x.Value.Name))
-            {
-                string title = journal.Value.Name;
-
-                Label label = Label.New(title);
-                label.Halign = Align.Start;
-
-                ListBoxRow row = new() { Name = journal.Key, Child = label };
-                listBox.Append(row);
-            }
-        }
-
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorJournalsTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "Field":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void Enums(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
+        Popover popover = CreatePopover(linkButton, out Box vBox);
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
-
-        static void Activate(string group, string name)
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Перелічення", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Перелічення", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "Enums":
+                    {
+
+                        return;
+                    }
+                case "Field":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void RegistersInformation(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
+        Popover popover = CreatePopover(linkButton, out Box vBox);
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
-
-        static void Activate(string group, string name)
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Регістри інформації", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Регістри інформації", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "RegistersInformation":
+                    {
+
+                        return;
+                    }
+                case "DimensionField":
+                    {
+
+                        return;
+                    }
+                case "ResourcesField":
+                    {
+
+                        return;
+                    }
+                case "PropertyField":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     void RegistersAccumulation(LinkButton linkButton)
     {
-        Popover popover = Popover.New();
-        popover.Position = PositionType.Right;
-        popover.SetParent(linkButton);
-        popover.WidthRequest = WidthList;
-        popover.HeightRequest = HeightList;
+        Popover popover = CreatePopover(linkButton, out Box vBox);
 
-        Box vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
-        Box hBox = Box.New(Orientation.Horizontal, 0);
-        vBox.Append(hBox);
-
-        static void Activate(string group, string name)
+        //Відкрити в новій вкладці
+        Form.CreateLink(vBox, "Відкрити окремо", () =>
         {
+            NotebookFunc.CreatePage("Регістри накопичення", getbox());
+            popover.Hide();
+        });
 
-        }
-
-        Box GetBox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate).Fill();
-
-        {
-            LinkButton link = LinkButton.New("");
-            link.Halign = Align.Start;
-            link.Label = "Відкрити в окремому вікні";
-            link.OnActivateLink += (_, _) =>
-            {
-                NotebookFunc.CreatePage("Регістри накопичення", GetBox());
-                popover.Hide();
-
-                return true;
-            };
-
-            hBox.Append(link);
-        }
-
-        vBox.Append(GetBox());
+        vBox.Append(getbox());
         popover.Show();
+
+        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, (group, name) =>
+        {
+            Console.WriteLine($"{group} {name}");
+
+            switch (group)
+            {
+                case "RegistersAccumulation":
+                    {
+
+                        return;
+                    }
+                case "DimensionField":
+                    {
+
+                        return;
+                    }
+                case "ResourcesField":
+                    {
+
+                        return;
+                    }
+                case "PropertyField":
+                    {
+
+                        return;
+                    }
+                case "TablePart":
+                    {
+
+                        return;
+                    }
+                case "TablePartField":
+                    {
+
+                        return;
+                    }
+                default:
+                    return;
+            }
+        }).Fill();
     }
 
     #endregion

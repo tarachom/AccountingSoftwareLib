@@ -27,7 +27,7 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? activate) : ConfiguratorTree(activate)
+public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>? activate) : ConfiguratorTree(activate)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -40,12 +40,12 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
         Store.RemoveAll();
 
         //Заповнення сховища
-        foreach (ConfigurationEnums enums in Conf.Enums.Values)
+        foreach (ConfigurationJournals journal in Conf.Journals.Values)
             Store.Append(new ConfiguratorItemRow()
             {
-                Group = "Enums",
-                Name = enums.Name,
-                Obj = enums
+                Group = "Journals",
+                Name = journal.Name,
+                Obj = journal
             });
 
         return HBox;
@@ -64,16 +64,17 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
 
         switch (group)
         {
-            case "Enums" when obj is ConfigurationEnums enums && enums.Fields.Count > 0:
+            case "Journals" when obj is ConfigurationJournals journal && journal.Fields.Count > 0:
                 {
-                    //Для перелічення заповнюю поля
-                    foreach (ConfigurationEnumField field in enums.Fields.Values)
+                    //Для журналу заповнюю поля
+                    foreach (ConfigurationJournalField field in journal.Fields.Values)
                         store.Append(new ConfiguratorItemRow()
                         {
                             Group = "Field",
                             Name = field.Name,
                             Obj = field,
-                            Desc = field.Value.ToString()
+                            Type = field.Type,
+                            Desc = (field.WherePeriod ? "Відбір по періоду, " : "") + (field.SortField ? "Сортування" : "")
                         });
 
                     return store;

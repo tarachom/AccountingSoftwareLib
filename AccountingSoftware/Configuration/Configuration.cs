@@ -1116,9 +1116,7 @@ namespace AccountingSoftware
 
             using var mso = new MemoryStream();
             using (var gs = new GZipStream(mso, CompressionMode.Compress))
-            {
                 gs.Write(bytes, 0, bytes.Length);
-            }
 
             return Convert.ToBase64String(mso.ToArray());
         }
@@ -1173,10 +1171,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="node">Вітка</param>
         /// <returns>Вміст вітки</returns>
-        static string GetUnZipAndBase64TextFromNode(XPathNavigator node)
+        static string GetUnZipAndBase64TextFromNode(XPathNavigator? node)
         {
-            string value = node.Value;
-            string attrZip = node.GetAttribute("Zip", "");
+            string value = node?.Value ?? "";
+            string attrZip = node?.GetAttribute("Zip", "") ?? "";
             return attrZip == "1" ? UnZipAndBase64Text(value) : value;
         }
 
