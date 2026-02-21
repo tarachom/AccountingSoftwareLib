@@ -68,6 +68,8 @@ namespace AccountingSoftware
             return TempTable;
         }
 
+        #region Для ієрархічного довідника
+
         /// <summary>
         /// Поле Родич для ієрархічного довідника
         /// </summary>
@@ -77,6 +79,13 @@ namespace AccountingSoftware
         /// Поле ЦеПапка для ієрархічного довідника
         /// </summary>
         public string IsFolderField { get; set; } = "";
+
+        /// <summary>
+        /// Вибрати дані як плоский список для ієрархічного довідника, без рекурсії
+        /// </summary>
+        public bool FlatList { get; set; }
+
+        #endregion
 
         /// <summary>
         /// Які поля вибирати
@@ -323,87 +332,77 @@ namespace AccountingSoftware
         /// </summary>
         public string ConstructHierarchical()
         {
-            string queryFirst = "";
-            string queryRecursive = "";
+            string query = "";
 
-            ///////////////////
-            // Перша частина //
-            ///////////////////
-
-            //Додаткове поле Родич
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "parent");
-                FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
-            }
-
-            //Додаткове поле Рівень
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "level");
-                FieldAndAlias.Add(new("1", "level"));
-            }
-
-            //Додаткове поле ЦеПапка
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "isfolder");
-
-                if (string.IsNullOrEmpty(IsFolderField))
-                    FieldAndAlias.Add(new("false", "isfolder"));
-                else
-                    FieldAndAlias.Add(new($"{Table}.{IsFolderField}", "isfolder"));
-            }
-
-            //Відбір по пустому родичу, тобто верхній рівень
-            {
-                Where whereEmpty = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
-                Where.Add(whereEmpty);
-
-                Where whereIsNull = new(Comparison.OR, ParentField, Comparison.ISNULL, new(), true);
-                Where.Add(whereIsNull);
-
-                queryFirst = Construct();
-
-                Where.Remove(whereEmpty);
-                Where.Remove(whereIsNull);
-            }
-
-            ///////////////////
-            // Друга частина //
-            ///////////////////
-
-            //Додаткове поле Родич
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "parent");
-                FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
-            }
-
-            //Наступний рівень
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "level");
-                FieldAndAlias.Add(new("r.level + 1", "level"));
-            }
-
-            //Додаткове поле ЦеПапка
-            {
-                FieldAndAlias.RemoveAll((x) => x.Name == "isfolder");
-                
-                if (string.IsNullOrEmpty(IsFolderField))
-                    FieldAndAlias.Add(new("false", "isfolder"));
-                else
-                    FieldAndAlias.Add(new($"{Table}.{IsFolderField}", "isfolder"));
-            }
-
-            //Приєднання рекурсії
-            {
-                Join join = new("r", ParentField, Table, "", JoinType.INNER);
-                Joins.Add(join);
-                queryRecursive = Construct();
-                Joins.Remove(join);
-            }
+            //Внутрішня функція для очистки
+            void Clear() => FieldAndAlias.RemoveAll((x) => x.Name == "parent" || x.Name == "level" || x.Name == "isfolder");
 
             //Очистка
-            FieldAndAlias.RemoveAll((x) => x.Name == "parent" || x.Name == "level" || x.Name == "isfolder");
+            Clear();
 
-            string query = @$"
+            //Додаткове поле Родич
+            FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
+
+            //Додаткове поле Рівень
+            FieldAndAlias.Add(new("1", "level"));
+
+            //Додаткове поле ЦеПапка
+            FieldAndAlias.Add(new(string.IsNullOrEmpty(IsFolderField) ? "false" : $"{Table}.{IsFolderField}", "isfolder"));
+
+            //Для плоского списку
+            if (FlatList)
+            {
+                query = Construct();
+            }
+            //Для ієрархічного списку
+            else
+            {
+                string queryFirst = "";
+                string queryRecursive = "";
+
+                ///////////////////
+                // Перша частина //
+                ///////////////////
+
+                //Відбір по пустому родичу, тобто верхній рівень
+                {
+                    Where whereEmpty = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
+                    Where.Add(whereEmpty);
+
+                    /*Where whereIsNull = new(Comparison.OR, ParentField, Comparison.ISNULL, new(), true);
+                    Where.Add(whereIsNull);*/
+
+                    queryFirst = Construct();
+
+                    Where.Remove(whereEmpty);
+                    //Where.Remove(whereIsNull);
+                }
+
+                ///////////////////
+                // Друга частина //
+                ///////////////////
+
+                //Очистка
+                Clear();
+
+                //Додаткове поле Родич
+                FieldAndAlias.Add(new($"{Table}.{ParentField}", "parent"));
+
+                //Наступний рівень
+                FieldAndAlias.Add(new("r.level + 1", "level"));
+
+                //Додаткове поле ЦеПапка
+                FieldAndAlias.Add(new(string.IsNullOrEmpty(IsFolderField) ? "false" : $"{Table}.{IsFolderField}", "isfolder"));
+
+                //Приєднання рекурсії
+                {
+                    Join join = new("r", ParentField, Table, "", JoinType.INNER);
+                    Joins.Add(join);
+                    queryRecursive = Construct();
+                    Joins.Remove(join);
+                }
+
+                query = @$"
 WITH RECURSIVE r AS
 (
 
@@ -414,8 +413,12 @@ UNION ALL
 ({queryRecursive})
 
 ) SELECT * FROM r ORDER BY level";
-            // Вибірка і так посортована по level бо partFirst видасть level=1, а partRecursive level+1
-            // але вихідна вибірка додатково сортується по level
+                // Вибірка і так посортована по level бо partFirst видасть level=1, а partRecursive level+1
+                // але вихідна вибірка додатково сортується по level
+            }
+
+            //Очистка
+            Clear();
 
             return query;
         }

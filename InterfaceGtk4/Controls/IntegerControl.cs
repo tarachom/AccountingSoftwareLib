@@ -41,7 +41,6 @@ public class IntegerControl : Box
 
         //Entry
         entryInteger.OnChanged += (_, _) => IsValidValue();
-        //entryInteger.MarginEnd = 2;
         Append(entryInteger);
     }
 
