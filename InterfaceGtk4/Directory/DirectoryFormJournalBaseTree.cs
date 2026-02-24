@@ -106,7 +106,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         return store;
     }
 
-    long LastTicksActivate = 0;
+    long LastTicksActivate = 0; //!!! Тимчасове рішення
 
     /// <summary>
     /// При активації

@@ -124,9 +124,9 @@ public abstract class FormTablePart : Form
             double pageSize = Grid.Vadjustment.PageSize;
 
             //Максимальне значення
-            double upper = Grid.Vadjustment.Upper;
+            double upper = Math.Round(Grid.Vadjustment.Upper);
 
-            if (pageSize > 0 && upper > 0 && upper >= pageSize)
+            if (pageSize > 0 && upper > 0 && upper > pageSize)
             {
                 //Висота одного рядка
                 double rowHeidth = upper / rowCount;
