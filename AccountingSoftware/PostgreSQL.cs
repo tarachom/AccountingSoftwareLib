@@ -695,7 +695,7 @@ new Dictionary<string, object>
 transactionID);
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UnigueID? unigueIDObjectWhere = null, int? limit = null)
+        public async ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
@@ -1446,7 +1446,7 @@ ON CONFLICT (uidobj) DO UPDATE SET
             }
         }
 
-        public async ValueTask SpetialTableFullTextSearchDelete(UnigueID uid, byte transactionID = 0)
+        public async ValueTask SpetialTableFullTextSearchDelete(UniqueID uid, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1589,9 +1589,9 @@ WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')
 
         #region SpetialTable LockedObject
 
-        public async ValueTask<UnigueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
+        public async ValueTask<UniqueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
         {
-            UnigueID unigueID = new UnigueID();
+            UniqueID uniqueID = new UniqueID();
 
             //Перевірка наявності блокування об'єкту
             string query = $@"SELECT count(uid) FROM {SpecialTables.LockedObject} WHERE (obj).uuid = @uid";
@@ -1600,11 +1600,11 @@ WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')
             //Якщо блокування немає то додаємо
             if (count == null || (long)count == 0)
             {
-                unigueID.New();
+                uniqueID.New();
 
                 Dictionary<string, object> paramQuery = new()
                 {
-                    { "uid", unigueID.UGuid },
+                    { "uid", uniqueID.UGuid },
                     { "session", session_uid },
                     { "user", user_uid },
                     { "obj", obj }
@@ -1629,10 +1629,10 @@ VALUES
 )", paramQuery);
             }
 
-            return unigueID;
+            return uniqueID;
         }
 
-        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UnigueID lockKey)
+        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UniqueID lockKey)
         {
             if (!lockKey.IsEmpty())
             {
@@ -1689,7 +1689,7 @@ WHERE (LockedObject.obj).uuid = @obj
 
                 while (await reader.ReadAsync())
                 {
-                    record.LockKey = new UnigueID(reader["uid"]);
+                    record.LockKey = new UniqueID(reader["uid"]);
                     record.UserName = reader["username"].ToString() ?? "";
                     record.DateLock = (DateTime)reader["datelock"];
                 }
@@ -1699,7 +1699,7 @@ WHERE (LockedObject.obj).uuid = @obj
             return record;
         }
 
-        public async ValueTask SpetialTableLockedObjectClear(UnigueID lockKey)
+        public async ValueTask SpetialTableLockedObjectClear(UniqueID lockKey)
         {
             if (!lockKey.IsEmpty())
             {
@@ -2563,11 +2563,11 @@ WHERE
 
         #region Func (Directory, Document)
 
-        public async ValueTask<bool> IsExistUniqueID(UnigueID unigueID, string table)
+        public async ValueTask<bool> IsExistUniqueID(UniqueID uniqueID, string table)
         {
             if (DataSource != null)
             {
-                object? result = await ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", new() { { "uid", unigueID.UGuid } });
+                object? result = await ExecuteSQLScalar($"SELECT count(uid) FROM {table} WHERE uid = @uid", new() { { "uid", uniqueID.UGuid } });
                 return result != null && (long)result == 1;
             }
             else
@@ -2578,16 +2578,16 @@ WHERE
         /// Функція обчислює розмір вибірки і кількість сторінок на яку можна розбити вибірку
         /// </summary>
         /// <param name="QuerySelect">Запит</param>
-        /// <param name="unigueID">Елемент на який треба спозиціонуватися</param>
+        /// <param name="uniqueID">Елемент на який треба спозиціонуватися</param>
         /// <param name="pageSize">Розмір сторінки</param>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UnigueID? unigueID, int pageSize = 1000)
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000)
         {
             SplitSelectToPages_Record record = new() { PageSize = pageSize };
 
             if (DataSource != null)
             {
                 string query = "";
-                UnigueID unigueIDLocal = unigueID ?? new UnigueID();
+                UniqueID unigueIDLocal = uniqueID ?? new UniqueID();
 
                 string[] sourceArray = ["row_number", "row_count"];
 
@@ -2750,7 +2750,7 @@ FROM
 
         #region Directory
 
-        public async ValueTask<bool> InsertDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2767,7 +2767,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
                 command.Parameters.AddWithValue("deletion_label", false);
 
                 foreach (string field in fieldArray)
@@ -2781,7 +2781,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateDirectoryObject(UnigueID unigueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async ValueTask<bool> UpdateDirectoryObject(UniqueID uniqueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -2795,7 +2795,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
                 command.Parameters.AddWithValue("deletion_label", deletion_label);
 
                 if (fieldArray != null && fieldValue != null)
@@ -2810,7 +2810,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
+        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDirectoryObject_Record record = new();
 
@@ -2825,7 +2825,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 record.Result = reader.HasRows;
@@ -2843,7 +2843,7 @@ FROM
             return record;
         }
 
-        public async ValueTask DeleteDirectoryObject(UnigueID unigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDirectoryObject(UniqueID uniqueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2852,13 +2852,13 @@ FROM
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers)
+        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -2886,13 +2886,13 @@ FROM
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
-                    listPointers.Add((new UnigueID(reader["uid"]), fields));
+                    listPointers.Add((new UniqueID(reader["uid"]), fields));
                 }
                 await reader.CloseAsync();
             }
         }
 
-        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers)
+        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -2907,8 +2907,8 @@ FROM
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    UnigueID unigueID = new(reader["uid"]);
-                    UnigueID parent = new(reader["parent"]);
+                    UniqueID uniqueID = new(reader["uid"]);
+                    UniqueID parent = new(reader["parent"]);
                     int level = (int)reader["level"];
                     bool isFolder = (bool)reader["isfolder"];
 
@@ -2925,15 +2925,15 @@ FROM
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
-                    listPointers.Add((unigueID, parent, level, isFolder, fields));
+                    listPointers.Add((uniqueID, parent, level, isFolder, fields));
                 }
                 await reader.CloseAsync();
             }
         }
 
-        public async ValueTask<UnigueID?> FindDirectoryPointer(Query QuerySelect)
+        public async ValueTask<UniqueID?> FindDirectoryPointer(Query QuerySelect)
         {
-            UnigueID? directoryPointer = null;
+            UniqueID? directoryPointer = null;
 
             if (DataSource != null)
             {
@@ -2951,7 +2951,7 @@ FROM
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
-                    directoryPointer = new UnigueID(reader["uid"]);
+                    directoryPointer = new UniqueID(reader["uid"]);
 
                 await reader.CloseAsync();
             }
@@ -3043,7 +3043,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3071,7 +3071,7 @@ FROM
             }
         }
 
-        public async ValueTask RemoveDirectoryTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3087,7 +3087,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteDirectoryTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3106,7 +3106,7 @@ FROM
 
         #region Document
 
-        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
+        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDocumentObject_Record record = new();
 
@@ -3121,7 +3121,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 record.Result = reader.HasRows;
@@ -3142,7 +3142,7 @@ FROM
             return record;
         }
 
-        public async ValueTask<bool> InsertDocumentObject(UnigueID unigueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertDocumentObject(UniqueID uniqueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3159,7 +3159,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
                 command.Parameters.AddWithValue("deletion_label", false);
                 command.Parameters.AddWithValue("spend", spend);
                 command.Parameters.AddWithValue("spend_date", spend_date);
@@ -3175,7 +3175,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateDocumentObject(UnigueID unigueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async ValueTask<bool> UpdateDocumentObject(UniqueID uniqueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -3199,7 +3199,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 if (deletion_label != null)
                     command.Parameters.AddWithValue("deletion_label", deletion_label);
@@ -3222,7 +3222,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask DeleteDocumentObject(UnigueID unigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3231,13 +3231,13 @@ FROM
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
                 NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> listPointers)
+        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -3265,15 +3265,15 @@ FROM
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
-                    listPointers.Add((new UnigueID(reader["uid"]), fields));
+                    listPointers.Add((new UniqueID(reader["uid"]), fields));
                 }
                 await reader.CloseAsync();
             }
         }
 
-        public async ValueTask<UnigueID?> FindDocumentPointer(Query QuerySelect)
+        public async ValueTask<UniqueID?> FindDocumentPointer(Query QuerySelect)
         {
-            UnigueID? documentPointer = null;
+            UniqueID? documentPointer = null;
 
             if (DataSource != null)
             {
@@ -3291,7 +3291,7 @@ FROM
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
-                    documentPointer = new UnigueID(reader["uid"]);
+                    documentPointer = new UniqueID(reader["uid"]);
 
                 await reader.CloseAsync();
             }
@@ -3362,7 +3362,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3390,7 +3390,7 @@ FROM
             }
         }
 
-        public async ValueTask RemoveDocumentTablePartRecords(Guid UID, UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3406,7 +3406,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteDocumentTablePartRecords(UnigueID ownerUnigueID, string table, byte transactionID = 0)
+        public async ValueTask DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3489,7 +3489,7 @@ FROM
                     {
                         JournalDocument document = new JournalDocument()
                         {
-                            UnigueID = new UnigueID(reader["uid"]),
+                            UniqueID = new UniqueID(reader["uid"]),
                             DocName = reader["docname"].ToString() ?? "",
                             DocDate = DateTime.Parse(reader["docdate"].ToString() ?? DateTime.MinValue.ToString()),
                             DocNomer = reader["docnomer"].ToString() ?? "",
@@ -3594,7 +3594,7 @@ FROM
             }
         }
 
-        public async ValueTask<bool> InsertRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> InsertRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3611,7 +3611,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
                 command.Parameters.AddWithValue("ownertype", ownertype);
@@ -3627,7 +3627,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateRegisterInformationObject(UnigueID unigueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<bool> UpdateRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3640,7 +3640,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
                 command.Parameters.AddWithValue("period", period);
                 command.Parameters.AddWithValue("owner", owner);
                 command.Parameters.AddWithValue("ownertype", ownertype);
@@ -3656,7 +3656,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UnigueID unigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             SelectRegisterInformationObject_Record record = new();
 
@@ -3671,7 +3671,7 @@ FROM
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
-                command.Parameters.AddWithValue("uid", unigueID.UGuid);
+                command.Parameters.AddWithValue("uid", uniqueID.UGuid);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 record.Result = reader.HasRows;
@@ -3706,7 +3706,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteRegisterInformationObject(string table, UnigueID uid)
+        public async ValueTask DeleteRegisterInformationObject(string table, UniqueID uid)
         {
             if (DataSource != null)
             {

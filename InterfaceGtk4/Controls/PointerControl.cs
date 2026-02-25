@@ -58,7 +58,7 @@ public abstract class PointerControl : Box
     /// Використовується при загрузці дерева щоб приховати вітку.
     /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
     /// </summary>
-    public UnigueID? OpenFolder { get; set; }
+    public UniqueID? OpenFolder { get; set; }
 
     #region Virtual Function
 

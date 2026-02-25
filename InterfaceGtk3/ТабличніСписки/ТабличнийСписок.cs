@@ -103,17 +103,17 @@ public abstract class ТабличнийСписок
     /// <param name="splitSelectToPagesFunc"></param>
     /// <param name="settings"></param>
     /// <param name="querySelect"></param>
-    /// <param name="unigueID"></param>
+    /// <param name="uniqueID"></param>
     /// <returns></returns>
-    public static async ValueTask ЗаповнитиСторінки(Func<UnigueID?, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesFunc,
-        Сторінки.Налаштування settings, Query querySelect, UnigueID? unigueID)
+    public static async ValueTask ЗаповнитиСторінки(Func<UniqueID?, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesFunc,
+        Сторінки.Налаштування settings, Query querySelect, UniqueID? uniqueID)
     {
         if (!settings.Calculated)
         {
-            settings.Record = await splitSelectToPagesFunc.Invoke(unigueID, settings.PageSize);
+            settings.Record = await splitSelectToPagesFunc.Invoke(uniqueID, settings.PageSize);
             settings.Calculated = true;
 
-            if (unigueID != null && settings.Record.CurrentPage > 0)
+            if (uniqueID != null && settings.Record.CurrentPage > 0)
                 settings.CurrentPage = settings.Record.CurrentPage;
             //Для журналів документів при відкритті ставиться остання сторінка
             else if (settings.Тип == InterfaceGtk3.Сторінки.ТипЖурналу.Документи)

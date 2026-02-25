@@ -48,7 +48,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         /// <returns></returns>
-        protected async ValueTask<bool> BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -57,7 +57,7 @@ namespace AccountingSoftware
             var record = await Kernel.DataBase.SelectRegisterInformationObject(uid, Table, FieldArray, FieldValue);
             if (record.Result)
             {
-                UnigueID = uid;
+                UniqueID = uid;
                 Period = record.Period;
                 Owner = record.Owner;
                 OwnerType = record.OwnerType;
@@ -79,13 +79,13 @@ namespace AccountingSoftware
 
             if (IsNew)
             {
-                result = await Kernel.DataBase.InsertRegisterInformationObject(UnigueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertRegisterInformationObject(UniqueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
                 if (result) IsNew = false;
             }
             else
             {
-                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
-                    result = await Kernel.DataBase.UpdateRegisterInformationObject(UnigueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
+                if (!UniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UniqueID, Table))
+                    result = await Kernel.DataBase.UpdateRegisterInformationObject(UniqueID, Period, Owner, OwnerType, Table, FieldArray, FieldValue);
                 else
                     throw new Exception("Спроба записати неіснуючий об'єкт");
             }
@@ -102,7 +102,7 @@ namespace AccountingSoftware
         /// </summary>
         protected async ValueTask BaseDelete()
         {
-            await Kernel.DataBase.DeleteRegisterInformationObject(Table, UnigueID);
+            await Kernel.DataBase.DeleteRegisterInformationObject(Table, UniqueID);
             BaseClear();
         }
     }

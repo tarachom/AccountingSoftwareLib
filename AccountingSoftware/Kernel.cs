@@ -368,7 +368,7 @@ namespace AccountingSoftware
             await DataBase.SpetialTableMessageErrorClearOld(User);
         }
 
-        public async ValueTask<SelectRequest_Record> SelectMessages(UnigueID? objectUnigueID = null, int? limit = null)
+        public async ValueTask<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null)
         {
             return await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
         }

@@ -111,8 +111,8 @@ namespace AccountingSoftware
         /// <exception cref="Exception"></exception>
         protected async ValueTask BaseRemove(Guid UID)
         {
-            UnigueID unigueID = new(UID);
-            if (!unigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(unigueID, Table))
+            UniqueID uniqueID = new(UID);
+            if (!uniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(uniqueID, Table))
                 await Kernel.DataBase.RemoveRegisterAccumulationTablePartRecords(UID, Table, TransactionID);
         }
 

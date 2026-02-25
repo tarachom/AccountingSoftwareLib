@@ -38,7 +38,7 @@ public partial class Row
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
-    public UnigueID UnigueID
+    public UniqueID UniqueID
     {
         get => UnigueID_;
         set
@@ -47,6 +47,6 @@ public partial class Row
             Сhanged_UnigueID?.Invoke();
         }
     }
-    UnigueID UnigueID_ = new();
+    UniqueID UnigueID_ = new();
     public Action? Сhanged_UnigueID;
 }

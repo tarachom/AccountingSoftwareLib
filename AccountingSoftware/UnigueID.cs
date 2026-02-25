@@ -26,18 +26,18 @@ namespace AccountingSoftware
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
-    public class UnigueID
+    public class UniqueID
     {
         /// <summary>
         /// Пустий вказівник
         /// </summary>
-        public UnigueID() { }
+        public UniqueID() { }
 
         /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
         /// <param name="uGuid">Унікальний ідентифікатор</param>
-        public UnigueID(Guid uGuid)
+        public UniqueID(Guid uGuid)
         {
             UGuid = uGuid;
         }
@@ -46,7 +46,7 @@ namespace AccountingSoftware
         /// Унікальний ідентифікатор
         /// </summary>
         /// <param name="uGuid">Унікальний ідентифікатор як object</param>
-        public UnigueID(object? uGuid)
+        public UniqueID(object? uGuid)
         {
             if (uGuid != null && uGuid != DBNull.Value && uGuid is Guid guid)
                 UGuid = guid;
@@ -58,7 +58,7 @@ namespace AccountingSoftware
         /// Унікальний ідентифікатор у формі тексту. Використовується Guid.Parse(uGuid).
         /// </summary>
         /// <param name="uGuid">Унікальний ідентифікатор</param>
-        public UnigueID(string uGuid)
+        public UniqueID(string uGuid)
         {
             if (Guid.TryParse(uGuid, out Guid result))
                 UGuid = result;
@@ -92,11 +92,11 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Новий UnigueID
+        /// Новий UniqueID
         /// </summary>
-        public static UnigueID NewUnigueID()
+        public static UniqueID NewUnigueID()
         {
-            return new UnigueID(Guid.NewGuid());
+            return new UniqueID(Guid.NewGuid());
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace AccountingSoftware
         /// </summary>
         public override bool Equals(object? obj)
         {
-            return obj != null && UGuid == ((UnigueID)obj).UGuid;
+            return obj != null && UGuid == ((UniqueID)obj).UGuid;
         }
 
         public override int GetHashCode()

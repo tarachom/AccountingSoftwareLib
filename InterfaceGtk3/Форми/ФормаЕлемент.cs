@@ -46,7 +46,7 @@ public abstract class ФормаЕлемент : Форма
     /// <summary>
     /// ІД елементу
     /// </summary>
-    public UnigueID? UnigueID { get => Element?.UnigueID; }
+    public UniqueID? UniqueID { get => Element?.UniqueID; }
 
     /// <summary>
     /// Назва         
@@ -56,7 +56,7 @@ public abstract class ФормаЕлемент : Форма
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
     /// </summary>
-    public Action<UnigueID?>? CallBack_LoadRecords { get; set; }
+    public Action<UniqueID?>? CallBack_LoadRecords { get; set; }
 
     public ФормаЕлемент() { }
 

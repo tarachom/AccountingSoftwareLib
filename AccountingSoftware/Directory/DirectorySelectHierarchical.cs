@@ -31,12 +31,12 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
-		protected (UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;
+		protected (UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)? CurrentPointerPositionHierarchical { get; private set; } = null;
 
 		/// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID UnigueID, UnigueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> BaseSelectListHierarchical { get; private set; } = [];
+		protected List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> BaseSelectListHierarchical { get; private set; } = [];
 
 		/// <summary>
 		/// Переміститися на одну позицію у вибірці

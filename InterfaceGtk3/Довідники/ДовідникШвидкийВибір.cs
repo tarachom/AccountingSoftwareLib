@@ -31,30 +31,30 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
     /// <summary>
     /// Елемент для вибору
     /// </summary>
-    public UnigueID? DirectoryPointerItem
+    public UniqueID? DirectoryPointerItem
     {
         get { return directoryPointerItem; }
         set { SelectPointerItem = directoryPointerItem = value; }
     }
 
-    UnigueID? directoryPointerItem;
+    UniqueID? directoryPointerItem;
 
     /// <summary>
     /// Відкрита папка.
     /// Використовується при загрузці дерева щоб приховати вітку.
     /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
     /// </summary>
-    public UnigueID? OpenFolder { get; set; }
+    public UniqueID? OpenFolder { get; set; }
 
     /// <summary>
     /// Функція вибору
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Функція для множинного вибору
     /// </summary>
-    public Action<UnigueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
+    public Action<UniqueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
 
     /// <summary>
     /// Верхній набір меню
@@ -114,9 +114,9 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UnigueID? unigueID = null);
-    protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
-    protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+    protected abstract ValueTask OpenPageList(UniqueID? uniqueID = null);
+    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
 
     #endregion
 
@@ -187,12 +187,12 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         if (args.Event.Type == Gdk.EventType.DoubleButtonPress && TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
             {
-                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
-                if (unigueID.IsEmpty()) return;
+                UniqueID uniqueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
+                if (uniqueID.IsEmpty()) return;
 
-                DirectoryPointerItem = unigueID;
+                DirectoryPointerItem = uniqueID;
 
-                CallBack_OnSelectPointer?.Invoke(unigueID);
+                CallBack_OnSelectPointer?.Invoke(uniqueID);
                 PopoverParent?.Hide();
             }
     }
@@ -213,12 +213,12 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
 
     async void OnListClick(object? sender, EventArgs args)
     {
-        UnigueID? unigueID = null;
+        UniqueID? uniqueID = null;
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             if (TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]))
-                unigueID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+                uniqueID = new UniqueID((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-        await OpenPageList(unigueID);
+        await OpenPageList(uniqueID);
     }
 
     async void OnAddClick(object? sender, EventArgs args)
@@ -235,9 +235,9 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
             foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 if (TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath))
                 {
-                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
-                    if (!unigueID.IsEmpty())
-                        await OpenPageElement(false, unigueID);
+                    UniqueID uniqueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    if (!uniqueID.IsEmpty())
+                        await OpenPageElement(false, uniqueID);
                 }
 
             ToolButtonSensitive(sender, true);
@@ -254,12 +254,12 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
+                    UniqueID uniqueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
 
-                    if (!unigueID.IsEmpty())
+                    if (!uniqueID.IsEmpty())
                     {
-                        await SetDeletionLabel(unigueID);
-                        SelectPointerItem = unigueID;
+                        await SetDeletionLabel(uniqueID);
+                        SelectPointerItem = uniqueID;
                     }
                 }
 
@@ -282,15 +282,15 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
     {
         if (CallBack_OnMultipleSelectPointer != null && TreeViewGrid.Selection.CountSelectedRows() != 0)
         {
-            List<UnigueID> listUnigueID = [];
+            List<UniqueID> listUnigueID = [];
             foreach (var selectionRow in TreeViewGrid.Selection.GetSelectedRows())
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, selectionRow);
 
-                UnigueID unigueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
-                if (unigueID.IsEmpty()) continue;
+                UniqueID uniqueID = new((string)TreeViewGrid.Model.GetValue(iter, 1));
+                if (uniqueID.IsEmpty()) continue;
 
-                listUnigueID.Add(unigueID);
+                listUnigueID.Add(uniqueID);
             }
 
             CallBack_OnMultipleSelectPointer.Invoke([.. listUnigueID]);

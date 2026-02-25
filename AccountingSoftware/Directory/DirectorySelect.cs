@@ -65,7 +65,7 @@ namespace AccountingSoftware
 		/// <param name="funcToField">Функція для поля</param>
 		/// <param name="funcToField_Param1">Перший параметр для функції</param>
 		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected async ValueTask<UnigueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
+		protected async ValueTask<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
 			Query querySelect = new(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
@@ -81,9 +81,9 @@ namespace AccountingSoftware
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
 		/// <returns>Повертає список знайдених вказівників</returns>
-		protected async ValueTask<List<(UnigueID UnigueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		protected async ValueTask<List<(UniqueID UniqueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
-			List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> directoryPointerList = [];
+			List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> directoryPointerList = [];
 
 			Query querySelect = new(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));

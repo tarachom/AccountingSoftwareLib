@@ -45,7 +45,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID { get; protected set; } = new();
+        public UniqueID UniqueID { get; protected set; } = new();
 
         /// <summary>
         /// Поля які були додатково прочитані з бази даних
@@ -62,9 +62,9 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор</param>
         /// <param name="fields">Поля які потрібно додатково зчитати</param>
-        protected void Init(UnigueID uid, Dictionary<string, object>? fields = null)
+        protected void Init(UniqueID uid, Dictionary<string, object>? fields = null)
         {
-            UnigueID = uid;
+            UniqueID = uid;
             Fields = fields ?? [];
             Name = "";
         }
@@ -74,7 +74,7 @@ namespace AccountingSoftware
         /// </summary>
         public void Clear()
         {
-            Init(new UnigueID());
+            Init(new UniqueID());
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace AccountingSoftware
         /// </summary>
         public bool IsEmpty()
         {
-            return UnigueID.IsEmpty();
+            return UniqueID.IsEmpty();
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace AccountingSoftware
         /// </summary>
         public Guid GetPointer()
         {
-            return UnigueID.UGuid;
+            return UniqueID.UGuid;
         }
 
         /// <summary>
@@ -99,17 +99,17 @@ namespace AccountingSoftware
         /// <returns>Ідентифікатор у вигляді тексту</returns>
         public override string ToString()
         {
-            return UnigueID.UGuid.ToString();
+            return UniqueID.UGuid.ToString();
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(UnigueID.UGuid);
+            return HashCode.Combine(UniqueID.UGuid);
         }
 
         public override bool Equals(object? obj)
         {
-            return obj != null && UnigueID.UGuid == ((Pointer)obj).UnigueID.UGuid;
+            return obj != null && UniqueID.UGuid == ((Pointer)obj).UniqueID.UGuid;
         }
     }
 }

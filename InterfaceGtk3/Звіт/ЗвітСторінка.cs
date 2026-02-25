@@ -537,8 +537,8 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
                 if (!Guid.TryParse(uid, out _))
                     return;
 
-                UnigueID unigueID = new UnigueID(uid);
-                if (unigueID.IsEmpty())
+                UniqueID uniqueID = new UniqueID(uid);
+                if (uniqueID.IsEmpty())
                     return;
 
                 //
@@ -569,16 +569,16 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
                     typeOpenForm = Enum.Parse<ФункціїДляДинамічногоВідкриття.TypeForm>(typeForm);
 
                 if (pointer == "Документи")
-                    ВідкритиДокументВідповідноДоВиду(type, unigueID, ".Report", typeOpenForm);
+                    ВідкритиДокументВідповідноДоВиду(type, uniqueID, ".Report", typeOpenForm);
                 else if (pointer == "Довідники")
-                    ВідкритиДовідникВідповідноДоВиду(type, unigueID, typeOpenForm);
+                    ВідкритиДовідникВідповідноДоВиду(type, uniqueID, typeOpenForm);
             }
         }
     }
 
     #region Virtual & Abstract Function
-    protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UnigueID? unigueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
-    protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UnigueID? unigueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
+    protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UniqueID? uniqueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
+    protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UniqueID? uniqueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
 
     protected virtual async void AppendToolbar(Toolbar toolbar) { await ValueTask.FromResult(true); }
     protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }

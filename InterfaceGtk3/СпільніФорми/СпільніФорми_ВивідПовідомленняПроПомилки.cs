@@ -62,7 +62,7 @@ public abstract class СпільніФорми_ВивідПовідомленн�
 
     #endregion
 
-    public async ValueTask LoadRecords(UnigueID? objectUnigueID = null, int? limit = null)
+    public async ValueTask LoadRecords(UniqueID? objectUnigueID = null, int? limit = null)
     {
         foreach (Widget Child in vBoxMessage.Children)
             vBoxMessage.Remove(Child);
@@ -123,13 +123,13 @@ public abstract class СпільніФорми_ВивідПовідомленн�
 
         //Для відкриття
         {
-            UnigueID unigueID = new UnigueID(row["uid"]);
+            UniqueID uniqueID = new UniqueID(row["uid"]);
             string type = row["type"].ToString() ?? "";
 
-            if (!unigueID.IsEmpty() && !string.IsNullOrEmpty(type))
+            if (!uniqueID.IsEmpty() && !string.IsNullOrEmpty(type))
             {
                 Box hBox = new Box(Orientation.Horizontal, 0);
-                hBox.PackStart(CreateCompositeControl("", new UuidAndText(unigueID, type)), false, false, 0);
+                hBox.PackStart(CreateCompositeControl("", new UuidAndText(uniqueID, type)), false, false, 0);
                 vBoxInfo.PackStart(hBox, false, false, 0);
             }
         }

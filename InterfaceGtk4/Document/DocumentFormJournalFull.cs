@@ -43,23 +43,23 @@ public abstract class DocumentFormJournalFull : DocumentFormJournalBase
     /// <summary>
     /// Меню друк
     /// </summary>
-    protected virtual NameValue<Action<UnigueID[]>>[]? SetPrintMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetPrintMenu() { return null; }
 
     /// <summary>
     /// Меню експорт
     /// </summary>
-    protected virtual NameValue<Action<UnigueID[]>>[]? SetExportMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetExportMenu() { return null; }
 
     /// <summary>
     /// Меню ввести на основі
     /// </summary>
-    protected virtual NameValue<Action<UnigueID[]>>[]? SetEnterDocumentBasedMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetEnterDocumentBasedMenu() { return null; }
 
     /// <summary>
     /// Історія версій
     /// </summary>
-    /// <param name="unigueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
+    /// <param name="uniqueID">Вибрані елементи</param>
+    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) { await ValueTask.FromResult(true); }
 
     #endregion
 

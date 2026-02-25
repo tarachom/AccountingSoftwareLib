@@ -39,12 +39,12 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Для вибору і позиціювання
     /// </summary>
-    public UnigueID? DocumentPointerItem
+    public UniqueID? DocumentPointerItem
     {
         get => documentPointerItem;
         set => SelectPointerItem = documentPointerItem = value;
     }
-    UnigueID? documentPointerItem;
+    UniqueID? documentPointerItem;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -54,7 +54,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Функція зворотнього виклику при виборі
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Верхній бок для додаткових кнопок
@@ -212,29 +212,29 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// При відкритті
     /// </summary>
     /// <param name="IsNew">Чи це новий?</param>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
     /// <summary>
     /// При встановленні помітки на видалення
     /// </summary>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
 
     /// <summary>
     /// При копіюванні об'єкту
     /// </summary>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
+    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
     /// </summary>
     /// <param name="selectPointer">Елемент на якому треба спозиціонувати список</param>
-    protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
+    protected virtual async void CallBack_LoadRecords(UniqueID? selectPointer)
     {
         SelectPointerItem = selectPointer;
         await LoadRecords();
@@ -260,15 +260,15 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Провести / відмінити проведення документів
     /// </summary>
-    /// <param name="unigueID">Вибрані елементи</param>
+    /// <param name="uniqueID">Вибрані елементи</param>
     /// <param name="spendDoc">Провести / відмінити</param>
-    protected virtual async ValueTask SpendTheDocument(UnigueID[] unigueID, bool spendDoc) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Друк проводок
     /// </summary>
-    /// <param name="unigueID">Вибрані елементи</param>
-    protected virtual void ReportSpendTheDocument(UnigueID[] unigueID) { }
+    /// <param name="uniqueID">Вибрані елементи</param>
+    protected virtual void ReportSpendTheDocument(UniqueID[] uniqueID) { }
 
     #endregion
 
@@ -283,10 +283,10 @@ public abstract class DocumentFormJournalBase : FormJournal
         MultiSelection model = (MultiSelection)Grid.Model;
         if (model.GetObject(position) is RowJournal row)
             if (DocumentPointerItem == null)
-                await OpenPageElement(false, row.UnigueID);
+                await OpenPageElement(false, row.UniqueID);
             else
             {
-                CallBack_OnSelectPointer?.Invoke(row.UnigueID);
+                CallBack_OnSelectPointer?.Invoke(row.UniqueID);
 
                 NotebookFunc?.ClosePage(GetName());
                 PopoverParent?.Hide();
@@ -351,7 +351,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         }
 
         {
-            NameValue<Action<UnigueID[]>>[]? SubMenu()
+            NameValue<Action<UniqueID[]>>[]? SubMenu()
             {
                 return
                 [
@@ -384,7 +384,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     async void Edit()
     {
         foreach (RowJournal row in GetSelection())
-            await OpenPageElement(false, row.UnigueID);
+            await OpenPageElement(false, row.UniqueID);
     }
 
     async void OnEdit(Button button, EventArgs args)
@@ -403,7 +403,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         if (rows.Count > 0)
         {
             foreach (RowJournal row in rows)
-                SelectPointerItem = await Copy(row.UnigueID);
+                SelectPointerItem = await Copy(row.UniqueID);
 
             PagesClear();
             await LoadRecords();
@@ -415,7 +415,7 @@ public abstract class DocumentFormJournalBase : FormJournal
             if (YN == Message.YesNo.Yes)
             {
                 foreach (RowJournal row in rows)
-                    SelectPointerItem = await Copy(row.UnigueID);
+                    SelectPointerItem = await Copy(row.UniqueID);
 
                 PagesClear();
                 await LoadRecords();
@@ -430,7 +430,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         if (rows.Count > 0)
         {
             foreach (RowJournal row in rows)
-                await SetDeletionLabel(row.UnigueID);
+                await SetDeletionLabel(row.UniqueID);
         }
 
         /*
@@ -439,7 +439,7 @@ public abstract class DocumentFormJournalBase : FormJournal
             if (YN == Message.YesNo.Yes)
             {
                 foreach (RowJournal row in rows)
-                    await SetDeletionLabel(row.UnigueID);
+                    await SetDeletionLabel(row.UniqueID);
             }
         });
         */

@@ -189,7 +189,7 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
                 foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
                 {
                     TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                    UnigueID versionID = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, (int)Columns.VersionID));
+                    UniqueID versionID = new UniqueID((string)TreeViewGrid.Model.GetValue(iter, (int)Columns.VersionID));
 
                     await Kernel.DataBase.SpetialTableObjectVersionsHistoryRemove(versionID.UGuid, Obj);
                 }

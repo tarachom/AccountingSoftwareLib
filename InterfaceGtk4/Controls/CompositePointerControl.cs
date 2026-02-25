@@ -145,7 +145,7 @@ public abstract class CompositePointerControl : PointerControl
                 page.GetType().GetProperty("PopoverParent")?.SetValue(page, popover);
 
                 //Елемент який потрібно виділити в списку
-                page.GetType().GetProperty("SelectPointerItem")?.SetValue(page, pointer.UnigueID());
+                page.GetType().GetProperty("SelectPointerItem")?.SetValue(page, pointer.UniqueID());
 
                 //Вибір дозволено коли TypeSelectSensetive == true
                 if (TypeSelectSensetive)
@@ -153,10 +153,10 @@ public abstract class CompositePointerControl : PointerControl
                     string propertyName = PointerName switch { "Документи" => "DocumentPointerItem", "Довідники" => "DirectoryPointerItem", _ => "" };
 
                     //Елемент для вибору
-                    page.GetType().GetProperty(propertyName)?.SetValue(page, pointer.UnigueID());
+                    page.GetType().GetProperty(propertyName)?.SetValue(page, pointer.UniqueID());
 
                     //Функція зворотнього виклику при виборі
-                    Action<UnigueID>? callBackAction = x =>
+                    Action<UniqueID>? callBackAction = x =>
                     {
                         Pointer = new UuidAndText(x.UGuid, GetBasisName());
                         AfterSelectFunc?.Invoke();

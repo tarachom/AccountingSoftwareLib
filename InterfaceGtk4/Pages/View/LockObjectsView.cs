@@ -111,7 +111,7 @@ public abstract class LockObjectsView : Box
 
             ItemRow itemRow = new()
             {
-                UnigueID = new UnigueID(record["session"]),
+                UniqueID = new UniqueID(record["session"]),
                 UserUID = (Guid)record["users"],
                 UserName = record["username"].ToString() ?? "",
                 ObjValue = obj,

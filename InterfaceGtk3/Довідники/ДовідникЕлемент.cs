@@ -32,7 +32,7 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
     /// Функція зворотнього виклику для вибору елементу
     /// Використовується коли потрібно новий елемент зразу вибрати
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Горизонтальний бокс для кнопок
@@ -178,11 +178,11 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
 
         if (isSave)
         {
-            if (CallBack_OnSelectPointer != null && UnigueID != null)
-                CallBack_OnSelectPointer.Invoke(UnigueID);
+            if (CallBack_OnSelectPointer != null && UniqueID != null)
+                CallBack_OnSelectPointer.Invoke(UniqueID);
 
             if (IsNew)
-                CallBack_LoadRecords?.Invoke(UnigueID);
+                CallBack_LoadRecords?.Invoke(UniqueID);
 
             if (closePage)
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);

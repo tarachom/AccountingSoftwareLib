@@ -40,7 +40,7 @@ public abstract class DirectoryFormJournalSmall : DirectoryFormJournalBase
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UnigueID? unigueID = null);
+    protected abstract ValueTask OpenPageList(UniqueID? uniqueID = null);
 
     #endregion
 

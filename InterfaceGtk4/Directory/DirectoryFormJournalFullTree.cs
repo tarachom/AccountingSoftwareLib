@@ -43,8 +43,8 @@ public abstract class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTre
     /// <summary>
     /// Історія версій
     /// </summary>
-    /// <param name="unigueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UnigueID[] unigueID) { await ValueTask.FromResult(true); }
+    /// <param name="uniqueID">Вибрані елементи</param>
+    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) { await ValueTask.FromResult(true); }
 
     #endregion
 

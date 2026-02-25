@@ -277,6 +277,7 @@ namespace AccountingSoftware
                                 break;
                             }
                         case Comparison.QT:
+                        case Comparison.GT:
                             {
                                 query += " > " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
@@ -287,11 +288,14 @@ namespace AccountingSoftware
                                 break;
                             }
                         case Comparison.QT_EQ:
+                        case Comparison.GT_EQ:
+                        case Comparison.GE:
                             {
                                 query += " >= " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
                             }
                         case Comparison.LT_EQ:
+                        case Comparison.LE:
                             {
                                 query += " <= " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
@@ -646,14 +650,20 @@ UNION ALL
         IN,
 
         /// <summary>
-        /// Рівне
+        /// Рівне (Equal)
         /// </summary>
         EQ,
 
         /// <summary>
         /// Більше
         /// </summary>
+        [Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT (Greater Than)")]
         QT,
+
+        /// <summary>
+        /// Більше
+        /// </summary>
+        GT,
 
         /// <summary>
         /// Менше
@@ -663,12 +673,30 @@ UNION ALL
         /// <summary>
         /// Більше або рівне
         /// </summary>
+        [Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT_EQ або GE (Greater Than or Equal)")]
         QT_EQ,
 
         /// <summary>
-        /// Менше або рівне
+        /// Більше або рівне. 
+        /// Не бажано використовувати, правильно буде GE
+        /// </summary>
+        GT_EQ,
+
+        /// <summary>
+        /// Більше або рівне (Greater Than or Equal to) 
+        /// </summary>
+        GE,
+
+        /// <summary>
+        /// Менше або рівне.
+        /// Не бажано використовувати, правильно буде LE
         /// </summary>
         LT_EQ,
+
+        /// <summary>
+        /// Менше або рівне (Less Than or Equal to)
+        /// </summary>
+        LE,
 
         /// <summary>
         /// Тільки для UsingSQLToValue = true

@@ -68,11 +68,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Новий композитний тип
         /// </summary>
-        /// <param name="unigueID">Унікальний ідентифікатор</param>
+        /// <param name="uniqueID">Унікальний ідентифікатор</param>
         /// <param name="text">Текст</param>
-        public UuidAndText(UnigueID unigueID, string text)
+        public UuidAndText(UniqueID uniqueID, string text)
         {
-            Uuid = unigueID.UGuid;
+            Uuid = uniqueID.UGuid;
             Text = text;
         }
 
@@ -109,10 +109,10 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
-        /// <returns>Новий UnigueID</returns>
-        public UnigueID UnigueID()
+        /// <returns>Новий UniqueID</returns>
+        public UniqueID UniqueID()
         {
-            return new UnigueID(Uuid);
+            return new UniqueID(Uuid);
         }
 
         /// <summary>

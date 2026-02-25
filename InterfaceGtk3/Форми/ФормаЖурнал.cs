@@ -46,7 +46,7 @@ public abstract class ФормаЖурнал : Форма
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
     /// </summary>
-    public UnigueID? SelectPointerItem { get; set; }
+    public UniqueID? SelectPointerItem { get; set; }
 
     /// <summary>
     /// Дерево
@@ -138,17 +138,17 @@ public abstract class ФормаЖурнал : Форма
     #region  TreeView
 
     /// <summary>
-    /// Функція повертає список UnigueID виділених рядків дерева
+    /// Функція повертає список UniqueID виділених рядків дерева
     /// </summary>
-    public List<UnigueID> GetSelectedRows()
+    public List<UniqueID> GetSelectedRows()
     {
-        List<UnigueID> unigueIDList = [];
+        List<UniqueID> unigueIDList = [];
 
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
             foreach (TreePath itemPath in TreeViewGrid.Selection.GetSelectedRows())
             {
                 TreeViewGrid.Model.GetIter(out TreeIter iter, itemPath);
-                unigueIDList.Add(new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
+                unigueIDList.Add(new UniqueID((string)TreeViewGrid.Model.GetValue(iter, 1)));
             }
 
         return unigueIDList;

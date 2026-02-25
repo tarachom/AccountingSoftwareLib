@@ -105,7 +105,7 @@ namespace AccountingSoftware
         /// Зчитати дані з бази даних
         /// </summary>
         /// <param name="ownerUnigueID"></param>
-        protected async ValueTask BaseRead(UnigueID ownerUnigueID)
+        protected async ValueTask BaseRead(UniqueID ownerUnigueID)
         {
             BaseClear();
             JoinValue.Clear();
@@ -145,7 +145,7 @@ namespace AccountingSoftware
         /// Функція очищає всю таб. частину
         /// </summary>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
-        protected async ValueTask BaseDelete(UnigueID ownerUnigueID)
+        protected async ValueTask BaseDelete(UniqueID ownerUnigueID)
         {
             await Kernel.DataBase.DeleteDirectoryTablePartRecords(ownerUnigueID, Table, TransactionID);
         }
@@ -155,7 +155,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="ownerUnigueID">Ід власника</param>
         /// <param name="ownerTable">Таблиця власника</param>
-        protected async ValueTask<bool> IsExistOwner(UnigueID ownerUnigueID, string ownerTable)
+        protected async ValueTask<bool> IsExistOwner(UniqueID ownerUnigueID, string ownerTable)
         {
             return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
         }
@@ -166,7 +166,7 @@ namespace AccountingSoftware
         /// <param name="UID">Унікальний ідентифікатор запису</param>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
         /// <param name="fieldValue">Значення полів запису</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, UnigueID ownerUnigueID, Dictionary<string, object> fieldValue)
+        protected async ValueTask<Guid> BaseSave(Guid UID, UniqueID ownerUnigueID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertDirectoryTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);

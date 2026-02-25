@@ -282,7 +282,7 @@ public abstract class PageService : Форма
                             Лог.CreateMessage($"{dateTimeCurrDoc.ToString("dd-MM-yyyy")}", LogMessage.TypeMessage.None);
                         }
 
-                        await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, journalSelect.Current.UnigueID.UGuid, journalSelect.Current.DocName);
+                        await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, journalSelect.Current.UniqueID.UGuid, journalSelect.Current.DocName);
 
                         DocumentObject? doc = await journalSelect.GetDocumentObject(true);
                         if (doc != null)
@@ -301,7 +301,7 @@ public abstract class PageService : Форма
                                 Лог.CreateMessage($"Помилка! {journalSelect.Current.DocName}", LogMessage.TypeMessage.Error);
 
                                 //Додатково вивід помилок у це вікно
-                                SelectRequest_Record record = await Kernel.SelectMessages(doc.UnigueID, 1);
+                                SelectRequest_Record record = await Kernel.SelectMessages(doc.UniqueID, 1);
 
                                 string msg = "";
                                 foreach (Dictionary<string, object> row in record.ListRow)
@@ -361,11 +361,11 @@ public abstract class PageService : Форма
                     {
                         if (cancellationToken!.IsCancellationRequested) break;
 
-                        UnigueID unigueID = new(row["uid"]);
-                        if (await directoryObject.Read(unigueID))
+                        UniqueID uniqueID = new(row["uid"]);
+                        if (await directoryObject.Read(uniqueID))
                         {
                             string nameObj = await directoryObject.GetPresentation();
-                            if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
+                            if (await SearchDependencies(listDependencies, uniqueID.UGuid, nameObj) == 0)
                             {
                                 await directoryObject.Delete();
                                 Лог.AppendLine("Видалено: " + nameObj);
@@ -400,11 +400,11 @@ public abstract class PageService : Форма
                     {
                         if (cancellationToken!.IsCancellationRequested) break;
 
-                        UnigueID unigueID = new(row["uid"]);
-                        if (await documentObject.Read(unigueID))
+                        UniqueID uniqueID = new(row["uid"]);
+                        if (await documentObject.Read(uniqueID))
                         {
                             string nameObj = await documentObject.GetPresentation();
-                            if (await SearchDependencies(listDependencies, unigueID.UGuid, nameObj) == 0)
+                            if (await SearchDependencies(listDependencies, uniqueID.UGuid, nameObj) == 0)
                             {
                                 await documentObject.Delete();
                                 Лог.AppendLine("Видалено: " + nameObj);

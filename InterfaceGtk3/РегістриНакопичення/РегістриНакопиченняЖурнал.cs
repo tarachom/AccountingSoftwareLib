@@ -111,7 +111,7 @@ public abstract class РегістриНакопиченняЖурнал : Фо�
         if (TreeViewGrid.Selection.CountSelectedRows() != 0)
         {
             TreeViewGrid.Model.GetIter(out TreeIter iter, TreeViewGrid.Selection.GetSelectedRows()[0]);
-            SelectPointerItem = new UnigueID((string)TreeViewGrid.Model.GetValue(iter, 1));
+            SelectPointerItem = new UniqueID((string)TreeViewGrid.Model.GetValue(iter, 1));
         }
     }
 

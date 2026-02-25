@@ -44,7 +44,7 @@ namespace AccountingSoftware
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
+                query.Where.Add(new Where("uid", Comparison.EQ, UniqueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
@@ -59,7 +59,7 @@ namespace AccountingSoftware
         {
             if (!IsEmpty())
             {
-                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UniqueID, Table, []);
                 return record.Result ? record.Spend : null;
             }
             else
@@ -73,7 +73,7 @@ namespace AccountingSoftware
         {
             if (!IsEmpty())
             {
-                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UniqueID, Table, []);
                 return record.Result ? (record.Spend, record.SpendDate) : (null, DateTime.MinValue);
             }
             else
@@ -89,7 +89,7 @@ namespace AccountingSoftware
         {
             if (!IsEmpty())
             {
-                await Kernel.DataBase.UpdateDocumentObject(UnigueID, spend ? false : null, spend, spend_date, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UniqueID, spend ? false : null, spend, spend_date, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -103,7 +103,7 @@ namespace AccountingSoftware
         {
             if (!IsEmpty())
             {
-                var record = await Kernel.DataBase.SelectDocumentObject(this.UnigueID, Table, []);
+                var record = await Kernel.DataBase.SelectDocumentObject(this.UniqueID, Table, []);
                 return record.Result ? record.DeletionLabel : null;
             }
             else
@@ -120,7 +120,7 @@ namespace AccountingSoftware
             if (Kernel != null && !IsEmpty())
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                await Kernel.DataBase.UpdateDocumentObject(UnigueID, label, null, null, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UniqueID, label, null, null, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -132,7 +132,7 @@ namespace AccountingSoftware
         /// </summary>
         public virtual UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
+            return new UuidAndText(UniqueID, $"Документи.{TypeDocument}");
         }
     }
 }

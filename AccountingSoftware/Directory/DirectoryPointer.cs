@@ -43,7 +43,7 @@ namespace AccountingSoftware
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
+                query.Where.Add(new Where("uid", Comparison.EQ, UniqueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }
@@ -59,7 +59,7 @@ namespace AccountingSoftware
         {
             if (!IsEmpty())
             {
-                var record = await Kernel.DataBase.SelectDirectoryObject(this.UnigueID, Table, []);
+                var record = await Kernel.DataBase.SelectDirectoryObject(this.UniqueID, Table, []);
                 return record.Result ? record.DeletionLabel : null;
             }
             else
@@ -75,7 +75,7 @@ namespace AccountingSoftware
             if (!IsEmpty())
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                await Kernel.DataBase.UpdateDirectoryObject(this.UnigueID, label, Table, null, null);
+                await Kernel.DataBase.UpdateDirectoryObject(this.UniqueID, label, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -87,7 +87,7 @@ namespace AccountingSoftware
         /// </summary>
         public virtual UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}");
+            return new UuidAndText(UniqueID, $"Довідники.{TypeDirectory}");
         }
     }
 }

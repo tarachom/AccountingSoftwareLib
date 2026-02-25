@@ -49,8 +49,8 @@ public abstract class ФункціїДляДинамічногоВідкритт
     /// Функція відкриває журнал
     /// </summary>
     /// <param name="typeJournal">Тип</param>
-    /// <param name="unigueID">Елемент для позиціювання</param>
-    public void ВідкритиЖурналВідповідноДоВиду(string typeJournal, UnigueID? unigueID)
+    /// <param name="uniqueID">Елемент для позиціювання</param>
+    public void ВідкритиЖурналВідповідноДоВиду(string typeJournal, UniqueID? uniqueID)
     {
         object? journalInstance;
 
@@ -69,7 +69,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
             dynamic journal = journalInstance;
 
             //Документ який потрібно виділити в списку
-            journal.SelectPointerItem = unigueID;
+            journal.SelectPointerItem = uniqueID;
             CreateNotebookPage(typeJournal, () => journal);
             journal.SetValue();
         }
@@ -79,8 +79,8 @@ public abstract class ФункціїДляДинамічногоВідкритт
     /// Функція відкриває список довідника
     /// </summary>
     /// <param name="typeDir">Тип</param>
-    /// <param name="unigueID">Елемент для позиціонування</param>
-    public void ВідкритиДовідникВідповідноДоВиду(string typeDir, UnigueID? unigueID, TypeForm typeForm = TypeForm.Journal)
+    /// <param name="uniqueID">Елемент для позиціонування</param>
+    public void ВідкритиДовідникВідповідноДоВиду(string typeDir, UniqueID? uniqueID, TypeForm typeForm = TypeForm.Journal)
     {
         object? directoryInstance;
 
@@ -103,7 +103,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
                         dynamic directory = directoryInstance;
 
                         //Елемент який потрібно виділити в списку
-                        directory.SelectPointerItem = unigueID;
+                        directory.SelectPointerItem = uniqueID;
 
                         //Заголовок журналу
                         string listName = "Список";
@@ -120,7 +120,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
             case TypeForm.Element:
                 {
                     Type? directoryFunction = ExecutingAssembly.GetType($"{NameSpageProgram}.{typeDir}_Функції");
-                    directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, unigueID, null, null]);
+                    directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, uniqueID, null, null]);
 
                     break;
                 }
@@ -131,9 +131,9 @@ public abstract class ФункціїДляДинамічногоВідкритт
     /// Функція відкриває список докуменів
     /// </summary>
     /// <param name="typeDoc">Тип документу</param>
-    /// <param name="unigueID">Елемент для позиціювання</param>
+    /// <param name="uniqueID">Елемент для позиціювання</param>
     /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
-    public void ВідкритиДокументВідповідноДоВиду(string typeDoc, UnigueID? unigueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
+    public void ВідкритиДокументВідповідноДоВиду(string typeDoc, UniqueID? uniqueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
     {
         object? documentInstance;
 
@@ -156,7 +156,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
                         dynamic document = documentInstance;
 
                         //Елемент який потрібно виділити в списку
-                        document.SelectPointerItem = unigueID;
+                        document.SelectPointerItem = uniqueID;
 
                         //Заголовок журналу
                         string listName = "Список";
@@ -177,14 +177,14 @@ public abstract class ФункціїДляДинамічногоВідкритт
             case TypeForm.Element:
                 {
                     Type? documentFunction = ExecutingAssembly.GetType($"{NameSpageProgram}.{typeDoc}_Функції");
-                    documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, unigueID, null]);
+                    documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, uniqueID, null]);
 
                     break;
                 }
         }
     }
 
-    public void ВідкритиРегістрВідомостейВідповідноДоВиду(string typeReg, UnigueID? unigueID)
+    public void ВідкритиРегістрВідомостейВідповідноДоВиду(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
 
@@ -203,7 +203,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
             dynamic register = registerInstance;
 
             //Елемент який потрібно виділити в списку
-            register.SelectPointerItem = unigueID;
+            register.SelectPointerItem = uniqueID;
 
             //Заголовок
             string listName = "Список";
@@ -217,7 +217,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
         }
     }
 
-    public void ВідкритиРегістрНакопиченняВідповідноДоВиду(string typeReg, UnigueID? unigueID)
+    public void ВідкритиРегістрНакопиченняВідповідноДоВиду(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
 
@@ -236,7 +236,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
             dynamic register = registerInstance;
 
             //Елемент який потрібно виділити в списку
-            register.SelectPointerItem = unigueID;
+            register.SelectPointerItem = uniqueID;
 
             //Заголовок
             string listName = "Список";
@@ -262,7 +262,7 @@ public abstract class ФункціїДляДинамічногоВідкритт
         foreach (KeyValuePair<string, string> typeDoc in allowDocument)
         {
             LinkButton lb = new LinkButton(typeDoc.Value, typeDoc.Value) { Halign = Align.Start };
-            lb.Clicked += (sender, args) => ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UnigueID());
+            lb.Clicked += (sender, args) => ВідкритиДокументВідповідноДоВиду(typeDoc.Key, new UniqueID());
             vBox.PackStart(lb, false, false, 0);
         }
 

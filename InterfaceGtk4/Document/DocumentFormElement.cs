@@ -35,7 +35,7 @@ public abstract class DocumentFormElement : FormElement
     /// Функція зворотнього виклику для вибору елементу
     /// Використовується коли потрібно новий елемент зразу вибрати
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Горизонтальний бокс для кнопок
@@ -97,12 +97,12 @@ public abstract class DocumentFormElement : FormElement
         CreateLinks(HBoxTop, [
             new("Проводки", () =>
             {
-                if (UnigueID != null) ReportSpendTheDocument(UnigueID);
+                if (UniqueID != null) ReportSpendTheDocument(UniqueID);
             }),
 
             new("В журналі", async () =>
             {
-                if (UnigueID != null) await InJournal(UnigueID);
+                if (UniqueID != null) await InJournal(UniqueID);
             })
         ]);
 
@@ -267,11 +267,11 @@ public abstract class DocumentFormElement : FormElement
 
         if (isSave)
         {
-            if (CallBack_OnSelectPointer != null && UnigueID != null)
-                CallBack_OnSelectPointer.Invoke(UnigueID);
+            if (CallBack_OnSelectPointer != null && UniqueID != null)
+                CallBack_OnSelectPointer.Invoke(UniqueID);
 
             if (IsNew)
-                CallBack_LoadRecords?.Invoke(UnigueID);
+                CallBack_LoadRecords?.Invoke(UniqueID);
 
             if (closePage && isSpend)
                 NotebookFunc?.ClosePage(GetName());
@@ -291,12 +291,12 @@ public abstract class DocumentFormElement : FormElement
     /// <summary>
     /// Для звіту Проводки
     /// </summary>
-    protected abstract void ReportSpendTheDocument(UnigueID unigueID);
+    protected abstract void ReportSpendTheDocument(UniqueID uniqueID);
 
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual async ValueTask InJournal(UnigueID unigueID) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask InJournal(UniqueID uniqueID) { await ValueTask.FromResult(true); }
 
     #endregion
 }

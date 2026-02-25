@@ -64,23 +64,23 @@ namespace AccountingSoftware
         protected Dictionary<string, object> FieldValue { get; private set; } = [];
 
         /// <summary>
-        /// Подія яка виникає при зміні UnigueID
+        /// Подія яка виникає при зміні UniqueID
         /// </summary>
-        public event EventHandler<UnigueID>? OnUnigueIDChanged;
+        public event EventHandler<UniqueID>? OnUnigueIDChanged;
 
         /// <summary>
         /// Унікальний ідентифікатор запису
         /// </summary>
-        public UnigueID UnigueID
+        public UniqueID UniqueID
         {
-            get => unigueID;
+            get => uniqueID;
             protected set
             {
-                unigueID = value;
+                uniqueID = value;
                 OnUnigueIDChanged?.Invoke(this, value);
             }
         }
-        UnigueID unigueID = new();
+        UniqueID uniqueID = new();
 
         /// <summary>
         /// Подія яка виникає при зміні Caption
@@ -125,7 +125,7 @@ namespace AccountingSoftware
         /// </summary>
         protected void BaseNew()
         {
-            UnigueID = UnigueID.NewUnigueID();
+            UniqueID = UniqueID.NewUnigueID();
             IsNew = true;
             IsSave = false;
 
@@ -144,7 +144,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Ключ блокування
         /// </summary>
-        private UnigueID LockKey { get; set; } = new();
+        private UniqueID LockKey { get; set; } = new();
 
         /// <summary>
         /// Заблокувати
@@ -185,12 +185,12 @@ namespace AccountingSoftware
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(UnigueID.UGuid);
+            return HashCode.Combine(UniqueID.UGuid);
         }
 
         public override bool Equals(object? obj)
         {
-            return obj != null && UnigueID.UGuid == ((Object)obj).UnigueID.UGuid;
+            return obj != null && UniqueID.UGuid == ((Object)obj).UniqueID.UGuid;
         }
     }
 }

@@ -59,21 +59,21 @@ namespace AccountingSoftware
         /// <summary>
         /// Поточний вказівник
         /// </summary>
-        protected (UnigueID UnigueID, Dictionary<string, object>? Fields)? CurrentPointerPosition { get; set; } = null;
+        protected (UniqueID UniqueID, Dictionary<string, object>? Fields)? CurrentPointerPosition { get; set; } = null;
 
         /// <summary>
 		/// Вибірка вказівників
 		/// </summary>
-		protected List<(UnigueID UnigueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
+		protected List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
 
         /// <summary>
         /// Обчислення розміру вибірки і обчислнення кількості сторінок
         /// </summary>
-        /// <param name="unigueID">Вибраний елемент</param>
+        /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UnigueID? unigueID, int pageSize = 1000) =>
-            await Kernel.DataBase.SplitSelectToPages(QuerySelect, unigueID, pageSize);
+        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000) =>
+            await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
 
         /// <summary>
         /// Перейти на початок вибірки

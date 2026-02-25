@@ -32,7 +32,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// Функція зворотнього виклику для вибору елементу
     /// Використовується коли потрібно новий елемент зразу вибрати
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Горизонтальний бокс для кнопок
@@ -101,7 +101,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
         //Проводки
         {
             LinkButton linkNew = new("Проводки") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-            linkNew.Clicked += (sender, args) => { if (UnigueID != null) ReportSpendTheDocument(UnigueID); };
+            linkNew.Clicked += (sender, args) => { if (UniqueID != null) ReportSpendTheDocument(UniqueID); };
 
             HBoxTop.PackStart(linkNew, false, false, 0);
         }
@@ -109,7 +109,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
         //В журналі
         {
             LinkButton linkInJournal = new("В журналі") { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-            linkInJournal.Clicked += async (sender, args) => { if (UnigueID != null) await InJournal(UnigueID); };
+            linkInJournal.Clicked += async (sender, args) => { if (UniqueID != null) await InJournal(UniqueID); };
 
             HBoxTop.PackStart(linkInJournal, false, false, 0);
         }
@@ -289,11 +289,11 @@ public abstract class ДокументЕлемент : ФормаЕлемент
 
         if (isSave)
         {
-            if (CallBack_OnSelectPointer != null && UnigueID != null)
-                CallBack_OnSelectPointer.Invoke(UnigueID);
+            if (CallBack_OnSelectPointer != null && UniqueID != null)
+                CallBack_OnSelectPointer.Invoke(UniqueID);
 
             if (IsNew)
-                CallBack_LoadRecords?.Invoke(UnigueID);
+                CallBack_LoadRecords?.Invoke(UniqueID);
 
             if (closePage && isSpend)
                 NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);
@@ -313,12 +313,12 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// <summary>
     /// Для звіту Проводки
     /// </summary>
-    protected abstract void ReportSpendTheDocument(UnigueID unigueID);
+    protected abstract void ReportSpendTheDocument(UniqueID uniqueID);
 
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual async ValueTask InJournal(UnigueID unigueID) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask InJournal(UniqueID uniqueID) { await ValueTask.FromResult(true); }
 
     #endregion
 }

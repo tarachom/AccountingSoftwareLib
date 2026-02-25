@@ -40,12 +40,12 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Для вибору і позиціювання
     /// </summary>
-    public UnigueID? DirectoryPointerItem
+    public UniqueID? DirectoryPointerItem
     {
         get => directoryPointerItem;
         set => SelectPointerItem = directoryPointerItem = value;
     }
-    UnigueID? directoryPointerItem;
+    UniqueID? directoryPointerItem;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -66,7 +66,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Функція зворотнього виклику при виборі
     /// </summary>
-    public Action<UnigueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
     /// Верхній бокc для пошуку та додаткових кнопок
@@ -237,29 +237,29 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Відкрити елемент
     /// </summary>
     /// <param name="IsNew">Чи це новий?</param>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask OpenPageElement(bool IsNew, UnigueID? unigueID = null);
+    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
     /// <summary>
     /// Помітка на видалення
     /// </summary>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask SetDeletionLabel(UnigueID unigueID);
+    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
 
     /// <summary>
     /// Копіювання
     /// </summary>
-    /// <param name="unigueID">Ід об'єкту</param>
+    /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask<UnigueID?> Copy(UnigueID unigueID);
+    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
     /// </summary>
     /// <param name="selectPointer">Елемент на якому треба спозиціонувати список</param>
-    protected virtual async void CallBack_LoadRecords(UnigueID? selectPointer)
+    protected virtual async void CallBack_LoadRecords(UniqueID? selectPointer)
     {
         SelectPointerItem = selectPointer;
         await LoadRecords();
@@ -290,10 +290,10 @@ public abstract class DirectoryFormJournalBase : FormJournal
         MultiSelection model = (MultiSelection)Grid.Model;
         if (model.GetObject(position) is RowJournal row)
             if (DirectoryPointerItem == null)
-                await OpenPageElement(false, row.UnigueID);
+                await OpenPageElement(false, row.UniqueID);
             else
             {
-                CallBack_OnSelectPointer?.Invoke(row.UnigueID);
+                CallBack_OnSelectPointer?.Invoke(row.UniqueID);
 
                 NotebookFunc?.ClosePage(GetName());
                 PopoverParent?.Hide();
@@ -375,7 +375,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     async void Edit()
     {
         foreach (RowJournal row in GetSelection())
-            await OpenPageElement(false, row.UnigueID);
+            await OpenPageElement(false, row.UniqueID);
     }
 
     async void OnEdit(Button button, EventArgs args)
@@ -394,7 +394,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
         if (rows.Count > 0)
         {
             foreach (RowJournal row in rows)
-                SelectPointerItem = await Copy(row.UnigueID);
+                SelectPointerItem = await Copy(row.UniqueID);
 
             PagesClear();
             await LoadRecords();
@@ -406,7 +406,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
             if (YN == Message.YesNo.Yes)
             {
                 foreach (RowJournal row in rows)
-                    SelectPointerItem = await Copy(row.UnigueID);
+                    SelectPointerItem = await Copy(row.UniqueID);
 
                 PagesClear();
                 await LoadRecords();
@@ -421,7 +421,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
         if (rows.Count > 0)
         {
             foreach (RowJournal row in rows)
-                await SetDeletionLabel(row.UnigueID);
+                await SetDeletionLabel(row.UniqueID);
         }
 
         /*
@@ -430,7 +430,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
             if (YN == Message.YesNo.Yes)
             {
                 foreach (RowJournal row in rows)
-                    await SetDeletionLabel(row.UnigueID);
+                    await SetDeletionLabel(row.UniqueID);
             }
         });
         */
@@ -463,7 +463,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Використовується при загрузці дерева щоб приховати вітку.
     /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
     /// </summary>
-    public UnigueID? OpenFolder { get; set; }
+    public UniqueID? OpenFolder { get; set; }
 
     /// <summary>
     /// Вставити пустий рядок в дерево

@@ -175,9 +175,9 @@ public abstract class Журнал : ФормаЖурнал
 
     protected abstract void ReportSpendTheDocument(DocumentPointer documentPointer);
 
-    protected abstract void ErrorSpendTheDocument(UnigueID unigueID);
+    protected abstract void ErrorSpendTheDocument(UniqueID uniqueID);
 
-    protected abstract void OpenDoc(string typeDoc, UnigueID unigueID);
+    protected abstract void OpenDoc(string typeDoc, UniqueID uniqueID);
 
     #endregion
 
@@ -300,9 +300,9 @@ public abstract class Журнал : ФормаЖурнал
                     string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                     string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
-                    //Використовується другий конструктор (UnigueID uid, Dictionary<string, object>? fields = null)
+                    //Використовується другий конструктор (UniqueID uid, Dictionary<string, object>? fields = null)
                     object? docPointerInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer",
-                        false, BindingFlags.CreateInstance, null, [new UnigueID(uid), null!], null, null);
+                        false, BindingFlags.CreateInstance, null, [new UniqueID(uid), null!], null, null);
 
                     if (docPointerInstance != null)
                     {
@@ -327,8 +327,8 @@ public abstract class Журнал : ФормаЖурнал
                 string uid = (string)TreeViewGrid.Model.GetValue(iter, 1);
                 string typeDoc = (string)TreeViewGrid.Model.GetValue(iter, 2);
 
-                UnigueID unigueID = new(uid);
-                object? documentPointer = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer", false, BindingFlags.CreateInstance, null, [unigueID, null!], null, null);
+                UniqueID uniqueID = new(uid);
+                object? documentPointer = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Pointer", false, BindingFlags.CreateInstance, null, [uniqueID, null!], null, null);
                 if (documentPointer != null)
                     ReportSpendTheDocument((DocumentPointer)documentPointer);
             }
@@ -340,18 +340,18 @@ public abstract class Журнал : ФормаЖурнал
 
     async ValueTask SpendTheDocument(string uid, string typeDoc, bool spendDoc)
     {
-        UnigueID unigueID = new(uid);
+        UniqueID uniqueID = new(uid);
 
         object? documentObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
         if (documentObjestInstance != null)
         {
             dynamic documentObjest = documentObjestInstance;
-            if (await documentObjest.Read(unigueID, true))
+            if (await documentObjest.Read(uniqueID, true))
             {
                 if (spendDoc)
                 {
                     if (!await documentObjest.SpendTheDocument(documentObjest.ДатаДок))
-                        ErrorSpendTheDocument(unigueID);
+                        ErrorSpendTheDocument(uniqueID);
                 }
                 else
                     await documentObjest.ClearSpendTheDocument();

@@ -48,7 +48,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// <summary>
     /// Функція вибору рядка в дереві
     /// </summary>
-    public Action<UnigueID>? CallBack_Activate { get; set; }
+    public Action<UniqueID>? CallBack_Activate { get; set; }
 
     public DirectoryFormJournalBaseTree(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
@@ -129,10 +129,10 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         if (rowItem != null)
         {
             if (DirectoryPointerItem == null)
-                await OpenPageElement(false, rowItem.UnigueID);
+                await OpenPageElement(false, rowItem.UniqueID);
             else
             {
-                CallBack_OnSelectPointer?.Invoke(rowItem.UnigueID);
+                CallBack_OnSelectPointer?.Invoke(rowItem.UniqueID);
 
                 NotebookFunc?.ClosePage(GetName());
                 PopoverParent?.Hide();
@@ -177,7 +177,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
             if (rowItem != null)
             {
-                SelectPointerItem = rowItem.UnigueID;
+                SelectPointerItem = rowItem.UniqueID;
                 CallBack_Activate?.Invoke(SelectPointerItem);
             }
 
@@ -186,16 +186,16 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             {
                 TreeListRow treeListRow = new(new Gtk.Internal.TreeListRowHandle(handle, false));
                 DirectoryHierarchicalRow? row = (DirectoryHierarchicalRow?)treeListRow.GetItem();
-                if (row != null) SelectPointerItem = row.UnigueID;
+                if (row != null) SelectPointerItem = row.UniqueID;
             }*/
         }
     }
 
     /// <summary>
-    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UnigueID
+    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
     /// </summary>
-    /// <param name="select">UnigueID елемента який треба виділити</param>
-    public override void AfterLoadRecords(UnigueID? select = null)
+    /// <param name="select">UniqueID елемента який треба виділити</param>
+    public override void AfterLoadRecords(UniqueID? select = null)
     {
         if (PopoverParent == null)
             NotebookFunc?.SpinnerOff(GetName());
@@ -242,7 +242,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             bool RecursionFind(TreeListRow row, uint position)
             {
                 DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                if (rowItem != null && rowItem.UnigueID.Equals(select))
+                if (rowItem != null && rowItem.UniqueID.Equals(select))
                 {
                     Grid.Model.SelectItem(position, false);
 

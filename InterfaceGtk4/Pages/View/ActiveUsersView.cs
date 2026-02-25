@@ -93,7 +93,7 @@ public class ActiveUsersView : Box
         {
             ItemRow itemRow = new()
             {
-                UnigueID = new UnigueID(record["uid"]),
+                UniqueID = new UniqueID(record["uid"]),
                 UserUID = (Guid)record["usersuid"],
                 UserName = record["username"].ToString() ?? "",
                 DateLogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString()),

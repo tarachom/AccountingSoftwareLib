@@ -79,7 +79,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Ключ блокування
         /// </summary>
-        public UnigueID? LockKey;
+        public UniqueID? LockKey;
 
         /// <summary>
         /// Дата блокування

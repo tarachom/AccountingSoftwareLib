@@ -62,7 +62,7 @@ namespace AccountingSoftware
         /// Зчитати дані
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
-        protected async ValueTask<bool> BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -71,7 +71,7 @@ namespace AccountingSoftware
             var record = await Kernel.DataBase.SelectDocumentObject(uid, Table, FieldArray, FieldValue);
             if (record.Result)
             {
-                UnigueID = uid;
+                UniqueID = uid;
                 DeletionLabel = record.DeletionLabel;
                 Spend = record.Spend;
                 SpendDate = record.SpendDate;
@@ -94,7 +94,7 @@ namespace AccountingSoftware
 
             if (IsNew)
             {
-                result = await Kernel.DataBase.InsertDocumentObject(UnigueID, Spend, SpendDate, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertDocumentObject(UniqueID, Spend, SpendDate, Table, FieldArray, FieldValue);
                 if (result)
                 {
                     IsNew = false;
@@ -103,9 +103,9 @@ namespace AccountingSoftware
             }
             else
             {
-                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                if (!UniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UniqueID, Table))
                 {
-                    result = await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
+                    result = await Kernel.DataBase.UpdateDocumentObject(UniqueID, DeletionLabel, Spend, SpendDate, Table, FieldArray, FieldValue);
                     if (result)
                         operation = 'U';
                 }
@@ -143,12 +143,12 @@ namespace AccountingSoftware
 
         protected async ValueTask BaseAddIgnoreDocumentList()
         {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UnigueID.UGuid, "");
+            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UniqueID.UGuid, "");
         }
 
         protected async ValueTask BaseRemoveIgnoreDocumentList()
         {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UnigueID.UGuid);
+            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UniqueID.UGuid);
         }
 
         protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
@@ -158,7 +158,7 @@ namespace AccountingSoftware
 
             if (IsSave)
             {
-                await Kernel.DataBase.UpdateDocumentObject(UnigueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UniqueID, Spend ? false : DeletionLabel, Spend, SpendDate, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -179,7 +179,7 @@ namespace AccountingSoftware
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                await Kernel.DataBase.UpdateDocumentObject(UnigueID, DeletionLabel, null, null, Table, null, null);
+                await Kernel.DataBase.UpdateDocumentObject(UniqueID, DeletionLabel, null, null, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -197,14 +197,14 @@ namespace AccountingSoftware
             byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
             //Видалити сам документ
-            await Kernel.DataBase.DeleteDocumentObject(UnigueID, Table, TransactionID);
+            await Kernel.DataBase.DeleteDocumentObject(UniqueID, Table, TransactionID);
 
             //Видалення даних з табличних частин
             foreach (string tablePartsTable in tablePartsTables)
-                await Kernel.DataBase.DeleteDocumentTablePartRecords(UnigueID, tablePartsTable, TransactionID);
+                await Kernel.DataBase.DeleteDocumentTablePartRecords(UniqueID, tablePartsTable, TransactionID);
 
             //Видалення з повнотекстового пошуку
-            await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
+            await Kernel.DataBase.SpetialTableFullTextSearchDelete(UniqueID, TransactionID);
 
             //Видалення з історії зміни даних
             await Kernel.DataBase.SpetialTableObjectVersionsHistoryRemoveAll(GetBasis(), TransactionID);
@@ -224,11 +224,11 @@ namespace AccountingSoftware
         /// <returns>Представлення обєкта</returns>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (!UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
+            if (!UniqueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
+                query.Where.Add(new Where("uid", Comparison.EQ, UniqueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDocumentPresentation(query, fieldPresentation);
             }
@@ -241,7 +241,7 @@ namespace AccountingSoftware
         /// </summary>
         public override UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID, $"Документи.{TypeDocument}");
+            return new UuidAndText(UniqueID, $"Документи.{TypeDocument}");
         }
 
         /// <summary>

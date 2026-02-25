@@ -33,7 +33,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Унікальний ідентифікатор запису
 		/// </summary>
-		public UnigueID UnigueID { get; set; } = new UnigueID();
+		public UniqueID UniqueID { get; set; } = new UniqueID();
 
 		/// <summary>
 		/// Назва документу
@@ -71,7 +71,7 @@ namespace AccountingSoftware
 		/// <returns></returns>
 		public UuidAndText GetBasis()
 		{
-			return new UuidAndText(UnigueID.UGuid, $"Документи.{TypeDocument}");
+			return new UuidAndText(UniqueID.UGuid, $"Документи.{TypeDocument}");
 		}
 	}
 }

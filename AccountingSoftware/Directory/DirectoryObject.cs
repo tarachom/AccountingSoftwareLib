@@ -52,7 +52,7 @@ namespace AccountingSoftware
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
-        protected async ValueTask<bool> BaseRead(UnigueID uid)
+        protected async ValueTask<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -61,7 +61,7 @@ namespace AccountingSoftware
             var record = await Kernel.DataBase.SelectDirectoryObject(uid, Table, FieldArray, FieldValue);
             if (record.Result)
             {
-                UnigueID = uid;
+                UniqueID = uid;
                 DeletionLabel = record.DeletionLabel;
                 IsSave = true;
 
@@ -82,7 +82,7 @@ namespace AccountingSoftware
 
             if (IsNew)
             {
-                result = await Kernel.DataBase.InsertDirectoryObject(UnigueID, Table, FieldArray, FieldValue);
+                result = await Kernel.DataBase.InsertDirectoryObject(UniqueID, Table, FieldArray, FieldValue);
                 if (result)
                 {
                     IsNew = false;
@@ -91,9 +91,9 @@ namespace AccountingSoftware
             }
             else
             {
-                if (!UnigueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UnigueID, Table))
+                if (!UniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(UniqueID, Table))
                 {
-                    result = await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, FieldArray, FieldValue);
+                    result = await Kernel.DataBase.UpdateDirectoryObject(UniqueID, DeletionLabel, Table, FieldArray, FieldValue);
                     if (result) operation = 'U';
                 }
                 else
@@ -140,7 +140,7 @@ namespace AccountingSoftware
             if (IsSave)
             {
                 //Обновлення поля deletion_label елементу, решта полів не зачіпаються
-                await Kernel.DataBase.UpdateDirectoryObject(UnigueID, DeletionLabel, Table, null, null);
+                await Kernel.DataBase.UpdateDirectoryObject(UniqueID, DeletionLabel, Table, null, null);
 
                 //Тригер оновлення обєкту
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
@@ -157,14 +157,14 @@ namespace AccountingSoftware
             byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
             //Видалити сам елемент
-            await Kernel.DataBase.DeleteDirectoryObject(UnigueID, Table, TransactionID);
+            await Kernel.DataBase.DeleteDirectoryObject(UniqueID, Table, TransactionID);
 
             //Видалення даних з табличних частин
             foreach (string tablePartsTable in tablePartsTables)
-                await Kernel.DataBase.DeleteDirectoryTablePartRecords(UnigueID, tablePartsTable, TransactionID);
+                await Kernel.DataBase.DeleteDirectoryTablePartRecords(UniqueID, tablePartsTable, TransactionID);
 
             //Видалення з повнотекстового пошуку
-            await Kernel.DataBase.SpetialTableFullTextSearchDelete(UnigueID, TransactionID);
+            await Kernel.DataBase.SpetialTableFullTextSearchDelete(UniqueID, TransactionID);
 
             //Видалення з історії зміни даних
             await Kernel.DataBase.SpetialTableObjectVersionsHistoryRemoveAll(GetBasis(), TransactionID);
@@ -183,11 +183,11 @@ namespace AccountingSoftware
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
         protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
         {
-            if (!UnigueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
+            if (!UniqueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
                 query.Field.AddRange(fieldPresentation);
-                query.Where.Add(new Where("uid", Comparison.EQ, UnigueID.UGuid)); //Відбір по uid
+                query.Where.Add(new Where("uid", Comparison.EQ, UniqueID.UGuid)); //Відбір по uid
 
                 return await Kernel.DataBase.GetDirectoryPresentation(query, fieldPresentation);
             }
@@ -200,7 +200,7 @@ namespace AccountingSoftware
         /// </summary>
         public override UuidAndText GetBasis()
         {
-            return new UuidAndText(UnigueID, $"Довідники.{TypeDirectory}");
+            return new UuidAndText(UniqueID, $"Довідники.{TypeDirectory}");
         }
 
         /// <summary>

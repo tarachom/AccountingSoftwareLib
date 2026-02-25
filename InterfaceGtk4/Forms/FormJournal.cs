@@ -48,7 +48,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
     /// </summary>
-    public UnigueID? SelectPointerItem { get; set; }
+    public UniqueID? SelectPointerItem { get; set; }
 
     /// <summary>
     /// Табличний список
@@ -153,10 +153,10 @@ public abstract class FormJournal : Form
 
     /// <summary>
     /// Для дерева. Саме тіло функції реалізується у класі який відповідає за дерево (наприклад клас DirectoryFormJournalBaseTree)
-    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UnigueID
+    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
     /// </summary>
-    /// <param name="select">UnigueID елемента який треба виділити</param>
-    public virtual void AfterLoadRecords(UnigueID? select = null) { }
+    /// <param name="select">UniqueID елемента який треба виділити</param>
+    public virtual void AfterLoadRecords(UniqueID? select = null) { }
 
     /// <summary>
     /// Прокрутка
@@ -216,7 +216,7 @@ public abstract class FormJournal : Form
         {
             uint position = selection.GetMaximum();
             RowJournal? row = (RowJournal?)Store.GetObject(position);
-            if (row != null) SelectPointerItem = row.UnigueID;
+            if (row != null) SelectPointerItem = row.UniqueID;
         }
     }
 
@@ -242,14 +242,14 @@ public abstract class FormJournal : Form
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
     /// <returns>Масив ІД виділених рядків</returns>
-    public UnigueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UnigueID)];
+    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UniqueID)];
 
     /// <summary>
     /// Відкриває Popover із списком лінків. Використовується для меню
     /// </summary>
     /// <param name="widget">Прикріплення Popover</param>
     /// <param name="links">Масив лінків</param>
-    public void CreatePopoverMenu(Widget widget, NameValue<Action<UnigueID[]>>[]? links)
+    public void CreatePopoverMenu(Widget widget, NameValue<Action<UniqueID[]>>[]? links)
     {
         if (links != null)
         {
@@ -361,7 +361,7 @@ public abstract class FormJournal : Form
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
                                 RowJournal? row = (RowJournal?)Store.GetObject(i);
-                                if (row != null && row.UnigueID.UGuid.Equals(record.Uid))
+                                if (row != null && row.UniqueID.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
                                     break;
@@ -385,11 +385,11 @@ public abstract class FormJournal : Form
                         RowJournal? row = (RowJournal?)Store.GetObject(i);
                         if (row != null)
                         {
-                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UnigueID.UGuid));
+                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UniqueID.UGuid));
                             if (obj != null)
                             {
                                 filtered.Add(obj);
-                                records.RemoveAll(x => x.Uid.Equals(row.UnigueID.UGuid));
+                                records.RemoveAll(x => x.Uid.Equals(row.UniqueID.UGuid));
                             }
                         }
                     }
@@ -502,17 +502,17 @@ public abstract class FormJournal : Form
     /// </summary>
     /// <param name="splitSelectToPagesFunc">Функція для обчислення сторінок</param>
     /// <param name="querySelect">Вибірка для задання меж</param>
-    /// <param name="unigueID">Вибраний елемент для позиціювання вибіоки</param>
+    /// <param name="uniqueID">Вибраний елемент для позиціювання вибіоки</param>
     /// <returns></returns>
-    public async ValueTask SplitPages(Func<UnigueID? /* Вибраний елемент */, int /* Розмір вибірки */, ValueTask<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UnigueID? unigueID)
+    public async ValueTask SplitPages(Func<UniqueID? /* Вибраний елемент */, int /* Розмір вибірки */, ValueTask<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UniqueID? uniqueID)
     {
         if (!PagesSettings.Calculated)
         {
             //Обчислення розміру вибірки
-            PagesSettings.Record = await splitSelectToPagesFunc.Invoke(unigueID, PagesSettings.PageSize);
+            PagesSettings.Record = await splitSelectToPagesFunc.Invoke(uniqueID, PagesSettings.PageSize);
             PagesSettings.Calculated = true;
 
-            if (unigueID != null && PagesSettings.Record.CurrentPage > 0)
+            if (uniqueID != null && PagesSettings.Record.CurrentPage > 0)
                 PagesSettings.CurrentPage = PagesSettings.Record.CurrentPage;
             else if (PagesSettings.Position == Pages.StartingPosition.End)
                 PagesSettings.CurrentPage = PagesSettings.Record.Pages;

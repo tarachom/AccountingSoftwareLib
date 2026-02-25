@@ -91,7 +91,7 @@ public abstract class РегістриВідомостейЕлемент : Фо�
         NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
 
         if (IsNew)
-            CallBack_LoadRecords?.Invoke(UnigueID);
+            CallBack_LoadRecords?.Invoke(UniqueID);
 
         if (closePage)
             NotebookFunction.CloseNotebookPageToCode(notebook, this.Name);

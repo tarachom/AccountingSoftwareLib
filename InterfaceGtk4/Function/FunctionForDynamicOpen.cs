@@ -50,8 +50,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// Функція відкриває журнал
     /// </summary>
     /// <param name="typeJournal">Тип</param>
-    /// <param name="unigueID">Елемент для позиціювання</param>
-    public bool OpenJournalByType(string typeJournal, UnigueID? unigueID)
+    /// <param name="uniqueID">Елемент для позиціювання</param>
+    public bool OpenJournalByType(string typeJournal, UniqueID? uniqueID)
     {
         object? journalInstance;
 
@@ -70,7 +70,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             dynamic journal = journalInstance;
 
             //Документ який потрібно виділити в списку
-            journal.SelectPointerItem = unigueID;
+            journal.SelectPointerItem = uniqueID;
 
             NotebookFunc?.CreatePage(typeJournal, journal);
             journal.SetValue();
@@ -84,9 +84,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// Функція відкриває список довідника або сам елемент
     /// </summary>
     /// <param name="typeDir">Тип</param>
-    /// <param name="unigueID">Елемент для позиціонування</param>
+    /// <param name="uniqueID">Елемент для позиціонування</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDirectoryByType(string typeDir, UnigueID? unigueID, TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDirectoryByType(string typeDir, UniqueID? uniqueID, TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
@@ -109,7 +109,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         dynamic directory = directoryInstance;
 
                         //Елемент який потрібно виділити в списку
-                        directory.SelectPointerItem = unigueID;
+                        directory.SelectPointerItem = uniqueID;
 
                         //Заголовок журналу
                         string listName = "Список";
@@ -129,7 +129,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             case TypeForm.Element:
                 {
                     Type? directoryFunction = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Функції");
-                    directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, unigueID, null, null]);
+                    directoryFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(directoryFunction, [false, uniqueID, null, null]);
 
                     return true;
                 }
@@ -142,10 +142,10 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// Функція відкриває список докуменів або сам документ
     /// </summary>
     /// <param name="typeDoc">Тип документу</param>
-    /// <param name="unigueID">Елемент для позиціювання</param>
+    /// <param name="uniqueID">Елемент для позиціювання</param>
     /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDocumentByType(string typeDoc, UnigueID? unigueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDocumentByType(string typeDoc, UniqueID? uniqueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
@@ -168,7 +168,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         dynamic document = documentInstance;
 
                         //Елемент який потрібно виділити в списку
-                        document.SelectPointerItem = unigueID;
+                        document.SelectPointerItem = uniqueID;
 
                         //Заголовок журналу
                         string listName = "Список";
@@ -191,7 +191,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             case TypeForm.Element:
                 {
                     Type? documentFunction = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Функції");
-                    documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, unigueID, null]);
+                    documentFunction?.GetMethod("OpenPageElement", BindingFlags.Public | BindingFlags.Static)?.Invoke(documentFunction, [false, uniqueID, null]);
 
                     return true;
                 }
@@ -204,8 +204,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// Функція відкриває регістр відомостей
     /// </summary>
     /// <param name="typeReg">Назва</param>
-    /// <param name="unigueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterInformationByType(string typeReg, UnigueID? unigueID)
+    /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
+    public bool OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
 
@@ -224,7 +224,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             dynamic register = registerInstance;
 
             //Елемент який потрібно виділити в списку
-            register.SelectPointerItem = unigueID;
+            register.SelectPointerItem = uniqueID;
 
             //Заголовок
             string listName = "Список";
@@ -246,8 +246,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// Функція відкриває регістр накопичення
     /// </summary>
     /// <param name="typeReg">Назва</param>
-    /// <param name="unigueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterAccumulationByType(string typeReg, UnigueID? unigueID)
+    /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
+    public bool OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
 
@@ -266,7 +266,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             dynamic register = registerInstance;
 
             //Елемент який потрібно виділити в списку
-            register.SelectPointerItem = unigueID;
+            register.SelectPointerItem = uniqueID;
 
             //Заголовок
             string listName = "Список";
@@ -299,7 +299,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             lb.Halign = Align.Start;
             lb.OnActivateLink += (sender, args) =>
             {
-                OpenDocumentByType(typeDoc.Key, new UnigueID());
+                OpenDocumentByType(typeDoc.Key, new UniqueID());
                 return true;
             };
 

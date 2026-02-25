@@ -125,19 +125,19 @@ public abstract class CompositePointerControl : PointerControl
             if (listPage != null)
             {
                 //Елемент який потрібно виділити в списку
-                listPage.GetType().GetProperty("SelectPointerItem")?.SetValue(listPage, pointer.UnigueID());
+                listPage.GetType().GetProperty("SelectPointerItem")?.SetValue(listPage, pointer.UniqueID());
 
                 //Вибір дозволено коли TypeSelectSensetive == true
                 if (TypeSelectSensetive)
                 {
                     //Елемент для вибору
                     if (PointerName == "Документи")
-                        listPage.GetType().GetProperty("DocumentPointerItem")?.SetValue(listPage, pointer.UnigueID());
+                        listPage.GetType().GetProperty("DocumentPointerItem")?.SetValue(listPage, pointer.UniqueID());
                     else
-                        listPage.GetType().GetProperty("DirectoryPointerItem")?.SetValue(listPage, pointer.UnigueID());
+                        listPage.GetType().GetProperty("DirectoryPointerItem")?.SetValue(listPage, pointer.UniqueID());
 
                     //Функція зворотнього виклику при виборі
-                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UnigueID selectPointer) =>
+                    listPage.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(listPage, (UniqueID selectPointer) =>
                     {
                         Pointer = new UuidAndText(selectPointer.UGuid, GetBasisName());
                     });
