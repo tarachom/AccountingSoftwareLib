@@ -32,6 +32,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Список активних користувачів
+/// </summary>
 public class ActiveUsersView : Box
 {
     class ItemRow: Row

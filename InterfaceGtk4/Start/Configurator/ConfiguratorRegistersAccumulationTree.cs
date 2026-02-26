@@ -27,6 +27,11 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Клас для виводу регістрів накопичення
+/// </summary>
+/// <param name="conf">Конфігурація</param>
+/// <param name="activate">Процедура активації вітки в дереві</param>
 public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<string, string>? activate) : ConfiguratorTree(activate)
 {
     Configuration Conf { get; set; } = conf;

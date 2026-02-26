@@ -26,6 +26,18 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Базовий клас для виводу певного участку дерева конфігурації
+/// 
+/// Основа для класів:
+///     ConfiguratorConstantsTree
+///     ConfiguratorDirectoriesTree
+///     ConfiguratorDocumentsTree
+///     ConfiguratorEnumsTree
+///     ConfiguratorJournalsTree
+///     ConfiguratorRegistersAccumulationTree
+///     ConfiguratorRegistersInformationTree
+/// </summary>
 public abstract class ConfiguratorTree
 {
     /// <summary>

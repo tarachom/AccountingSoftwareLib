@@ -4,7 +4,7 @@ using GObject;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Клас для даних моделі яка викоритовується для виведення дерева конфігурації
 /// </summary>
 [Subclass<GObject.Object>]
 partial class ConfiguratorItemRow

@@ -22,25 +22,39 @@ limitations under the License.
 */
 
 using Gtk;
-using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// ДовідникФормаЕлемент
+/// Основа для сторінок в конфігураторі
+///     
 /// </summary>
-public abstract class DirectoryFormElement : FormElement
+public abstract class FormPageConfigurator : Form
 {
     /// <summary>
-    /// Функція зворотнього виклику для вибору елементу
-    /// Використовується коли потрібно новий елемент зразу вибрати
+    /// 
     /// </summary>
-    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
+    public bool IsNew { get; set; }
 
     /// <summary>
-    /// Горизонтальний бокс для кнопок
+    /// 
+    /// </summary>
+    public string ConfName { get; set; } = "";
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Caption { get; set; } = "";
+
+    /// <summary>
+    /// Верхній блок для кнопок
     /// </summary>
     protected Box HBoxTop = New(Orientation.Horizontal, 0);
+
+    /// <summary>
+    /// Середній блок
+    /// </summary>
+    //protected Box HBoxBody = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок для полів
@@ -50,10 +64,10 @@ public abstract class DirectoryFormElement : FormElement
     /// <summary>
     /// Кнопки "Зберегти та закрити", "Зберегти"
     /// </summary>
-    Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
-    Button bSave = Button.NewWithLabel("Зберегти");
+    protected Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
+    protected Button bSave = Button.NewWithLabel("Зберегти");
 
-    public DirectoryFormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
+    public FormPageConfigurator(NotebookFunction? notebookFunc) : base(notebookFunc)
     {
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
@@ -63,9 +77,8 @@ public abstract class DirectoryFormElement : FormElement
         bSave.OnClicked += (_, _) => BeforeAndAfterSave();
         HBoxTop.Append(bSave);
 
-        //Індикатор стану блокування
-        HBoxTop.Append(LockInfo);
-
+        //Кнопки
+        HBoxTop.MarginBottom = 10;
         Append(HBoxTop);
 
         //StarBloc
@@ -84,49 +97,9 @@ public abstract class DirectoryFormElement : FormElement
         Append(HPanedTop);
     }
 
-    public override async ValueTask SetValue()
-    {
-        //Блокування
-        {
-            if (NotebookFunc != null && Element != null)
-                await NotebookFunc.AddLockObjectFunc(GetName(), Element);
-
-            //Інформування
-            LockInfo.Element = Element;
-            await LockInfo.LockInfo();
-
-            if (Element != null && !await Element.IsLock())
-                bSaveAndClose.Sensitive = bSave.Sensitive = false;
-        }
-
-        DefaultGrabFocus();
-
-        NotebookFunc?.SpinnerOn(GetName());
-        await AssignValue();
-        NotebookFunc?.SpinnerOff(GetName());
-    }
-
-    #region Virtual Function
-
-    /// <summary>
-    /// Лівий Блок
-    /// </summary>
-    protected virtual void CreateStart(Box vBox) { }
-
-    /// <summary>
-    /// Правий Блок
-    /// </summary>
-    protected virtual void CreateEnd(Box vBox) { }
-
-    #endregion
-
-    /// <summary>
-    /// Функція обробки перед збереження та після збереження
-    /// </summary>
-    /// <param name="closePage"></param>
     async void BeforeAndAfterSave(bool closePage = false)
     {
-        GetValue();
+        await GetValue();
 
         NotebookFunc?.SensitivePage(GetName(), false);
         NotebookFunc?.SpinnerOn(GetName());
@@ -138,16 +111,51 @@ public abstract class DirectoryFormElement : FormElement
 
         if (isSave)
         {
-            if (CallBack_OnSelectPointer != null && UniqueID != null)
-                CallBack_OnSelectPointer.Invoke(UniqueID);
-
-            if (IsNew)
-                CallBack_LoadRecords?.Invoke(UniqueID);
-
             if (closePage)
                 NotebookFunc?.ClosePage(GetName());
             else
                 NotebookFunc?.RenamePage(Caption, GetName());
         }
     }
+
+    public async ValueTask SetValue()
+    {
+        NotebookFunc?.SpinnerOn(GetName());
+        await AssignValue();
+        NotebookFunc?.SpinnerOff(GetName());
+    }
+
+    #region Abstract and Virtual Function
+
+    /// <summary>
+    /// Лівий Блок
+    /// </summary>
+    protected virtual void CreateStart(Box vBox) { }
+
+    /// <summary>
+    /// Правий Блок
+    /// </summary>
+    protected virtual void CreateEnd(Box vBox) { }
+
+    /// <summary>
+    /// Додаткова функція яка викликається із SetValue
+    /// </summary>
+    public abstract ValueTask AssignValue();
+
+    /// <summary>
+    /// Фокус за стандартом
+    /// </summary>
+    public virtual void DefaultGrabFocus() { }
+
+    /// <summary>
+    /// Зчитування значень
+    /// </summary>
+    protected abstract ValueTask GetValue();
+
+    /// <summary>
+    /// Збереження
+    /// </summary>
+    protected abstract ValueTask<bool> Save();
+
+    #endregion
 }

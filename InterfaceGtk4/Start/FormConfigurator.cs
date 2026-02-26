@@ -84,6 +84,8 @@ public abstract class FormConfigurator : Window
     protected abstract void Service(LinkButton link);
     protected abstract void Settings(LinkButton link);
 
+    protected virtual async ValueTask PageDirectory(string name, bool isNew = false) { }
+
     #endregion
 
     #region LeftMenu
@@ -215,15 +217,13 @@ public abstract class FormConfigurator : Window
         vBox.Append(getbox());
         popover.Show();
 
-        Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, (group, name) =>
+        Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, async (group, name) =>
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "Directories":
                     {
-
+                        await PageDirectory(name);
                         return;
                     }
                 case "Field":

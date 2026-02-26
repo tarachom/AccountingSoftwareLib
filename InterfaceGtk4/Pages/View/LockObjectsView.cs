@@ -23,7 +23,7 @@ limitations under the License.
 
 /*
 
-Список активних користувачів
+Список заблокованих об'єктів (відкриті для редагування)
 
 */
 
@@ -32,6 +32,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Заблоковані об'єкти (відкриті для редагування)
+/// </summary>
 public abstract class LockObjectsView : Box
 {
     class ItemRow : Row

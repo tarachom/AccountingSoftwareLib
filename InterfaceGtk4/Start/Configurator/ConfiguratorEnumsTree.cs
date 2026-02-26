@@ -27,6 +27,11 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Клас для виводу перелічень
+/// </summary>
+/// <param name="conf">Конфігурація</param>
+/// <param name="activate">Процедура активації вітки в дереві</param>
 public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? activate) : ConfiguratorTree(activate)
 {
     Configuration Conf { get; set; } = conf;

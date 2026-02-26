@@ -149,7 +149,10 @@ public abstract class DocumentFormElement : FormElement
         }
 
         DefaultGrabFocus();
+
+        NotebookFunc?.SpinnerOn(GetName());
         await AssignValue();
+        NotebookFunc?.SpinnerOff(GetName());
     }
 
     /// <summary>
