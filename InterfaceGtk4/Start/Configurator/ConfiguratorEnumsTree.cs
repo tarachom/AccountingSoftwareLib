@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? activate) : ConfiguratorTree(activate)
+public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -41,6 +41,12 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
     /// </summary>
     /// <returns>Бокс із заповненою таблицею</returns>
     public Box Fill()
+    {
+        FillGrid();
+        return VBox;
+    }
+
+    protected override void FillGrid()
     {
         Store.RemoveAll();
 
@@ -52,8 +58,6 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
                 Name = enums.Name,
                 Obj = enums
             });
-
-        return HBox;
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)

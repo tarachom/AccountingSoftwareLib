@@ -41,6 +41,11 @@ namespace InterfaceGtk4;
 public abstract class ConfiguratorTree
 {
     /// <summary>
+    /// Вибраний елемент дерева
+    /// </summary>
+    ConfiguratorItemRow? SelectionRow { get; set; }
+
+    /// <summary>
     /// Сховище
     /// </summary>
     protected Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
@@ -51,22 +56,55 @@ public abstract class ConfiguratorTree
     protected abstract Gio.ListModel? CreateFunc(GObject.Object item);
 
     /// <summary>
-    /// Функція активації
+    /// Заповнення дерева
+    /// </summary>
+    protected abstract void FillGrid();
+
+    /// <summary>
+    /// Функція активації елементу дерева
     /// </summary>
     public Action<string, string>? Activate { get; set; }
 
     /// <summary>
-    /// Основний бокс для таблиці
+    /// Функції для меню
     /// </summary>
-    protected Box HBox { get; set; } = Box.New(Orientation.Horizontal, 0);
+    public ToolbarAction? Toolbar { get; set; }
 
-    public ConfiguratorTree(Action<string, string>? activate)
+    /// <summary>
+    /// Основний бокс
+    /// </summary>
+    protected Box VBox { get; set; } = Box.New(Orientation.Vertical, 0);
+
+    /// <summary>
+    /// Верхній набір меню
+    /// </summary>
+    Box HBoxToolbar { get; } = Box.New(Orientation.Horizontal, 0);
+
+    /// <summary>
+    /// Бокс для таблиці
+    /// </summary>
+    Box HBoxGrid { get; set; } = Box.New(Orientation.Horizontal, 0);
+
+    public ConfiguratorTree(Action<string, string>? activate, ToolbarAction? toolbar)
     {
         Activate = activate;
+        Toolbar = toolbar;
+
+        AddToolbar();
+
+        HBoxToolbar.MarginBottom = 5;
+        VBox.Append(HBoxToolbar);
 
         TreeListModel list = TreeListModel.New(Store, false, false, CreateFunc);
         SingleSelection model = SingleSelection.New(list);
         ColumnView columnView = ColumnView.New(model);
+        columnView.Reorderable = false;
+
+        model.OnSelectionChanged += (_, _) =>
+        {
+            TreeListRow? row = (TreeListRow?)model.GetSelectedItem();
+            SelectionRow = (ConfiguratorItemRow?)row?.Item;
+        };
 
         AddColumn(columnView);
 
@@ -75,7 +113,89 @@ public abstract class ConfiguratorTree
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         scroll.Child = columnView;
 
-        HBox.Append(scroll);
+        HBoxGrid.Append(scroll);
+        VBox.Append(HBoxGrid);
+    }
+
+    protected void AddToolbar()
+    {
+        if (Toolbar == null) return;
+
+        //Новий
+        if (Toolbar.Add != null)
+        {
+            Button button = Button.NewFromIconName("new");
+            button.MarginEnd = 5;
+            button.TooltipText = "Додати";
+            button.OnClicked += (_, _) => Toolbar.Add();
+            HBoxToolbar.Append(button);
+        }
+
+        //Редагувати
+        if (Toolbar.Edit != null)
+        {
+            Button button = Button.NewFromIconName("edit");
+            button.MarginEnd = 5;
+            button.TooltipText = "Редагувати";
+            button.OnClicked += (_, _) =>
+            {
+                if (SelectionRow != null)
+                    Toolbar.Edit(SelectionRow.Group, SelectionRow.Name);
+            };
+            HBoxToolbar.Append(button);
+        }
+
+        //Оновити
+        {
+            Button button = Button.NewFromIconName("refresh");
+            button.MarginEnd = 5;
+            button.TooltipText = "Оновити";
+            button.OnClicked += (_, _) => FillGrid();
+            HBoxToolbar.Append(button);
+        }
+
+        //Копіювати
+        if (Toolbar.Copy != null)
+        {
+            Button button = Button.NewFromIconName("copy");
+            button.MarginEnd = 5;
+            button.TooltipText = "Копіювати";
+            button.OnClicked += (_, _) =>
+            {
+                if (SelectionRow != null)
+                    Toolbar.Copy(SelectionRow.Group, SelectionRow.Name);
+            };
+            HBoxToolbar.Append(button);
+        }
+
+        //Видалити
+        if (Toolbar.Delete != null)
+        {
+            Button button = Button.NewFromIconName("delete");
+            button.MarginEnd = 5;
+            button.TooltipText = "Видалити";
+            button.OnClicked += (_, _) =>
+            {
+                if (SelectionRow != null)
+                    Toolbar.Delete(SelectionRow.Group, SelectionRow.Name);
+            };
+            HBoxToolbar.Append(button);
+        }
+
+        //Відкрити окремо
+        if (Toolbar.OpenNewTab != null)
+        {
+            Separator separator = Separator.New(Orientation.Vertical);
+            separator.MarginStart = 5;
+            separator.MarginEnd = 10;
+            HBoxToolbar.Append(separator);
+
+            Button button = Button.NewFromIconName("go-up");
+            button.MarginEnd = 5;
+            button.TooltipText = "Відкрити окремо";
+            button.OnClicked += (_, _) => Toolbar.OpenNewTab();
+            HBoxToolbar.Append(button);
+        }
     }
 
     protected void AddColumn(ColumnView columnView)
@@ -188,5 +308,17 @@ public abstract class ConfiguratorTree
                     Activate?.Invoke(itemRow.Group, itemRow.Name);
             }
         };
+    }
+
+    /// <summary>
+    /// Функції для меню
+    /// </summary>
+    public record ToolbarAction
+    {
+        public Action? Add { get; set; }
+        public Action<string, string>? Edit { get; set; }
+        public Action<string, string>? Copy { get; set; }
+        public Action<string, string>? Delete { get; set; }
+        public Action? OpenNewTab { get; set; }
     }
 }

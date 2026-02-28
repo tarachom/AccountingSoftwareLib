@@ -71,12 +71,12 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Верхній бокc для пошуку та додаткових кнопок
     /// </summary>
-    protected Box HBoxTop { get; } = New(Orientation.Horizontal, 0);
+    protected Box HBoxTop { get; } = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Верхній набір меню
     /// </summary>
-    protected Box HBoxToolbarTop { get; } = New(Orientation.Horizontal, 0);
+    protected Box HBoxToolbarTop { get; } = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Пошук

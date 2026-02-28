@@ -24,6 +24,7 @@ limitations under the License.
 using Gtk;
 using AccountingSoftware;
 using InterfaceGtkLib;
+using System.Text.RegularExpressions;
 
 namespace InterfaceGtk4;
 
@@ -84,7 +85,14 @@ public abstract class FormConfigurator : Window
     protected abstract void Service(LinkButton link);
     protected abstract void Settings(LinkButton link);
 
+    protected virtual async ValueTask PageConstantBlock(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageConstant(string name, bool isNew = false) { }
     protected virtual async ValueTask PageDirectory(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageDocument(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageJournal(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageEnum(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageRegisterInformation(string name, bool isNew = false) { }
+    protected virtual async ValueTask PageRegisterAccumulation(string name, bool isNew = false) { }
 
     #endregion
 
@@ -143,48 +151,34 @@ public abstract class FormConfigurator : Window
         hbox.Append(scroll);
     }
 
-    Popover CreatePopover(LinkButton linkButton, out Box vBox)
+    Popover CreatePopover(LinkButton linkButton)
     {
         Popover popover = Popover.New();
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
         popover.WidthRequest = 800;
         popover.HeightRequest = 600;
-
-        vBox = Box.New(Orientation.Vertical, 0);
-        popover.Child = vBox;
-
         return popover;
     }
 
     void Constants(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Константи", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "Block":
                     {
-
+                        await PageConstantBlock(name);
                         return;
                     }
                 case "Const":
                     {
-
+                        await PageConstant(name);
                         return;
                     }
                 case "TablePart":
@@ -200,24 +194,39 @@ public abstract class FormConfigurator : Window
                 default:
                     return;
             }
+        }
+
+        Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate, new()
+        {
+            Add = async () =>
+            {
+                await PageDirectory("", true);
+            },
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Константи", getbox());
+                popover.Hide();
+            }
         }).Fill();
     }
 
     void Directory(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Довідники", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, async (group, name) =>
+        async void Activate(string group, string name)
         {
             switch (group)
             {
@@ -244,32 +253,42 @@ public abstract class FormConfigurator : Window
                 default:
                     return;
             }
+        }
+
+        Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
+        {
+            Add = async () => await PageDirectory("", true),
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+                
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Довідники", getbox());
+                popover.Hide();
+            }
         }).Fill();
     }
 
     void Documents(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Документи", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "Documents":
                     {
-
+                        await PageDocument(name);
                         return;
                     }
                 case "Field":
@@ -289,30 +308,45 @@ public abstract class FormConfigurator : Window
                     }
                 default:
                     return;
+            }
+        }
+
+        Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
+        {
+            Add = async () => await PageDocument("", true),
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Документи", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
 
     void Journals(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Журнали", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorJournalsTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
+                case "Journals":
+                    {
+                        await PageJournal(name);
+                        return;
+                    }
                 case "Field":
                     {
 
@@ -320,33 +354,46 @@ public abstract class FormConfigurator : Window
                     }
                 default:
                     return;
+            }
+        }
+
+        Box getbox() => new ConfiguratorJournalsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
+        {
+            Add = async () =>
+            {
+                await PageJournal("", true);
+            },
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Журнали", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
 
     void Enums(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Перелічення", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "Enums":
                     {
-
+                        await PageEnum(name);
                         return;
                     }
                 case "Field":
@@ -357,32 +404,42 @@ public abstract class FormConfigurator : Window
                 default:
                     return;
             }
+        }
+
+        Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
+        {
+            Add = async () => await PageEnum("", true),
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Перелічення", getbox());
+                popover.Hide();
+            }
         }).Fill();
     }
 
     void RegistersInformation(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Регістри інформації", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "RegistersInformation":
                     {
-
+                        await PageRegisterInformation(name);
                         return;
                     }
                 case "DimensionField":
@@ -403,32 +460,42 @@ public abstract class FormConfigurator : Window
                 default:
                     return;
             }
+        }
+
+        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
+        {
+            Add = async () => await PageRegisterInformation("", true),
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити в новій вкладці
+                NotebookFunc.CreatePage("Регістри інформації", getbox());
+                popover.Hide();
+            }
         }).Fill();
     }
 
     void RegistersAccumulation(LinkButton linkButton)
     {
-        Popover popover = CreatePopover(linkButton, out Box vBox);
-
-        //Відкрити в новій вкладці
-        Form.CreateLink(vBox, "Відкрити окремо", () =>
-        {
-            NotebookFunc.CreatePage("Регістри накопичення", getbox());
-            popover.Hide();
-        });
-
-        vBox.Append(getbox());
+        Popover popover = CreatePopover(linkButton);
+        popover.Child = getbox();
         popover.Show();
 
-        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, (group, name) =>
+        async void Activate(string group, string name)
         {
-            Console.WriteLine($"{group} {name}");
-
             switch (group)
             {
                 case "RegistersAccumulation":
                     {
-
+                        await PageRegisterAccumulation(name);
                         return;
                     }
                 case "DimensionField":
@@ -458,6 +525,26 @@ public abstract class FormConfigurator : Window
                     }
                 default:
                     return;
+            }
+        }
+
+        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new()
+        {
+            Add = async () => await PageRegisterAccumulation("", true),
+            Edit = (group, name) => Activate(group, name),
+            Copy = (group, name) =>
+            {
+
+            },
+            Delete = (group, name) =>
+            {
+
+            },
+            OpenNewTab = () =>
+            {
+                //Відкрити окремо
+                NotebookFunc.CreatePage("Регістри накопичення", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
