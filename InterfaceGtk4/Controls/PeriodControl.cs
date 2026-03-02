@@ -33,6 +33,7 @@ namespace InterfaceGtk4;
 
 public class PeriodControl : Box
 {
+    //DropDown dropDownPeriod; //Набір варіантів періодів
     ComboBoxText comboBoxPeriod; //Набір варіантів періодів
     DateTimeControl dateStart = new() { OnlyDate = true };
     DateTimeControl dateStop = new() { OnlyDate = true, Value = DateTime.Now };
@@ -70,7 +71,7 @@ public class PeriodControl : Box
         };
         Append(bSelect);
 
-        comboBoxPeriod = PeriodForJournal.СписокВідбірПоПеріоду();
+        comboBoxPeriod = PeriodForJournal.PeriodSelectionList();
         comboBoxPeriod.MarginEnd = 2;
         comboBoxPeriod.OnChanged += (_, _) =>
         {
@@ -81,10 +82,10 @@ public class PeriodControl : Box
             }
             else if (Period != PeriodForJournal.TypePeriod.Special)
             {
-                DateTime? dtStart = PeriodForJournal.ДатаПочатокЗПеріоду(Period);
+                DateTime? dtStart = PeriodForJournal.DateStartOfPeriod(Period);
                 if (dtStart != null) dateStart.Value = dtStart.Value;
 
-                DateTime? dtStop = PeriodForJournal.ДатаКінецьЗПеріоду(Period);
+                DateTime? dtStop = PeriodForJournal.DateEndOfPeriod(Period);
                 dateStop.Value = dtStop != null ? dtStop.Value : DateTime.Now;
             }
 
@@ -92,6 +93,46 @@ public class PeriodControl : Box
         };
         Append(comboBoxPeriod);
     }
+
+    /*
+
+    //Заготовка на майбутнє    
+
+    void CreateDropDownPeriod()
+    {
+        var factory = SignalListItemFactory.New();
+
+        factory.OnSetup += (_, args) =>
+        {
+            ListItem listItem = (ListItem)args.Object;
+            listItem.SetChild(Label.New(null));
+        };
+
+        factory.OnBind += (_, args) =>
+        {
+            ListItem listItem = (ListItem)args.Object;
+            Label? label = (Label?)listItem.GetChild();
+            if (listItem.GetItem() is PeriodItemRow item && label != null)
+                label.SetText(item.Name);
+        };
+
+        dropDownPeriod = DropDown.New(PeriodForJournal.PeriodSelectionStore(), null);
+        dropDownPeriod.Factory = factory;
+        dropDownPeriod.OnNotify += (s, args) =>
+        {
+            if (args.Pspec.GetName() == "selected-item")
+            {
+                var dd = (DropDown)s;
+                if (dd.SelectedItem is PeriodItemRow selectedItem)
+                {
+                    Console.WriteLine($"Обрано період: {selectedItem.TypePeriod}");
+                }
+            }
+        };
+
+        Append(dropDownPeriod);
+    }
+    */
 
     public bool OnlyDate
     {

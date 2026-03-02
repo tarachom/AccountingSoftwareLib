@@ -26,8 +26,14 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Періоди для журналів
+/// </summary>
 public static class PeriodForJournal
 {
+    /// <summary>
+    /// Варіанти типів періодів
+    /// </summary>
     public enum TypePeriod
     {
         AllPeriod = 1,
@@ -44,6 +50,11 @@ public static class PeriodForJournal
         Today
     }
 
+    /// <summary>
+    /// Псевдонім для типу періоду
+    /// </summary>
+    /// <param name="value">Тип періоду</param>
+    /// <returns>Назва</returns>
     static string TypePeriod_Alias(TypePeriod value)
     {
         return value switch
@@ -64,7 +75,12 @@ public static class PeriodForJournal
         };
     }
 
-    public static ComboBoxText СписокВідбірПоПеріоду()
+    /// <summary>
+    /// Список доступних відборів.
+    /// Використовується із PeriodControl
+    /// </summary>
+    /// <returns>ComboBoxText</returns>
+    public static ComboBoxText PeriodSelectionList()
     {
         ComboBoxText сomboBox = new();
 
@@ -74,71 +90,116 @@ public static class PeriodForJournal
         return сomboBox;
     }
 
+    /// <summary>
+    /// Повертає сховище з набором варантів періоду.
+    /// Використовується із PeriodControl. Заготовка на майбутнє
+    /// </summary>
+    /// <returns>Сховище Gio.ListStore</returns>
+    public static Gio.ListStore PeriodSelectionStore()
+    {
+        Gio.ListStore store = Gio.ListStore.New(PeriodItemRow.GetGType());
+
+        foreach (TypePeriod value in Enum.GetValues<TypePeriod>())
+            store.Append(new PeriodItemRow(value, TypePeriod_Alias(value)));
+
+        return store;
+    }
+
     #region Функції
 
-    static DateTime ПочатокТижня(DateTime dt) => dt.AddDays(-(((int)dt.DayOfWeek + 6) % 7));
+    /// <summary>
+    /// Початок тижня
+    /// </summary>
+    /// <param name="dt">Дата</param>
+    /// <returns>Дата початок тижня</returns>
+    static DateTime StartOfWeek(DateTime dt) => dt.AddDays(-(((int)dt.DayOfWeek + 6) % 7));
 
-    static DateTime КінецьТижня(DateTime dt) => ПочатокТижня(dt).AddDays(6);
+    /// <summary>
+    /// Кінець тижня
+    /// </summary>
+    /// <param name="dt">Дата</param>
+    /// <returns>Дата кінець тижня</returns>
+    static DateTime EndOfWeek(DateTime dt) => StartOfWeek(dt).AddDays(6);
 
-    static List<(DateTime Початок, DateTime Кінець)> СписокКварталів(DateTime dt)
+    /// <summary>
+    /// Список кварталів для року із дати
+    /// </summary>
+    /// <param name="dt">Дата</param>
+    /// <returns>Список із кортежами де перший параметр дата початку кварталу а другий це кінець кварталу</returns>
+    static List<(DateTime Start, DateTime End)> GetQuarterList()
     {
-        DateTime ПочатокРоку = new(DateTime.Now.Year, 1, 1);
+        DateTime StartOfYear = new(DateTime.Now.Year, 1, 1);
 
-        List<(DateTime Початок, DateTime Кінець)> Квартали =
+        List<(DateTime Start, DateTime End)> Quarters =
         [
-            (ПочатокРоку, ПочатокРоку.AddMonths(3).AddDays(-1)),              //1                
-            (ПочатокРоку.AddMonths(3), ПочатокРоку.AddMonths(6).AddDays(-1)), //2                
-            (ПочатокРоку.AddMonths(6), ПочатокРоку.AddMonths(9).AddDays(-1)), //3                
-            (ПочатокРоку.AddMonths(9), ПочатокРоку.AddMonths(12).AddDays(-1)) //4
+            (StartOfYear, StartOfYear.AddMonths(3).AddDays(-1)),              //1                
+            (StartOfYear.AddMonths(3), StartOfYear.AddMonths(6).AddDays(-1)), //2                
+            (StartOfYear.AddMonths(6), StartOfYear.AddMonths(9).AddDays(-1)), //3                
+            (StartOfYear.AddMonths(9), StartOfYear.AddMonths(12).AddDays(-1)) //4
         ];
 
-        return Квартали;
+        return Quarters;
     }
 
-    static DateTime ПочатокКварталу(DateTime dt)
+    /// <summary>
+    /// Початок кварталу
+    /// </summary>
+    /// <param name="dt">Дата</param>
+    /// <returns>Дата початку кварталу для дати</returns>
+    static DateTime StartQuarter(DateTime dt)
     {
-        DateTime? Дата = null;
+        DateTime? date = null;
         DateTime dtDateOnly = dt.Date;
 
-        foreach (var (Початок, Кінець) in СписокКварталів(dt))
-            if (dtDateOnly >= Початок && dtDateOnly <= Кінець)
+        foreach (var (Start, End) in GetQuarterList())
+            if (dtDateOnly >= Start && dtDateOnly <= End)
             {
-                Дата = Початок;
+                date = Start;
                 break;
             }
 
-        return Дата ?? DateTime.MinValue;
+        return date ?? DateTime.MinValue;
     }
 
-    static DateTime КінецьКварталу(DateTime dt)
+    /// <summary>
+    /// Кінець кварталу
+    /// </summary>
+    /// <param name="dt">Дата</param>
+    /// <returns>Дата кінця кварталу для дати</returns>
+    static DateTime EndQuarter(DateTime dt)
     {
-        DateTime? Дата = null;
+        DateTime? date = null;
         DateTime dtDateOnly = dt.Date;
 
-        foreach (var (Початок, Кінець) in СписокКварталів(dt))
-            if (dtDateOnly >= Початок && dtDateOnly <= Кінець)
+        foreach (var (Start, End) in GetQuarterList())
+            if (dtDateOnly >= Start && dtDateOnly <= End)
             {
-                Дата = Кінець;
+                date = End;
                 break;
             }
 
-        return Дата ?? DateTime.MinValue;
+        return date ?? DateTime.MinValue;
     }
 
     #endregion
 
-    public static DateTime? ДатаПочатокЗПеріоду(TypePeriod типПеріоду)
+    /// <summary>
+    /// Дата початку для періоду
+    /// </summary>
+    /// <param name="typePeriod">Тип періоду</param>
+    /// <returns>Дата</returns>
+    public static DateTime? DateStartOfPeriod(TypePeriod typePeriod)
     {
-        DateTime? dateTime = типПеріоду switch
+        DateTime? dateTime = typePeriod switch
         {
             TypePeriod.LastYear => new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1),
             TypePeriod.ThisYear => new DateTime(DateTime.Now.Year, 1, 1),
-            TypePeriod.LastQuarter => ПочатокКварталу(DateTime.Now).AddMonths(-3),
-            TypePeriod.ThisQuarter => ПочатокКварталу(DateTime.Now),
+            TypePeriod.LastQuarter => StartQuarter(DateTime.Now).AddMonths(-3),
+            TypePeriod.ThisQuarter => StartQuarter(DateTime.Now),
             TypePeriod.LastMonth => new DateTime(DateTime.Now.Year, DateTime.Now.AddMonths(-1).Month, 1),
             TypePeriod.ThisMonth => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
-            TypePeriod.LastWeek => ПочатокТижня(DateTime.Now.AddDays(-7)),
-            TypePeriod.ThisWeek => ПочатокТижня(DateTime.Now),
+            TypePeriod.LastWeek => StartOfWeek(DateTime.Now.AddDays(-7)),
+            TypePeriod.ThisWeek => StartOfWeek(DateTime.Now),
             TypePeriod.Yesterday => DateTime.Now.AddDays(-1),
             TypePeriod.Today => DateTime.Now,
             _ => null
@@ -147,17 +208,22 @@ public static class PeriodForJournal
         return dateTime?.Date;
     }
 
-    public static DateTime? ДатаКінецьЗПеріоду(TypePeriod типПеріоду)
+    /// <summary>
+    /// Дата кінця для періоду
+    /// </summary>
+    /// <param name="typePeriod">Тип періоду</param>
+    /// <returns>Дата</returns>
+    public static DateTime? DateEndOfPeriod(TypePeriod typePeriod)
     {
-        DateTime? dateTime = типПеріоду switch
+        DateTime? dateTime = typePeriod switch
         {
             TypePeriod.LastYear => new DateTime(DateTime.Now.Year, 1, 1).AddDays(-1),
             TypePeriod.ThisYear => null,
-            TypePeriod.LastQuarter => КінецьКварталу(DateTime.Now.AddMonths(-3)),
+            TypePeriod.LastQuarter => EndQuarter(DateTime.Now.AddMonths(-3)),
             TypePeriod.ThisQuarter => null,
             TypePeriod.LastMonth => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddDays(-1),
             TypePeriod.ThisMonth => null,
-            TypePeriod.LastWeek => КінецьТижня(DateTime.Now.AddDays(-7)),
+            TypePeriod.LastWeek => EndOfWeek(DateTime.Now.AddDays(-7)),
             TypePeriod.ThisWeek => null,
             TypePeriod.Yesterday => DateTime.Now.AddDays(-1),
             TypePeriod.Today => null,
@@ -167,31 +233,30 @@ public static class PeriodForJournal
         return dateTime?.Date;
     }
 
-    public static Where? ВідбірПоПеріоду(string fieldWhere, TypePeriod typePeriod, DateTime? start = null, DateTime? stop = null)
+    /// <summary>
+    /// Відбір по періоду
+    /// </summary>
+    /// <param name="fieldWhere">Назва поля для відбору</param>
+    /// <param name="typePeriod">Тип періоду</param>
+    /// <param name="start">Дата початку</param>
+    /// <param name="stop">Дата кінця</param>
+    /// <returns>Відбір</returns>
+    public static Where? SelectionByPeriod(string fieldWhere, TypePeriod typePeriod, DateTime? start = null, DateTime? stop = null)
     {
-        if (typePeriod == TypePeriod.AllPeriod)
-            return null;
-        else if (typePeriod == TypePeriod.Special)
+        //Локальна функція
+        Where whereLocalFunc(DateTime startDate, DateTime endDate)
         {
-            if (start != null && stop != null)
-            {
-                string start_format = start.Value.ToString("yyyy-MM-dd 00:00:00");
-                string stop_format = stop.Value.ToString("yyyy-MM-dd 23:59:59");
-
-                return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
-            }
-            else
-                return null;
-        }
-        else
-        {
-            DateTime dateStartTime = ДатаПочатокЗПеріоду(typePeriod) ?? DateTime.MinValue;
-            DateTime dateStopTime = ДатаКінецьЗПеріоду(typePeriod) ?? DateTime.Now;
-
-            string start_format = dateStartTime.ToString("yyyy-MM-dd 00:00:00");
-            string stop_format = dateStopTime.ToString("yyyy-MM-dd 23:59:59");
+            string start_format = startDate.ToString("yyyy-MM-dd 00:00:00");
+            string stop_format = endDate.ToString("yyyy-MM-dd 23:59:59");
 
             return new Where(fieldWhere, Comparison.BETWEEN, $"'{start_format}' AND '{stop_format}'", true);
         }
+
+        if (typePeriod == TypePeriod.AllPeriod)
+            return null;
+        else if (typePeriod == TypePeriod.Special)
+            return (start != null && stop != null) ? whereLocalFunc(start.Value, stop.Value) : null;
+        else
+            return whereLocalFunc(DateStartOfPeriod(typePeriod) ?? DateTime.MinValue, DateEndOfPeriod(typePeriod) ?? DateTime.Now);
     }
 }
