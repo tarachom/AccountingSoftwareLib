@@ -81,7 +81,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         await BeforeSetValue();
 
         await LoadRecords();
-        //RunUpdateRecords();
+        RunUpdateRecords();
     }
 
     /// <summary>

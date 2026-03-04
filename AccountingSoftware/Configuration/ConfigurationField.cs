@@ -161,7 +161,17 @@ namespace AccountingSoftware
         /// </summary>
         public ConfigurationField Copy()
         {
-            return new ConfigurationField(Name, FullName, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch);
+            ConfigurationField copyField = new(Name, FullName, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch, IsSearch, IsExport)
+            {
+                Multiline = Multiline,
+                AutomaticNumbering = AutomaticNumbering,
+                CompositePointerNotUseDirectories = CompositePointerNotUseDirectories,
+                CompositePointerNotUseDocuments = CompositePointerNotUseDocuments,
+                CompositePointerAllowDirectories = [.. CompositePointerAllowDirectories],
+                CompositePointerAllowDocuments = [.. CompositePointerAllowDocuments]
+            };
+
+            return copyField;
         }
     }
 }

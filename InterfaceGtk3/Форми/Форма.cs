@@ -120,7 +120,7 @@ public abstract class Форма : Box
         }
 
         if (label != null)
-            usingBox.PackStart(new Label(label), false, false, 5);
+            usingBox.PackStart(new Label(AddColon(label)), false, false, 5);
 
         if (field != null)
             usingBox.PackStart(field, false, false, 5);
@@ -142,7 +142,7 @@ public abstract class Форма : Box
         vBox.PackStart(hBox, false, false, 5);
 
         if (label != null)
-            hBox.PackStart(new Label(label) { Valign = Align.Start }, false, false, 5);
+            hBox.PackStart(new Label(AddColon(label)) { Valign = Align.Start }, false, false, 5);
 
         ScrolledWindow scroll = new ScrolledWindow() { ShadowType = ShadowType.In, WidthRequest = Width, HeightRequest = Height };
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
@@ -163,12 +163,25 @@ public abstract class Форма : Box
         {
             Box hBoxCaption = new Box(Orientation.Horizontal, 0);
             vBox.PackStart(hBoxCaption, false, false, 5);
-            hBoxCaption.PackStart(new Label(label), false, false, 5);
+            hBoxCaption.PackStart(new Label(AddColon(label)), false, false, 5);
         }
 
         Box hBox = new Box(Orientation.Horizontal, 0);
         vBox.PackStart(hBox, false, false, 0);
         hBox.PackStart(tablePart, true, true, 5);
+    }
+
+    /// <summary>
+    /// Добавляє дві крапки в кінці тексту
+    /// </summary>
+    /// <param name="text">Текст</param>
+    /// <returns>Модифікований текст</returns>
+    static string AddColon(string text)
+    {
+        string txt = text.TrimEnd();
+        if (!string.IsNullOrEmpty(txt) && !txt.EndsWith(':')) txt += ":";
+
+        return txt;
     }
 
     #endregion

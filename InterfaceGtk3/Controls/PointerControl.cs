@@ -78,7 +78,10 @@ public abstract class PointerControl : Box
         }
         set
         {
-            labelCaption.Text = value;
+            string txt = value.Trim();
+            if (!string.IsNullOrEmpty(txt) && !txt.EndsWith(':')) txt += ":";
+
+            labelCaption.Text = txt;
         }
     }
 
