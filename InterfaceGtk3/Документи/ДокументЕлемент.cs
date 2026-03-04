@@ -281,8 +281,9 @@ public abstract class ДокументЕлемент : ФормаЕлемент
         NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, false);
         SpinnerOn(notebook);
 
+        bool isNew = IsNew;
         bool isSave = await Save();
-        bool isSpend = (spendDoc || !IsNew) && await SpendTheDocument(isSave && spendDoc);
+        bool isSpend = (spendDoc || !isNew) && await SpendTheDocument(isSave && spendDoc);
 
         SpinnerOff(notebook);
         NotebookFunction.SensitiveNotebookPageToCode(notebook, this.Name, true);
@@ -292,7 +293,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
             if (CallBack_OnSelectPointer != null && UniqueID != null)
                 CallBack_OnSelectPointer.Invoke(UniqueID);
 
-            if (IsNew)
+            if (isNew)
                 CallBack_LoadRecords?.Invoke(UniqueID);
 
             if (closePage && isSpend)
