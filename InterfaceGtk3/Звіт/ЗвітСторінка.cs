@@ -35,6 +35,7 @@ namespace InterfaceGtk3;
 public abstract class ЗвітСторінка(Kernel kernel) : Форма
 {
     Kernel Kernel { get; set; } = kernel;
+
     TreeView? TreeViewGrid = null;
 
     /// <summary>
@@ -304,10 +305,8 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
         for (int i = 0; i < columnsList.Count; i++)
             types[i] = typeof(string);
 
-        ListStore listStore = new ListStore(types);
-
-        TreeViewGrid = new TreeView(listStore);
-        TreeViewGrid.EnableGridLines = TreeViewGridLines.Both;
+        ListStore listStore = new(types);
+        TreeViewGrid = new TreeView(listStore) { EnableGridLines = TreeViewGridLines.Both };
         TreeViewGrid.ButtonPressEvent += ВідкритиДовідникАбоДокумент;
 
         if (!string.IsNullOrEmpty(TreeStyleClass))
@@ -318,8 +317,8 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
             string сolumnName = RecordResult.ColumnsName[i];
             if (ColumnSettings.TryGetValue(сolumnName, out ColumnsSettings? columnSettings))
             {
-                CellRendererText cell = new CellRendererText() { Xalign = columnSettings.Xalign };
-                TreeViewColumn treeColumn = new TreeViewColumn(columnSettings.Caption, cell, "text", i) { Alignment = columnSettings.Xalign, Resizable = true, MinWidth = 20 };
+                CellRendererText cell = new() { Xalign = columnSettings.Xalign };
+                TreeViewColumn treeColumn = new(columnSettings.Caption, cell, "text", i) { Alignment = columnSettings.Xalign, Resizable = true, MinWidth = 20 };
                 TreeViewGrid.AppendColumn(treeColumn);
 
                 //Привязка колонки з даними

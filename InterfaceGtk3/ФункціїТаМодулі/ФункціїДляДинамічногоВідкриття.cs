@@ -184,6 +184,11 @@ public abstract class ФункціїДляДинамічногоВідкритт
         }
     }
 
+    /// <summary>
+    /// Функція відкриває список рег відомостей
+    /// </summary>
+    /// <param name="typeReg">Тип</param>
+    /// <param name="uniqueID">Елемент для позиціювання</param>
     public void ВідкритиРегістрВідомостейВідповідноДоВиду(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
@@ -217,6 +222,11 @@ public abstract class ФункціїДляДинамічногоВідкритт
         }
     }
 
+    /// <summary>
+    /// Функція відкриває список рег накопичення
+    /// </summary>
+    /// <param name="typeReg">Тип</param>
+    /// <param name="uniqueID">Функція відкриває список рег відомостей</param>
     public void ВідкритиРегістрНакопиченняВідповідноДоВиду(string typeReg, UniqueID? uniqueID)
     {
         object? registerInstance;
