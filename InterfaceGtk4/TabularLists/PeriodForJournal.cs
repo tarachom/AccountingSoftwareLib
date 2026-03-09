@@ -126,9 +126,9 @@ public static class PeriodForJournal
     /// </summary>
     /// <param name="dt">Дата</param>
     /// <returns>Список із кортежами де перший параметр дата початку кварталу а другий це кінець кварталу</returns>
-    static List<(DateTime Start, DateTime End)> GetQuarterList()
+    static List<(DateTime Start, DateTime End)> GetQuarterList(DateTime dt)
     {
-        DateTime StartOfYear = new(DateTime.Now.Year, 1, 1);
+        DateTime StartOfYear = new(dt.Year, 1, 1);
 
         List<(DateTime Start, DateTime End)> Quarters =
         [
@@ -151,7 +151,7 @@ public static class PeriodForJournal
         DateTime? date = null;
         DateTime dtDateOnly = dt.Date;
 
-        foreach (var (Start, End) in GetQuarterList())
+        foreach (var (Start, End) in GetQuarterList(dt))
             if (dtDateOnly >= Start && dtDateOnly <= End)
             {
                 date = Start;
@@ -171,7 +171,7 @@ public static class PeriodForJournal
         DateTime? date = null;
         DateTime dtDateOnly = dt.Date;
 
-        foreach (var (Start, End) in GetQuarterList())
+        foreach (var (Start, End) in GetQuarterList(dt))
             if (dtDateOnly >= Start && dtDateOnly <= End)
             {
                 date = End;
