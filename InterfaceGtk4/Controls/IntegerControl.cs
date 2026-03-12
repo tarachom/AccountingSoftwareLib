@@ -27,21 +27,17 @@ namespace InterfaceGtk4;
 
 public class IntegerControl : Box
 {
-    Entry entryInteger = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
+    Entry entry = new();
 
     public IntegerControl()
     {
         SetOrientation(Orientation.Horizontal);
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
-
         //Entry
-        entryInteger.OnChanged += (_, _) => IsValidValue();
-        Append(entryInteger);
+        entry.OnChanged += (_, _) => IsValidValue();
+        entry.MarginStart = 5;
+        entry.MarginEnd = 2;
+        Append(entry);
     }
 
     int mValue;
@@ -51,37 +47,35 @@ public class IntegerControl : Box
         set
         {
             mValue = value;
-            entryInteger.SetText( mValue.ToString());
-            entryInteger.TooltipText = entryInteger.GetText();
+            entry.SetText(mValue.ToString());
+            entry.TooltipText = entry.GetText();
         }
     }
 
-    void ClearHBoxInfoValid()
-    {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
-
+    /// <summary>
+    /// Перевірити правильність заповнення
+    /// </summary>
+    /// <returns>true якщо все ок</returns>
     public bool IsValidValue()
     {
-        ClearHBoxInfoValid();
+        /* Можна зробити обмеження .Where(x => x == "error") */
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
 
-        if (string.IsNullOrEmpty(entryInteger.Text_))
+        if (string.IsNullOrEmpty(entry.GetText()))
         {
             mValue = 0;
             return true;
         }
 
-        if (int.TryParse(entryInteger.Text_, out int value))
+        if (int.TryParse(entry.GetText(), out int value))
         {
             mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
             return true;
         }
         else
         {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
+            entry.AddCssClass("error");
             return false;
         }
     }

@@ -27,24 +27,19 @@ namespace InterfaceGtk4;
 
 public class TimeControl : Box
 {
-    Entry entryTime = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
+    Entry entry = new();
     Button bOpenPopover;
 
     public TimeControl()
     {
         SetOrientation(Orientation.Horizontal);
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
-
         //Entry
-        entryTime.OnChanged += (_, _) => IsValidValue();
-        entryTime.MarginEnd = 2;
-        entryTime.SetMaxWidthChars(10);
-        Append(entryTime);
+        entry.OnChanged += (_, _) => IsValidValue();
+        entry.MarginStart =5;
+         entry.MarginEnd = 2;
+        entry.SetMaxWidthChars(10);
+        Append(entry);
 
         //Button
         bOpenPopover = Button.New();
@@ -62,40 +57,48 @@ public class TimeControl : Box
             mValue = value;
 
             if (mValue == DateTime.MinValue.TimeOfDay)
-                entryTime.SetText("");
+                entry.SetText("");
             else
-                entryTime.SetText(mValue.ToString());
+                entry.SetText(mValue.ToString());
 
-            entryTime.TooltipText = entryTime.Text_;
+            entry.TooltipText = entry.GetText();
         }
     }
 
-    void ClearHBoxInfoValid()
-    {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
+    /// <summary>
+    /// Допустимі формати часу
+    /// </summary>
+    string[] formats =
+    [
+        @"%h",
+        @"h\:m",
+        @"h\:mm",
+        @"h\:m\:s",
+        @"h\:mm\:ss",
+        @"hh\:mm",
+        @"hh\:mm\:ss"
+    ];
 
     public bool IsValidValue()
     {
-        ClearHBoxInfoValid();
+        /* Можна зробити обмеження .Where(x => x == "error") */
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
 
-        if (string.IsNullOrEmpty(entryTime.Text_))
+        if (string.IsNullOrEmpty(entry.GetText()))
         {
             mValue = DateTime.MinValue.TimeOfDay;
             return true;
         }
 
-        if (TimeSpan.TryParse(entryTime.Text_, out TimeSpan value))
+        if (TimeSpan.TryParseExact(entry.GetText(), formats, null, out TimeSpan value))
         {
             mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
             return true;
         }
         else
         {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
+            entry.AddCssClass("error");
             return false;
         }
     }

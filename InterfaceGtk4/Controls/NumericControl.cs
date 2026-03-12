@@ -28,8 +28,7 @@ namespace InterfaceGtk4;
 
 public class NumericControl : Box
 {
-    Entry entryNumeric = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
+    Entry entry = new();
     NumberFormatInfo numberFormatUA = new CultureInfo("uk-UA", false).NumberFormat;
 
     public NumericControl()
@@ -39,14 +38,11 @@ public class NumericControl : Box
         numberFormatUA.NumberGroupSeparator = " ";
         numberFormatUA.NumberDecimalDigits = 2;
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
-
         //Entry
-        entryNumeric.OnChanged += (_, _) => IsValidValue();
-        Append(entryNumeric);
+        entry.OnChanged += (_, _) => IsValidValue();
+        entry.MarginStart = 5;
+        entry.MarginEnd = 2;
+        Append(entry);
     }
 
     decimal mValue;
@@ -56,37 +52,35 @@ public class NumericControl : Box
         set
         {
             mValue = value;
-            entryNumeric.SetText(mValue.ToString("N", numberFormatUA));
-            entryNumeric.TooltipText = entryNumeric.GetText();
+            entry.SetText(mValue.ToString("N", numberFormatUA));
+            entry.TooltipText = entry.GetText();
         }
     }
 
-    void ClearHBoxInfoValid()
-    {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
-
+    /// <summary>
+    /// Перевірити правильність заповнення
+    /// </summary>
+    /// <returns>true якщо все ок</returns>
     public bool IsValidValue()
     {
-        ClearHBoxInfoValid();
+        /* Можна зробити обмеження .Where(x => x == "error") */
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
 
-        if (string.IsNullOrEmpty(entryNumeric.Text_))
+        if (string.IsNullOrEmpty(entry.GetText()))
         {
             mValue = 0;
             return true;
         }
 
-        if (decimal.TryParse(entryNumeric.Text_, out decimal value))
+        if (decimal.TryParse(entry.GetText(), out decimal value))
         {
             mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
             return true;
         }
         else
         {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
+            entry.AddCssClass("error");
             return false;
         }
     }

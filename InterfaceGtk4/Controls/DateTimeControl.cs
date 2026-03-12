@@ -27,23 +27,18 @@ namespace InterfaceGtk4;
 
 public class DateTimeControl : Box
 {
-    Entry entryDateTimeValue = new();
-    Box hBoxInfoValid = New(Orientation.Horizontal, 0);
+    Entry entry = new();
     Button bOpenCalendar;
 
     public DateTimeControl()
     {
         SetOrientation(Orientation.Horizontal);
 
-        //Info box valid
-        hBoxInfoValid.WidthRequest = 16;
-        hBoxInfoValid.MarginEnd = 2;
-        Append(hBoxInfoValid);
-
         //Entry
-        entryDateTimeValue.OnChanged += (_, _) => IsValidValue();
-        entryDateTimeValue.MarginEnd = 2;
-        Append(entryDateTimeValue);
+        entry.OnChanged += (_, _) => IsValidValue();
+        entry.MarginStart = 5;
+        entry.MarginEnd = 2;
+        Append(entry);
 
         //Button
         bOpenCalendar = Button.New();
@@ -70,21 +65,21 @@ public class DateTimeControl : Box
         {
             mValue = value;
 
-            if (OnlyDate) 
-                entryDateTimeValue.SetMaxWidthChars(10);
+            if (OnlyDate)
+                entry.SetMaxWidthChars(10);
 
             if (/*HideMinValue && */mValue.Date == DateTime.MinValue.Date)
-                entryDateTimeValue.Text_ = "";
+                entry.SetText("");
             else if (OnlyDate)
             {
                 mValue = mValue.Date;
-                entryDateTimeValue.Text_ = mValue.ToString("dd.MM.yyyy");
+                entry.SetText(mValue.ToString("dd.MM.yyyy"));
             }
             else
-                entryDateTimeValue.Text_ = mValue.ToString("dd.MM.yyyy HH:mm:ss");
+                entry.SetText(mValue.ToString("dd.MM.yyyy HH:mm:ss"));
 
             //Підказка
-            entryDateTimeValue.TooltipText = entryDateTimeValue.Text_;
+            entry.TooltipText = entry.GetText();
         }
     }
 
@@ -100,32 +95,30 @@ public class DateTimeControl : Box
     /// <returns>Дата кінця дня</returns>
     public DateTime DayEnd() => new(Value.Year, Value.Month, Value.Day, 23, 59, 59);
 
-    void ClearHBoxInfoValid()
-    {
-        Widget? child = hBoxInfoValid.GetFirstChild();
-        if (child != null) hBoxInfoValid.Remove(child);
-    }
-
+    /// <summary>
+    /// Перевірити правильність заповнення
+    /// </summary>
+    /// <returns>true якщо все ок</returns>
     public bool IsValidValue()
     {
-        ClearHBoxInfoValid();
+        /* Можна зробити обмеження .Where(x => x == "error") */
+        foreach (var cssclass in entry.CssClasses)
+            entry.RemoveCssClass(cssclass);
 
-        if (string.IsNullOrEmpty(entryDateTimeValue.Text_))
+        if (string.IsNullOrEmpty(entry.GetText()))
         {
             mValue = DateTime.MinValue;
             return true;
         }
 
-        if (DateTime.TryParse(entryDateTimeValue.Text_, out DateTime value))
+        if (DateTime.TryParse(entry.GetText(), out DateTime value))
         {
             mValue = value;
-
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Ok));
             return true;
         }
         else
         {
-            hBoxInfoValid.Append(Image.NewFromPixbuf(Icon.ForInformation.Error));
+            entry.AddCssClass("error");
             return false;
         }
     }
@@ -138,6 +131,11 @@ public class DateTimeControl : Box
     /// <returns>GLib.DateTime?</returns>
     GLib.DateTime? GetGLibDateTime() => GLib.DateTime.NewLocal(Value.Year, Value.Month, Value.Day, Value.Hour, Value.Minute, Value.Second);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     void OnOpenCalendar(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
