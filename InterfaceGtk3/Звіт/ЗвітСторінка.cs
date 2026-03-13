@@ -34,8 +34,14 @@ namespace InterfaceGtk3;
 
 public abstract class ЗвітСторінка(Kernel kernel) : Форма
 {
+    /// <summary>
+    /// Ядро
+    /// </summary>
     Kernel Kernel { get; set; } = kernel;
 
+    /// <summary>
+    /// Дерево
+    /// </summary>
     TreeView? TreeViewGrid = null;
 
     /// <summary>
@@ -72,6 +78,15 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     /// Додаткова інформація для звіту
     /// </summary>
     public Func<ValueTask<string>>? GetInfo { get; set; } = null;
+
+    #region Event
+
+    /// <summary>
+    /// Подія яка викликається після повного завантаження даних в TreeView
+    /// </summary>
+    event EventHandler? OnFillTreeViewFinished;
+
+    #endregion
 
     #region View
 
@@ -358,11 +373,13 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
 
             listStore.AppendValues(values);
         }
-    }
 
-    public void FillTreeView2()
-    {
-        //У вигляді дерева. Групувати по колонках
+        //Функція з низьким пріоритетом для виклику після повного завантаження даних в Tree
+        GLib.Idle.Add(GLib.Priority.DefaultIdle, new GLib.IdleHandler(() =>
+        {
+            OnFillTreeViewFinished?.Invoke(null, new());
+            return false;
+        }));
     }
 
     /// <summary>
@@ -457,6 +474,18 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
         vBox.PackStart(scroll, true, true, 0);
 
         NotebookFunction.CreateNotebookPage(notebook, Caption, () => vBox, insertPage);
+
+        //Відображення завантаження даних
+        {
+            string codePage = vBox.Name;
+
+            //Вмикається спінер
+            NotebookFunction.SpinnerNotebookPageToCode(notebook, true, codePage);
+
+            //Вимикається спінер
+            OnFillTreeViewFinished += (_, _) =>
+                NotebookFunction.SpinnerNotebookPageToCode(notebook, false, codePage);
+        }
     }
 
     /// <summary>
