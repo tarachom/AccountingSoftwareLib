@@ -145,9 +145,12 @@ public abstract class FormJournal : Form
         {
             Grid.Model.SelectItem(selectPosition - 1, false);
 
-            //Це для того щоб активувати подію Grid.Vadjustment?.OnChanged
-            ScrollToEnable = true;
-            Grid.Vadjustment?.Upper += 0.1;
+            //Функція яка викликається після повного завантаження
+            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_DEFAULT_IDLE, () =>
+            {
+                ScrollTo(selectPosition);
+                return false;
+            });
         }
     }
 
@@ -185,24 +188,10 @@ public abstract class FormJournal : Form
                 double pageSizePart = pageSize / 2;
 
                 if (value > pageSizePart)
-                    Task.Run(async () =>
-                    {
-                        //Вимушена затримка, щоб все промалювалося
-                        await Task.Delay(100);
-
-                        //Позиціювання потрібного рядка посередині
-                        Grid.Vadjustment.SetValue(value - pageSizePart);
-                    });
+                    Grid.Vadjustment.SetValue(value - pageSizePart);
             }
         }
     }
-
-    /// <summary>
-    /// Дозвіл на прокрутку до виділеного рядка.
-    /// Це потрібно тільки для дерева, тому що при вікритті вітки спрацьовує подія Grid.Vadjustment?.OnChanged
-    /// так як змінюється значення Grid.Vadjustment.Upper
-    /// </summary>
-    protected bool ScrollToEnable { get; set; } = false;
 
     /// <summary>
     /// При виділенні елементів в таблиці

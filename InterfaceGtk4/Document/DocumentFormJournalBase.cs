@@ -197,13 +197,6 @@ public abstract class DocumentFormJournalBase : FormJournal
         await BeforeSetValue();
 
         RunUpdateRecords();
-
-        //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
     }
 
     #region Virtual & Abstract Function
