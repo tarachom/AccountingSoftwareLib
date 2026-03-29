@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -28,8 +29,16 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Рядок для табличного списку журналу регістру накопичення
 /// </summary>
-public partial class RegisterAccumulationRowJournal : RowJournal
+[Subclass<GObject.Object>]
+public partial class RegisterAccumulationRowJournal
 {
+    public static RegisterAccumulationRowJournal New() => NewWithProperties([]);
+
+    /// <summary>
+    /// Унікальний ідентифікатор
+    /// </summary>
+    public UniqueID UniqueID { get; set; } = new();
+
     /// <summary>
     /// Проведений
     /// </summary>
@@ -54,4 +63,9 @@ public partial class RegisterAccumulationRowJournal : RowJournal
     /// Тип власника
     /// </summary>
     public NameAndText? OwnerType { get; set; }
+
+    /// <summary>
+    /// Колекція полів
+    /// </summary>
+    public Dictionary<string, string> Fields { get; set; } = [];
 }

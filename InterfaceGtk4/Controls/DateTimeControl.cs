@@ -25,12 +25,13 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class DateTimeControl : Box
+[GObject.Subclass<Box>]
+public partial class DateTimeControl : Box
 {
-    Entry entry = new();
+    Entry entry = Entry.New();
     Button bOpenCalendar;
 
-    public DateTimeControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -45,6 +46,11 @@ public class DateTimeControl : Box
         bOpenCalendar.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
         bOpenCalendar.OnClicked += OnOpenCalendar;
         Append(bOpenCalendar);
+    }
+
+    public static DateTimeControl New()
+    {
+        return NewWithProperties([]);
     }
 
     /// <summary>

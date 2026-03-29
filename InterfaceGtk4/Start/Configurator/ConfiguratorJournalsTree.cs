@@ -52,12 +52,14 @@ public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>
 
         //Заповнення сховища
         foreach (ConfigurationJournals journal in Conf.Journals.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "Journals",
-                Name = journal.Name,
-                Obj = journal
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "Journals";
+            row.Name = journal.Name;
+            row.Obj = journal;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -77,14 +79,16 @@ public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>
                 {
                     //Для журналу заповнюю поля
                     foreach (ConfigurationJournalField field in journal.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "Field",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = (field.WherePeriod ? "Відбір по періоду, " : "") + (field.SortField ? "Сортування" : "")
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Field";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = (field.WherePeriod ? "Відбір по періоду, " : "") + (field.SortField ? "Сортування" : "");
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

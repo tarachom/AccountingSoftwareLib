@@ -204,8 +204,13 @@ public abstract class FormJournal : Form
         if (selection.GetMinimum() == selection.GetMaximum())
         {
             uint position = selection.GetMaximum();
-            RowJournal? row = (RowJournal?)Store.GetObject(position);
-            if (row != null) SelectPointerItem = row.UniqueID;
+
+            Console.WriteLine("Selection: " + Store.GetObject(position)?.GetType());
+
+            if (Store.GetObject(position) is DirectoryRowJournal row)
+                SelectPointerItem = row.UniqueID;
+            else if (Store.GetObject(position) is DocumentRowJournal row2)
+                SelectPointerItem = row2.UniqueID;
         }
     }
 
@@ -213,16 +218,26 @@ public abstract class FormJournal : Form
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public virtual List<RowJournal> GetSelection()
+    public virtual List<UniqueID> GetSelection()
     {
-        List<RowJournal> rows = [];
+        List<UniqueID> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i) && model.GetObject(i) is RowJournal row)
-                rows.Add(row);
+            if (model.IsSelected(i))
+            {
+                UniqueID? row = Store.GetObject(i) switch
+                {
+                    DirectoryRowJournal x => x.UniqueID,
+                    DocumentRowJournal x => x.UniqueID,
+                    _ => null
+                };
+
+                if (row != null)
+                    rows.Add(row);
+            }
 
         return rows;
     }
@@ -231,7 +246,7 @@ public abstract class FormJournal : Form
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
     /// <returns>Масив ІД виділених рядків</returns>
-    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UniqueID)];
+    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection()];
 
     /// <summary>
     /// Відкриває Popover із списком лінків. Використовується для меню
@@ -349,8 +364,14 @@ public abstract class FormJournal : Form
                         foreach (var record in delete)
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
-                                RowJournal? row = (RowJournal?)Store.GetObject(i);
-                                if (row != null && row.UniqueID.UGuid.Equals(record.Uid))
+                                UniqueID? row = Store.GetObject(i) switch
+                                {
+                                    DirectoryRowJournal x => x.UniqueID,
+                                    DocumentRowJournal x => x.UniqueID,
+                                    _ => null
+                                };
+
+                                if (row != null && row.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
                                     break;
@@ -371,14 +392,20 @@ public abstract class FormJournal : Form
                         if (records.Count == 0)
                             break;
 
-                        RowJournal? row = (RowJournal?)Store.GetObject(i);
+                        UniqueID? row = Store.GetObject(i) switch
+                        {
+                            DirectoryRowJournal x => x.UniqueID,
+                            DocumentRowJournal x => x.UniqueID,
+                            _ => null
+                        };
+
                         if (row != null)
                         {
-                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UniqueID.UGuid));
+                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UGuid));
                             if (obj != null)
                             {
                                 filtered.Add(obj);
-                                records.RemoveAll(x => x.Uid.Equals(row.UniqueID.UGuid));
+                                records.RemoveAll(x => x.Uid.Equals(row.UGuid));
                             }
                         }
                     }

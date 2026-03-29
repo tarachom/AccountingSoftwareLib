@@ -52,12 +52,14 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
 
         //Заповнення сховища
         foreach (ConfigurationRegistersAccumulation registers in Conf.RegistersAccumulation.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "RegistersAccumulation",
-                Name = registers.Name,
-                Obj = registers
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "RegistersAccumulation";
+            row.Name = registers.Name;
+            row.Obj = registers;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -75,34 +77,42 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
         {
             case "RegistersAccumulation" when obj is ConfigurationRegistersAccumulation registers:
                 {
-                    store.Append(new ConfiguratorItemRow()
                     {
-                        Group = "DimensionFields",
-                        Name = "Виміри",
-                        Obj = registers
-                    });
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "DimensionFields";
+                        row.Name = "Виміри";
+                        row.Obj = registers;
 
-                    store.Append(new ConfiguratorItemRow()
-                    {
-                        Group = "ResourcesFields",
-                        Name = "Ресурси",
-                        Obj = registers
-                    });
+                        store.Append(row);
+                    }
 
-                    store.Append(new ConfiguratorItemRow()
                     {
-                        Group = "PropertyFields",
-                        Name = "Реквізити",
-                        Obj = registers
-                    });
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "ResourcesFields";
+                        row.Name = "Ресурси";
+                        row.Obj = registers;
+
+                        store.Append(row);
+                    }
+
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "PropertyFields";
+                        row.Name = "Реквізити";
+                        row.Obj = registers;
+
+                        store.Append(row);
+                    }
 
                     if (registers.TabularParts.Count > 0)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartGroup",
-                            Name = "[ Табличні частини ]",
-                            Obj = registers
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartGroup";
+                        row.Name = "[ Табличні частини ]";
+                        row.Obj = registers;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -110,14 +120,16 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                 {
                     //Виміри
                     foreach (ConfigurationField field in registers.DimensionFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "DimensionField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "DimensionField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -125,14 +137,16 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                 {
                     //Русурси
                     foreach (ConfigurationField field in registers.ResourcesFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "ResourcesField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "ResourcesField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -140,14 +154,16 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                 {
                     //Реквізити
                     foreach (ConfigurationField field in registers.PropertyFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "PropertyField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "PropertyField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -155,12 +171,14 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
                     foreach (ConfigurationTablePart tablePart in registers.TabularParts.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePart",
-                            Name = tablePart.Name,
-                            Obj = tablePart
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePart";
+                        row.Name = tablePart.Name;
+                        row.Obj = tablePart;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -168,14 +186,16 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

@@ -6,7 +6,7 @@ namespace InterfaceGtk4;
 
 public class LockControl : Box
 {
-    Label label = new();
+    Label label = Label.New(null);
     public AccountingSoftware.Object? Element { get; set; }
 
     public LockControl()

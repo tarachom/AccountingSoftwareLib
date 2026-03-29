@@ -21,20 +21,42 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using GObject;
+using AccountingSoftware;
+
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Рядок для табличного списку журналу документу
+/// Ієрархічний рядок
 /// </summary>
-public partial class DocumentRowJournal : RowJournal
+/// </summary>
+[Subclass<GObject.Object>]
+public partial class DirectoryHierarchicalRow
 {
+    public static DirectoryHierarchicalRow New() => NewWithProperties([]);
+
+    /// <summary>
+    /// Унікальний ідентифікатор
+    /// </summary>
+    public UniqueID UniqueID { get; set; } = new();
+
     /// <summary>
     /// Помітка на видалення
     /// </summary>
     public bool DeletionLabel { get; set; } = false;
 
     /// <summary>
-    /// Проведений
+    /// Це папка
     /// </summary>
-    public bool Spend { get; set; } = false;
+    public bool IsFolder { get; set; }
+
+    /// <summary>
+    /// Колекція елементів
+    /// </summary>
+    public List<DirectoryHierarchicalRow> Sub { get; set; } = [];
+
+    /// <summary>
+    /// Колекція полів
+    /// </summary>
+    public Dictionary<string, string> Fields { get; set; } = [];
 }

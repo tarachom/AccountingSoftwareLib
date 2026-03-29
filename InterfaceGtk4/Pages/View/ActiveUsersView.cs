@@ -28,6 +28,7 @@ limitations under the License.
 */
 
 using Gtk;
+using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -35,10 +36,15 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Список активних користувачів
 /// </summary>
-public class ActiveUsersView : Box
+public partial class ActiveUsersView : Box
 {
-    class ItemRow: Row
+    [Subclass<GObject.Object>]
+    public partial class ItemRow
     {
+        public static ItemRow New() => NewWithProperties([]);
+
+        public UniqueID UniqueID { get; set; } = new();
+
         public Guid UserUID { get; set; } = Guid.Empty;
 
         public string UserName { get; set; } = "";
@@ -94,16 +100,14 @@ public class ActiveUsersView : Box
         Store.RemoveAll();
         foreach (Dictionary<string, object> record in recordResult.ListRow)
         {
-            ItemRow itemRow = new()
-            {
-                UniqueID = new UniqueID(record["uid"]),
-                UserUID = (Guid)record["usersuid"],
-                UserName = record["username"].ToString() ?? "",
-                DateLogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString()),
-                DateUp = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString()),
-                Master = (bool)record["master"],
-                TypeForm = Kernel.TypeForm_Alias((TypeForm)record["type_form"])
-            };
+            var itemRow = ItemRow.New();
+            itemRow.UniqueID = new UniqueID(record["uid"]);
+            itemRow.UserUID = (Guid)record["usersuid"];
+            itemRow.UserName = record["username"].ToString() ?? "";
+            itemRow.DateLogin = DateTime.Parse(record["datelogin"].ToString() ?? DateTime.MinValue.ToString());
+            itemRow.DateUp = DateTime.Parse(record["dateupdate"].ToString() ?? DateTime.MinValue.ToString());
+            itemRow.Master = (bool)record["master"];
+            itemRow.TypeForm = Kernel.TypeForm_Alias((TypeForm)record["type_form"]);
 
             Store.Append(itemRow);
         }

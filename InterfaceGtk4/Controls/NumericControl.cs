@@ -26,12 +26,13 @@ using System.Globalization;
 
 namespace InterfaceGtk4;
 
-public class NumericControl : Box
+[GObject.Subclass<Box>]
+public partial class NumericControl : Box
 {
-    Entry entry = new();
+    Entry entry = Entry.New();
     NumberFormatInfo numberFormatUA = new CultureInfo("uk-UA", false).NumberFormat;
 
-    public NumericControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -43,6 +44,11 @@ public class NumericControl : Box
         entry.MarginStart = 5;
         entry.MarginEnd = 2;
         Append(entry);
+    }
+
+    public static NumericControl New()
+    {
+        return NewWithProperties([]);
     }
 
     decimal mValue;

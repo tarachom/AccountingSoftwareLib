@@ -41,7 +41,7 @@ public abstract class PageService : Form
     private string NamespaceCodeGeneration { get; set; }
     private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
-    protected PeriodControl Period = new();
+    protected PeriodControl Period = PeriodControl.New();
     LogMessage Log = new();
     protected const string KeyForSettings = "PageService";
 

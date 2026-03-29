@@ -52,12 +52,14 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
 
         //Заповнення сховища
         foreach (ConfigurationConstantsBlock block in Conf.ConstantsBlock.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "Block",
-                Name = block.BlockName,
-                Obj = block
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "Block";
+            row.Name = block.BlockName;
+            row.Obj = block;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -77,26 +79,28 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                 {
                     //Для блоку заповнюємо контстанти
                     foreach (ConfigurationConstants constant in block.Constants.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "Const",
-                            Name = constant.Name,
-                            Obj = constant,
-                            Type = constant.Type,
-                            Desc = constant.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Const";
+                        row.Name = constant.Name;
+                        row.Obj = constant;
+                        row.Type = constant.Type;
+                        row.Desc = constant.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
             case "Const" when obj is ConfigurationConstants constant && constant.TabularParts.Count > 0:
                 {
+                    var row = ConfiguratorItemRow.New();
+                    row.Group = "TablePartGroup";
+                    row.Name = "[ Табличні частини ]";
+                    row.Obj = constant;
+
                     //Для константи Група Табличні частини
-                    store.Append(new ConfiguratorItemRow()
-                    {
-                        Group = "TablePartGroup",
-                        Name = "[ Табличні частини ]",
-                        Obj = constant
-                    });
+                    store.Append(row);
 
                     return store;
                 }
@@ -104,12 +108,14 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
                     foreach (ConfigurationTablePart tablePart in constant.TabularParts.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePart",
-                            Name = tablePart.Name,
-                            Obj = tablePart
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePart";
+                        row.Name = tablePart.Name;
+                        row.Obj = tablePart;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -117,14 +123,16 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

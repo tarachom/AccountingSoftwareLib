@@ -28,6 +28,7 @@ limitations under the License.
 */
 
 using Gtk;
+using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -35,10 +36,16 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Заблоковані об'єкти (відкриті для редагування)
 /// </summary>
-public abstract class LockObjectsView : Box
+public abstract partial class LockObjectsView : Box
 {
-    class ItemRow : Row
+    [Subclass<GObject.Object>]
+    public partial class ItemRow
     {
+        public static ItemRow New() => NewWithProperties([]);
+
+        public UniqueID UniqueID { get; set; } = new();
+
+
         public Guid UserUID { get; set; } = Guid.Empty;
 
         public string UserName { get; set; } = "";
@@ -112,15 +119,13 @@ public abstract class LockObjectsView : Box
                 CacheData.Add(obj.Uuid, presentation);
             }
 
-            ItemRow itemRow = new()
-            {
-                UniqueID = new UniqueID(record["session"]),
-                UserUID = (Guid)record["users"],
-                UserName = record["username"].ToString() ?? "",
-                ObjValue = obj,
-                ObjPresentation = SubstringName(presentation.Record.result),
-                DateLock = DateTime.Parse(record["datelock"].ToString() ?? DateTime.MinValue.ToString())
-            };
+            var itemRow = ItemRow.New();
+            itemRow.UniqueID = new UniqueID(record["session"]);
+            itemRow.UserUID = (Guid)record["users"];
+            itemRow.UserName = record["username"].ToString() ?? "";
+            itemRow.ObjValue = obj;
+            itemRow.ObjPresentation = SubstringName(presentation.Record.result);
+            itemRow.DateLock = DateTime.Parse(record["datelock"].ToString() ?? DateTime.MinValue.ToString());
 
             Store.Append(itemRow);
         }

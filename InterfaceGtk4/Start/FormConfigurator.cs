@@ -102,7 +102,7 @@ public abstract class FormConfigurator : Window
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
-        ScrolledWindow scroll = new();
+        ScrolledWindow scroll = ScrolledWindow.New();
         scroll.SetPolicy(PolicyType.Never, PolicyType.Never);
         scroll.Child = vBox;
 
@@ -261,7 +261,7 @@ public abstract class FormConfigurator : Window
             Edit = (group, name) => Activate(group, name),
             Copy = (group, name) =>
             {
-                
+
             },
             Delete = (group, name) =>
             {

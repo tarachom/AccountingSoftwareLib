@@ -70,7 +70,8 @@ class FormLogIn : Window
             label.Halign = Align.End;
             grid.Attach(label, 0, row, 1, 1);
 
-            comboBoxAllUsers = new ComboBoxText() { WidthRequest = 200 };
+            comboBoxAllUsers = ComboBoxText.New();
+            comboBoxAllUsers.WidthRequest = 200;
 
             //Заборона прокрутки
             EventControllerScroll contr = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
@@ -88,7 +89,9 @@ class FormLogIn : Window
             label.Halign = Align.End;
             grid.Attach(label, 0, row, 1, 1);
 
-            passwordUser = new PasswordEntry() { WidthRequest = 200, ShowPeekIcon = true };
+            passwordUser = PasswordEntry.New();
+            passwordUser.WidthRequest = 200;
+            passwordUser.ShowPeekIcon = true;
 
             //Контролєр для поля пароль
             EventControllerKey contr = EventControllerKey.New();

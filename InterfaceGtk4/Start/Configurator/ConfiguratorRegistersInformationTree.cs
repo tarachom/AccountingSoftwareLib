@@ -52,12 +52,14 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
 
         //Заповнення сховища
         foreach (ConfigurationRegistersInformation registers in Conf.RegistersInformation.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "RegistersInformation",
-                Name = registers.Name,
-                Obj = registers
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "RegistersInformation";
+            row.Name = registers.Name;
+            row.Obj = registers;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -75,26 +77,32 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
         {
             case "RegistersInformation" when obj is ConfigurationRegistersInformation registers:
                 {
-                    store.Append(new ConfiguratorItemRow()
                     {
-                        Group = "DimensionFields",
-                        Name = "Виміри",
-                        Obj = registers
-                    });
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "DimensionFields";
+                        row.Name = "Виміри";
+                        row.Obj = registers;
 
-                    store.Append(new ConfiguratorItemRow()
-                    {
-                        Group = "ResourcesFields",
-                        Name = "Ресурси",
-                        Obj = registers
-                    });
+                        store.Append(row);
+                    }
 
-                    store.Append(new ConfiguratorItemRow()
                     {
-                        Group = "PropertyFields",
-                        Name = "Реквізити",
-                        Obj = registers
-                    });
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "ResourcesFields";
+                        row.Name = "Ресурси";
+                        row.Obj = registers;
+
+                        store.Append(row);
+                    }
+
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "PropertyFields";
+                        row.Name = "Реквізити";
+                        row.Obj = registers;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -102,14 +110,16 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
                 {
                     //Виміри
                     foreach (ConfigurationField field in registers.DimensionFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "DimensionField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "DimensionField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -117,14 +127,16 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
                 {
                     //Русурси
                     foreach (ConfigurationField field in registers.ResourcesFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "ResourcesField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "ResourcesField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -132,14 +144,16 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
                 {
                     //Реквізити
                     foreach (ConfigurationField field in registers.PropertyFields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "PropertyField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "PropertyField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

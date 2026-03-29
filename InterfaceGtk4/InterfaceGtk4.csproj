@@ -4,12 +4,13 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.7.0" />
-    <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0" />
+    <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.8.0-preview.1" />
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.8.0-preview.1" />
   </ItemGroup>
 
   <ItemGroup>

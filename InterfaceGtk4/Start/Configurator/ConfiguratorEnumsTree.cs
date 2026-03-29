@@ -52,12 +52,14 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
 
         //Заповнення сховища
         foreach (ConfigurationEnums enums in Conf.Enums.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "Enums",
-                Name = enums.Name,
-                Obj = enums
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "Enums";
+            row.Name = enums.Name;
+            row.Obj = enums;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -77,13 +79,15 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
                 {
                     //Для перелічення заповнюю поля
                     foreach (ConfigurationEnumField field in enums.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "Field",
-                            Name = field.Name,
-                            Obj = field,
-                            Desc = field.Value.ToString()
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Field";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Desc = field.Value.ToString();
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

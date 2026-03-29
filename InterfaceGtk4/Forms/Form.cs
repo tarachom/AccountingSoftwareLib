@@ -222,7 +222,10 @@ public abstract class Form : Box
             hBox.Append(label);
         }
 
-        ScrolledWindow scroll = new() { HasFrame = true, WidthRequest = width, HeightRequest = height };
+        ScrolledWindow scroll = ScrolledWindow.New();
+        scroll.WidthRequest = width;
+        scroll.HeightRequest = height;
+        scroll.HasFrame = true;
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         scroll.MarginEnd = 5;
         scroll.Child = field;

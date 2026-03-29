@@ -28,8 +28,8 @@ namespace InterfaceGtk4;
 
 public abstract class PointerControl : Box
 {
-    Label labelCaption = new();
-    Entry entryText = new() { Editable = false };
+    Label labelCaption = Label.New(null);
+    Entry entryText = Entry.New();
     Button bClear = Button.New();
 
     public PointerControl()
@@ -39,6 +39,7 @@ public abstract class PointerControl : Box
         labelCaption.MarginEnd = 5;
         Append(labelCaption);
 
+        entryText.Editable = false;
         Append(entryText);
         entryText.MarginEnd = 2;
 

@@ -72,15 +72,13 @@ public class NotebookFunction
     {
         BasicForm = basicForm;
 
-        Notebook = new()
-        {
-            Scrollable = true,
-            ShowBorder = false,
-            TabPos = PositionType.Top,
-            Hexpand = true,
-            Vexpand = true,
-            EnablePopup = true
-        };
+        Notebook = Notebook.New();
+        Notebook.Scrollable = true;
+        Notebook.ShowBorder = false;
+        Notebook.TabPos = PositionType.Top;
+        Notebook.Hexpand = true;
+        Notebook.Vexpand = true;
+        Notebook.EnablePopup = true;
 
         EventControllerKey contrKey = EventControllerKey.New();
         Notebook.AddController(contrKey);
@@ -312,7 +310,21 @@ public class NotebookFunction
                                 Widget? firstChild = BoxIconOrSpinner.GetFirstChild();
                                 if (firstChild != null) BoxIconOrSpinner.Remove(firstChild);
 
-                                BoxIconOrSpinner.Append(active ? new Spinner() { Spinning = true } : Image.NewFromIconName("doc"));
+                                //Локальна функція яка повертає віджет відповідно до параметру active
+                                static Widget get(bool active)
+                                {
+                                    if (active)
+                                    {
+                                        Spinner spinner = Spinner.New();
+                                        spinner.Spinning = true;
+
+                                        return spinner;
+                                    }
+                                    else
+                                        return Image.NewFromIconName("doc");
+                                }
+
+                                BoxIconOrSpinner.Append(get(active));
                                 break;
                             }
 

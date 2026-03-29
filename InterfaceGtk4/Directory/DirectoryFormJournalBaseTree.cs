@@ -152,9 +152,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public override List<RowJournal> GetSelection()
+    public override List<UniqueID> GetSelection()
     {
-        List<RowJournal> rows = [];
+        List<UniqueID> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
@@ -164,7 +164,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             {
                 TreeListRow? row = TreeList?.GetRow(i);
                 DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
-                if (rowItem != null) rows.Add(rowItem);
+                if (rowItem != null) rows.Add(rowItem.UniqueID);
             }
 
         return rows;

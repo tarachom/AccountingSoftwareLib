@@ -62,7 +62,7 @@ public abstract class FormConfigurationSelection : Window
 
         //Список
         {
-            ScrolledWindow scroll = new();
+            ScrolledWindow scroll = ScrolledWindow.New();
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.SetSizeRequest(500, 300);
             scroll.HasFrame = true;
@@ -77,7 +77,8 @@ public abstract class FormConfigurationSelection : Window
                     OnOpen(null, new());
             };
 
-            listBox = new ListBox { SelectionMode = SelectionMode.Single };
+            listBox = ListBox.New();
+            listBox.SelectionMode = SelectionMode.Single;
             listBox.AddController(gesture);
             listBox.AddController(contr);
             listBox.OnRowActivated += (_, args) => { };
@@ -124,7 +125,7 @@ public abstract class FormConfigurationSelection : Window
                 hBoxSpinner.Halign = Align.Center;
                 vBoxButton.Append(hBoxSpinner);
 
-                spinner = new Spinner();
+                spinner = Spinner.New();
                 hBoxSpinner.Append(spinner);
             }
         }
@@ -206,7 +207,9 @@ public abstract class FormConfigurationSelection : Window
             Label label = Label.New(itemConfigurationParam.ToString());
             label.Halign = Align.Start;
 
-            ListBoxRow row = new() { Name = itemConfigurationParam.ConfigurationKey, Child = label };
+            ListBoxRow row = ListBoxRow.New();
+            row.Name = itemConfigurationParam.ConfigurationKey;
+            row.Child = label;
             listBox.Append(row);
 
             if (!string.IsNullOrEmpty(selectConfKey))

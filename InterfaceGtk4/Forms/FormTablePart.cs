@@ -173,6 +173,8 @@ public abstract class FormTablePart : Form
             if (model.IsSelected(i) && model.GetObject(i) is RowTablePart row)
                 rows.Add(row);
 
+        //model.GetObject(i)
+
         return rows;
     }
 

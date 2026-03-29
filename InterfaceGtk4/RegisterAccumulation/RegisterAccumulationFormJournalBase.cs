@@ -49,7 +49,7 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     /// <summary>
     /// Період
     /// </summary>
-    public PeriodControl Period { get; } = new();
+    public PeriodControl Period { get; } = PeriodControl.New();
 
     /// <summary>
     /// Фільтр

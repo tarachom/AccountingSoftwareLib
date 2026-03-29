@@ -25,11 +25,12 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class IntegerControl : Box
+[GObject.Subclass<Box>]
+public partial class IntegerControl : Box
 {
-    Entry entry = new();
+    Entry entry = Entry.New();
 
-    public IntegerControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -38,6 +39,11 @@ public class IntegerControl : Box
         entry.MarginStart = 5;
         entry.MarginEnd = 2;
         Append(entry);
+    }
+
+    public static IntegerControl New()
+    {
+        return NewWithProperties([]);
     }
 
     int mValue;

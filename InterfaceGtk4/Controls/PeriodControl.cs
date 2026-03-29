@@ -31,16 +31,17 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class PeriodControl : Box
+[GObject.Subclass<Box>]
+public partial class PeriodControl : Box
 {
     //DropDown dropDownPeriod; //Набір варіантів періодів
     ComboBoxText comboBoxPeriod; //Набір варіантів періодів
-    DateTimeControl dateStart = new() { OnlyDate = true };
-    DateTimeControl dateStop = new() { OnlyDate = true, Value = DateTime.Now };
+    DateTimeControl dateStart = DateTimeControl.New();
+    DateTimeControl dateStop = DateTimeControl.New();
     Button bSelect = Button.NewFromIconName("go-next");
     public Action? Changed { get; set; }
 
-    public PeriodControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -53,11 +54,14 @@ public class PeriodControl : Box
 
         Append(AddLabel("Період з "));
 
+        dateStart.OnlyDate = true;
         dateStart.MarginEnd = 5;
         Append(dateStart);
 
         Append(AddLabel(" по "));
 
+        dateStop.OnlyDate = true;
+        dateStop.Value = DateTime.Now;
         dateStop.MarginEnd = 5;
         Append(dateStop);
 
@@ -92,6 +96,11 @@ public class PeriodControl : Box
             Changed?.Invoke();
         };
         Append(comboBoxPeriod);
+    }
+
+    public static PeriodControl New()
+    {
+        return NewWithProperties([]);
     }
 
     /*

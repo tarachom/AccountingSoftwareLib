@@ -31,11 +31,11 @@ namespace InterfaceGtk4;
 /// Контрол для вибору з типом який потрібно вибрати.
 /// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
 /// </summary>
-public abstract class CompositePointerControl : PointerControl
+public abstract partial class CompositePointerControl : PointerControl
 {
-    Kernel Kernel { get; set; }
-    string NamespaceProgram { get; set; }
-    string NamespaceCodeGeneration { get; set; }
+    Kernel? Kernel { get; set; }
+    string NamespaceProgram { get; set; } = "";
+    string NamespaceCodeGeneration { get; set; }= "";
     NotebookFunction? NotebookFunc { get; set; }
     Assembly CallingAssembly { get; } = Assembly.GetCallingAssembly();
     event EventHandler<UuidAndText>? PointerChanged;
@@ -77,7 +77,7 @@ public abstract class CompositePointerControl : PointerControl
             PointerChanged?.Invoke(this, pointer);
         }
     }
-    UuidAndText pointer;
+    UuidAndText pointer = new();
 
     /// <summary>
     /// При зміні вказівника

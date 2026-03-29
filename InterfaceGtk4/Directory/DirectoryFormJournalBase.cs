@@ -280,7 +280,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     protected virtual async ValueTask GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
-        if (model.GetObject(position) is RowJournal row)
+        if (model.GetObject(position) is DirectoryRowJournal row)
             if (DirectoryPointerItem == null)
                 await OpenPageElement(false, row.UniqueID);
             else
@@ -366,8 +366,8 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async void Edit()
     {
-        foreach (RowJournal row in GetSelection())
-            await OpenPageElement(false, row.UniqueID);
+        foreach (UniqueID uniqueID in GetSelection())
+            await OpenPageElement(false, uniqueID);
     }
 
     async void OnEdit(Button button, EventArgs args)
@@ -382,11 +382,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async void OnCopy(Button button, EventArgs args)
     {
-        List<RowJournal> rows = GetSelection();
+        List<UniqueID> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (RowJournal row in rows)
-                SelectPointerItem = await Copy(row.UniqueID);
+            foreach (UniqueID uniqueID in rows)
+                SelectPointerItem = await Copy(uniqueID);
 
             PagesClear();
             await LoadRecords();
@@ -409,11 +409,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async ValueTask Delete()
     {
-        List<RowJournal> rows = GetSelection();
+        List<UniqueID> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (RowJournal row in rows)
-                await SetDeletionLabel(row.UniqueID);
+            foreach (UniqueID uniqueID in rows)
+                await SetDeletionLabel(uniqueID);
         }
 
         /*

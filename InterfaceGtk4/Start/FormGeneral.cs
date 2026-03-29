@@ -111,7 +111,8 @@ public abstract class FormGeneral : Window
         popover.Position = PositionType.Bottom;
         popover.SetParent(button);
 
-        SearchEntry entry = new() { WidthRequest = 500 };
+        SearchEntry entry = SearchEntry.New();
+        entry.WidthRequest = 500;
 
         EventControllerKey contrKey = EventControllerKey.New();
         entry.AddController(contrKey);
@@ -157,7 +158,7 @@ public abstract class FormGeneral : Window
     {
         Box vBox = Box.New(Orientation.Vertical, 0);
 
-        ScrolledWindow scroll = new();
+        ScrolledWindow scroll = ScrolledWindow.New();
         scroll.SetPolicy(PolicyType.Never, PolicyType.Never);
         scroll.Child = vBox;
 
@@ -227,7 +228,8 @@ public abstract class FormGeneral : Window
             labelCaption.MarginTop = labelCaption.MarginBottom = 5;
             vBoxList.Append(labelCaption);
 
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+            ListBox listBox = ListBox.New();
+            listBox.SelectionMode = SelectionMode.Single;
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
@@ -241,7 +243,10 @@ public abstract class FormGeneral : Window
                 }
             };
 
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            ScrolledWindow scroll = ScrolledWindow.New();
+            scroll.WidthRequest = 300;
+            scroll.HeightRequest = 300;
+            scroll.HasFrame = true;
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Child = listBox;
 
@@ -254,7 +259,9 @@ public abstract class FormGeneral : Window
                 Label label = Label.New(title);
                 label.Halign = Align.Start;
 
-                ListBoxRow row = new() { Name = documents.Key, Child = label };
+                ListBoxRow row = ListBoxRow.New();
+                row.Name = documents.Key;
+                row.Child = label;
                 listBox.Append(row);
             }
         }
@@ -288,7 +295,8 @@ public abstract class FormGeneral : Window
             labelCaption.MarginTop = labelCaption.MarginBottom = 5;
             vBoxList.Append(labelCaption);
 
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+            ListBox listBox = ListBox.New();
+            listBox.SelectionMode = SelectionMode.Single;
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
@@ -302,7 +310,10 @@ public abstract class FormGeneral : Window
                 }
             };
 
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            ScrolledWindow scroll = ScrolledWindow.New();
+            scroll.WidthRequest = 300;
+            scroll.HeightRequest = 300;
+            scroll.HasFrame = true;
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Child = listBox;
 
@@ -315,7 +326,9 @@ public abstract class FormGeneral : Window
                 Label label = Label.New(title);
                 label.Halign = Align.Start;
 
-                ListBoxRow row = new() { Name = directories.Key, Child = label };
+                ListBoxRow row = ListBoxRow.New();
+                row.Name = directories.Key;
+                row.Child = label;
                 listBox.Append(row);
             }
         }
@@ -349,7 +362,8 @@ public abstract class FormGeneral : Window
             labelCaption.MarginTop = labelCaption.MarginBottom = 5;
             vBoxList.Append(labelCaption);
 
-            ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+            ListBox listBox = ListBox.New();
+            listBox.SelectionMode = SelectionMode.Single;
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
@@ -363,7 +377,10 @@ public abstract class FormGeneral : Window
                 }
             };
 
-            ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+            ScrolledWindow scroll = ScrolledWindow.New();
+            scroll.WidthRequest = 300;
+            scroll.HeightRequest = 300;
+            scroll.HasFrame = true;
             scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scroll.Child = listBox;
 
@@ -376,7 +393,9 @@ public abstract class FormGeneral : Window
                 Label label = Label.New(title);
                 label.Halign = Align.Start;
 
-                ListBoxRow row = new() { Name = journal.Key, Child = label };
+                ListBoxRow row = ListBoxRow.New();
+                row.Name = journal.Key;
+                row.Child = label;
                 listBox.Append(row);
             }
         }
@@ -430,7 +449,8 @@ public abstract class FormGeneral : Window
                 labelCaption.MarginTop = labelCaption.MarginBottom = 5;
                 vBoxBlock.Append(labelCaption);
 
-                ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+                ListBox listBox = ListBox.New();
+                listBox.SelectionMode = SelectionMode.Single;
 
                 GestureClick gesture = GestureClick.New();
                 listBox.AddController(gesture);
@@ -444,7 +464,10 @@ public abstract class FormGeneral : Window
                     }
                 };
 
-                ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                ScrolledWindow scroll = ScrolledWindow.New();
+                scroll.WidthRequest = 300;
+                scroll.HeightRequest = 300;
+                scroll.HasFrame = true;
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
                 scroll.Child = listBox;
 
@@ -457,7 +480,9 @@ public abstract class FormGeneral : Window
                     Label label = Label.New(title);
                     label.Halign = Align.Start;
 
-                    ListBoxRow row = new() { Name = register.Key, Child = label };
+                    ListBoxRow row = ListBoxRow.New();
+                    row.Name = register.Key;
+                    row.Child = label;
                     listBox.Append(row);
                 }
             }
@@ -471,7 +496,8 @@ public abstract class FormGeneral : Window
                 labelCaption.MarginTop = labelCaption.MarginBottom = 5;
                 vBoxBlock.Append(labelCaption);
 
-                ListBox listBox = new() { SelectionMode = SelectionMode.Single };
+                ListBox listBox = ListBox.New();
+                listBox.SelectionMode = SelectionMode.Single;
 
                 GestureClick gesture = GestureClick.New();
                 listBox.AddController(gesture);
@@ -485,7 +511,10 @@ public abstract class FormGeneral : Window
                     }
                 };
 
-                ScrolledWindow scroll = new() { WidthRequest = 300, HeightRequest = 300, HasFrame = true };
+                ScrolledWindow scroll = ScrolledWindow.New();
+                scroll.WidthRequest = 300;
+                scroll.HeightRequest = 300;
+                scroll.HasFrame = true;
                 scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
                 scroll.Child = listBox;
 
@@ -498,7 +527,9 @@ public abstract class FormGeneral : Window
                     Label label = Label.New(title);
                     label.Halign = Align.Start;
 
-                    ListBoxRow row = new() { Name = register.Key, Child = label };
+                    ListBoxRow row = ListBoxRow.New();
+                    row.Name = register.Key;
+                    row.Child = label;
                     listBox.Append(row);
                 }
             }

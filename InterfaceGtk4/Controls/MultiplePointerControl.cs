@@ -55,9 +55,12 @@ public abstract class MultiplePointerControl : PointerControl
         popover.Position = PositionType.Bottom;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
-        ListBox listBox = new() { SelectionMode = SelectionMode.None };
+        ListBox listBox = ListBox.New();
+        listBox.SelectionMode = SelectionMode.None;
 
-        ScrolledWindow scroll = new() { HeightRequest = 300, WidthRequest = 750 };
+        ScrolledWindow scroll = ScrolledWindow.New();
+        scroll.HeightRequest = 300;
+        scroll.WidthRequest = 750;
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         scroll.SetChild(listBox);
 

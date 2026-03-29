@@ -69,7 +69,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Період
     /// </summary>
-    public PeriodControl Period { get; } = new();
+    public PeriodControl Period { get; } = PeriodControl.New();
 
     /// <summary>
     /// Пошук
@@ -274,7 +274,10 @@ public abstract class DocumentFormJournalBase : FormJournal
     async ValueTask GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
-        if (model.GetObject(position) is RowJournal row)
+
+        Console.WriteLine("Activate: " + model.GetObject(position)?.GetType());
+
+        if (model.GetObject(position) is DocumentRowJournal row)
             if (DocumentPointerItem == null)
                 await OpenPageElement(false, row.UniqueID);
             else
@@ -376,8 +379,8 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async void Edit()
     {
-        foreach (RowJournal row in GetSelection())
-            await OpenPageElement(false, row.UniqueID);
+        foreach (UniqueID uniqueID in GetSelection())
+            await OpenPageElement(false, uniqueID);
     }
 
     async void OnEdit(Button button, EventArgs args)
@@ -392,11 +395,11 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async void OnCopy(Button button, EventArgs args)
     {
-        List<RowJournal> rows = GetSelection();
+        List<UniqueID> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (RowJournal row in rows)
-                SelectPointerItem = await Copy(row.UniqueID);
+            foreach (UniqueID uniqueID  in rows)
+                SelectPointerItem = await Copy(uniqueID);
 
             PagesClear();
             await LoadRecords();
@@ -419,11 +422,11 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async ValueTask Delete()
     {
-        List<RowJournal> rows = GetSelection();
+        List<UniqueID> rows = GetSelection();
         if (rows.Count > 0)
         {
-            foreach (RowJournal row in rows)
-                await SetDeletionLabel(row.UniqueID);
+            foreach (UniqueID uniqueID in rows)
+                await SetDeletionLabel(uniqueID);
         }
 
         /*

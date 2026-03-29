@@ -52,12 +52,14 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
 
         //Заповнення сховища
         foreach (ConfigurationDocuments document in Conf.Documents.Values)
-            Store.Append(new ConfiguratorItemRow()
-            {
-                Group = "Documents",
-                Name = document.Name,
-                Obj = document
-            });
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "Documents";
+            row.Name = document.Name;
+            row.Obj = document;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -77,22 +79,26 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                 {
                     //Для документу заповнюю поля
                     foreach (ConfigurationField field in document.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "Field",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Field";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     if (document.TabularParts.Count > 0)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartGroup",
-                            Name = "[ Табличні частини ]",
-                            Obj = document
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartGroup";
+                        row.Name = "[ Табличні частини ]";
+                        row.Obj = document;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -100,12 +106,14 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
                     foreach (ConfigurationTablePart tablePart in document.TabularParts.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePart",
-                            Name = tablePart.Name,
-                            Obj = tablePart
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePart";
+                        row.Name = tablePart.Name;
+                        row.Obj = tablePart;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }
@@ -113,14 +121,16 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)
-                        store.Append(new ConfiguratorItemRow()
-                        {
-                            Group = "TablePartField",
-                            Name = field.Name,
-                            Obj = field,
-                            Type = field.Type,
-                            Desc = field.Pointer
-                        });
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartField";
+                        row.Name = field.Name;
+                        row.Obj = field;
+                        row.Type = field.Type;
+                        row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
 
                     return store;
                 }

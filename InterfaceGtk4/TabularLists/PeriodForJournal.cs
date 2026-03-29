@@ -82,7 +82,7 @@ public static class PeriodForJournal
     /// <returns>ComboBoxText</returns>
     public static ComboBoxText PeriodSelectionList()
     {
-        ComboBoxText сomboBox = new();
+        ComboBoxText сomboBox = ComboBoxText.New();
 
         foreach (TypePeriod value in Enum.GetValues<TypePeriod>())
             сomboBox.Append(value.ToString(), TypePeriod_Alias(value));
@@ -100,7 +100,7 @@ public static class PeriodForJournal
         Gio.ListStore store = Gio.ListStore.New(PeriodItemRow.GetGType());
 
         foreach (TypePeriod value in Enum.GetValues<TypePeriod>())
-            store.Append(new PeriodItemRow(value, TypePeriod_Alias(value)));
+            store.Append(PeriodItemRow.NewWithPeriod(value, TypePeriod_Alias(value)));
 
         return store;
     }

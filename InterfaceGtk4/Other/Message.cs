@@ -46,16 +46,16 @@ public class Message
     /// <returns>MessageDialog</returns>
     static MessageDialog Create(Application? app, Window? win, string text, string? secondaryText = null)
     {
-        return new()
-        {
-            TransientFor = win,
-            Application = app,
-            Modal = true,
-            Valign = Align.Center,
-            Halign = Align.Center,
-            Text = text,
-            SecondaryText = secondaryText
-        };
+        MessageDialog md = MessageDialog.NewWithProperties([]);
+        md.TransientFor = win;
+        md.Application = app;
+        md.Modal = true;
+        md.Valign = Align.Center;
+        md.Halign = Align.Center;
+        md.Text = text;
+        md.SecondaryText = secondaryText;
+
+        return md;
     }
 
     public static void Info(Application? app, Window? win, string text, string? secondaryText = null)

@@ -373,13 +373,6 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
 
             listStore.AppendValues(values);
         }
-
-        //Функція з низьким пріоритетом для виклику після повного завантаження даних в Tree
-        GLib.Idle.Add(GLib.Priority.DefaultIdle, new GLib.IdleHandler(() =>
-        {
-            OnFillTreeViewFinished?.Invoke(null, new());
-            return false;
-        }));
     }
 
     /// <summary>
@@ -485,6 +478,13 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
             //Вимикається спінер
             OnFillTreeViewFinished += (_, _) =>
                 NotebookFunction.SpinnerNotebookPageToCode(notebook, false, codePage);
+
+            //Функція з низьким пріоритетом для виклику після повного завантаження даних в Tree
+            GLib.Idle.Add(GLib.Priority.DefaultIdle, new GLib.IdleHandler(() =>
+            {
+                OnFillTreeViewFinished?.Invoke(null, new());
+                return false;
+            }));
         }
     }
 

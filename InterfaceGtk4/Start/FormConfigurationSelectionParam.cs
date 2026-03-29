@@ -74,7 +74,8 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                ConfName = new Entry() { WidthRequest = 300 };
+                ConfName = Entry.New();
+                ConfName.WidthRequest = 300;
                 grid.Attach(ConfName, 1, row, 1, 1);
             }
 
@@ -86,7 +87,8 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Server = new Entry() { WidthRequest = 300 };
+                Server = Entry.New();
+                Server.WidthRequest = 300;
                 grid.Attach(Server, 1, row, 1, 1);
             }
 
@@ -98,7 +100,8 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Port = new Entry() { WidthRequest = 300 };
+                Port = Entry.New();
+                Port.WidthRequest = 300;
                 grid.Attach(Port, 1, row, 1, 1);
             }
 
@@ -110,7 +113,8 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Login = new Entry() { WidthRequest = 300 };
+                Login = Entry.New();
+                Login.WidthRequest = 300;
                 grid.Attach(Login, 1, row, 1, 1);
             }
 
@@ -122,7 +126,9 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Password = new PasswordEntry() { WidthRequest = 300, ShowPeekIcon = true };
+                Password = PasswordEntry.New();
+                Password.WidthRequest = 300;
+                Password.ShowPeekIcon = true;
                 grid.Attach(Password, 1, row, 1, 1);
             }
 
@@ -134,7 +140,8 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Basename = new Entry() { WidthRequest = 300 };
+                Basename = Entry.New();
+                Basename.WidthRequest = 300;
                 grid.Attach(Basename, 1, row, 1, 1);
             }
         }

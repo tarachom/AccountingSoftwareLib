@@ -27,7 +27,7 @@ namespace InterfaceGtk4;
 
 public class TimeControl : Box
 {
-    Entry entry = new();
+    Entry entry = Entry.New();
     Button bOpenPopover;
 
     public TimeControl()
@@ -36,8 +36,8 @@ public class TimeControl : Box
 
         //Entry
         entry.OnChanged += (_, _) => IsValidValue();
-        entry.MarginStart =5;
-         entry.MarginEnd = 2;
+        entry.MarginStart = 5;
+        entry.MarginEnd = 2;
         entry.SetMaxWidthChars(10);
         Append(entry);
 
