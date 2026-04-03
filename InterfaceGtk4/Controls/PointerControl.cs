@@ -26,14 +26,18 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class PointerControl : Box
+[GObject.Subclass<Box>]
+public partial class PointerControl : Box
 {
     Label labelCaption = Label.New(null);
     Entry entryText = Entry.New();
     Button bClear = Button.New();
 
-    public PointerControl()
+    partial void Initialize()
     {
+        //Ігнорувати виклик ініціалізації для вказаних типів
+        if (new Type[] { typeof(PointerControl), typeof(CompositePointerControl) }.Contains(GetType())) return;
+
         SetOrientation(Orientation.Horizontal);
 
         labelCaption.MarginEnd = 5;

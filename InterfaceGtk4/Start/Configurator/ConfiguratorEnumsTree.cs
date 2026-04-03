@@ -71,7 +71,6 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
         object? obj = itemRow.Obj;
 
         Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
-        _ = store.Ref();
 
         switch (group)
         {

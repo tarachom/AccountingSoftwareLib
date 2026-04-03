@@ -28,12 +28,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Число з комою
 /// </summary>
-public class NumericTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class NumericTablePartCell : Box
 {
     Box hBox;
     Entry entry = Entry.New();
 
-    public NumericTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -48,6 +49,8 @@ public class NumericTablePartCell : Box
         Append(hBox);
         AddCssClass("numeric");
     }
+
+    public static NumericTablePartCell New() => NewWithProperties([]);
 
     public decimal Value
     {

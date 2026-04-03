@@ -28,12 +28,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Текст
 /// </summary>
-public class TextTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class TextTablePartCell : Box
 {
     Box hBox;
     Entry entry = Entry.New();
 
-    public TextTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -47,6 +48,16 @@ public class TextTablePartCell : Box
 
         Append(hBox);
         AddCssClass("text");
+    }
+
+    public static TextTablePartCell New() => NewWithProperties([]);
+
+    public static TextTablePartCell NewWithString(string? text)
+    {
+        TextTablePartCell lbl = NewWithProperties([]);
+        lbl.SetText(text);
+
+        return lbl;
     }
 
     public string Value
@@ -67,13 +78,5 @@ public class TextTablePartCell : Box
     public void SetText(string? text)
     {
         entry.SetText(text ?? "");
-    }
-
-    public static TextTablePartCell New(string? text)
-    {
-        TextTablePartCell lbl = new();
-        lbl.SetText(text);
-
-        return lbl;
     }
 }

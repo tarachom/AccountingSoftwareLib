@@ -28,13 +28,14 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Час
 /// </summary>
-public class TimeTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class TimeTablePartCell : Box
 {
     Box hBox;
     Entry entry = Entry.New();
     Button buttonSelect;
 
-    public TimeTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -57,6 +58,16 @@ public class TimeTablePartCell : Box
 
         Append(hBox);
         AddCssClass("time");
+    }
+
+    public static TimeTablePartCell New() => NewWithProperties([]);
+
+    public static TimeTablePartCell NewWithTimeSpan(TimeSpan? ts)
+    {
+        TimeTablePartCell cell = NewWithProperties([]);
+        cell.Value = ts ?? DateTime.MinValue.TimeOfDay;
+
+        return cell;
     }
 
     public TimeSpan Value
@@ -112,12 +123,6 @@ public class TimeTablePartCell : Box
     /// Не відображати мінімальне значення дати DateTime.MinValue
     /// </summary>
     public bool HideMinValue { get; set; } = false;
-
-    public static TimeTablePartCell New(TimeSpan? ts)
-    {
-        TimeTablePartCell cell = new() { Value = ts ?? DateTime.MinValue.TimeOfDay };
-        return cell;
-    }
 
     void OnOpenSelect(object? sender, EventArgs args)
     {

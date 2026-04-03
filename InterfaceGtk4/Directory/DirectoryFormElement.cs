@@ -131,6 +131,7 @@ public abstract class DirectoryFormElement : FormElement
         NotebookFunc?.SensitivePage(GetName(), false);
         NotebookFunc?.SpinnerOn(GetName());
 
+        bool isNew = IsNew;
         bool isSave = await Save();
 
         NotebookFunc?.SpinnerOff(GetName());
@@ -141,7 +142,7 @@ public abstract class DirectoryFormElement : FormElement
             if (CallBack_OnSelectPointer != null && UniqueID != null)
                 CallBack_OnSelectPointer.Invoke(UniqueID);
 
-            if (IsNew)
+            if (isNew)
                 CallBack_LoadRecords?.Invoke(UniqueID);
 
             if (closePage)

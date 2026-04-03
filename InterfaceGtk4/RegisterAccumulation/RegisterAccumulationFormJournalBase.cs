@@ -54,7 +54,7 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     /// <summary>
     /// Фільтр
     /// </summary>
-    public FilterControl Filter { get; } = new(true);
+    public FilterControl Filter { get; } = FilterControl.NewWithUsePeriod(true);
 
     public RegisterAccumulationFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {

@@ -105,7 +105,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         if (itemRow.Sub.Count > 0)
         {
             store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
-            _ = store.Ref();
 
             foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
                 store.Append(subRow);

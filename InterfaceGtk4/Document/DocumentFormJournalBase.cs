@@ -79,7 +79,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Фільтр
     /// </summary>
-    public FilterControl Filter { get; } = new(true);
+    public FilterControl Filter { get; } = FilterControl.NewWithUsePeriod(true);
 
     public DocumentFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
     {

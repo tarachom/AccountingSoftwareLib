@@ -28,14 +28,18 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Вказівник
 /// </summary>
-public abstract class PointerTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class PointerTablePartCell : Box
 {
     Box hBox;
     Label label = Label.New(null);
     Button buttonSelect;
 
-    public PointerTablePartCell()
+    partial void Initialize()
     {
+        //Ігнорувати виклик ініціалізації для цього базового класу
+        if (GetType() == typeof(PointerTablePartCell)) return;
+
         SetOrientation(Orientation.Vertical);
 
         hBox = New(Orientation.Horizontal, 0);
@@ -58,9 +62,8 @@ public abstract class PointerTablePartCell : Box
             if (buttonSelect != null && args.NPress >= 2)
                 Select(buttonSelect, new());
         };
-        */
 
-        /*EventControllerKey contrKey = EventControllerKey.New();
+        EventControllerKey contrKey = EventControllerKey.New();
         entryPresentation.AddController(contrKey);
         contrKey.OnKeyReleased += (_, args) =>
         {
@@ -68,7 +71,8 @@ public abstract class PointerTablePartCell : Box
                 Select(buttonSelect, new());
             else if (args.Keyval == (uint)Key.Delete)
                 Clear();
-        };*/
+        };
+        */
 
         //Select
         {
@@ -86,8 +90,8 @@ public abstract class PointerTablePartCell : Box
 
     #region Virtual Function
 
-    protected abstract void Select(Button button, EventArgs args);
-    protected abstract void Clear();
+    protected virtual void Select(Button button, EventArgs args) { }
+    protected virtual void Clear() { }
 
     #endregion
 
@@ -96,7 +100,7 @@ public abstract class PointerTablePartCell : Box
     /// </summary>
     public Action? OnSelect { get; set; }
 
-     /// <summary>
+    /// <summary>
     /// Функція яка викликається перед відкриттям вибору
     /// </summary>
     public Action? BeforeClickOpenFunc { get; set; }

@@ -206,7 +206,7 @@ public abstract class ConfiguratorTree
             factory.OnSetup += (_, args) =>
             {
                 ListItem listItem = (ListItem)args.Object;
-                var cell = LabelTablePartCell.New(null);
+                var cell = LabelTablePartCell.NewWithString(null);
 
                 TreeExpander expander = TreeExpander.New();
                 expander.SetChild(cell);
@@ -241,7 +241,7 @@ public abstract class ConfiguratorTree
             factory.OnSetup += (_, args) =>
             {
                 var listItem = (ListItem)args.Object;
-                var cell = LabelTablePartCell.New(null);
+                var cell = LabelTablePartCell.NewWithString(null);
                 listItem.SetChild(cell);
 
             };
@@ -268,7 +268,7 @@ public abstract class ConfiguratorTree
             factory.OnSetup += (_, args) =>
             {
                 var listItem = (ListItem)args.Object;
-                var cell = LabelTablePartCell.New(null);
+                var cell = LabelTablePartCell.NewWithString(null);
                 listItem.SetChild(cell);
 
             };

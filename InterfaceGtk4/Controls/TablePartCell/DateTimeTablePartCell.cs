@@ -28,13 +28,14 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Дата час
 /// </summary>
-public class DateTimeTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class DateTimeTablePartCell : Box
 {
     Box hBox;
     Entry entry = Entry.New();
     Button buttonSelect;
 
-    public DateTimeTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -57,6 +58,16 @@ public class DateTimeTablePartCell : Box
 
         Append(hBox);
         AddCssClass("datetime");
+    }
+
+    public static DateTimeTablePartCell New() => NewWithProperties([]);
+
+    public static DateTimeTablePartCell NewWithDateTime(DateTime? dt)
+    {
+        DateTimeTablePartCell cell = NewWithProperties([]);
+        cell.Value = dt ?? DateTime.MinValue;
+
+        return cell;
     }
 
     public DateTime Value
@@ -115,12 +126,6 @@ public class DateTimeTablePartCell : Box
         }
         else
             entry.AddCssClass("error");
-    }
-
-    public static DateTimeTablePartCell New(DateTime? dt)
-    {
-        DateTimeTablePartCell cell = new() { Value = dt ?? DateTime.MinValue };
-        return cell;
     }
 
     /// <summary>

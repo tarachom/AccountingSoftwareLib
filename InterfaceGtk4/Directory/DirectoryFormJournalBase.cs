@@ -69,6 +69,11 @@ public abstract class DirectoryFormJournalBase : FormJournal
     public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
 
     /// <summary>
+    /// Функція зворотнього виклику для множинного вибору
+    /// </summary>
+    public Action<UniqueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
+
+    /// <summary>
     /// Верхній бокc для пошуку та додаткових кнопок
     /// </summary>
     protected Box HBoxTop { get; } = Box.New(Orientation.Horizontal, 0);
@@ -86,7 +91,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Фільтр
     /// </summary>
-    public FilterControl Filter { get; } = new();
+    public FilterControl Filter { get; } = FilterControl.NewWithUsePeriod();
 
     /// <summary>
     /// Панель з двох блоків

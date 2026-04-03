@@ -31,21 +31,21 @@ namespace InterfaceGtk4;
 /// Контрол для вибору з типом який потрібно вибрати.
 /// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
 /// </summary>
-public abstract partial class CompositePointerControl : PointerControl
+[GObject.Subclass<PointerControl>]
+public partial class CompositePointerControl : PointerControl
 {
-    Kernel? Kernel { get; set; }
-    string NamespaceProgram { get; set; } = "";
-    string NamespaceCodeGeneration { get; set; }= "";
-    NotebookFunction? NotebookFunc { get; set; }
+    protected Kernel? Kernel { get; set; }
+    protected string NamespaceProgram { get; set; } = "";
+    protected string NamespaceCodeGeneration { get; set; } = "";
+    protected NotebookFunction? NotebookFunc { get; set; }
+
     Assembly CallingAssembly { get; } = Assembly.GetCallingAssembly();
     event EventHandler<UuidAndText>? PointerChanged;
 
-    public CompositePointerControl(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebookFunc)
+    partial void Initialize()
     {
-        Kernel = kernel;
-        NamespaceProgram = namespaceProgram;
-        NamespaceCodeGeneration = namespaceCodeGeneration;
-        NotebookFunc = notebookFunc;
+        //Ігнорувати виклик ініціалізації для цього базового класу
+        if (GetType() == typeof(CompositePointerControl)) return;
 
         PointerChanged += OnPointerChanged;
 
@@ -61,7 +61,8 @@ public abstract partial class CompositePointerControl : PointerControl
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+    protected virtual ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
+       ValueTask.FromResult(new CompositePointerPresentation_Record()); //????
 
     #endregion
 

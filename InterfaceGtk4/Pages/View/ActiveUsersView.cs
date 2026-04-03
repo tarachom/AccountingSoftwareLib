@@ -177,7 +177,7 @@ public partial class ActiveUsersView : Box
     void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell label = LabelTablePartCell.New(null);
+        LabelTablePartCell label = LabelTablePartCell.NewWithString(null);
         listItem.Child = label;
     }
 
@@ -216,7 +216,7 @@ public partial class ActiveUsersView : Box
     {
         ListItem listItem = (ListItem)args.Object;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
-        listItem.SetChild(ImageTablePartCell.NewForPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
+        listItem.SetChild(ImageTablePartCell.NewFromPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
     }
 
     void OnBind_TypeForm(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)

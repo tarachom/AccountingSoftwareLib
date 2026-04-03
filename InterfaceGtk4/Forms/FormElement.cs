@@ -61,7 +61,7 @@ public abstract class FormElement : Form
     /// <summary>
     /// Інформація про блокування
     /// </summary>
-    protected LockControl LockInfo = new();
+    protected LockControl LockInfo = LockControl.New();
 
     public FormElement(NotebookFunction? notebookFunc) : base(notebookFunc) { }
 

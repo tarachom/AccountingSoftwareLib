@@ -1178,6 +1178,13 @@ namespace AccountingSoftware
             return attrZip == "1" ? UnZipAndBase64Text(value) : value;
         }
 
+        /// <summary>
+        /// Генерує короткий ключ на основі згенерованого Guid
+        /// Довжина ключа менше 21 символу
+        /// </summary>
+        /// <returns>Ключ</returns>
+        public static string GetShortGuid() => Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "").Replace("+", "")[..^2];
+
         #endregion
 
         #region Load (завантаження конфігурації з ХМЛ файлу)

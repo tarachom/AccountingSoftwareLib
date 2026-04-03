@@ -162,18 +162,16 @@ public abstract class FormTablePart : Form
             SelectPosition = selection.GetMaximum();
     }
 
-    protected List<RowTablePart> GetSelection()
+    protected List<IRowTablePart> GetSelection()
     {
-        List<RowTablePart> rows = [];
+        List<IRowTablePart> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i) && model.GetObject(i) is RowTablePart row)
+            if (model.IsSelected(i) && model.GetObject(i) is IRowTablePart row)
                 rows.Add(row);
-
-        //model.GetObject(i)
 
         return rows;
     }
@@ -191,11 +189,11 @@ public abstract class FormTablePart : Form
 
     void OnCopy(Button button, EventArgs args)
     {
-        List<RowTablePart> rows = GetSelection();
+        List<IRowTablePart> rows = GetSelection();
         if (rows.Count > 0)
         {
             SelectPosition = 0;
-            foreach (RowTablePart row in rows)
+            foreach (IRowTablePart row in rows)
             {
                 Store.Append(row.Copy());
                 SelectPosition = Store.GetNItems() - 1;

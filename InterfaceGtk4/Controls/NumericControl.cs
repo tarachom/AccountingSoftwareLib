@@ -46,10 +46,7 @@ public partial class NumericControl : Box
         Append(entry);
     }
 
-    public static NumericControl New()
-    {
-        return NewWithProperties([]);
-    }
+    public static NumericControl New() => NewWithProperties([]);
 
     decimal mValue;
     public decimal Value

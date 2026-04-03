@@ -31,7 +31,8 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class FilterControl : Box
+[GObject.Subclass<Box>]
+public partial class FilterControl : Box
 {
     /// <summary>
     /// Функція вибірки даних
@@ -72,12 +73,11 @@ public class FilterControl : Box
     /// </summary>
     CheckButton UsePeriod { get; set; } = CheckButton.NewWithLabel("В межах періоду");
 
-    public FilterControl(bool usePeriod = false)
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
         //В межах періоду
-        if (usePeriod)
         {
             Box hBox = New(Orientation.Horizontal, 0);
             Append(hBox);
@@ -134,10 +134,34 @@ public class FilterControl : Box
         }
     }
 
+    public static FilterControl New() => NewWithProperties([]);
+
+    /// <summary>
+    /// Новий з врахування використання періоду
+    /// </summary>
+    /// <param name="usePeriod">Використання періоду</param>
+    /// <returns>Новий FilterControl</returns>
+    public static FilterControl NewWithUsePeriod(bool usePeriod = false)
+    {
+        FilterControl filter = NewWithProperties([]);
+        filter.IsUsePeriod = usePeriod;
+
+        return filter;
+    }
+
     /// <summary>
     /// Чи враховувати період для відборів (В межах періоду)
     /// </summary>
-    public bool IsUsePeriod { get => UsePeriod.Active; }
+    public bool IsUsePeriod
+    {
+        get => UsePeriod.Active;
+        set
+        {
+            UsePeriod.Active = value;
+
+            ((Box?)UsePeriod.Parent)?.Visible = value;
+        }
+    }
 
     /// <summary>
     /// Створене спливаюче вікно

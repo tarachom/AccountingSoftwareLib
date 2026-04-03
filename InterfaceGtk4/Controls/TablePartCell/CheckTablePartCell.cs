@@ -28,12 +28,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Ціле число
 /// </summary>
-public class CheckTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class CheckTablePartCell : Box
 {
     Box hBox;
-   public CheckButton Check { get; } = CheckButton.New();
+    public CheckButton Check { get; } = CheckButton.New();
 
-    public CheckTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -46,6 +47,8 @@ public class CheckTablePartCell : Box
         Append(hBox);
         AddCssClass("combotext");
     }
+
+    public static CheckTablePartCell New() => NewWithProperties([]);
 
     public bool Value
     {

@@ -48,10 +48,7 @@ public partial class DateTimeControl : Box
         Append(bOpenCalendar);
     }
 
-    public static DateTimeControl New()
-    {
-        return NewWithProperties([]);
-    }
+    public static DateTimeControl New() => NewWithProperties([]);
 
     /// <summary>
     /// Тільки дата, без часу

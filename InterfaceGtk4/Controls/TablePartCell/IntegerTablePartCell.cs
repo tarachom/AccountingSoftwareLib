@@ -28,12 +28,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Ціле число
 /// </summary>
-public class IntegerTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class IntegerTablePartCell : Box
 {
     Box hBox;
     Entry entry = Entry.New();
 
-    public IntegerTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -48,6 +49,8 @@ public class IntegerTablePartCell : Box
         Append(hBox);
         AddCssClass("integer");
     }
+
+    public static IntegerTablePartCell New() => NewWithProperties([]);
 
     public int Value
     {

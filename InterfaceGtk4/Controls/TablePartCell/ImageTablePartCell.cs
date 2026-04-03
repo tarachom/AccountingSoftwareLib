@@ -29,12 +29,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Іконка
 /// </summary>
-public class ImageTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class ImageTablePartCell : Box
 {
     Box hBox;
     Image img = Image.NewFromPixbuf(null);
 
-    public ImageTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -47,16 +48,18 @@ public class ImageTablePartCell : Box
         AddCssClass("base");
     }
 
-    public void SetImage(Pixbuf? pixbuf)
-    {
-        img.SetFromPixbuf(pixbuf);
-    }
+    public static ImageTablePartCell New() => NewWithProperties([]);
 
-    public static ImageTablePartCell NewForPixbuf(Pixbuf? pixbuf)
+    public static ImageTablePartCell NewFromPixbuf(Pixbuf? pixbuf)
     {
-        ImageTablePartCell img = new();
+        ImageTablePartCell img = NewWithProperties([]);
         img.SetImage(pixbuf);
 
         return img;
     }
+
+    public void SetImage(Pixbuf? pixbuf)
+    {
+        img.SetFromPixbuf(pixbuf);
+    } 
 }

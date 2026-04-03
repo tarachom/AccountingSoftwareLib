@@ -31,9 +31,10 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public abstract class MultiplePointerControl : PointerControl
+[GObject.Subclass<PointerControl>]
+public partial class MultiplePointerControl : PointerControl
 {
-    public MultiplePointerControl()
+    partial void Initialize()
     {
         Button bMultiple = Button.NewFromIconName("go-down");
         bMultiple.MarginEnd = 1;
@@ -46,12 +47,12 @@ public abstract class MultiplePointerControl : PointerControl
     /// </summary>
     /// <param name="listBox">Список</param>
     /// <returns></returns>
-    protected abstract ValueTask FillList(ListBox listBox);
+    protected virtual async ValueTask FillList(ListBox listBox) => await ValueTask.FromResult(true);
 
-    protected virtual async void OnMultiple(object? sender, EventArgs args)
+    protected virtual async void OnMultiple(Button button, EventArgs args)
     {
         Popover popover = Popover.New();
-        popover.SetParent((Button)sender!);
+        popover.SetParent(button);
         popover.Position = PositionType.Bottom;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 

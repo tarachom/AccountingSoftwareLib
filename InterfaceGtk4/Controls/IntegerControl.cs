@@ -41,10 +41,7 @@ public partial class IntegerControl : Box
         Append(entry);
     }
 
-    public static IntegerControl New()
-    {
-        return NewWithProperties([]);
-    }
+    public static IntegerControl New() => NewWithProperties([]);
 
     int mValue;
     public int Value

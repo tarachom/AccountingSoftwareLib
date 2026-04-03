@@ -71,7 +71,6 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
         object? obj = itemRow.Obj;
 
         Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
-        _ = store.Ref();
 
         switch (group)
         {

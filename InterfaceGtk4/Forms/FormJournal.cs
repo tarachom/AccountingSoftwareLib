@@ -207,10 +207,12 @@ public abstract class FormJournal : Form
 
             Console.WriteLine("Selection: " + Store.GetObject(position)?.GetType());
 
-            if (Store.GetObject(position) is DirectoryRowJournal row)
-                SelectPointerItem = row.UniqueID;
-            else if (Store.GetObject(position) is DocumentRowJournal row2)
-                SelectPointerItem = row2.UniqueID;
+            SelectPointerItem = Store.GetObject(position) switch
+            {
+                DirectoryRowJournal x => x.UniqueID,
+                DocumentRowJournal x => x.UniqueID,
+                _ => null
+            };
         }
     }
 

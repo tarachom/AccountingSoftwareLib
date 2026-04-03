@@ -98,10 +98,7 @@ public partial class PeriodControl : Box
         Append(comboBoxPeriod);
     }
 
-    public static PeriodControl New()
-    {
-        return NewWithProperties([]);
-    }
+    public static PeriodControl New() => NewWithProperties([]);
 
     /*
 

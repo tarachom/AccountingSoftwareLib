@@ -21,38 +21,22 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Базовий клас для рядка табличної частини
+/// 
 /// </summary>
-[Subclass<GObject.Object>]
-public partial class RowTablePart
+public interface IRowTablePart
 {
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
-    public UniqueID UniqueID
-    {
-        get => UnigueID_;
-        set
-        {
-            UnigueID_ = value;
-            Сhanged_UnigueID?.Invoke();
-        }
-    }
-    UniqueID UnigueID_ = new();
-    public Action? Сhanged_UnigueID;
-
-    /*
-    Функції
-    */
+    public UniqueID UniqueID { get; set; }
 
     /// <summary>
-    /// Копіювання рядка
+    /// Функція копіювання
     /// </summary>
-    public virtual RowTablePart Copy() => NewWithProperties([]);
+    public GObject.Object Copy();
 }

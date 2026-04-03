@@ -187,7 +187,7 @@ public abstract partial class LockObjectsView : Box
     void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell label = LabelTablePartCell.New(null);
+        LabelTablePartCell label = LabelTablePartCell.NewWithString(null);
         listItem.Child = label;
     }
 

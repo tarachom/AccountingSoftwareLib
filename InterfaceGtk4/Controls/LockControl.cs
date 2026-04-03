@@ -4,12 +4,13 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public class LockControl : Box
+[GObject.Subclass<Box>]
+public partial class LockControl : Box
 {
     Label label = Label.New(null);
     public AccountingSoftware.Object? Element { get; set; }
 
-    public LockControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
         MarginStart = MarginEnd = 10;
@@ -28,9 +29,10 @@ public class LockControl : Box
                 Box hBox = New(Orientation.Horizontal, 0);
                 vBox.Append(hBox);
 
-                string info = recordResult.Result ? 
-                    $"Заблоковано користувачем {recordResult.UserName} - {recordResult.DateLock:dd:MM:yyyy} о {recordResult.DateLock:HH:mm:ss}" : 
+                string info = recordResult.Result ?
+                    $"Заблоковано користувачем {recordResult.UserName} - {recordResult.DateLock:dd:MM:yyyy} о {recordResult.DateLock:HH:mm:ss}" :
                     "Не заблоковано";
+
                 hBox.Append(Label.New(info));
 
                 Popover popover = Popover.New();
@@ -42,6 +44,8 @@ public class LockControl : Box
         };
         Append(button);
     }
+
+    public static LockControl New() => NewWithProperties([]);
 
     /// <summary>
     /// Функція для відображення інформації про блокування

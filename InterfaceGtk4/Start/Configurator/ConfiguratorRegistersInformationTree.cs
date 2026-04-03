@@ -71,7 +71,6 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<str
         object? obj = itemRow.Obj;
 
         Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
-        store.Ref();
 
         switch (group)
         {

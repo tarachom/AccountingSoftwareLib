@@ -28,12 +28,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Клітинка табличної частини - Ціле число
 /// </summary>
-public class ComboTextTablePartCell : Box
+[GObject.Subclass<Box>]
+public partial class ComboTextTablePartCell : Box
 {
     Box hBox;
     public ComboBoxText Combo { get; } = ComboBoxText.New();
 
-    public ComboTextTablePartCell()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -47,6 +48,8 @@ public class ComboTextTablePartCell : Box
         Append(hBox);
         AddCssClass("combotext");
     }
+
+    public static ComboTextTablePartCell New() => NewWithProperties([]);
 
     public string Value
     {
