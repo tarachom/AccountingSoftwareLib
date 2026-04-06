@@ -289,7 +289,8 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             //Функція яка викликається після повного завантаження
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
-                Grid.ScrollTo(position, null, ListScrollFlags.Focus, null);
+                ScrollTo(position);
+                //Grid.ScrollTo(position, null, ListScrollFlags.Focus, null);
                 return false;
             });
         }
@@ -403,7 +404,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// Переоприділення функції прокрутки
     /// </summary>
     /// <param name="selectPosition">Позиція</param>
-    /*protected override void ScrollTo(uint selectPosition)
+    protected override void ScrollTo(uint selectPosition)
     {
         if (TreeList != null)
         {
@@ -436,5 +437,5 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 }
             }
         }
-    }*/
+    }
 }

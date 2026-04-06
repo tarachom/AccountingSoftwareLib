@@ -151,8 +151,8 @@ public abstract class FormJournal : Form
             //Функція яка викликається після повного завантаження
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
-                //ScrollTo(selectPosition);
-                Grid.ScrollTo(selectPosition, null, ListScrollFlags.Focus, null);
+                ScrollTo(selectPosition);
+                //Grid.ScrollTo(selectPosition, null, ListScrollFlags.Focus, null);
                 return false;
             });
         }
@@ -171,7 +171,7 @@ public abstract class FormJournal : Form
     /// Прокрутка
     /// </summary>
     /// <param name="selectPosition"></param>
-    /*protected virtual void ScrollTo(uint selectPosition)
+    protected virtual void ScrollTo(uint selectPosition)
     {
         uint rowCount = Store.GetNItems();
         if (rowCount > 0 && Grid.Vadjustment != null)
@@ -197,7 +197,7 @@ public abstract class FormJournal : Form
                     Grid.Vadjustment.SetValue(value - pageSizePart);
             }
         }
-    }*/
+    }
 
     /// <summary>
     /// При виділенні елементів в таблиці
