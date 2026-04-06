@@ -97,6 +97,9 @@ public abstract class FormJournal : Form
         Grid.Reorderable = false;
         Grid.AccessibleRole = AccessibleRole.Table; //Уточнити для чого це, на що впливає і чи потрібно
 
+        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+        ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
+
         EventControllerKey contrKey = EventControllerKey.New();
         Grid.AddController(contrKey);
         contrKey.OnKeyReleased += async (sender, args) =>
@@ -146,9 +149,10 @@ public abstract class FormJournal : Form
             Grid.Model.SelectItem(selectPosition - 1, false);
 
             //Функція яка викликається після повного завантаження
-            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_DEFAULT_IDLE, () =>
+            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
-                ScrollTo(selectPosition);
+                //ScrollTo(selectPosition);
+                Grid.ScrollTo(selectPosition, null, ListScrollFlags.Focus, null);
                 return false;
             });
         }
@@ -161,11 +165,13 @@ public abstract class FormJournal : Form
     /// <param name="select">UniqueID елемента який треба виділити</param>
     public virtual void AfterLoadRecords(UniqueID? select = null) { }
 
+    public virtual void AfterLoadRecords(Stack<UniqueID> parents) { }
+
     /// <summary>
     /// Прокрутка
     /// </summary>
     /// <param name="selectPosition"></param>
-    protected virtual void ScrollTo(uint selectPosition)
+    /*protected virtual void ScrollTo(uint selectPosition)
     {
         uint rowCount = Store.GetNItems();
         if (rowCount > 0 && Grid.Vadjustment != null)
@@ -191,7 +197,7 @@ public abstract class FormJournal : Form
                     Grid.Vadjustment.SetValue(value - pageSizePart);
             }
         }
-    }
+    }*/
 
     /// <summary>
     /// При виділенні елементів в таблиці
@@ -220,26 +226,16 @@ public abstract class FormJournal : Form
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public virtual List<UniqueID> GetSelection()
+    public virtual List<IRowSubclassJournal> GetSelection()
     {
-        List<UniqueID> rows = [];
+        List<IRowSubclassJournal> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
         for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
-            if (model.IsSelected(i))
-            {
-                UniqueID? row = Store.GetObject(i) switch
-                {
-                    DirectoryRowJournal x => x.UniqueID,
-                    DocumentRowJournal x => x.UniqueID,
-                    _ => null
-                };
-
-                if (row != null)
-                    rows.Add(row);
-            }
+            if (model.IsSelected(i) && model.GetObject(i) is IRowSubclassJournal row)
+                rows.Add(row);
 
         return rows;
     }
@@ -248,7 +244,7 @@ public abstract class FormJournal : Form
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
     /// <returns>Масив ІД виділених рядків</returns>
-    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection()];
+    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UniqueID)];
 
     /// <summary>
     /// Відкриває Popover із списком лінків. Використовується для меню
@@ -366,14 +362,8 @@ public abstract class FormJournal : Form
                         foreach (var record in delete)
                             for (uint i = 0; i < Store.GetNItems(); i++)
                             {
-                                UniqueID? row = Store.GetObject(i) switch
-                                {
-                                    DirectoryRowJournal x => x.UniqueID,
-                                    DocumentRowJournal x => x.UniqueID,
-                                    _ => null
-                                };
-
-                                if (row != null && row.UGuid.Equals(record.Uid))
+                                IRowSubclassJournal? row = (IRowSubclassJournal?)Store.GetObject(i);
+                                if (row != null && row.UniqueID.UGuid.Equals(record.Uid))
                                 {
                                     Store.Remove(i);
                                     break;
@@ -394,20 +384,14 @@ public abstract class FormJournal : Form
                         if (records.Count == 0)
                             break;
 
-                        UniqueID? row = Store.GetObject(i) switch
-                        {
-                            DirectoryRowJournal x => x.UniqueID,
-                            DocumentRowJournal x => x.UniqueID,
-                            _ => null
-                        };
-
+                        IRowSubclassJournal? row = (IRowSubclassJournal?)Store.GetObject(i);
                         if (row != null)
                         {
-                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UGuid));
+                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UniqueID.UGuid));
                             if (obj != null)
                             {
                                 filtered.Add(obj);
-                                records.RemoveAll(x => x.Uid.Equals(row.UGuid));
+                                records.RemoveAll(x => x.Uid.Equals(row.UniqueID.UGuid));
                             }
                         }
                     }

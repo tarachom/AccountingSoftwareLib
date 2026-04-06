@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// </summary>
 [Subclass<GObject.Object>]
-public partial class DirectoryHierarchicalRow
+public partial class DirectoryHierarchicalRow : IRowSubclassJournal
 {
     public static DirectoryHierarchicalRow New() => NewWithProperties([]);
 
@@ -39,6 +39,11 @@ public partial class DirectoryHierarchicalRow
     /// Унікальний ідентифікатор
     /// </summary>
     public UniqueID UniqueID { get; set; } = new();
+
+    /// <summary>
+    /// Унікальний ідентифікатор родича
+    /// </summary>
+    public UniqueID? Parent { get; set; } = null;
 
     /// <summary>
     /// Помітка на видалення

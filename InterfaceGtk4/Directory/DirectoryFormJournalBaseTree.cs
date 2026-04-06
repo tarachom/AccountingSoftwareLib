@@ -81,15 +81,19 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         await BeforeSetValue();
 
         await LoadRecords();
+
         //RunUpdateRecords();
+        PopoverParent?.OnHide += (_, _) => GC.Collect(); //!!! Помістити це в RunUpdateRecords
 
         //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        /*Grid.Vadjustment?.OnChanged += (sender, args) =>
         {
+            Console.WriteLine("Grid.Vadjustment?.OnChanged");
+            
             Bitset selection = Grid.Model.GetSelection();
             if (selection.GetSize() > 0 && ScrollToEnable)
                 ScrollTo(selection.GetMaximum());
-        };
+        };*/
     }
 
     /// <summary>
@@ -122,7 +126,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     protected override async ValueTask GridOnActivate(uint position)
     {
         //!!! Тимчасове рішення, бо відбувається двойна активація.
-        //Можливо це повязано із глюком дерева яке мають виправити у версії 0.8.0
         {
             var ticks = DateTime.Now.Ticks;
             var exit = false;
@@ -151,9 +154,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// Функція повертає список вибраних елементів
     /// </summary>
     /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
-    public override List<UniqueID> GetSelection()
+    public override List<IRowSubclassJournal> GetSelection()
     {
-        List<UniqueID> rows = [];
+        List<IRowSubclassJournal> rows = [];
 
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
@@ -162,8 +165,8 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             if (model.IsSelected(i))
             {
                 TreeListRow? row = TreeList?.GetRow(i);
-                DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
-                if (rowItem != null) rows.Add(rowItem.UniqueID);
+                IRowSubclassJournal? rowItem = (IRowSubclassJournal?)row?.GetItem();
+                if (rowItem != null) rows.Add(rowItem);
             }
 
         return rows;
@@ -198,10 +201,105 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
+    public override void AfterLoadRecords(Stack<UniqueID> parents)
+    {
+        #region Local Func
+
+        (TreeListRow? Row, uint Position) FindTop(UniqueID select)
+        {
+            for (uint i = 0; i < TreeList.GetNItems(); i++)
+            {
+                TreeListRow? row = TreeList.GetRow(i);
+                if (row != null)
+                {
+                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                    if (rowItem != null && rowItem.UniqueID.Equals(select))
+                    {
+                        row.Expanded = true;
+                        return (row, i);
+                    }
+                }
+            }
+
+            return (null, 0);
+        }
+
+        (TreeListRow? Row, uint Position) FindChild(TreeListRow? treeListRow, UniqueID select)
+        {
+            Gio.ListModel? children = treeListRow?.GetChildren();
+            for (uint j = 0; j < children?.GetNItems(); ++j)
+            {
+                TreeListRow? row = treeListRow?.GetChildRow(j);
+                if (row != null)
+                {
+                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                    if (rowItem != null && rowItem.UniqueID.Equals(select))
+                    {
+                        row.Expanded = true;
+                        return (row, j + 1);
+                    }
+                }
+            }
+
+            return (null, 0);
+        }
+
+        #endregion
+
+        if (PopoverParent == null)
+            NotebookFunc?.SpinnerOff(GetName());
+
+        //Якщо є перший пустий рядок і нічого не вибрано тоді зразу його виділяю
+        if (InsertEmptyFirstRow && parents.Count == 0)
+        {
+            Grid.Model.SelectItem(0, false);
+            return;
+        }
+
+        if (TreeList != null)
+        {
+            bool isTopLevel = true;
+            TreeListRow? currentRow = null;
+            uint position = 0;
+
+            while (parents.Count > 0)
+            {
+                UniqueID select = parents.Pop();
+
+                if (isTopLevel)
+                {
+                    (currentRow, position) = FindTop(select);
+                    if (currentRow != null)
+                        isTopLevel = false;
+                    else
+                        break;
+                }
+                else if (currentRow != null)
+                {
+                    (currentRow, uint position_) = FindChild(currentRow, select);
+                    if (currentRow != null)
+                        position += position_;
+                    else
+                        break;
+                }
+            }
+
+            Grid.Model.SelectItem(position, false);
+
+            //Функція яка викликається після повного завантаження
+            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
+            {
+                Grid.ScrollTo(position, null, ListScrollFlags.Focus, null);
+                return false;
+            });
+        }
+    }
+
     /// <summary>
     /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
     /// </summary>
     /// <param name="select">UniqueID елемента який треба виділити</param>
+    /*
     public override void AfterLoadRecords(UniqueID? select = null)
     {
         if (PopoverParent == null)
@@ -214,24 +312,36 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             return;
         }
 
-        if (TreeList != null && select != null)
+        {
+            //Store.FindWithEqualFunc
+        }
+
+        if (TreeList != null && select != null && !select.IsEmpty())
         {
             /*
             Принцип роботи:
                 Рекусивно обходяться всі вітки дерева і якщо знайдений
                 елемент то обробка припиняється і вітки залишаються відкритими.
                 Вітки де не знайдено закриваються після обробки.
-            */
+            *//*
             for (uint i = 0; i < TreeList.GetNItems(); i++)
             {
                 TreeListRow? row = TreeList.GetRow(i);
                 if (row != null)
                 {
-                    row.Expanded = true;
-                    if (RecursionFind(row, i))
-                        break;
-                    else
-                        row.Expanded = false;
+                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                    if (rowItem != null && rowItem.IsFolder)
+                    {
+                        //Console.WriteLine(rowItem.Fields["Назва"]);
+                        row.Expanded = true;
+                        if (RecursionFind(row, i))
+                        {
+                            //Console.WriteLine($"Break recursion {i}");
+                            break;
+                        }
+                        else
+                            row.Expanded = false;
+                    }
                 }
             }
 
@@ -246,16 +356,19 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 else
                     return 0;
             }
-            */
+            *//*
 
             bool RecursionFind(TreeListRow row, uint position)
             {
+                //Console.WriteLine($"Start recursion {position}");
+
                 DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
                 if (rowItem != null && rowItem.UniqueID.Equals(select))
                 {
                     Grid.Model.SelectItem(position, false);
                     ScrollToEnable = true;
 
+                    //Console.WriteLine($"Exit recursion {position}");
                     return true;
                 }
 
@@ -265,24 +378,32 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     TreeListRow? childRow = row.GetChildRow(j);
                     if (childRow != null)
                     {
-                        childRow.Expanded = true;
-                        if (RecursionFind(childRow, ++position))
-                            return true;
-                        else
-                            childRow.Expanded = false;
+                        DirectoryHierarchicalRow? rowItem2 = (DirectoryHierarchicalRow?)row.GetItem();
+                        if (rowItem2 != null && rowItem2.IsFolder)
+                        {
+                            //Console.WriteLine(rowItem2.Fields["Назва"]);
+                            childRow.Expanded = true;
+                            if (RecursionFind(childRow, ++position))
+                            {
+                                //Console.WriteLine($"Exit recursion {position}");
+                                return true;
+                            }
+                            else
+                                childRow.Expanded = false;
+                        }
                     }
                 }
 
                 return false;
             }
         }
-    }
+    }*/
 
     /// <summary>
     /// Переоприділення функції прокрутки
     /// </summary>
     /// <param name="selectPosition">Позиція</param>
-    protected override void ScrollTo(uint selectPosition)
+    /*protected override void ScrollTo(uint selectPosition)
     {
         if (TreeList != null)
         {
@@ -291,33 +412,29 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             {
                 //Видима частина
                 double pageSize = Grid.Vadjustment.PageSize;
+                Console.WriteLine($"pageSize {pageSize}");
 
                 //Максимальне значення
                 double upper = Math.Round(Grid.Vadjustment.Upper);
-                if (pageSize > 0 && upper > 0 && upper > pageSize)
+                Console.WriteLine($"upper {upper}");
+                if (pageSize > 0 && upper > 0 && upper >= pageSize)
                 {
                     //Висота одного рядка
                     double rowHeidth = upper / rowCount;
+                    Console.WriteLine($"rowHeidth {rowHeidth}");
 
                     //Висота для потрібної позиції
                     double value = rowHeidth * selectPosition;
+                    Console.WriteLine($"value {value}");
 
                     //Розмір половини видимої частини
                     double pageSizePart = pageSize / 2;
+                    Console.WriteLine($"pageSizePart {pageSizePart}");
+
                     if (value > pageSizePart)
-                    {
                         Grid.Vadjustment.SetValue(value - pageSizePart);
-                        ScrollToEnable = false;
-                    }
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Дозвіл на прокрутку до виділеного рядка.
-    /// Це потрібно тільки для дерева, тому що при вікритті вітки спрацьовує подія Grid.Vadjustment?.OnChanged
-    /// так як змінюється значення Grid.Vadjustment.Upper
-    /// </summary>
-    protected bool ScrollToEnable { get; set; } = false;
+    }*/
 }

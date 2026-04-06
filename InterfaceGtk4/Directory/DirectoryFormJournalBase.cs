@@ -185,12 +185,10 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
         Box vBoxStart = New(Orientation.Vertical, 0);
 
-        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
         vBoxStart.Append(ScrollGrid);
 
-        ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         vBoxStart.Append(ScrollPages);
 
@@ -371,7 +369,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async void Edit()
     {
-        foreach (UniqueID uniqueID in GetSelection())
+        foreach (UniqueID uniqueID in GetSelectionUnigueID())
             await OpenPageElement(false, uniqueID);
     }
 
@@ -387,8 +385,8 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async void OnCopy(Button button, EventArgs args)
     {
-        List<UniqueID> rows = GetSelection();
-        if (rows.Count > 0)
+        UniqueID[] rows = GetSelectionUnigueID();
+        if (rows.Length > 0)
         {
             foreach (UniqueID uniqueID in rows)
                 SelectPointerItem = await Copy(uniqueID);
@@ -414,8 +412,8 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
     async ValueTask Delete()
     {
-        List<UniqueID> rows = GetSelection();
-        if (rows.Count > 0)
+        UniqueID[] rows = GetSelectionUnigueID();
+        if (rows.Length > 0)
         {
             foreach (UniqueID uniqueID in rows)
                 await SetDeletionLabel(uniqueID);

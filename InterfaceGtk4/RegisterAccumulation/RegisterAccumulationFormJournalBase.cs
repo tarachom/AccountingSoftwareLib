@@ -102,12 +102,10 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
         CreateToolbar();
         GridModel();
 
-        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
         Append(ScrollGrid);
 
-        ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         Append(ScrollPages);
     }
@@ -127,11 +125,11 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
         await BeforeSetValue();
 
         //Прокрутка до виділеного рядка
-        Grid.Vadjustment?.OnChanged += (sender, args) =>
+        /*Grid.Vadjustment?.OnChanged += (sender, args) =>
         {
             Bitset selection = Grid.Model.GetSelection();
             if (selection.GetSize() > 0) ScrollTo(selection.GetMaximum());
-        };
+        };*/
     }
 
     #region Virtual & Abstract Function

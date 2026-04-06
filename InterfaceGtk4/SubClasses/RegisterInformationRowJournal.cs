@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// Рядок для табличного списку журналу регістру інформації
 /// </summary>
 [Subclass<GObject.Object>]
-public partial class RegisterInformationRowJournal 
+public partial class RegisterInformationRowJournal : IRowSubclass
 {
     public static RegisterInformationRowJournal New() => NewWithProperties([]);
 

@@ -114,7 +114,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         //Заголовок журналу
                         string listName = "Список";
 
-                        Type? directoryConst = ExecutingAssembly.GetType($"{NamespaceProgram}.Довідники.{typeDir}_Const");
+                        Type? directoryConst = ExecutingAssembly.GetType($"{NamespaceCodeGeneration}.Довідники.{typeDir}_Const");
                         if (directoryConst != null)
                             listName = directoryConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;
 
@@ -172,6 +172,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                         //Заголовок журналу
                         string listName = "Список";
+                        
                         Type? documentConst = ExecutingAssembly.GetType($"{NamespaceCodeGeneration}.Документи.{typeDoc}_Const");
                         if (documentConst != null)
                             listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;

@@ -44,7 +44,7 @@ public partial class CompositePointerControl : PointerControl
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації для цього базового класу
+        //Ігнорувати виклик ініціалізації для цього класу
         if (GetType() == typeof(CompositePointerControl)) return;
 
         PointerChanged += OnPointerChanged;
@@ -62,7 +62,7 @@ public partial class CompositePointerControl : PointerControl
     #region Virtual & Abstract Function
 
     protected virtual ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-       ValueTask.FromResult(new CompositePointerPresentation_Record()); //????
+        ValueTask.FromResult<CompositePointerPresentation_Record>(new());
 
     #endregion
 
@@ -293,6 +293,9 @@ public partial class CompositePointerControl : PointerControl
     Box BoxSelectType(Action? CallBackSelect = null)
     {
         Box vBoxContainer = New(Orientation.Vertical, 0);
+
+        //У випадку якщо Kernel == null повертаю пустий Box
+        if (Kernel == null) return vBoxContainer;
 
         //Заголовок
         Label labelCaption = Label.New("<b>Вибір типу даних</b>");

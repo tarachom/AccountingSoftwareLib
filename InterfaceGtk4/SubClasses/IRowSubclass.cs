@@ -26,17 +26,12 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Базовий інтерфейс для рядка
 /// </summary>
-public interface IRowTablePart
+public interface IRowSubclass
 {
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
     public UniqueID UniqueID { get; set; }
-
-    /// <summary>
-    /// Функція копіювання
-    /// </summary>
-    public GObject.Object Copy();
 }

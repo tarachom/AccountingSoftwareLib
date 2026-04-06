@@ -31,7 +31,7 @@ namespace AccountingSoftware
     ///     DocumentObject
     ///     RegisterInformationObject
     /// </summary>
-    public abstract class Object
+    public abstract class Object //Переназвати на AObject
     {
         public Object(Kernel kernel, string table, string[] fieldsArray)
         {

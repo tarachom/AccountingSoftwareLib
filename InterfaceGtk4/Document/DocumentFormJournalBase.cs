@@ -172,12 +172,10 @@ public abstract class DocumentFormJournalBase : FormJournal
             }
         };
 
-        ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
         Append(ScrollGrid);
 
-        ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
         ScrollPages.SetChild(HBoxPages);
         Append(ScrollPages);
     }
@@ -379,7 +377,7 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async void Edit()
     {
-        foreach (UniqueID uniqueID in GetSelection())
+        foreach (UniqueID uniqueID in GetSelectionUnigueID())
             await OpenPageElement(false, uniqueID);
     }
 
@@ -395,8 +393,8 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async void OnCopy(Button button, EventArgs args)
     {
-        List<UniqueID> rows = GetSelection();
-        if (rows.Count > 0)
+        UniqueID[] rows = GetSelectionUnigueID();
+        if (rows.Length > 0)
         {
             foreach (UniqueID uniqueID  in rows)
                 SelectPointerItem = await Copy(uniqueID);
@@ -422,8 +420,8 @@ public abstract class DocumentFormJournalBase : FormJournal
 
     async ValueTask Delete()
     {
-        List<UniqueID> rows = GetSelection();
-        if (rows.Count > 0)
+        UniqueID[] rows = GetSelectionUnigueID();
+        if (rows.Length > 0)
         {
             foreach (UniqueID uniqueID in rows)
                 await SetDeletionLabel(uniqueID);

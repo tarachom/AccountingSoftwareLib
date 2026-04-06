@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// Рядок для табличного списку журналу документу
 /// </summary>
 [Subclass<GObject.Object>]
-public partial class DocumentRowJournal
+public partial class DocumentRowJournal : IRowSubclassJournal
 {
     public static DocumentRowJournal New() => NewWithProperties([]);
 
