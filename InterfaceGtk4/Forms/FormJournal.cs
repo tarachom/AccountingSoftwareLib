@@ -152,7 +152,6 @@ public abstract class FormJournal : Form
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
                 ScrollTo(selectPosition);
-                //Grid.ScrollTo(selectPosition, null, ListScrollFlags.Focus, null);
                 return false;
             });
         }
@@ -210,15 +209,8 @@ public abstract class FormJournal : Form
         if (selection.GetMinimum() == selection.GetMaximum())
         {
             uint position = selection.GetMaximum();
-
-            Console.WriteLine("Selection: " + Store.GetObject(position)?.GetType());
-
-            SelectPointerItem = Store.GetObject(position) switch
-            {
-                DirectoryRowJournal x => x.UniqueID,
-                DocumentRowJournal x => x.UniqueID,
-                _ => null
-            };
+            if (Store.GetObject(position) is IRowSubclassJournal row)
+                SelectPointerItem = row.UniqueID;
         }
     }
 
@@ -436,6 +428,20 @@ public abstract class FormJournal : Form
     /// Завантаження списку
     /// </summary>
     public abstract ValueTask LoadRecords();
+
+    /// <summary>
+    /// Довантаження даних в дерево
+    /// </summary>
+    /// <param name="parent">Вітка родич</param>
+    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID parent)
+    {
+        return await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
+    }
+
+    /// <summary>
+    /// Пустий рядок
+    /// </summary>
+    public virtual DirectoryHierarchicalRow LoadEmptyChildren() => DirectoryHierarchicalRow.New();
 
     /// <summary>
     /// Оновлення списку

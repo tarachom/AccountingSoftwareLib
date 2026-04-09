@@ -471,6 +471,12 @@ public abstract class DirectoryFormJournalBase : FormJournal
     #region ForCompositeMode
 
     /// <summary>
+    /// Повертає значення переключателя викристання ієрархії
+    /// </summary>
+    /// <returns>true або false</returns>
+    public bool IsUseHierarchy() => UseHierarchy.Active;
+
+    /// <summary>
     /// Додати переключатель використання ієрархії на форму
     /// </summary>
     protected void AddSwitchUseHierarchy()
@@ -491,12 +497,12 @@ public abstract class DirectoryFormJournalBase : FormJournal
 
         UseHierarchy.OnStateSet += (_, args) =>
         {
-            async void reloadFunc()
+            async void f()
             {
                 PagesClear();
                 await LoadRecords();
             }
-            reloadFunc();
+            f();
 
             return false;
         };

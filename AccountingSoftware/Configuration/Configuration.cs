@@ -1185,6 +1185,21 @@ namespace AccountingSoftware
         /// <returns>Ключ</returns>
         public static string GetShortGuid() => Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "").Replace("+", "")[..^2];
 
+        /// <summary>
+        /// Перетворює стрічку в тип ConfigurationDirectories.HierarchicalContentType
+        /// </summary>
+        /// <param name="allowedContent">Стрічка для пошуку</param>
+        public static ConfigurationDirectories.HierarchicalContentType GetAllowedContent(string allowedContent)
+        {
+            return allowedContent switch
+            {
+                "Folders" => ConfigurationDirectories.HierarchicalContentType.Folders,
+                "Elements" => ConfigurationDirectories.HierarchicalContentType.Elements,
+                "FoldersAndElements" => ConfigurationDirectories.HierarchicalContentType.FoldersAndElements,
+                _ => ConfigurationDirectories.HierarchicalContentType.Folders
+            };
+        }
+
         #endregion
 
         #region Load (завантаження конфігурації з ХМЛ файлу)
@@ -1333,13 +1348,7 @@ namespace AccountingSoftware
 
                     //Тип вмісту ієрархічного довідника
                     string allowedContent = directoryNodes.Current?.SelectSingleNode("AllowedContent")?.Value ?? "";
-                    allowedContent_Hierarchical = allowedContent switch
-                    {
-                        "Folders" => ConfigurationDirectories.HierarchicalContentType.Folders,
-                        "Elements" => ConfigurationDirectories.HierarchicalContentType.Elements,
-                        "FoldersAndElements" => ConfigurationDirectories.HierarchicalContentType.FoldersAndElements,
-                        _ => ConfigurationDirectories.HierarchicalContentType.Folders
-                    };
+                    allowedContent_Hierarchical = GetAllowedContent(allowedContent);
 
                     if (allowedContent_Hierarchical == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements)
                         isFolderField_Hierarchical = directoryNodes.Current?.SelectSingleNode("IsFolderField")?.Value ?? ""; //Поле ЦеПапка

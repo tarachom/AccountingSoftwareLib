@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// Рядок для табличного списку журналу регістру накопичення
 /// </summary>
 [Subclass<GObject.Object>]
-public partial class RegisterAccumulationRowJournal : IRowSubclass
+public partial class RegisterAccumulationRowJournal : IRowSubclassJournal
 {
     public static RegisterAccumulationRowJournal New() => NewWithProperties([]);
 
@@ -67,5 +67,5 @@ public partial class RegisterAccumulationRowJournal : IRowSubclass
     /// <summary>
     /// Колекція полів
     /// </summary>
-    public Dictionary<string, string> Fields { get; set; } = [];
+    public Dictionary<string, string?> Fields { get; set; } = [];
 }

@@ -84,16 +84,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         //RunUpdateRecords();
         PopoverParent?.OnHide += (_, _) => GC.Collect(); //!!! Помістити це в RunUpdateRecords
-
-        //Прокрутка до виділеного рядка
-        /*Grid.Vadjustment?.OnChanged += (sender, args) =>
-        {
-            Console.WriteLine("Grid.Vadjustment?.OnChanged");
-            
-            Bitset selection = Grid.Model.GetSelection();
-            if (selection.GetSize() > 0 && ScrollToEnable)
-                ScrollTo(selection.GetMaximum());
-        };*/
     }
 
     /// <summary>
@@ -101,9 +91,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     /// <param name="item">Поточний об'єкт для якого викликається функція</param>
     /// <returns></returns>
-    private static Gio.ListModel? CreateFunc(GObject.Object item)
+    /*private Gio.ListModel? CreateFunc(GObject.Object item)
     {
-        var itemRow = (DirectoryHierarchicalRow)item;
+        DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
         Gio.ListStore? store = null;
 
         if (itemRow.Sub.Count > 0)
@@ -112,6 +102,66 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
             foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
                 store.Append(subRow);
+        }
+
+        return store;
+    }*/
+
+    private Gio.ListModel? CreateFunc(GObject.Object item)
+    {
+        DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
+        Gio.ListStore? store = null;
+
+        //Якщо це вітка для завантаження
+        if (itemRow.IsLoading)
+        {
+            if (itemRow.Store != null)
+            {
+                GLib.Functions.IdleAdd(0, () =>
+                {
+                    async void f()
+                    {
+                        try
+                        {
+                            //Видалення
+                            itemRow.Store.RemoveAll();
+
+                            List<DirectoryHierarchicalRow> list = await LoadChildren(itemRow.UniqueID);
+
+                            //Заповнення
+                            foreach (var item in list)
+                                itemRow.Store.Append(item);
+
+                            Console.WriteLine("Заповнено");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+
+                    f();
+                    return false;
+                });
+            }
+        }
+        else
+        {
+            if (!itemRow.UniqueID.IsEmpty())
+                if (itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Elements ||
+                    itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Folders ||
+                    (itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements && itemRow.IsFolder))
+                {
+                    store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
+
+                    //Додається одна пуста вітка для завантаження
+                    DirectoryHierarchicalRow itemEmpty = LoadEmptyChildren();
+                    itemEmpty.UniqueID = itemRow.UniqueID;
+                    itemEmpty.IsLoading = true;
+                    itemEmpty.Store = store;
+
+                    store.Append(itemEmpty);
+                }
         }
 
         return store;
@@ -177,6 +227,9 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     protected override void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
     {
+        Console.WriteLine("GridOnSelectionChanged");
+
+        /*
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
@@ -197,8 +250,8 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 TreeListRow treeListRow = new(new Gtk.Internal.TreeListRowHandle(handle, false));
                 DirectoryHierarchicalRow? row = (DirectoryHierarchicalRow?)treeListRow.GetItem();
                 if (row != null) SelectPointerItem = row.UniqueID;
-            }*/
-        }
+            }*//*
+        }*/
     }
 
     public override void AfterLoadRecords(Stack<UniqueID> parents)
@@ -256,7 +309,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             return;
         }
 
-        if (TreeList != null)
+        if (TreeList != null && parents.Count > 0)
         {
             bool isTopLevel = true;
             TreeListRow? currentRow = null;
@@ -290,7 +343,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
                 ScrollTo(position);
-                //Grid.ScrollTo(position, null, ListScrollFlags.Focus, null);
                 return false;
             });
         }
@@ -319,12 +371,12 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         if (TreeList != null && select != null && !select.IsEmpty())
         {
-            /*
-            Принцип роботи:
-                Рекусивно обходяться всі вітки дерева і якщо знайдений
-                елемент то обробка припиняється і вітки залишаються відкритими.
-                Вітки де не знайдено закриваються після обробки.
-            *//*
+            
+            //Принцип роботи:
+            //    Рекусивно обходяться всі вітки дерева і якщо знайдений
+            //    елемент то обробка припиняється і вітки залишаються відкритими.
+            //    Вітки де не знайдено закриваються після обробки.
+            
             for (uint i = 0; i < TreeList.GetNItems(); i++)
             {
                 TreeListRow? row = TreeList.GetRow(i);
@@ -346,18 +398,16 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 }
             }
 
-            /*
-            uint CountNItems(TreeListRow? row)
-            {
-                if (row != null)
-                {
-                    uint count = row.GetChildren()?.GetNItems() ?? 0;
-                    return count + CountNItems(row.GetParent());
-                }
-                else
-                    return 0;
-            }
-            *//*
+            //uint CountNItems(TreeListRow? row)
+            //{
+            //    if (row != null)
+            //    {
+            //        uint count = row.GetChildren()?.GetNItems() ?? 0;
+            //        return count + CountNItems(row.GetParent());
+            //    }
+            //    else
+            //        return 0;
+            //}
 
             bool RecursionFind(TreeListRow row, uint position)
             {
@@ -413,24 +463,24 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             {
                 //Видима частина
                 double pageSize = Grid.Vadjustment.PageSize;
-                Console.WriteLine($"pageSize {pageSize}");
+                //Console.WriteLine($"pageSize {pageSize}");
 
                 //Максимальне значення
                 double upper = Math.Round(Grid.Vadjustment.Upper);
-                Console.WriteLine($"upper {upper}");
+                //Console.WriteLine($"upper {upper}");
                 if (pageSize > 0 && upper > 0 && upper >= pageSize)
                 {
                     //Висота одного рядка
                     double rowHeidth = upper / rowCount;
-                    Console.WriteLine($"rowHeidth {rowHeidth}");
+                    //Console.WriteLine($"rowHeidth {rowHeidth}");
 
                     //Висота для потрібної позиції
                     double value = rowHeidth * selectPosition;
-                    Console.WriteLine($"value {value}");
+                    //Console.WriteLine($"value {value}");
 
                     //Розмір половини видимої частини
                     double pageSizePart = pageSize / 2;
-                    Console.WriteLine($"pageSizePart {pageSizePart}");
+                    //Console.WriteLine($"pageSizePart {pageSizePart}");
 
                     if (value > pageSizePart)
                         Grid.Vadjustment.SetValue(value - pageSizePart);

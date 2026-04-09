@@ -52,5 +52,5 @@ public partial class DocumentRowJournal : IRowSubclassJournal
     /// <summary>
     /// Колекція полів
     /// </summary>
-    public Dictionary<string, string> Fields { get; set; } = [];
+    public Dictionary<string, string?> Fields { get; set; } = [];
 }

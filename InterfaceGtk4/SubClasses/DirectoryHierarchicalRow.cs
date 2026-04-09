@@ -29,11 +29,29 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Ієрархічний рядок
 /// </summary>
-/// </summary>
 [Subclass<GObject.Object>]
 public partial class DirectoryHierarchicalRow : IRowSubclassJournal
 {
     public static DirectoryHierarchicalRow New() => NewWithProperties([]);
+
+    #region Довантаження
+
+    /// <summary>
+    /// Цей елемент для завантаження даних
+    /// </summary>
+    public bool IsLoading { get; set; }
+
+    /// <summary>
+    /// Сховище
+    /// </summary>
+    public Gio.ListStore Store { get; set; }
+
+    /// <summary>
+    /// Доступний тип контенту довідника
+    /// </summary>
+    public ConfigurationDirectories.HierarchicalContentType AllowedContent { get; set; } = ConfigurationDirectories.HierarchicalContentType.Folders;
+
+    #endregion
 
     /// <summary>
     /// Унікальний ідентифікатор
@@ -43,7 +61,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// <summary>
     /// Унікальний ідентифікатор родича
     /// </summary>
-    public UniqueID? Parent { get; set; } = null;
+    //public UniqueID? Parent { get; set; } = null; 
 
     /// <summary>
     /// Помітка на видалення
@@ -58,10 +76,10 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// <summary>
     /// Колекція елементів
     /// </summary>
-    public List<DirectoryHierarchicalRow> Sub { get; set; } = [];
+    public List<DirectoryHierarchicalRow> Sub { get; set; } = []; //Чи ще треба буде???
 
     /// <summary>
     /// Колекція полів
     /// </summary>
-    public Dictionary<string, string> Fields { get; set; } = [];
+    public Dictionary<string, string?> Fields { get; set; } = [];
 }
