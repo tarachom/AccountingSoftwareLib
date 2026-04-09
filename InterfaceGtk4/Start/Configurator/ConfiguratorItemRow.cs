@@ -9,12 +9,7 @@ namespace InterfaceGtk4;
 [Subclass<GObject.Object>]
 partial class ConfiguratorItemRow
 {
-    //partial void Initialize() { }
-
-    public static ConfiguratorItemRow New()
-    {
-        return NewWithProperties([]);
-    }
+    public static ConfiguratorItemRow New() => NewWithProperties([]);
 
     /// <summary>
     /// Група

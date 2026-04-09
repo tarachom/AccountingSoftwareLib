@@ -61,5 +61,22 @@ public partial class ImageTablePartCell : Box
     public void SetImage(Pixbuf? pixbuf)
     {
         img.SetFromPixbuf(pixbuf);
-    } 
+    }
+
+    /// <summary>
+    /// Видаляє із hBox віджет img і замість нього ставить Spinner.
+    /// 
+    /// Використовується для вітки дерева в яку повинні завантажитись дані.
+    /// Після завантаження даних, ця вітка видаляється
+    /// </summary>
+    public void SetSpinner()
+    {
+        Widget? firstChild = hBox.GetFirstChild();
+        if (firstChild != null) hBox.Remove(firstChild);
+
+        Spinner spinner = Spinner.New();
+        spinner.Spinning = true;
+
+        hBox.Append(spinner);
+    }
 }

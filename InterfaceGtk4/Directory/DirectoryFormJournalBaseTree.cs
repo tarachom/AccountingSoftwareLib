@@ -82,8 +82,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         await LoadRecords();
 
-        //RunUpdateRecords();
-        PopoverParent?.OnHide += (_, _) => GC.Collect(); //!!! Помістити це в RunUpdateRecords
+        PopoverParent?.OnHide += (_, _) => GC.Collect();
     }
 
     /// <summary>
@@ -91,22 +90,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     /// <param name="item">Поточний об'єкт для якого викликається функція</param>
     /// <returns></returns>
-    /*private Gio.ListModel? CreateFunc(GObject.Object item)
-    {
-        DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
-        Gio.ListStore? store = null;
-
-        if (itemRow.Sub.Count > 0)
-        {
-            store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
-
-            foreach (DirectoryHierarchicalRow subRow in itemRow.Sub)
-                store.Append(subRow);
-        }
-
-        return store;
-    }*/
-
     private Gio.ListModel? CreateFunc(GObject.Object item)
     {
         DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
@@ -128,11 +111,14 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
                             List<DirectoryHierarchicalRow> list = await LoadChildren(itemRow.UniqueID);
 
-                            //Заповнення
-                            foreach (var item in list)
-                                itemRow.Store.Append(item);
-
-                            Console.WriteLine("Заповнено");
+                            if (list.Count > 0)
+                                foreach (var item in list) //Заповнення
+                                    itemRow.Store.Append(item);
+                            else
+                            {
+                                itemRow.Store.Dispose();
+                                itemRow.Store = null;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -191,12 +177,18 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             if (DirectoryPointerItem == null)
                 await OpenPageElement(false, rowItem.UniqueID);
             else
-            {
-                CallBack_OnSelectPointer?.Invoke(rowItem.UniqueID);
+                if (AllowedContentSelection == null || //Вибір папок і елементів
+                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements || //Вибір папок і елементів
+                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Folders && rowItem.IsFolder || //Вибір елементів
+                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Elements && !rowItem.IsFolder) //Вибір папок
+                {
+                    CallBack_OnSelectPointer?.Invoke(rowItem.UniqueID);
 
-                NotebookFunc?.ClosePage(GetName());
-                PopoverParent?.Hide();
-            }
+                    NotebookFunc?.ClosePage(GetName());
+                    PopoverParent?.Hide();
+                }
+                else
+                    LastTicksActivate = 0;
         }
     }
 
@@ -227,9 +219,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     protected override void GridOnSelectionChanged(SelectionModel sender, SelectionModel.SelectionChangedSignalArgs args)
     {
-        Console.WriteLine("GridOnSelectionChanged");
-
-        /*
         MultiSelection model = (MultiSelection)Grid.Model;
         Bitset selection = model.GetSelection();
 
@@ -250,11 +239,11 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 TreeListRow treeListRow = new(new Gtk.Internal.TreeListRowHandle(handle, false));
                 DirectoryHierarchicalRow? row = (DirectoryHierarchicalRow?)treeListRow.GetItem();
                 if (row != null) SelectPointerItem = row.UniqueID;
-            }*//*
-        }*/
+            }*/
+        }
     }
 
-    public override void AfterLoadRecords(Stack<UniqueID> parents)
+    /*public override void AfterLoadRecords(Stack<UniqueID> parents)
     {
         #region Local Func
 
@@ -346,7 +335,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                 return false;
             });
         }
-    }
+    }*/
 
     /// <summary>
     /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID

@@ -449,9 +449,9 @@ public abstract class DirectoryFormJournalBase : FormJournal
     #region ForTree
 
     /// <summary>
-    /// Форма відкрита для вибору
+    /// Вибирати тільки вказаний тип контенту (тільки елементи, тільки папки або папки і елементи)
     /// </summary>
-    public bool OpenSelect { get; set; }
+    public ConfigurationDirectories.HierarchicalContentType? AllowedContentSelection { get; set; } = null;
 
     /// <summary>
     /// Відкрита папка.

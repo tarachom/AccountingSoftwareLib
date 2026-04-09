@@ -164,7 +164,7 @@ public abstract class FormJournal : Form
     /// <param name="select">UniqueID елемента який треба виділити</param>
     public virtual void AfterLoadRecords(UniqueID? select = null) { }
 
-    public virtual void AfterLoadRecords(Stack<UniqueID> parents) { }
+    //public virtual void AfterLoadRecords(Stack<UniqueID> parents) { }
 
     /// <summary>
     /// Прокрутка

@@ -44,12 +44,27 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// <summary>
     /// Сховище
     /// </summary>
-    public Gio.ListStore Store { get; set; }
+    public Gio.ListStore? Store { get; set; }
 
     /// <summary>
     /// Доступний тип контенту довідника
     /// </summary>
-    public ConfigurationDirectories.HierarchicalContentType AllowedContent { get; set; } = ConfigurationDirectories.HierarchicalContentType.Folders;
+    public ConfigurationDirectories.HierarchicalContentType AllowedContent
+    {
+        get => allowedContent_;
+        set
+        {
+            allowedContent_ = value;
+
+            //Базове значення поля IsFolder в залежності від типу контенту
+            //Для контенту FoldersAndElements значення задається в згенерованому модулі
+            if (allowedContent_ == ConfigurationDirectories.HierarchicalContentType.Folders)
+                IsFolder = true;
+            else if (allowedContent_ == ConfigurationDirectories.HierarchicalContentType.Elements)
+                IsFolder = false;
+        }
+    }
+    ConfigurationDirectories.HierarchicalContentType allowedContent_ = ConfigurationDirectories.HierarchicalContentType.Folders;
 
     #endregion
 
@@ -57,11 +72,6 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// Унікальний ідентифікатор
     /// </summary>
     public UniqueID UniqueID { get; set; } = new();
-
-    /// <summary>
-    /// Унікальний ідентифікатор родича
-    /// </summary>
-    //public UniqueID? Parent { get; set; } = null; 
 
     /// <summary>
     /// Помітка на видалення
@@ -72,11 +82,6 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// Це папка
     /// </summary>
     public bool IsFolder { get; set; }
-
-    /// <summary>
-    /// Колекція елементів
-    /// </summary>
-    public List<DirectoryHierarchicalRow> Sub { get; set; } = []; //Чи ще треба буде???
 
     /// <summary>
     /// Колекція полів
