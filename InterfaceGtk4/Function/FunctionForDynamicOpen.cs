@@ -92,11 +92,14 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         {
             case TypeForm.Journal:
                 {
-                    object? directoryInstance;
+                    object? directoryInstance = null;
 
                     try
                     {
-                        directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}_Список");
+                        //directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}_Список");
+                        Type? docw = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Список");
+                        if (docw != null)
+                            directoryInstance = docw.GetMethod("New")?.Invoke(docw, null);
                     }
                     catch (Exception ex)
                     {
@@ -151,11 +154,15 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         {
             case TypeForm.Journal:
                 {
-                    object? documentInstance;
+                    object? documentInstance = null;
 
                     try
                     {
-                        documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}_Список");
+                        //documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}_Список");
+                        Type? docw = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Список");
+                        if (docw != null)
+                            documentInstance = docw.GetMethod("New")?.Invoke(docw, null);
+
                     }
                     catch (Exception ex)
                     {
@@ -172,7 +179,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                         //Заголовок журналу
                         string listName = "Список";
-                        
+
                         Type? documentConst = ExecutingAssembly.GetType($"{NamespaceCodeGeneration}.Документи.{typeDoc}_Const");
                         if (documentConst != null)
                             listName = documentConst.GetField("FULLNAME")?.GetValue(null)?.ToString() ?? listName;

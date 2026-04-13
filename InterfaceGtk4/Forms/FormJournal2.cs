@@ -38,7 +38,8 @@ namespace InterfaceGtk4;
 ///     РегістриНакопиченняЖурнал,
 ///     РегістриНакопиченняЖурнал_СпрощенийРежим
 /// </summary>
-public abstract class FormJournal : Form
+[GObject.Subclass<Form2>]
+public partial class FormJournal2 : Form2
 {
     /// <summary>
     /// Вспливаюче вікно власник даної форми (у випадку якщо форма поміщена у Popover)
@@ -58,7 +59,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    public abstract Gio.ListStore Store { get; }
+    public virtual Gio.ListStore Store { get; }
 
     /// <summary>
     /// Відбори
@@ -91,8 +92,10 @@ public abstract class FormJournal : Form
     /// </summary>
     public bool CompositeMode { get; set; } = false;
 
-    public FormJournal(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Не переміщати стовпчики
         Grid.Reorderable = false;
         Grid.AccessibleRole = AccessibleRole.Table; //Уточнити для чого це, на що впливає і чи потрібно
@@ -407,12 +410,12 @@ public abstract class FormJournal : Form
 
     #region Virtual & Abstract Function
 
-    protected abstract void GridModel();
+    protected virtual void GridModel() { }
 
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public abstract ValueTask SetValue();
+    public virtual async ValueTask SetValue() { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
@@ -427,7 +430,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Завантаження списку
     /// </summary>
-    public abstract ValueTask LoadRecords();
+    public virtual async ValueTask LoadRecords() { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Довантаження даних в дерево

@@ -32,15 +32,16 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class LogMessage : Box
+[GObject.Subclass<Box>]
+public partial class LogMessage : Box
 {
+    ListBox listBox;
     ScrolledWindow scrollMessage;
-    Box vBox;
+    
+    TextView textTerminal;
+    ScrolledWindow scrollTextTerminal;
 
-    TextView? textTerminal;
-    ScrolledWindow? scrollTextTerminal;
-
-    public LogMessage(bool visibleTextTerminal = true)
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
@@ -51,18 +52,17 @@ public class LogMessage : Box
 
         //Верх
         {
-            vBox = New(Orientation.Vertical, 0);
+            listBox = ListBox.New();
 
             scrollMessage = ScrolledWindow.New();
             scrollMessage.Vexpand = true;
             scrollMessage.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-            scrollMessage.SetChild(vBox);
+            scrollMessage.SetChild(listBox);
 
             vPaned.SetStartChild(scrollMessage);
         }
 
         //Низ
-        if (visibleTextTerminal)
         {
             textTerminal = TextView.New();
             textTerminal.Editable = false;
@@ -78,6 +78,14 @@ public class LogMessage : Box
         }
 
         Append(vPaned);
+    }
+
+    public static LogMessage New(bool visibleTextTerminal = true)
+    {
+        LogMessage view = NewWithProperties([]);
+        view.textTerminal.Visible = visibleTextTerminal;
+
+        return view;
     }
 
     void AddImage(Box hBoxInfo, TypeMessage typeMsg)
@@ -135,14 +143,15 @@ public class LogMessage : Box
 
         Box hBoxInfo = New(Orientation.Horizontal, 0);
         hBoxInfo.MarginEnd = 2;
-        vBox.Append(hBoxInfo);
-
         AddImage(hBoxInfo, typeMsg);
-
         hBoxInfo.Append(AddLabel(message));
 
-        if (appendEmpty) CreateEmptyMsg();
+        ListBoxRow row = ListBoxRow.New();
+        row.Child = hBoxInfo;
 
+        listBox.Append(row);
+
+        if (appendEmpty) CreateEmptyMsg();
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
 
         return hBoxInfo;
@@ -153,7 +162,6 @@ public class LogMessage : Box
         TrimMessage();
 
         AddImage(hBoxInfo, typeMsg);
-
         hBoxInfo.Append(AddLabel(message));
 
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
@@ -193,14 +201,13 @@ public class LogMessage : Box
 
         Box hBoxInfo = New(Orientation.Horizontal, 0);
         hBoxInfo.MarginEnd = 2;
-        vBox.Append(hBoxInfo);
-
         AddImage(hBoxInfo, typeMsg);
-
         hBoxInfo.Append(widget ?? Label.New("Error: Widget null"));
 
-        if (appendEmpty) CreateEmptyMsg();
+        ListBoxRow row = ListBoxRow.New();
+        row.Child = hBoxInfo;
 
+        if (appendEmpty) CreateEmptyMsg();
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
 
         return hBoxInfo;
@@ -212,8 +219,6 @@ public class LogMessage : Box
 
         Box hBoxInfo = New(Orientation.Horizontal, 0);
         hBoxInfo.MarginEnd = 2;
-        vBox.Append(hBoxInfo);
-
         AddImage(hBoxInfo, typeMsg);
 
         if (widgets != null)
@@ -223,8 +228,10 @@ public class LogMessage : Box
                 hBoxInfo.Append(widget);
             }
 
-        if (appendEmpty) CreateEmptyMsg();
+        ListBoxRow row = ListBoxRow.New();
+        row.Child = hBoxInfo;
 
+        if (appendEmpty) CreateEmptyMsg();
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
 
         return hBoxInfo;
@@ -235,7 +242,6 @@ public class LogMessage : Box
         TrimMessage();
 
         AddImage(hBoxInfo, typeMsg);
-
         hBoxInfo.Append(widget);
 
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
@@ -243,13 +249,13 @@ public class LogMessage : Box
 
     public void ClearMessage()
     {
-        //Очистка
+        //Очистка списку
         {
-            Widget? child = vBox.GetFirstChild();
+            Widget? child = listBox.GetFirstChild();
             while (child != null)
             {
                 Widget? next = child.GetNextSibling();
-                vBox.Remove(child);
+                listBox.Remove(child);
                 child = next;
             }
         }
@@ -262,12 +268,12 @@ public class LogMessage : Box
         int maxChildren = MaxLine;
         int countChildren = 0;
 
-        Widget? child = vBox.GetFirstChild();
+        Widget? child = listBox.GetLastChild();
         while (child != null)
         {
-            Widget? next = child.GetNextSibling();
+            Widget? next = child.GetPrevSibling();
             if (++countChildren > maxChildren)
-                vBox.Remove(child);
+                listBox.Remove(child);
             child = next;
         }
     }

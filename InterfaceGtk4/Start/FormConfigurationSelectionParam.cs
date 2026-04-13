@@ -40,7 +40,7 @@ class FormConfigurationSelectionParam : Window
 
     #endregion
 
-    public FormConfigurationSelectionParam(Application? app) : base()
+    public FormConfigurationSelectionParam(Application? app) 
     {
         Application = app;
         Title = "Параметри підключення PostgreSQL";

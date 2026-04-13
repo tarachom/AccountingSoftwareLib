@@ -40,7 +40,7 @@ public abstract class FormConfigurationSelection : Window
     Button buttonConfigurator;
     Spinner spinner;
 
-    public FormConfigurationSelection(Application? app, Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm) : base()
+    public FormConfigurationSelection(Application? app, Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm)
     {
         Application = app;
         Title = "Вибір бази даних";

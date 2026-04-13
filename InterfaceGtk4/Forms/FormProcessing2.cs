@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using HarfBuzz;
 
 namespace InterfaceGtk4;
 
@@ -29,7 +30,8 @@ namespace InterfaceGtk4;
 /// Основа для класів:
 ///         Processing (Обробка)
 /// </summary>
-public abstract class FormProcessing : Form
+[GObject.Subclass<Form2>]
+public partial class FormProcessing2 : Form2
 {
     /// <summary>
     /// Верхній блок для кнопок
@@ -44,8 +46,10 @@ public abstract class FormProcessing : Form
     //Лог
     protected virtual LogMessage Log { get; set; } = LogMessage.New();
 
-    public FormProcessing(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Кнопки
         HBoxTop.MarginBottom = 10;
         Append(HBoxTop);

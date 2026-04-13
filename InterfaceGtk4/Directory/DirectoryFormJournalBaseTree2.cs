@@ -33,9 +33,10 @@ namespace InterfaceGtk4;
 ///     DirectoryFormJournalFullTree (ДовідникФормаЖурналПовнийДерево),
 ///     DirectoryFormJournalSmallTree (ДовідникФормаЖурналМініДерево),
 /// </summary>
-public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
+[GObject.Subclass<DirectoryFormJournalBase2>]
+public partial class DirectoryFormJournalBaseTree2 : DirectoryFormJournalBase2
 {
-    event EventHandler<TreeListModel?, UniqueID>? OnLoaded;
+    //event EventHandler<TreeListModel?, UniqueID>? OnLoaded;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних
@@ -52,10 +53,11 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     public Action<UniqueID>? CallBack_Activate { get; set; }
 
-    public DirectoryFormJournalBaseTree(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
-        GridModel();
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
+        GridModel();
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
     }
 
@@ -73,11 +75,11 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         Grid.Model = model;
 
-        OnLoaded += (o, e) =>
+        /*OnLoaded += (o, e) =>
         {
             Console.WriteLine("OnLoaded:");
-            AfterLoadRecordsNext();
-        };
+            //AfterLoadRecordsNext();
+        };*/
     }
 
     /// <summary>
@@ -129,7 +131,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                                 itemRow.Store = null;
                             }
 
-                            OnLoaded?.Invoke(TreeList, itemRow.UniqueID);
+                            //OnLoaded?.Invoke(TreeList, itemRow.UniqueID);
                         }
                         catch (Exception ex)
                         {
@@ -273,7 +275,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }*/
 
-
+/*
     OpenTreeState openTreeState = new();
     readonly Lock lock_ = new();
 
@@ -322,7 +324,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             }
         }
     }
-
+*/
     public override void AfterLoadRecords(Stack<UniqueID> parents)
     {
         if (PopoverParent == null)
@@ -335,7 +337,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             return;
         }
 
-        if (TreeList != null && parents.Count > 0)
+        /*if (TreeList != null && parents.Count > 0)
         {
             UniqueID select;
 
@@ -365,7 +367,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     }
                 }
             }
-        }
+        }*/
     }
 
     /// <summary>
@@ -510,7 +512,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     }
 }
 
-record OpenTreeState
+/*record OpenTreeState
 {
     public Stack<UniqueID> Parents { get; set; } = [];
 
@@ -523,4 +525,4 @@ record OpenTreeState
         CurrnetRow = null;
         Position = 0;
     }
-}
+}*/

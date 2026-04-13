@@ -99,6 +99,11 @@ namespace AccountingSoftware
             return new UniqueID(Guid.NewGuid());
         }
 
+        public static UniqueID NewEmpty()
+        {
+            return new UniqueID(Guid.Empty);
+        }
+
         /// <summary>
         /// Пустий ідентифікатор
         /// </summary>

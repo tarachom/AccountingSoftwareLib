@@ -41,8 +41,8 @@ public abstract class PageService : Form
     private string NamespaceCodeGeneration { get; set; }
     private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
-    protected PeriodControl Period = PeriodControl.New();
-    LogMessage Log = new();
+    protected PeriodControl Period { get; } = PeriodControl.New();
+    LogMessage Log { get; } = LogMessage.New();
     protected const string KeyForSettings = "PageService";
 
     public PageService(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebook) : base(notebook)
@@ -248,7 +248,7 @@ public abstract class PageService : Form
 
         return vBox;
     }
-    
+
     #region Virtual & Abstract Function
 
     protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);

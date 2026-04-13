@@ -28,23 +28,24 @@ limitations under the License.
 */
 
 using Gtk;
-using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Заблоковані об'єкти (відкриті для редагування)
+/// Заблоковані об'єкти (відкриті для редагування).
+/// 
+/// Це клас є базовим і потребує наслідування і переоприділення віртуальних функцій.
 /// </summary>
-public abstract partial class LockObjectsView : Box
+[GObject.Subclass<Box>]
+public partial class LockObjectsView : Box
 {
-    [Subclass<GObject.Object>]
+    [GObject.Subclass<GObject.Object>]
     public partial class ItemRow
     {
         public static ItemRow New() => NewWithProperties([]);
 
         public UniqueID UniqueID { get; set; } = new();
-
 
         public Guid UserUID { get; set; } = Guid.Empty;
 
@@ -58,16 +59,16 @@ public abstract partial class LockObjectsView : Box
     }
 
     Kernel Kernel { get; set; }
-    Dictionary<Guid, (CompositePointerPresentation_Record Record, DateTime DateExpire)> CacheData = [];
+    Dictionary<Guid, (CompositePointerPresentation_Record Record, DateTime DateExpire)> CacheData { get; set; } = [];
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
-    ColumnView Grid { get; }
+    ColumnView Grid { get; set; }
 
-    public LockObjectsView(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
+    public void Init(Kernel kernel, int widthRequest, int heightRequest)
     {
         SetOrientation(Orientation.Vertical);
 
         Kernel = kernel;
-        Kernel.UpdateSession += async (sender, args) => await LoadRecords();
+        Kernel.UpdateSession += async (_, _) => await LoadRecords();
 
         Box hBoxCaption = New(Orientation.Horizontal, 0);
         hBoxCaption.MarginBottom = 5;
@@ -83,17 +84,18 @@ public abstract partial class LockObjectsView : Box
         Grid = ColumnView.New(model);
         Columns();
 
-        ScrolledWindow scroll = ScrolledWindow.New();
-        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        scroll.WidthRequest = widthRequest;
-        scroll.HeightRequest = heightRequest;
-        scroll.SetChild(Grid);
-        Append(scroll);
+        ScrolledWindow Scroll = ScrolledWindow.New();
+        Scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+        Scroll.WidthRequest = widthRequest;
+        Scroll.HeightRequest = heightRequest;
+        Scroll.SetChild(Grid);
+        Append(Scroll);
     }
 
-    #region Virtual & Abstract Function
+    #region Virtual Function
 
-    protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+    protected virtual ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
+        ValueTask.FromResult<CompositePointerPresentation_Record>(new());
 
     #endregion
 
@@ -187,7 +189,7 @@ public abstract partial class LockObjectsView : Box
     void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell label = LabelTablePartCell.NewWithString(null);
+        LabelTablePartCell label = LabelTablePartCell.New();
         listItem.Child = label;
     }
 

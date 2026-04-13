@@ -28,17 +28,19 @@ limitations under the License.
 */
 
 using Gtk;
-using GObject;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Список активних користувачів
+/// Список активних користувачів.
+/// 
+/// Клас не потребує наслідування і може зразу використовуватися.
 /// </summary>
+[GObject.Subclass<Box>]
 public partial class ActiveUsersView : Box
 {
-    [Subclass<GObject.Object>]
+    [GObject.Subclass<GObject.Object>]
     public partial class ItemRow
     {
         public static ItemRow New() => NewWithProperties([]);
@@ -59,17 +61,13 @@ public partial class ActiveUsersView : Box
     }
 
     Kernel Kernel { get; set; }
-
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
+    ColumnView Grid { get; set; }
+    ScrolledWindow Scroll { get; set; } = ScrolledWindow.New();
 
-    ColumnView Grid { get; }
-
-    public ActiveUsersView(Kernel kernel, int widthRequest = 800, int heightRequest = 500)
+    partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
-
-        Kernel = kernel;
-        Kernel.UpdateSession += async (sender, args) => await LoadRecords();
 
         Box hBoxCaption = New(Orientation.Horizontal, 0);
         hBoxCaption.MarginBottom = 5;
@@ -85,19 +83,28 @@ public partial class ActiveUsersView : Box
         Grid = ColumnView.New(model);
         Columns();
 
-        ScrolledWindow scroll = ScrolledWindow.New();
-        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        scroll.WidthRequest = widthRequest;
-        scroll.HeightRequest = heightRequest;
-        scroll.SetChild(Grid);
-        Append(scroll);
+        Scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+        Scroll.SetChild(Grid);
+        Append(Scroll);
     }
 
-    async ValueTask LoadRecords()
+    public static ActiveUsersView New(Kernel kernel, int widthRequest, int heightRequest)
     {
-        var recordResult = await Kernel.DataBase.SpetialTableActiveUsersSelect();
+        ActiveUsersView view = NewWithProperties([]);
+        view.Scroll.WidthRequest = widthRequest;
+        view.Scroll.HeightRequest = heightRequest;
 
-        Store.RemoveAll();
+        view.Kernel = kernel;
+        view.Kernel.UpdateSession += async (_, _) => await LoadRecords(view);
+
+        return view;
+    }
+
+    static async ValueTask LoadRecords(ActiveUsersView view)
+    {
+        var recordResult = await view.Kernel.DataBase.SpetialTableActiveUsersSelect();
+
+        view.Store.RemoveAll();
         foreach (Dictionary<string, object> record in recordResult.ListRow)
         {
             var itemRow = ItemRow.New();
@@ -109,7 +116,7 @@ public partial class ActiveUsersView : Box
             itemRow.Master = (bool)record["master"];
             itemRow.TypeForm = Kernel.TypeForm_Alias((TypeForm)record["type_form"]);
 
-            Store.Append(itemRow);
+            view.Store.Append(itemRow);
         }
     }
 
@@ -177,7 +184,7 @@ public partial class ActiveUsersView : Box
     void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell label = LabelTablePartCell.NewWithString(null);
+        LabelTablePartCell label = LabelTablePartCell.New();
         listItem.Child = label;
     }
 

@@ -71,7 +71,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// <summary>
     /// Унікальний ідентифікатор
     /// </summary>
-    public UniqueID UniqueID { get; set; } = new();
+    public UniqueID UniqueID { get; set; } = UniqueID.NewEmpty();
 
     /// <summary>
     /// Помітка на видалення

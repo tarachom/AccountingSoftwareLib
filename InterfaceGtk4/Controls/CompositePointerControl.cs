@@ -121,11 +121,14 @@ public partial class CompositePointerControl : PointerControl
         //Якщо вибраний тип тоді відкриваю журнал
         if (PointerName == "Документи" || PointerName == "Довідники")
         {
-            object? page;
+            object? page = null;
 
             try
             {
-                page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                //page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                Type? docw = CallingAssembly.GetType($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                if (docw != null)
+                    page = docw.GetMethod("New")?.Invoke(docw, null);
             }
             catch (Exception ex)
             {
