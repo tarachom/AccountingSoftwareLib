@@ -31,15 +31,14 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class TimeTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     Entry entry = Entry.New();
-    Button buttonSelect;
+    Button buttonSelect = Button.New();
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => IsValid();
@@ -48,7 +47,6 @@ public partial class TimeTablePartCell : Box
 
         //Select
         {
-            buttonSelect = Button.New();
             buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
             buttonSelect.OnClicked += OnOpenSelect;
             buttonSelect.TooltipText = "Вибрати";

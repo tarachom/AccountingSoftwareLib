@@ -32,11 +32,12 @@ using Gdk;
 
 namespace InterfaceGtk4;
 
-public class SearchControl : Box
+[GObject.Subclass<Box>]
+public partial class SearchControl : Box
 {
     SearchEntry entrySearch = SearchEntry.New();
 
-    public SearchControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -63,6 +64,8 @@ public class SearchControl : Box
         bClear.OnClicked += (_, _) => Clear?.Invoke();
         Append(bClear);
     }
+
+    public static SearchControl New() => NewWithProperties([]);
 
     void Search()
     {

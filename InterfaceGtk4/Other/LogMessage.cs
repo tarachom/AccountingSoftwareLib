@@ -35,11 +35,11 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class LogMessage : Box
 {
-    ListBox listBox;
-    ScrolledWindow scrollMessage;
-    
-    TextView textTerminal;
-    ScrolledWindow scrollTextTerminal;
+    ListBox listBox = ListBox.New();
+    ScrolledWindow scrollMessage = ScrolledWindow.New();
+
+    TextView textTerminal = TextView.New();
+    ScrolledWindow scrollTextTerminal = ScrolledWindow.New();
 
     partial void Initialize()
     {
@@ -52,9 +52,6 @@ public partial class LogMessage : Box
 
         //Верх
         {
-            listBox = ListBox.New();
-
-            scrollMessage = ScrolledWindow.New();
             scrollMessage.Vexpand = true;
             scrollMessage.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scrollMessage.SetChild(listBox);
@@ -64,13 +61,11 @@ public partial class LogMessage : Box
 
         //Низ
         {
-            textTerminal = TextView.New();
             textTerminal.Editable = false;
             textTerminal.CursorVisible = true;
             textTerminal.MarginTop = textTerminal.MarginEnd = textTerminal.MarginBottom = textTerminal.MarginStart = 2;
             textTerminal.AddCssClass("log_text_terminal");
 
-            scrollTextTerminal = ScrolledWindow.New();
             scrollTextTerminal.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             scrollTextTerminal.SetChild(textTerminal);
 

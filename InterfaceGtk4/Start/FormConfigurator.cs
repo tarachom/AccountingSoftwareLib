@@ -24,7 +24,6 @@ limitations under the License.
 using Gtk;
 using AccountingSoftware;
 using InterfaceGtkLib;
-using System.Text.RegularExpressions;
 
 namespace InterfaceGtk4;
 

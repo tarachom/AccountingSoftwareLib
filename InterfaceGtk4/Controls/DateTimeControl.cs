@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 public partial class DateTimeControl : Box
 {
     Entry entry = Entry.New();
-    Button bOpenCalendar;
+    Button bOpenCalendar = Button.New();
 
     partial void Initialize()
     {
@@ -42,7 +42,6 @@ public partial class DateTimeControl : Box
         Append(entry);
 
         //Button
-        bOpenCalendar = Button.New();
         bOpenCalendar.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
         bOpenCalendar.OnClicked += OnOpenCalendar;
         Append(bOpenCalendar);

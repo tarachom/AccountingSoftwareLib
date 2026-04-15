@@ -35,14 +35,15 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Рух документу по регістрах
 /// </summary>
-public abstract class CommonForms_DocumentMovementThroughRegisters(NotebookFunction? notebookFunc) : Form(notebookFunc)
+[GObject.Subclass<Form2>]
+public partial class CommonForms_DocumentMovementThroughRegisters2 : Form2
 {
     /// <summary>
     /// Повертає віджет для відображення документу
     /// </summary>
     /// <param name="documentPointer">Вказівник на документ</param>
     /// <returns>Віджет</returns>
-    protected abstract Widget Document_PointerControl(DocumentPointer documentPointer);
+    protected virtual Widget Document_PointerControl(DocumentPointer documentPointer) { return Widget.NewWithProperties([]); }
 
     /// <summary>
     /// Додає контрол віджет для відображення документу

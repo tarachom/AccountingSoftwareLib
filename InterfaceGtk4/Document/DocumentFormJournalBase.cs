@@ -74,7 +74,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Пошук
     /// </summary>
-    protected SearchControl Search { get; } = new();
+    protected SearchControl Search { get; } = SearchControl.New();
 
     /// <summary>
     /// Фільтр

@@ -61,7 +61,7 @@ public partial class LockObjectsView : Box
     Kernel Kernel { get; set; }
     Dictionary<Guid, (CompositePointerPresentation_Record Record, DateTime DateExpire)> CacheData { get; set; } = [];
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
-    ColumnView Grid { get; set; }
+    ColumnView Grid { get; set; } = ColumnView.New(null);
 
     public void Init(Kernel kernel, int widthRequest, int heightRequest)
     {

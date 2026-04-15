@@ -35,7 +35,7 @@ namespace InterfaceGtk4;
 public partial class PeriodControl : Box
 {
     //DropDown dropDownPeriod; //Набір варіантів періодів
-    ComboBoxText comboBoxPeriod; //Набір варіантів періодів
+    ComboBoxText comboBoxPeriod = PeriodForJournal.PeriodSelectionList(); //Набір варіантів періодів
     DateTimeControl dateStart = DateTimeControl.New();
     DateTimeControl dateStop = DateTimeControl.New();
     Button bSelect = Button.NewFromIconName("go-next");
@@ -75,7 +75,7 @@ public partial class PeriodControl : Box
         };
         Append(bSelect);
 
-        comboBoxPeriod = PeriodForJournal.PeriodSelectionList();
+        //comboBoxPeriod = PeriodForJournal.PeriodSelectionList();
         comboBoxPeriod.MarginEnd = 2;
         comboBoxPeriod.OnChanged += (_, _) =>
         {

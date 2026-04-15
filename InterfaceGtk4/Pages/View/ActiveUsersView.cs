@@ -62,7 +62,7 @@ public partial class ActiveUsersView : Box
 
     Kernel Kernel { get; set; }
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
-    ColumnView Grid { get; set; }
+    ColumnView Grid { get; set; } = ColumnView.New(null);
     ScrolledWindow Scroll { get; set; } = ScrolledWindow.New();
 
     partial void Initialize()

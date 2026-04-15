@@ -31,18 +31,16 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class LabelTablePartCell : Box
 {
-    Box hBox;
-    Label label;
+    Box hBox = New(Orientation.Horizontal, 0);
+    Label label = Label.New(null);
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Valign = Align.Center;
         hBox.Vexpand = true;
 
-        label = Label.New(null);
         hBox.Append(label);
 
         Append(hBox);

@@ -31,9 +31,9 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class PointerTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     Label label = Label.New(null);
-    Button buttonSelect;
+    Button buttonSelect = Button.New();
 
     partial void Initialize()
     {
@@ -42,7 +42,6 @@ public partial class PointerTablePartCell : Box
 
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Hexpand = hBox.Vexpand = true;
 
         label.Halign = Align.Start;
@@ -76,7 +75,6 @@ public partial class PointerTablePartCell : Box
 
         //Select
         {
-            buttonSelect = Button.New();
             buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
             buttonSelect.OnClicked += Select;
             buttonSelect.TooltipText = "Вибрати";

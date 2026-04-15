@@ -31,14 +31,13 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class CheckTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     public CheckButton Check { get; } = CheckButton.New();
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Vexpand = true;
 
         Check.OnToggled += (_, _) => OnСhanged?.Invoke();

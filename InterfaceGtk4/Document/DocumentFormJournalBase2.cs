@@ -75,7 +75,7 @@ public partial class DocumentFormJournalBase2 : FormJournal2
     /// <summary>
     /// Пошук
     /// </summary>
-    protected SearchControl Search { get; } = new();
+    protected SearchControl Search { get; } = SearchControl.New();
 
     /// <summary>
     /// Фільтр

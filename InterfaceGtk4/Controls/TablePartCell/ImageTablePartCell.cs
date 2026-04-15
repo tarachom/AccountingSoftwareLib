@@ -32,14 +32,13 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class ImageTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     Image img = Image.NewFromPixbuf(null);
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Valign = hBox.Halign = Align.Center;
         hBox.Vexpand = true;
         hBox.Append(img);

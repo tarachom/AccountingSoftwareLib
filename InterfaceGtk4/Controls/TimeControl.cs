@@ -25,12 +25,13 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-public class TimeControl : Box
+[GObject.Subclass<Box>]
+public partial class TimeControl : Box
 {
     Entry entry = Entry.New();
-    Button bOpenPopover;
+    Button bOpenPopover = Button.New();
 
-    public TimeControl()
+    partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
 
@@ -42,7 +43,6 @@ public class TimeControl : Box
         Append(entry);
 
         //Button
-        bOpenPopover = Button.New();
         bOpenPopover.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
         bOpenPopover.OnClicked += OnOpenPopover;
         Append(bOpenPopover);

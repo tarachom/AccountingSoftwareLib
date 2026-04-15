@@ -31,14 +31,13 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class ComboTextTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     public ComboBoxText Combo { get; } = ComboBoxText.New();
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Vexpand = true;
 
         Combo.OnChanged += (_, _) => OnСhanged?.Invoke();

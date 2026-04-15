@@ -66,7 +66,7 @@ public partial class FilterControl : Box
     /// <summary>
     /// Таблиця для фільтрів
     /// </summary>
-    Grid FilterGrid = Grid.New();
+    Grid FilterGrid { get; set; } = Grid.New();
 
     /// <summary>
     /// Галочка яка вказує на те що потрібно враховувати період у фільтрі

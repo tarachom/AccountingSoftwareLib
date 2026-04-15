@@ -36,7 +36,7 @@ public partial class PointerControl : Box
     partial void Initialize()
     {
         //Ігнорувати виклик ініціалізації для вказаних типів
-        if (new Type[] { typeof(PointerControl), typeof(CompositePointerControl) }.Contains(GetType())) return;
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
         SetOrientation(Orientation.Horizontal);
 

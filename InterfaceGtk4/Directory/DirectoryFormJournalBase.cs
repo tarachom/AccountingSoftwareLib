@@ -86,7 +86,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Пошук
     /// </summary>
-    protected SearchControl Search { get; } = new();
+    protected SearchControl Search { get; } = SearchControl.New();
 
     /// <summary>
     /// Фільтр

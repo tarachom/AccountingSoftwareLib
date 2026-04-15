@@ -31,14 +31,13 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Box>]
 public partial class TextTablePartCell : Box
 {
-    Box hBox;
+    Box hBox = New(Orientation.Horizontal, 0);
     Entry entry = Entry.New();
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox = New(Orientation.Horizontal, 0);
         hBox.Valign = Align.Center;
         hBox.Vexpand = true;
 
