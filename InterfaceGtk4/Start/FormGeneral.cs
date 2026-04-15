@@ -27,17 +27,17 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk4;
 
-public abstract class FormGeneral : Window
+[GObject.Subclass<Window>]
+public partial class FormGeneral : Window
 {
-    public ConfigurationParam? OpenConfigurationParam { get; set; }
+    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
     public NotebookFunction NotebookFunc { get; } = new();
 
     Kernel Kernel { get; set; }
     protected Statusbar StatusBar = Statusbar.New();
 
-    public FormGeneral(Application? app, Kernel kernel) : base()
+    public void Init(Kernel kernel)
     {
-        Application = app;
         Kernel = kernel;
 
         SetDefaultSize(1200, 900);
@@ -133,16 +133,16 @@ public abstract class FormGeneral : Window
 
     #region Virtual & Abstract Function
 
-    protected abstract void ButtonMessageClicked();
-    protected abstract void ButtonFindClicked(string text);
-    protected abstract bool OpenDocumentByType(string name);
-    protected abstract bool OpenDirectoryByType(string name);
-    protected abstract bool OpenJournalByType(string name);
-    protected abstract bool OpenRegisterInformationByType(string name);
-    protected abstract bool OpenRegisterAccumulationByType(string name);
-    protected abstract void Settings(LinkButton link);
-    protected abstract void Service(LinkButton link);
-    protected abstract void Processing(LinkButton link);
+    protected virtual void ButtonMessageClicked() { }
+    protected virtual void ButtonFindClicked(string text) { }
+    protected virtual bool OpenDocumentByType(string name) => false;
+    protected virtual bool OpenDirectoryByType(string name) => false;
+    protected virtual bool OpenJournalByType(string name) => false;
+    protected virtual bool OpenRegisterInformationByType(string name) => false;
+    protected virtual bool OpenRegisterAccumulationByType(string name) => false;
+    protected virtual void Settings(LinkButton link) { }
+    protected virtual void Service(LinkButton link) { }
+    protected virtual void Processing(LinkButton link) { }
 
     protected virtual void MenuDocuments(Box vBox) { }
     protected virtual void MenuDirectory(Box vBox) { }

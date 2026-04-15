@@ -96,10 +96,14 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                     try
                     {
-                        //directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}_Список");
-                        Type? docw = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Список");
-                        if (docw != null)
-                            directoryInstance = docw.GetMethod("New")?.Invoke(docw, null);
+                        /*
+                            Старий варіант
+                            directoryInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDir}_Список");
+                        */
+
+                        Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Список");
+                        if (list != null)
+                            directoryInstance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
                     }
                     catch (Exception ex)
                     {
@@ -158,10 +162,14 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                     try
                     {
-                        //documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}_Список");
-                        Type? docw = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Список");
-                        if (docw != null)
-                            documentInstance = docw.GetMethod("New")?.Invoke(docw, null);
+                        /*
+                            Старий варіант
+                            documentInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.{typeDoc}_Список");
+                        */
+
+                        Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Список");
+                        if (list != null)
+                            documentInstance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
 
                     }
                     catch (Exception ex)

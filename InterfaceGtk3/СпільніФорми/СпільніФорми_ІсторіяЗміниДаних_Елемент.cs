@@ -223,7 +223,7 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
                                             pointer.Pointer = new UuidAndText(Guid.Parse(value), Field.Pointer);
 
                                             if (valueChanged && previous_value != null)
-                                                previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(previous_value), Field.Pointer))).result;
+                                                previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(previous_value), Field.Pointer))).Result;
                                         }
                                         else
                                         {
@@ -237,7 +237,7 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
                                             {
                                                 string[] UuidNameSplit = previous_value.Split([":"], StringSplitOptions.None);
                                                 if (UuidNameSplit.Length == 2)
-                                                    previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]))).result;
+                                                    previous_value_presentation = (await CompositePointerPresentation(new UuidAndText(Guid.Parse(UuidNameSplit[0]), UuidNameSplit[1]))).Result;
                                             }
                                         }
 
@@ -317,7 +317,7 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
                                     case "pointer":
                                         {
                                             var record = await CompositePointerPresentation(new UuidAndText(Guid.Parse(value), field.Pointer));
-                                            value = record.result;
+                                            value = record.Result;
                                             break;
                                         }
                                 }

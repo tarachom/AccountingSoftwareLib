@@ -28,21 +28,25 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk4;
 
-class FormConfigurationSelectionParam : Window
+[GObject.Subclass<Window>]
+partial class FormConfigurationSelectionParam : Window
 {
-    public ConfigurationParam? OpenConfigurationParam { get; set; }
-    public Action<ConfigurationParam>? CallBackUpdate { get; set; }
+    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
+    public Action<ConfigurationParam>? CallBackUpdate { get; set; } = null;
 
     #region Fields
 
-    Entry ConfName, Server, Port, Login, Basename;
-    PasswordEntry Password;
+    Entry ConfName = Entry.New();
+    Entry Server = Entry.New();
+    Entry Port = Entry.New();
+    Entry Login = Entry.New();
+    Entry Basename = Entry.New();
+    PasswordEntry Password = PasswordEntry.New();
 
     #endregion
 
-    public FormConfigurationSelectionParam(Application? app) 
+    partial void Initialize()
     {
-        Application = app;
         Title = "Параметри підключення PostgreSQL";
         Resizable = false;
         Modal = true;
@@ -74,7 +78,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                ConfName = Entry.New();
                 ConfName.WidthRequest = 300;
                 grid.Attach(ConfName, 1, row, 1, 1);
             }
@@ -87,7 +90,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Server = Entry.New();
                 Server.WidthRequest = 300;
                 grid.Attach(Server, 1, row, 1, 1);
             }
@@ -100,7 +102,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Port = Entry.New();
                 Port.WidthRequest = 300;
                 grid.Attach(Port, 1, row, 1, 1);
             }
@@ -113,7 +114,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Login = Entry.New();
                 Login.WidthRequest = 300;
                 grid.Attach(Login, 1, row, 1, 1);
             }
@@ -126,7 +126,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Password = PasswordEntry.New();
                 Password.WidthRequest = 300;
                 Password.ShowPeekIcon = true;
                 grid.Attach(Password, 1, row, 1, 1);
@@ -140,7 +139,6 @@ class FormConfigurationSelectionParam : Window
                 label.Halign = Align.End;
                 grid.Attach(label, 0, row, 1, 1);
 
-                Basename = Entry.New();
                 Basename.WidthRequest = 300;
                 grid.Attach(Basename, 1, row, 1, 1);
             }
@@ -179,6 +177,12 @@ class FormConfigurationSelectionParam : Window
         }
 
         Child = vBox;
+    }
+
+    public static new FormConfigurationSelectionParam New()
+    {
+        FormConfigurationSelectionParam window = NewWithProperties([]);
+        return window;
     }
 
     public void SetValue()

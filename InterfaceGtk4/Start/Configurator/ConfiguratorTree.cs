@@ -43,7 +43,7 @@ public abstract class ConfiguratorTree
     /// <summary>
     /// Вибраний елемент дерева
     /// </summary>
-    ConfiguratorItemRow? SelectionRow { get; set; }
+    ConfiguratorItemRow? SelectionRow { get; set; } = null;
 
     /// <summary>
     /// Сховище
@@ -63,12 +63,12 @@ public abstract class ConfiguratorTree
     /// <summary>
     /// Функція активації елементу дерева
     /// </summary>
-    public Action<string, string>? Activate { get; set; }
+    public Action<string, string>? Activate { get; set; } = null;
 
     /// <summary>
     /// Функції для меню
     /// </summary>
-    public ToolbarAction? Toolbar { get; set; }
+    public ToolbarAction? Toolbar { get; set; } = null;
 
     /// <summary>
     /// Основний бокс
@@ -315,10 +315,10 @@ public abstract class ConfiguratorTree
     /// </summary>
     public record ToolbarAction
     {
-        public Action? Add { get; set; }
-        public Action<string, string>? Edit { get; set; }
-        public Action<string, string>? Copy { get; set; }
-        public Action<string, string>? Delete { get; set; }
-        public Action? OpenNewTab { get; set; }
+        public Action? Add { get; set; } = null;
+        public Action<string, string>? Edit { get; set; } = null;
+        public Action<string, string>? Copy { get; set; } = null;
+        public Action<string, string>? Delete { get; set; } = null;
+        public Action? OpenNewTab { get; set; } = null;
     }
 }

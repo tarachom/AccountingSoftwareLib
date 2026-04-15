@@ -22,22 +22,24 @@ limitations under the License.
 */
 
 using Gtk;
-using Gdk;
 
 namespace InterfaceGtk4;
 
 /// <summary>
 /// РегістриВідомостейФормаЖурналМіні
 /// </summary>
-public abstract class RegisterAccumulationFormJournalSmall : FormJournal
+[GObject.Subclass<FormJournal>]
+public partial class RegisterAccumulationFormJournalSmall : FormJournal
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
     /// </summary>
     public override Gio.ListStore Store { get; } = Gio.ListStore.New(RegisterAccumulationRowJournal.GetGType());
 
-    public RegisterAccumulationFormJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         GridModel();
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
@@ -66,7 +68,7 @@ public abstract class RegisterAccumulationFormJournalSmall : FormJournal
 
     public override void BeforeLoadRecords()
     {
-        
+
     }
 
     public override void AfterLoadRecords(uint selectPosition = 0)

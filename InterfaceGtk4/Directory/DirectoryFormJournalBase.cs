@@ -35,7 +35,8 @@ namespace InterfaceGtk4;
 ///     DirectoryFormJournalSmall (ДовідникФормаЖурналМіні),
 ///     DirectoryFormJournalBaseTree (ДовідникФормаЖурналБазовийДерево)
 /// </summary>
-public abstract class DirectoryFormJournalBase : FormJournal
+[GObject.Subclass<FormJournal>]
+public partial class DirectoryFormJournalBase : FormJournal
 {
     /// <summary>
     /// Для вибору і позиціювання
@@ -45,7 +46,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
         get => directoryPointerItem;
         set => SelectPointerItem = directoryPointerItem = value;
     }
-    UniqueID? directoryPointerItem;
+    UniqueID? directoryPointerItem = null;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -55,23 +56,23 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Відбори по родичу або інший постійний відбір
     /// </summary>
-    public List<Where>? ParentWhereList { get; set; }
+    public List<Where>? ParentWhereList { get; set; } = null;
 
     /// <summary>
     /// Відбори по власнику або інший постійний відбір.
     /// Використовується функція яка повертає список для відбору щоб відбір був актуальний
     /// </summary>
-    public Func<List<Where>>? OwnerWhereListFunc { get; set; }
+    public Func<List<Where>>? OwnerWhereListFunc { get; set; } = null;
 
     /// <summary>
     /// Функція зворотнього виклику при виборі
     /// </summary>
-    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; } = null;
 
     /// <summary>
     /// Функція зворотнього виклику для множинного вибору
     /// </summary>
-    public Action<UniqueID[]>? CallBack_OnMultipleSelectPointer { get; set; }
+    public Action<UniqueID[]>? CallBack_OnMultipleSelectPointer { get; set; } = null;
 
     /// <summary>
     /// Верхній бокc для пошуку та додаткових кнопок
@@ -103,8 +104,10 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// </summary>
     public Switch UseHierarchy { get; } = Switch.New();
 
-    public DirectoryFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
@@ -234,21 +237,21 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// <param name="IsNew">Чи це новий?</param>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected virtual async ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Помітка на видалення
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
+    protected virtual async ValueTask SetDeletionLabel(UniqueID uniqueID) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Копіювання
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
+    protected virtual async ValueTask<UniqueID?> Copy(UniqueID uniqueID) => await ValueTask.FromResult(UniqueID.NewEmpty());
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -264,7 +267,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Формування відборів для пошуку
     /// </summary>
     /// <param name="searchText">Текст для пошуку</param>
-    protected abstract void SetSearch(string searchText);
+    protected virtual void SetSearch(string searchText) { }
 
     /// <summary>
     /// Заповнити поля для фільтру
@@ -362,10 +365,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
         }
     }
 
-    async void OnAdd(Button button, EventArgs args)
-    {
-        await OpenPageElement(true);
-    }
+    async void OnAdd(Button button, EventArgs args) => await OpenPageElement(true);
 
     async void Edit()
     {
@@ -373,15 +373,9 @@ public abstract class DirectoryFormJournalBase : FormJournal
             await OpenPageElement(false, uniqueID);
     }
 
-    async void OnEdit(Button button, EventArgs args)
-    {
-        Edit();
-    }
+    async void OnEdit(Button button, EventArgs args) => Edit();
 
-    async void OnRefresh(Button sender, EventArgs args)
-    {
-        await Refresh();
-    }
+    async void OnRefresh(Button sender, EventArgs args) => await Refresh();
 
     async void OnCopy(Button button, EventArgs args)
     {
@@ -458,7 +452,7 @@ public abstract class DirectoryFormJournalBase : FormJournal
     /// Використовується при загрузці дерева щоб приховати вітку.
     /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
     /// </summary>
-    public UniqueID? OpenFolder { get; set; }
+    public UniqueID? OpenFolder { get; set; } = null;
 
     /// <summary>
     /// Вставити пустий рядок в дерево

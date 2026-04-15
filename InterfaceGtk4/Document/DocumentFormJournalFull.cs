@@ -31,10 +31,13 @@ namespace InterfaceGtk4;
 /// 
 /// Основа для журналів документів певного виду (Повний)
 /// </summary>
-public abstract class DocumentFormJournalFull : DocumentFormJournalBase
+[GObject.Subclass<DocumentFormJournalBase>]
+public partial class DocumentFormJournalFull : DocumentFormJournalBase
 {
-    public DocumentFormJournalFull(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         AddToolbar();
     }
 
@@ -43,23 +46,23 @@ public abstract class DocumentFormJournalFull : DocumentFormJournalBase
     /// <summary>
     /// Меню друк
     /// </summary>
-    protected virtual NameValue<Action<UniqueID[]>>[]? SetPrintMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetPrintMenu() => null;
 
     /// <summary>
     /// Меню експорт
     /// </summary>
-    protected virtual NameValue<Action<UniqueID[]>>[]? SetExportMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetExportMenu() => null;
 
     /// <summary>
     /// Меню ввести на основі
     /// </summary>
-    protected virtual NameValue<Action<UniqueID[]>>[]? SetEnterDocumentBasedMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetEnterDocumentBasedMenu() => null;
 
     /// <summary>
     /// Історія версій
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) => await ValueTask.FromResult(true);
 
     #endregion
 
@@ -106,10 +109,7 @@ public abstract class DocumentFormJournalFull : DocumentFormJournalBase
         }
     }
 
-    async void OnVersionsHistory(Button button, EventArgs args)
-    {
-        await VersionsHistory(GetSelectionUnigueID());
-    }
+    async void OnVersionsHistory(Button button, EventArgs args) => await VersionsHistory(GetSelectionUnigueID());
 
     #endregion
 }

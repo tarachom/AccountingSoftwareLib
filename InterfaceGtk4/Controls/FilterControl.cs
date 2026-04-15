@@ -37,12 +37,12 @@ public partial class FilterControl : Box
     /// <summary>
     /// Функція вибірки даних
     /// </summary>
-    public Action? Select { get; set; }
+    public Action? Select { get; set; } = null;
 
     /// <summary>
     /// Скидання фільтрів
     /// </summary>
-    public Action? Clear { get; set; }
+    public Action? Clear { get; set; } = null;
 
     /// <summary>
     /// Рекорд для колекції
@@ -55,13 +55,13 @@ public partial class FilterControl : Box
     /// <summary>
     /// Список для фільтрів
     /// </summary>
-    public Action<FilterControl>? FillFilterList { get; set; }
+    public Action<FilterControl>? FillFilterList { get; set; } = null;
 
     /// <summary>
     /// Функція яка згенерована в коді
     /// Вона формує набір відборів
     /// </summary>
-    public Func<bool>? GetWhere { get; set; }
+    public Func<bool>? GetWhere { get; set; } = null;
 
     /// <summary>
     /// Таблиця для фільтрів
@@ -171,7 +171,7 @@ public partial class FilterControl : Box
     /// <summary>
     /// Вспливаюче вікно власник
     /// </summary>
-    public Popover? PopoverParent { get; private set; }
+    public Popover? PopoverParent { get; private set; } = null;
 
     /// <summary>
     /// Кількість рядків в таблиці

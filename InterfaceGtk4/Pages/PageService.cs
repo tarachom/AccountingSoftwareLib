@@ -34,18 +34,19 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-public abstract class PageService : Form
+[GObject.Subclass<Form>]
+public partial class PageService : Form
 {
-    private Kernel Kernel { get; set; }
-    private string NamespaceProgram { get; set; }
-    private string NamespaceCodeGeneration { get; set; }
-    private Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
+    Kernel? Kernel { get; set; } = null;
+    string NamespaceProgram { get; set; } = "";
+    string NamespaceCodeGeneration { get; set; } = "";
+    Assembly ExecutingAssembly { get; } = Assembly.GetCallingAssembly();
 
     protected PeriodControl Period { get; } = PeriodControl.New();
     LogMessage Log { get; } = LogMessage.New();
     protected const string KeyForSettings = "PageService";
 
-    public PageService(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration, NotebookFunction? notebook) : base(notebook)
+    public void Init(Kernel kernel, string namespaceProgram, string namespaceCodeGeneration)
     {
         Kernel = kernel;
         NamespaceProgram = namespaceProgram;
@@ -163,6 +164,8 @@ public abstract class PageService : Form
 
         bFilterAllowDoc.OnClicked += (sender, args) =>
         {
+            if (Kernel == null) throw new Exception("Kernel null");
+
             if (popoverAllowDoc == null)
             {
                 //Список видів документів
@@ -251,11 +254,11 @@ public abstract class PageService : Form
 
     #region Virtual & Abstract Function
 
-    protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
+    protected virtual CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText) { return CompositePointerControl.NewWithProperties([]); }
 
     protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
 
-    protected abstract void PeriodChanged();
+    protected virtual void PeriodChanged() { }
 
     #endregion
 
@@ -263,6 +266,8 @@ public abstract class PageService : Form
 
     async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
     {
+        if (Kernel == null) throw new Exception("Kernel null");
+
         object? journalSelectInstance = ExecutingAssembly.CreateInstance($"{NamespaceCodeGeneration}.Журнали.JournalSelect");
         if (journalSelectInstance != null)
         {
@@ -350,6 +355,8 @@ public abstract class PageService : Form
 
     async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
     {
+        if (Kernel == null) throw new Exception("Kernel null");
+
         //Шаблон запиту для вибірки елементів помічених на видалення
         string querySelectDeletion = "SELECT uid FROM @TABLE WHERE deletion_label = true";
 
@@ -438,6 +445,8 @@ public abstract class PageService : Form
 
     async ValueTask<long> SearchDependencies(List<ConfigurationDependencies> listDependencies, Guid uid, string name)
     {
+        if (Kernel == null) throw new Exception("Kernel null");
+
         long allCountDependencies = 0;
         bool existUse = false;
 

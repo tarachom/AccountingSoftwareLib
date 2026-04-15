@@ -63,7 +63,7 @@ public partial class PointerControl : Box
     /// Використовується при загрузці дерева щоб приховати вітку.
     /// Актуально у випадку вибору родича, щоб не можна було вибрати у якості родича відкриту папку
     /// </summary>
-    public UniqueID? OpenFolder { get; set; }
+    public UniqueID? OpenFolder { get; set; } = null;
 
     #region Virtual Function
 
@@ -75,17 +75,17 @@ public partial class PointerControl : Box
     /// <summary>
     /// Функція яка викликається перед відкриттям вибору
     /// </summary>
-    public Action? BeforeClickOpenFunc { get; set; }
+    public Action? BeforeClickOpenFunc { get; set; } = null;
 
     /// <summary>
     /// Функція яка викликається після вибору.
     /// </summary>
-    public Action? AfterSelectFunc { get; set; }
+    public Action? AfterSelectFunc { get; set; } = null;
 
     /// <summary>
     /// Функція яка викликається після очищення.
     /// </summary>
-    public Action? AfterClearFunc { get; set; }
+    public Action? AfterClearFunc { get; set; } = null;
 
     public string Caption
     {

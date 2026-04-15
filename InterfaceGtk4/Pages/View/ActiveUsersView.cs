@@ -60,7 +60,7 @@ public partial class ActiveUsersView : Box
         public string TypeForm { get; set; } = "";
     }
 
-    Kernel Kernel { get; set; }
+    Kernel? Kernel { get; set; } = null;
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
     ColumnView Grid { get; set; } = ColumnView.New(null);
     ScrolledWindow Scroll { get; set; } = ScrolledWindow.New();
@@ -102,6 +102,8 @@ public partial class ActiveUsersView : Box
 
     static async ValueTask LoadRecords(ActiveUsersView view)
     {
+        if (view.Kernel == null) throw new Exception("Kernel null");
+
         var recordResult = await view.Kernel.DataBase.SpetialTableActiveUsersSelect();
 
         view.Store.RemoveAll();

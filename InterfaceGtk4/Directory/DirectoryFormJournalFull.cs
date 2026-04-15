@@ -31,10 +31,13 @@ namespace InterfaceGtk4;
 /// 
 /// Журнал довідників певного виду (Повний)
 /// </summary>
-public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
+[GObject.Subclass<DirectoryFormJournalBase>]
+public partial class DirectoryFormJournalFull : DirectoryFormJournalBase
 {
-    public DirectoryFormJournalFull(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         AddToolbar();
     }
 
@@ -43,18 +46,18 @@ public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
     /// <summary>
     /// Меню друк
     /// </summary>
-    protected virtual NameValue<Action<UniqueID[]>>[]? SetPrintMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetPrintMenu() => null;
 
     /// <summary>
     /// Меню експорт
     /// </summary>
-    protected virtual NameValue<Action<UniqueID[]>>[]? SetExportMenu() { return null; }
+    protected virtual NameValue<Action<UniqueID[]>>[]? SetExportMenu() => null;
 
     /// <summary>
     /// Історія версій
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) => await ValueTask.FromResult(true);
 
     #endregion
 
@@ -93,10 +96,7 @@ public abstract class DirectoryFormJournalFull : DirectoryFormJournalBase
         }
     }
 
-    async void OnVersionsHistory(Button button, EventArgs args)
-    {
-        await VersionsHistory(GetSelectionUnigueID());
-    }
+    async void OnVersionsHistory(Button button, EventArgs args) => await VersionsHistory(GetSelectionUnigueID());
 
     #endregion
 }

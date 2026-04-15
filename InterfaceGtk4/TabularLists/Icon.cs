@@ -30,8 +30,8 @@ namespace InterfaceGtk4.Icon;
 /// </summary>
 public static class ForForm
 {
-    public static string General = $"{AppContext.BaseDirectory}images/form.ico";
-    public static string Configurator = $"{AppContext.BaseDirectory}images/configurator.ico";
+    public static string General { get; } = $"{AppContext.BaseDirectory}images/form.ico";
+    public static string Configurator { get; } = $"{AppContext.BaseDirectory}images/configurator.ico";
 }
 
 /// <summary>
@@ -39,9 +39,9 @@ public static class ForForm
 /// </summary>
 public static class ForButton
 {
-    public static Pixbuf? Find = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/find.png");
-    public static Pixbuf? Clean = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/clean.png");
-    public static Pixbuf? Doc = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc.png");
+    public static Pixbuf? Find { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/find.png");
+    public static Pixbuf? Clean { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/clean.png");
+    public static Pixbuf? Doc { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc.png");
 }
 
 /// <summary>
@@ -49,16 +49,16 @@ public static class ForButton
 /// </summary>
 public static class ForInformation
 {
-    public static Pixbuf? Ok = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/ok.png");
-    public static Pixbuf? Error = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/error.png");
+    public static Pixbuf? Ok { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/ok.png");
+    public static Pixbuf? Error { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/error.png");
 
-    public static Pixbuf? Info = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/info.png");
-    public static Pixbuf? Lock = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/lock.png");
-    public static Pixbuf? Key = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/key.png");
-    public static Pixbuf? Synchronizing = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/synchronizing.png");
+    public static Pixbuf? Info { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/info.png");
+    public static Pixbuf? Lock { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/lock.png");
+    public static Pixbuf? Key { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/key.png");
+    public static Pixbuf? Synchronizing { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/synchronizing.png");
 
-    public static Pixbuf? Check = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/check.png");
-    public static Pixbuf? Grid = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/grid.png");
+    public static Pixbuf? Check { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/check.png");
+    public static Pixbuf? Grid { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/16/grid.png");
 }
 
 /// <summary>
@@ -66,8 +66,8 @@ public static class ForInformation
 /// </summary>
 public static class ForInformationBig
 {
-    public static Pixbuf? Error = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/error.png");
-    public static Pixbuf? Ok = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/ok.png");
+    public static Pixbuf? Error { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/error.png");
+    public static Pixbuf? Ok { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/ok.png");
 }
 
 /// <summary>
@@ -75,8 +75,8 @@ public static class ForInformationBig
 /// </summary>
 public static class ForTabularLists
 {
-    public static Pixbuf? Normal = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc.png");
-    public static Pixbuf? Delete = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc_delete.png");
+    public static Pixbuf? Normal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc.png");
+    public static Pixbuf? Delete { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/doc_delete.png");
 }
 
 /// <summary>
@@ -84,6 +84,6 @@ public static class ForTabularLists
 /// </summary>
 public static class ForTree
 {
-    public static Pixbuf? Normal = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder.png");
-    public static Pixbuf? Delete = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder_delete.png");
+    public static Pixbuf? Normal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder.png");
+    public static Pixbuf? Delete { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder_delete.png");
 }

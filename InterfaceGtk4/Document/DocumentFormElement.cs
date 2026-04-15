@@ -29,13 +29,14 @@ namespace InterfaceGtk4;
 /// <summary>
 /// ДокументФормаЕлемент
 /// </summary>
-public abstract class DocumentFormElement : FormElement
+[GObject.Subclass<FormElement>]
+public partial class DocumentFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
     /// Використовується коли потрібно новий елемент зразу вибрати
     /// </summary>
-    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; } = null;
 
     /// <summary>
     /// Горизонтальний бокс для кнопок
@@ -79,8 +80,10 @@ public abstract class DocumentFormElement : FormElement
     Button bSpend = Button.NewWithLabel("Провести");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    public DocumentFormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         bSaveAndSpend.MarginEnd = 10;
         bSaveAndSpend.OnClicked += (_, _) => BeforeAndAfterSave(true, true);
         HBoxTop.Append(bSaveAndSpend);
@@ -95,15 +98,8 @@ public abstract class DocumentFormElement : FormElement
 
         //Лінки: Проводки та В журналі
         CreateLinks(HBoxTop, [
-            new("Проводки", () =>
-            {
-                if (UniqueID != null) ReportSpendTheDocument(UniqueID);
-            }),
-
-            new("В журналі", async () =>
-            {
-                if (UniqueID != null) await InJournal(UniqueID);
-            })
+            new("Проводки", () => { if (UniqueID != null) ReportSpendTheDocument(UniqueID); }),
+            new("В журналі", async () => { if (UniqueID != null) await InJournal(UniqueID); })
         ]);
 
         //Індикатор стану блокування
@@ -289,17 +285,17 @@ public abstract class DocumentFormElement : FormElement
     /// Проведення
     /// </summary>
     /// <param name="spendDoc">Провести</param>
-    protected abstract ValueTask<bool> SpendTheDocument(bool spendDoc);
+    protected virtual async ValueTask<bool> SpendTheDocument(bool spendDoc) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Для звіту Проводки
     /// </summary>
-    protected abstract void ReportSpendTheDocument(UniqueID uniqueID);
+    protected virtual void ReportSpendTheDocument(UniqueID uniqueID) { }
 
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual async ValueTask InJournal(UniqueID uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask InJournal(UniqueID uniqueID) => await ValueTask.FromResult(true);
 
     #endregion
 }

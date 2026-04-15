@@ -31,16 +31,19 @@ namespace InterfaceGtk4;
 /// 
 /// Основа для журналів документів певного виду (Міні)
 /// </summary>
-public abstract class DocumentFormJournalSmall : DocumentFormJournalBase
+[GObject.Subclass<DocumentFormJournalBase>]
+public partial class DocumentFormJournalSmall : DocumentFormJournalBase
 {
-    public DocumentFormJournalSmall(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         AddToolbar();
     }
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UniqueID? uniqueID = null);
+    protected virtual async ValueTask OpenPageList(UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
 
     #endregion
 

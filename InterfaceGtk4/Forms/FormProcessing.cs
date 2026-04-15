@@ -29,7 +29,8 @@ namespace InterfaceGtk4;
 /// Основа для класів:
 ///         Processing (Обробка)
 /// </summary>
-public abstract class FormProcessing : Form
+[GObject.Subclass<Form>]
+public partial class FormProcessing : Form
 {
     /// <summary>
     /// Верхній блок для кнопок
@@ -44,8 +45,10 @@ public abstract class FormProcessing : Form
     //Лог
     protected virtual LogMessage Log { get; set; } = LogMessage.New();
 
-    public FormProcessing(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Кнопки
         HBoxTop.MarginBottom = 10;
         Append(HBoxTop);

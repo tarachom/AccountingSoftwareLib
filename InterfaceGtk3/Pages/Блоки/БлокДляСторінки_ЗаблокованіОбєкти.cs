@@ -113,7 +113,7 @@ public abstract class БлокДляСторінки_ЗаблокованіОб�
             Store.AppendValues(
                 record["session"].ToString(),
                 record["users"].ToString(),
-                presentation.Record.result,
+                presentation.Record.Result,
                 datelock,
                 record["username"].ToString(),
                 obj.Text

@@ -78,8 +78,8 @@ public partial class SearchControl : Box
             Select?.Invoke("%" + txt.Replace(" ", "%") + "%");
     }
 
-    public Action<string>? Select { get; set; }
-    public Action? Clear { get; set; }
+    public Action<string>? Select { get; set; }= null;
+    public Action? Clear { get; set; }= null;
 
     public int MinLength { get; set; } = 1;
     public bool ToLower { get; set; } = true;

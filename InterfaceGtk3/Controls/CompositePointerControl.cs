@@ -79,9 +79,9 @@ public abstract class CompositePointerControl : PointerControl
         {
             CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
 
-            Presentation = record.result;
-            PointerName = record.pointer;
-            TypeCaption = record.type;
+            Presentation = record.Result;
+            PointerName = record.Pointer;
+            TypeCaption = record.Type;
         }
         else
             Presentation = PointerName = TypeCaption = "";

@@ -37,8 +37,8 @@ public partial class PointerTablePartCell : Box
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації для цього базового класу
-        if (GetType() == typeof(PointerTablePartCell)) return;
+        //Ігнорувати виклик ініціалізації
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
         SetOrientation(Orientation.Vertical);
 
@@ -96,22 +96,22 @@ public partial class PointerTablePartCell : Box
     /// <summary>
     /// Функція яка викликається після вибору
     /// </summary>
-    public Action? OnSelect { get; set; }
+    public Action? OnSelect { get; set; } = null;
 
     /// <summary>
     /// Функція яка викликається перед відкриттям вибору
     /// </summary>
-    public Action? BeforeClickOpenFunc { get; set; }
+    public Action? BeforeClickOpenFunc { get; set; } = null;
 
     /// <summary>
     /// Функція яка викликається після вибору.
     /// </summary>
-    public Action? AfterSelectFunc { get; set; }
+    public Action? AfterSelectFunc { get; set; } = null;
 
     /// <summary>
     /// Функція яка викликається після очищення.
     /// </summary>
-    public Action? AfterClearFunc { get; set; }
+    public Action? AfterClearFunc { get; set; } = null;
 
     /// <summary>
     /// Відображення

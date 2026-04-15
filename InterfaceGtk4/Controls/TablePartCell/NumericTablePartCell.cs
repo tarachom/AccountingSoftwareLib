@@ -72,7 +72,7 @@ public partial class NumericTablePartCell : Box
     /// <summary>
     /// Функція яка викликається після зміни
     /// </summary>
-    public Action? OnСhanged { get; set; }
+    public Action? OnСhanged { get; set; } = null;
 
     void IsValid()
     {

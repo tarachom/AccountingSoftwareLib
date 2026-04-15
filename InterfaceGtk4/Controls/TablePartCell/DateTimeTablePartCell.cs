@@ -103,7 +103,7 @@ public partial class DateTimeTablePartCell : Box
     /// <summary>
     /// Функція яка викликається після зміни
     /// </summary>
-    public Action? OnСhanged { get; set; }
+    public Action? OnСhanged { get; set; } = null;
 
     void IsValid()
     {
@@ -156,7 +156,8 @@ public partial class DateTimeTablePartCell : Box
         {
             try
             {
-                Value = new DateTime(calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(), Value.Hour, Value.Minute, Value.Second);
+                Value = new DateTime(calendar.GetDate().GetYear(), calendar.GetDate().GetMonth(), calendar.GetDate().GetDayOfMonth(),
+                    Value.Hour, Value.Minute, Value.Second);
             }
             catch
             {

@@ -27,20 +27,20 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
-class FormLogIn : Window
+[GObject.Subclass<Window>]
+partial class FormLogIn : Window
 {
     public TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
-    public Kernel? ProgramKernel { get; set; }
-    public Action? CallBack_ResponseOk { get; set; }
-    public Action? CallBack_ResponseCancel { get; set; }
+    public Kernel? ProgramKernel { get; set; } = null;
+    public Action? CallBack_ResponseOk { get; set; } = null;
+    public Action? CallBack_ResponseCancel { get; set; } = null;
 
-    ComboBoxText comboBoxAllUsers;
-    PasswordEntry passwordUser;
-    Button? buttonAuth;
+    ComboBoxText comboBoxAllUsers = ComboBoxText.New();
+    PasswordEntry passwordUser = PasswordEntry.New();
+    Button? buttonAuth = null;
 
-    public FormLogIn(Application? app) : base()
+    partial void Initialize()
     {
-        Application = app;
         Title = "Авторизація";
         Resizable = false;
         Modal = true;
@@ -70,7 +70,6 @@ class FormLogIn : Window
             label.Halign = Align.End;
             grid.Attach(label, 0, row, 1, 1);
 
-            comboBoxAllUsers = ComboBoxText.New();
             comboBoxAllUsers.WidthRequest = 200;
 
             //Заборона прокрутки
@@ -89,7 +88,6 @@ class FormLogIn : Window
             label.Halign = Align.End;
             grid.Attach(label, 0, row, 1, 1);
 
-            passwordUser = PasswordEntry.New();
             passwordUser.WidthRequest = 200;
             passwordUser.ShowPeekIcon = true;
 
@@ -134,6 +132,12 @@ class FormLogIn : Window
         }
 
         Child = vBox;
+    }
+
+    public static new FormLogIn New()
+    {
+        FormLogIn window = NewWithProperties([]);
+        return window;
     }
 
     public async ValueTask SetValue()

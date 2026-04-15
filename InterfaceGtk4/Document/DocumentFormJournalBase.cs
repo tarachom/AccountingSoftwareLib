@@ -34,7 +34,8 @@ namespace InterfaceGtk4;
 ///     DocumentFormJournalFull (ДокументФормаЖурналПовний),
 ///     DocumentFormJournalSmall (ДокументФормаЖурналМіні)
 /// </summary>
-public abstract class DocumentFormJournalBase : FormJournal
+[GObject.Subclass<FormJournal>]
+public partial class DocumentFormJournalBase : FormJournal
 {
     /// <summary>
     /// Для вибору і позиціювання
@@ -44,7 +45,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         get => documentPointerItem;
         set => SelectPointerItem = documentPointerItem = value;
     }
-    UniqueID? documentPointerItem;
+    UniqueID? documentPointerItem = null;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -54,7 +55,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// Функція зворотнього виклику при виборі
     /// </summary>
-    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; } = null;
 
     /// <summary>
     /// Верхній бок для додаткових кнопок
@@ -81,8 +82,10 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = FilterControl.NewWithUsePeriod(true);
 
-    public DocumentFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
@@ -148,7 +151,7 @@ public abstract class DocumentFormJournalBase : FormJournal
 
         CreateToolbar();
         GridModel();
-        
+
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
 
         EventControllerKey contrKey = EventControllerKey.New();
@@ -205,21 +208,21 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <param name="IsNew">Чи це новий?</param>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected virtual async ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// При встановленні помітки на видалення
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
+    protected virtual async ValueTask SetDeletionLabel(UniqueID uniqueID) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// При копіюванні об'єкту
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
+    protected virtual async ValueTask<UniqueID?> Copy(UniqueID uniqueID) => await ValueTask.FromResult(UniqueID.NewEmpty());
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -235,7 +238,7 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// Формування відборів для пошуку
     /// </summary>
     /// <param name="searchText">Текст для пошуку</param>
-    protected abstract void SetSearch(string searchText);
+    protected virtual void SetSearch(string searchText) { }
 
     /// <summary>
     /// Заповнити поля для фільтру
@@ -246,14 +249,14 @@ public abstract class DocumentFormJournalBase : FormJournal
     /// <summary>
     /// При зміні періоду в контролі Period
     /// </summary>
-    protected abstract void PeriodChanged();
+    protected virtual void PeriodChanged() { }
 
     /// <summary>
     /// Провести / відмінити проведення документів
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
     /// <param name="spendDoc">Провести / відмінити</param>
-    protected virtual async ValueTask SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Друк проводок
@@ -272,8 +275,6 @@ public abstract class DocumentFormJournalBase : FormJournal
     async ValueTask GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
-
-        Console.WriteLine("Activate: " + model.GetObject(position)?.GetType());
 
         if (model.GetObject(position) is DocumentRowJournal row)
             if (DocumentPointerItem == null)
@@ -370,10 +371,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         }
     }
 
-    async void OnAdd(Button button, EventArgs args)
-    {
-        await OpenPageElement(true);
-    }
+    async void OnAdd(Button button, EventArgs args) => await OpenPageElement(true);
 
     async void Edit()
     {
@@ -381,22 +379,16 @@ public abstract class DocumentFormJournalBase : FormJournal
             await OpenPageElement(false, uniqueID);
     }
 
-    async void OnEdit(Button button, EventArgs args)
-    {
-        Edit();
-    }
+    async void OnEdit(Button button, EventArgs args) => Edit();
 
-    async void OnRefresh(Button sender, EventArgs args)
-    {
-        await Refresh();
-    }
+    async void OnRefresh(Button sender, EventArgs args) => await Refresh();
 
     async void OnCopy(Button button, EventArgs args)
     {
         UniqueID[] rows = GetSelectionUnigueID();
         if (rows.Length > 0)
         {
-            foreach (UniqueID uniqueID  in rows)
+            foreach (UniqueID uniqueID in rows)
                 SelectPointerItem = await Copy(uniqueID);
 
             PagesClear();
@@ -439,10 +431,7 @@ public abstract class DocumentFormJournalBase : FormJournal
         */
     }
 
-    async void OnDelete(Button button, EventArgs args)
-    {
-        await Delete();
-    }
+    async void OnDelete(Button button, EventArgs args) => await Delete();
 
     void OnFilter(Button button, EventArgs args)
     {

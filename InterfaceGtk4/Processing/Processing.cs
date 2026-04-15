@@ -26,7 +26,11 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Обробка
 /// </summary>
-public abstract class Processing : FormProcessing
+[GObject.Subclass<FormProcessing>]
+public partial class Processing : FormProcessing
 {
-    public Processing(NotebookFunction? notebook) : base(notebook) { }
+    partial void Initialize()
+    {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+    }
 }

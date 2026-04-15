@@ -28,21 +28,21 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk4;
 
-public abstract class FormConfigurationSelection : Window
+[GObject.Subclass<Window>]
+public partial class FormConfigurationSelection : Window
 {
     TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
-    Kernel? ProgramKernel { get; set; }
-    Kernel? ConfiguratorKernel { get; set; }
+    Kernel? ProgramKernel { get; set; } = null;
+    Kernel? ConfiguratorKernel { get; set; } = null;
 
-    Box? toolbarBox;
-    ListBox listBox;
-    Button? buttonOpen;
-    Button buttonConfigurator;
-    Spinner spinner;
+    Box? toolbarBox = null;
+    ListBox listBox = ListBox.New();
+    Button? buttonOpen = null;
+    Button buttonConfigurator = Button.NewWithLabel("Конфігуратор");
+    Spinner spinner = Spinner.New();
 
-    public FormConfigurationSelection(Application? app, Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm)
+    public void Init(Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm)
     {
-        Application = app;
         Title = "Вибір бази даних";
         Resizable = false;
 
@@ -77,7 +77,6 @@ public abstract class FormConfigurationSelection : Window
                     OnOpen(null, new());
             };
 
-            listBox = ListBox.New();
             listBox.SelectionMode = SelectionMode.Single;
             listBox.AddController(gesture);
             listBox.AddController(contr);
@@ -108,7 +107,6 @@ public abstract class FormConfigurationSelection : Window
 
             //Конфігуратор
             {
-                buttonConfigurator = Button.NewWithLabel("Конфігуратор");
                 buttonConfigurator.MarginBottom = 5;
                 buttonConfigurator.OnClicked += OnOpenConfigurator;
 
@@ -125,7 +123,6 @@ public abstract class FormConfigurationSelection : Window
                 hBoxSpinner.Halign = Align.Center;
                 vBoxButton.Append(hBoxSpinner);
 
-                spinner = Spinner.New();
                 hBoxSpinner.Append(spinner);
             }
         }
@@ -139,7 +136,7 @@ public abstract class FormConfigurationSelection : Window
     #region Virtual Functions
 
     public virtual ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) => ValueTask.FromResult(true);
-    public abstract ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
+    public virtual ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) => ValueTask.FromResult(true);
 
     #endregion
 
@@ -266,18 +263,17 @@ public abstract class FormConfigurationSelection : Window
                 {
                     if (await CheckSystemTables(ProgramKernel)) //Перевірка наявності системних таблиць
                     {
-                        FormLogIn windowFormLogIn = new(Application)
+                        FormLogIn windowFormLogIn = FormLogIn.New();
+                        windowFormLogIn.Application = Application;
+                        windowFormLogIn.TypeOpenForm = TypeForm.WorkingProgram;
+                        windowFormLogIn.ProgramKernel = ProgramKernel;
+                        windowFormLogIn.TransientFor = this;
+                        windowFormLogIn.CallBack_ResponseOk = async () =>
                         {
-                            TypeOpenForm = TypeForm.WorkingProgram,
-                            ProgramKernel = ProgramKernel,
-                            TransientFor = this,
-                            CallBack_ResponseOk = async () =>
-                            {
-                                await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
-                                Close();
-                            },
-                            CallBack_ResponseCancel = ProgramKernel.Close
+                            await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
+                            Close();
                         };
+                        windowFormLogIn.CallBack_ResponseCancel = ProgramKernel.Close;
 
                         await windowFormLogIn.SetValue();
                         windowFormLogIn.Show();
@@ -324,18 +320,17 @@ public abstract class FormConfigurationSelection : Window
                     //Перевірка наявності системних таблиць
                     if (await CheckSystemTables(ConfiguratorKernel))
                     {
-                        FormLogIn windowFormLogIn = new(Application)
+                        FormLogIn windowFormLogIn = FormLogIn.New();
+                        windowFormLogIn.Application = Application;
+                        windowFormLogIn.TypeOpenForm = TypeForm.Configurator;
+                        windowFormLogIn.ProgramKernel = ConfiguratorKernel;
+                        windowFormLogIn.TransientFor = this;
+                        windowFormLogIn.CallBack_ResponseOk = async () =>
                         {
-                            TypeOpenForm = TypeForm.Configurator,
-                            ProgramKernel = ConfiguratorKernel,
-                            TransientFor = this,
-                            CallBack_ResponseOk = async () =>
-                            {
-                                await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
-                                Close();
-                            },
-                            CallBack_ResponseCancel = ConfiguratorKernel.Close
+                            await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
+                            Close();
                         };
+                        windowFormLogIn.CallBack_ResponseCancel = ConfiguratorKernel.Close;
 
                         await windowFormLogIn.SetValue();
                         windowFormLogIn.Show();
@@ -433,13 +428,11 @@ public abstract class FormConfigurationSelection : Window
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
         {
-            FormConfigurationSelectionParam configurationSelectionParam = new(Application)
-            {
-                TransientFor = this,
-                Modal = true,
-                OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name),
-                CallBackUpdate = CallBackUpdate
-            };
+            FormConfigurationSelectionParam configurationSelectionParam = FormConfigurationSelectionParam.New();
+            configurationSelectionParam.Application = Application;
+            configurationSelectionParam.TransientFor = this;
+            configurationSelectionParam.OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name);
+            configurationSelectionParam.CallBackUpdate = CallBackUpdate;
 
             configurationSelectionParam.SetValue();
             configurationSelectionParam.Show();

@@ -30,12 +30,13 @@ namespace InterfaceGtk4;
 /// Основа для класів:
 ///      Form*
 /// </summary>
-public abstract class Form : Box
+[GObject.Subclass<Box>]
+public partial class Form : Box
 {
     /// <summary>
     /// Оновний блокнот
     /// </summary>
-    protected NotebookFunction? NotebookFunc { get; private set; }
+    protected NotebookFunction? NotebookFunc { get; set; } = null;
 
     /// <summary>
     /// Основне вікно
@@ -47,11 +48,11 @@ public abstract class Form : Box
     /// </summary>
     protected Application? BasicApp { get => NotebookFunc?.BasicForm?.Application; }
 
-    public Form(NotebookFunction? notebookFunc)
+    partial void Initialize()
     {
-        SetOrientation(Orientation.Vertical);
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
-        NotebookFunc = notebookFunc;
+        SetOrientation(Orientation.Vertical);
     }
 
     #region Link

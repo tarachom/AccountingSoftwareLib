@@ -75,7 +75,6 @@ public partial class PeriodControl : Box
         };
         Append(bSelect);
 
-        //comboBoxPeriod = PeriodForJournal.PeriodSelectionList();
         comboBoxPeriod.MarginEnd = 2;
         comboBoxPeriod.OnChanged += (_, _) =>
         {

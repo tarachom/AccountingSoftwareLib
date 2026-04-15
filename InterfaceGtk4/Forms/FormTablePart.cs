@@ -31,7 +31,8 @@ namespace InterfaceGtk4;
 ///         DocumentFormTablePart (Документ таблична частина)
 ///         DirectoryFormTablePart (Довідник таблична частина)
 /// </summary>
-public abstract class FormTablePart : Form
+[GObject.Subclass<Form>]
+public partial class FormTablePart : Form
 {
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
@@ -46,15 +47,17 @@ public abstract class FormTablePart : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    protected abstract Gio.ListStore Store { get; }
+    protected virtual Gio.ListStore Store { get; }
 
     /// <summary>
     /// Верхній набір меню
     /// </summary>
     protected Box HBoxToolbarTop { get; } = New(Orientation.Horizontal, 0);
 
-    public FormTablePart(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         Append(HBoxToolbarTop);
         CreateToolbar();
 
@@ -72,10 +75,10 @@ public abstract class FormTablePart : Form
 
     #region Virtual & Abstract Function
 
-    protected abstract void Columns();
-    public abstract ValueTask LoadRecords();
-    public abstract ValueTask SaveRecords();
-    public abstract bool NewRecord();
+    protected virtual void Columns() { }
+    public virtual async ValueTask LoadRecords() => await ValueTask.FromResult(true);
+    public virtual async ValueTask SaveRecords() => await ValueTask.FromResult(true);
+    public virtual bool NewRecord() { return false; }
 
     #endregion
 

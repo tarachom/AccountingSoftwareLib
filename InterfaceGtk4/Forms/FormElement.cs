@@ -31,12 +31,13 @@ namespace InterfaceGtk4;
 ///      ДокументФормаЕлемент, 
 ///      РегістриВідомостейФормаЕлемент
 /// </summary>
-public abstract class FormElement : Form
+[GObject.Subclass<Form>]
+public partial class FormElement : Form
 {
     /// <summary>
     /// Об'єкт який привязується до форми
     /// </summary>
-    protected AccountingSoftware.Object? Element { get; init; }
+    protected AccountingSoftware.Object? Element { get; set; } = null;
 
     /// <summary>
     /// Чи це новий елемент
@@ -56,26 +57,31 @@ public abstract class FormElement : Form
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
     /// </summary>
-    public Action<UniqueID?>? CallBack_LoadRecords { get; set; }
+    public Action<UniqueID?>? CallBack_LoadRecords { get; set; } = null;
 
     /// <summary>
     /// Інформація про блокування
     /// </summary>
     protected LockControl LockInfo = LockControl.New();
 
-    public FormElement(NotebookFunction? notebookFunc) : base(notebookFunc) { }
+    /*
+    partial void Initialize()
+    {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+    }
+    */
 
     #region Abstract Function
 
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public abstract ValueTask SetValue();
+    public virtual async ValueTask SetValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public virtual async ValueTask AssignValue() { await ValueTask.FromResult(true); }
+    public virtual async ValueTask AssignValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Фокус за стандартом
@@ -85,12 +91,12 @@ public abstract class FormElement : Form
     /// <summary>
     /// Зчитування значень
     /// </summary>
-    protected abstract void GetValue();
+    protected virtual void GetValue() { }
 
     /// <summary>
     /// Збереження
     /// </summary>
-    protected abstract ValueTask<bool> Save();
+    protected virtual async ValueTask<bool> Save() => await ValueTask.FromResult(true);
 
     #endregion
 }

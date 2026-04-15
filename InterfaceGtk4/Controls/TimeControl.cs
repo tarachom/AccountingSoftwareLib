@@ -68,7 +68,7 @@ public partial class TimeControl : Box
     /// <summary>
     /// Допустимі формати часу
     /// </summary>
-    string[] formats =
+    readonly string[] formats =
     [
         @"%h",
         @"h\:m",

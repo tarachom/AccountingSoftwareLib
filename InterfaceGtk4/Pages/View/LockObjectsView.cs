@@ -58,7 +58,7 @@ public partial class LockObjectsView : Box
         public DateTime DateLock { get; set; } = DateTime.MinValue;
     }
 
-    Kernel Kernel { get; set; }
+    Kernel? Kernel { get; set; } = null;
     Dictionary<Guid, (CompositePointerPresentation_Record Record, DateTime DateExpire)> CacheData { get; set; } = [];
     Gio.ListStore Store { get; } = Gio.ListStore.New(ItemRow.GetGType());
     ColumnView Grid { get; set; } = ColumnView.New(null);
@@ -101,6 +101,8 @@ public partial class LockObjectsView : Box
 
     async ValueTask LoadRecords()
     {
+        if (Kernel == null) throw new Exception("Kernel null");
+        
         var recordResult = await Kernel.DataBase.SpetialTableLockedObjectSelect();
 
         //Очистка через певний час
@@ -121,15 +123,15 @@ public partial class LockObjectsView : Box
                 CacheData.Add(obj.Uuid, presentation);
             }
 
-            var itemRow = ItemRow.New();
-            itemRow.UniqueID = new UniqueID(record["session"]);
-            itemRow.UserUID = (Guid)record["users"];
-            itemRow.UserName = record["username"].ToString() ?? "";
-            itemRow.ObjValue = obj;
-            itemRow.ObjPresentation = SubstringName(presentation.Record.result);
-            itemRow.DateLock = DateTime.Parse(record["datelock"].ToString() ?? DateTime.MinValue.ToString());
+            var row = ItemRow.New();
+            row.UniqueID = new UniqueID(record["session"]);
+            row.UserUID = (Guid)record["users"];
+            row.UserName = record["username"].ToString() ?? "";
+            row.ObjValue = obj;
+            row.ObjPresentation = SubstringName(presentation.Record.Result);
+            row.DateLock = DateTime.Parse(record["datelock"].ToString() ?? DateTime.MinValue.ToString());
 
-            Store.Append(itemRow);
+            Store.Append(row);
         }
     }
 

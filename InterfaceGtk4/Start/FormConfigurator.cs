@@ -27,7 +27,8 @@ using InterfaceGtkLib;
 
 namespace InterfaceGtk4;
 
-public abstract class FormConfigurator : Window
+[GObject.Subclass<Window>]
+public partial class FormConfigurator : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
     public NotebookFunction NotebookFunc { get; } = new();
@@ -35,9 +36,8 @@ public abstract class FormConfigurator : Window
     Kernel Kernel { get; set; }
     protected Statusbar StatusBar = Statusbar.New();
 
-    public FormConfigurator(Application? app, Kernel kernel) : base()
+    public void Init(Kernel kernel)
     {
-        Application = app;
         Kernel = kernel;
 
         SetDefaultSize(1200, 900);
@@ -81,8 +81,8 @@ public abstract class FormConfigurator : Window
 
     #region Virtual & Abstract Function
 
-    protected abstract void Service(LinkButton link);
-    protected abstract void Settings(LinkButton link);
+    protected virtual void Service(LinkButton link) { }
+    protected virtual void Settings(LinkButton link) { }
 
     protected virtual async ValueTask PageConstantBlock(string name, bool isNew = false) { }
     protected virtual async ValueTask PageConstant(string name, bool isNew = false) { }

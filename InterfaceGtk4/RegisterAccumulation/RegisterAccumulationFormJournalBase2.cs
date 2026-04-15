@@ -29,7 +29,8 @@ namespace InterfaceGtk4;
 /// <summary>
 /// РегістриВідомостейФормаЖурналБазовий
 /// </summary>
-public abstract class RegisterAccumulationFormJournalBase : FormJournal
+[GObject.Subclass<FormJournal>]
+public partial class RegisterAccumulationFormJournalBase : FormJournal
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -56,8 +57,10 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     /// </summary>
     public FilterControl Filter { get; } = FilterControl.NewWithUsePeriod(true);
 
-    public RegisterAccumulationFormJournalBase(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
@@ -143,7 +146,7 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
     /// <summary>
     /// При зміні періоду в контролі Period
     /// </summary>
-    protected abstract void PeriodChanged();
+    protected virtual void PeriodChanged() { }
 
     #endregion
 
@@ -171,10 +174,7 @@ public abstract class RegisterAccumulationFormJournalBase : FormJournal
         }
     }
 
-    async void OnRefresh(Button sender, EventArgs args)
-    {
-        await Refresh();
-    }
+    async void OnRefresh(Button sender, EventArgs args) => await Refresh();
 
     void OnFilter(Button button, EventArgs args)
     {

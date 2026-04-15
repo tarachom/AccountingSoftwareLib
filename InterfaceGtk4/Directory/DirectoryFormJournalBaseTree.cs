@@ -33,9 +33,10 @@ namespace InterfaceGtk4;
 ///     DirectoryFormJournalFullTree (ДовідникФормаЖурналПовнийДерево),
 ///     DirectoryFormJournalSmallTree (ДовідникФормаЖурналМініДерево),
 /// </summary>
-public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
+[GObject.Subclass<DirectoryFormJournalBase>]
+public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 {
-    event EventHandler<TreeListModel?, UniqueID>? OnLoaded;
+    //event EventHandler<TreeListModel?, UniqueID>? OnLoaded;
 
     /// <summary>
     /// Перевизначення сховища для нового типу даних
@@ -45,17 +46,18 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// <summary>
     /// Модель для дерева
     /// </summary>
-    TreeListModel? TreeList { get; set; }
+    TreeListModel? TreeList { get; set; } = null;
 
     /// <summary>
     /// Функція вибору рядка в дереві
     /// </summary>
-    public Action<UniqueID>? CallBack_Activate { get; set; }
+    public Action<UniqueID>? CallBack_Activate { get; set; } = null;
 
-    public DirectoryFormJournalBaseTree(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
-        GridModel();
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
+        GridModel();
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
     }
 
@@ -72,12 +74,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         model.OnSelectionChanged += GridOnSelectionChanged;
 
         Grid.Model = model;
-
-        OnLoaded += (o, e) =>
-        {
-            Console.WriteLine("OnLoaded:");
-            AfterLoadRecordsNext();
-        };
     }
 
     /// <summary>
@@ -128,8 +124,6 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                                 itemRow.Store.Dispose();
                                 itemRow.Store = null;
                             }
-
-                            OnLoaded?.Invoke(TreeList, itemRow.UniqueID);
                         }
                         catch (Exception ex)
                         {
@@ -144,9 +138,13 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
         else
         {
-            if (!itemRow.UniqueID.IsEmpty() && (itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Elements ||
-                itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Folders ||
-                (itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements && itemRow.IsFolder)))
+            /* Вітка для завантаження */
+            if (!itemRow.UniqueID.IsEmpty() && //Не порожній вказівник
+                (
+                    itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Elements || //Елементи
+                    itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.Folders ||  //Папки
+                    (itemRow.AllowedContent == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements && itemRow.IsFolder)) //Папки та елементи і це папка
+                )
             {
                 store = Gio.ListStore.New(DirectoryHierarchicalRow.GetGType());
 
@@ -273,56 +271,56 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }*/
 
+    /*
+        OpenTreeState openTreeState = new();
+        readonly Lock lock_ = new();
 
-    OpenTreeState openTreeState = new();
-    readonly Lock lock_ = new();
-
-    void AfterLoadRecordsNext()
-    {
-        Console.WriteLine("AfterLoadRecordsNext");
-
-        TreeListRow? treeListRow = null;
-        UniqueID? select = null;
-
-        lock (lock_)
+        void AfterLoadRecordsNext()
         {
-            if (openTreeState.CurrnetRow != null && openTreeState.Parents.Count > 0)
-            {
-                treeListRow = openTreeState.CurrnetRow;
-                select = openTreeState.Parents.Pop();
-            }
-        }
+            Console.WriteLine("AfterLoadRecordsNext");
 
-        if (treeListRow != null && select != null)
-        {
-            Console.WriteLine("next: " + select);
+            TreeListRow? treeListRow = null;
+            UniqueID? select = null;
 
-            Gio.ListModel? children = treeListRow.GetChildren();
-            Console.WriteLine(children?.GetNItems());
-            for (uint i = 0; i < children?.GetNItems(); i++)
+            lock (lock_)
             {
-                TreeListRow? row = treeListRow?.GetChildRow(i);
-                if (row != null)
+                if (openTreeState.CurrnetRow != null && openTreeState.Parents.Count > 0)
                 {
-                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                    Console.WriteLine(rowItem?.IsLoading + " - " + rowItem?.UniqueID + " - " + rowItem?.Fields["Назва"] + " = " + select);
-                    if (rowItem != null && rowItem.UniqueID.Equals(select))
-                    {
-                        Console.WriteLine($"next ok: {i} " + select);
-                        lock (lock_)
-                        {
-                            openTreeState.CurrnetRow = row;
-                            openTreeState.Position += i;
-                        }
+                    treeListRow = openTreeState.CurrnetRow;
+                    select = openTreeState.Parents.Pop();
+                }
+            }
 
-                        row.Expanded = true;
-                        break;
+            if (treeListRow != null && select != null)
+            {
+                Console.WriteLine("next: " + select);
+
+                Gio.ListModel? children = treeListRow.GetChildren();
+                Console.WriteLine(children?.GetNItems());
+                for (uint i = 0; i < children?.GetNItems(); i++)
+                {
+                    TreeListRow? row = treeListRow?.GetChildRow(i);
+                    if (row != null)
+                    {
+                        DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                        Console.WriteLine(rowItem?.IsLoading + " - " + rowItem?.UniqueID + " - " + rowItem?.Fields["Назва"] + " = " + select);
+                        if (rowItem != null && rowItem.UniqueID.Equals(select))
+                        {
+                            Console.WriteLine($"next ok: {i} " + select);
+                            lock (lock_)
+                            {
+                                openTreeState.CurrnetRow = row;
+                                openTreeState.Position += i;
+                            }
+
+                            row.Expanded = true;
+                            break;
+                        }
                     }
                 }
             }
         }
-    }
-
+    */
     public override void AfterLoadRecords(Stack<UniqueID> parents)
     {
         if (PopoverParent == null)
@@ -335,7 +333,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             return;
         }
 
-        if (TreeList != null && parents.Count > 0)
+        /*if (TreeList != null && parents.Count > 0)
         {
             UniqueID select;
 
@@ -365,7 +363,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     }
                 }
             }
-        }
+        }*/
     }
 
     /// <summary>
@@ -510,7 +508,7 @@ public abstract class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     }
 }
 
-record OpenTreeState
+/*record OpenTreeState
 {
     public Stack<UniqueID> Parents { get; set; } = [];
 
@@ -523,4 +521,4 @@ record OpenTreeState
         CurrnetRow = null;
         Position = 0;
     }
-}
+}*/

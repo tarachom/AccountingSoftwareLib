@@ -34,7 +34,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
 {
     public static DirectoryHierarchicalRow New() => NewWithProperties([]);
 
-    #region Довантаження
+    #region Динамічне довантаження
 
     /// <summary>
     /// Цей елемент для завантаження даних

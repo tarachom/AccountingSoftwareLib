@@ -70,5 +70,5 @@ public partial class ComboTextTablePartCell : Box
     /// <summary>
     /// Функція яка викликається після зміни
     /// </summary>
-    public Action? OnСhanged { get; set; }
+    public Action? OnСhanged { get; set; } = null;
 }

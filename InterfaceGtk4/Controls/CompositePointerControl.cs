@@ -45,7 +45,7 @@ public partial class CompositePointerControl : PointerControl
     partial void Initialize()
     {
         //Ігнорувати виклик ініціалізації для цього класу
-        if (GetType() == typeof(CompositePointerControl)) return;
+        if (GetType().Namespace == "InterfaceGtk4") return;
 
         PointerChanged += OnPointerChanged;
 
@@ -89,9 +89,9 @@ public partial class CompositePointerControl : PointerControl
         {
             CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
 
-            Presentation = record.result;
-            PointerName = record.pointer;
-            TypeCaption = record.type;
+            Presentation = record.Result;
+            PointerName = record.Pointer;
+            TypeCaption = record.Type;
         }
         else
             Presentation = PointerName = TypeCaption = "";
@@ -125,7 +125,11 @@ public partial class CompositePointerControl : PointerControl
 
             try
             {
-                //page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                /*
+                Старий варіант
+                page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                */
+
                 Type? docw = CallingAssembly.GetType($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
                 if (docw != null)
                     page = docw.GetMethod("New")?.Invoke(docw, null);

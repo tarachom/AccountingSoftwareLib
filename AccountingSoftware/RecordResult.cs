@@ -182,17 +182,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Презентація
         /// </summary>
-        public string result = "";
+        public string Result = "";
 
         /// <summary>
         /// Вказівник (Довідники, Документи)
         /// </summary>
-        public string pointer = "";
+        public string Pointer = "";
 
         /// <summary>
         /// Тип довідника чи документу
         /// </summary>
-        public string type = "";
+        public string Type = "";
     }
 
     #endregion

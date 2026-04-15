@@ -29,13 +29,14 @@ namespace InterfaceGtk4;
 /// <summary>
 /// ДовідникФормаЕлемент
 /// </summary>
-public abstract class DirectoryFormElement : FormElement
+[GObject.Subclass<FormElement>]
+public partial class DirectoryFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
     /// Використовується коли потрібно новий елемент зразу вибрати
     /// </summary>
-    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; }
+    public Action<UniqueID>? CallBack_OnSelectPointer { get; set; } = null;
 
     /// <summary>
     /// Горизонтальний бокс для кнопок
@@ -53,8 +54,10 @@ public abstract class DirectoryFormElement : FormElement
     Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
     Button bSave = Button.NewWithLabel("Зберегти");
 
-    public DirectoryFormElement(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
         HBoxTop.Append(bSaveAndClose);

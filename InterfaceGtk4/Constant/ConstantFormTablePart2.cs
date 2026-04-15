@@ -26,11 +26,13 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Константа таблична частина
 /// </summary>
-[GObject.Subclass<FormTablePart2>]
-public partial class ConstantFormTablePart2 : FormTablePart2
+[GObject.Subclass<FormTablePart>]
+public partial class ConstantFormTablePart : FormTablePart
 {
+    /*
     partial void Initialize()
     {
         if (GetType().Namespace == "InterfaceGtk4") return;
     }
+    */
 }

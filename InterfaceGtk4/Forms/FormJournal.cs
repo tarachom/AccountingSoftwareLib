@@ -38,17 +38,18 @@ namespace InterfaceGtk4;
 ///     РегістриНакопиченняЖурнал,
 ///     РегістриНакопиченняЖурнал_СпрощенийРежим
 /// </summary>
-public abstract class FormJournal : Form
+[GObject.Subclass<Form>]
+public partial class FormJournal : Form
 {
     /// <summary>
     /// Вспливаюче вікно власник даної форми (у випадку якщо форма поміщена у Popover)
     /// </summary>
-    public Popover? PopoverParent { get; set; }
+    public Popover? PopoverParent { get; set; } = null;
 
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
     /// </summary>
-    public UniqueID? SelectPointerItem { get; set; }
+    public UniqueID? SelectPointerItem { get; set; } = null;
 
     /// <summary>
     /// Табличний список
@@ -58,12 +59,12 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    public abstract Gio.ListStore Store { get; }
+    public virtual Gio.ListStore Store { get; } = Gio.ListStore.NewWithProperties([]);
 
     /// <summary>
     /// Відбори
     /// </summary>
-    public List<Where>? WhereList { get; set; }
+    public List<Where>? WhereList { get; set; } = null;
 
     /// <summary>
     /// Прокрутка дерева
@@ -91,11 +92,12 @@ public abstract class FormJournal : Form
     /// </summary>
     public bool CompositeMode { get; set; } = false;
 
-    public FormJournal(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         //Не переміщати стовпчики
         Grid.Reorderable = false;
-        Grid.AccessibleRole = AccessibleRole.Table; //Уточнити для чого це, на що впливає і чи потрібно
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
@@ -407,36 +409,33 @@ public abstract class FormJournal : Form
 
     #region Virtual & Abstract Function
 
-    protected abstract void GridModel();
+    protected virtual void GridModel() { }
 
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public abstract ValueTask SetValue();
+    public virtual async ValueTask SetValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+    protected virtual async ValueTask BeforeSetValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Фокус за стандартом
     /// </summary>
-    public virtual void DefaultGrabFocus() { Grid.GrabFocus(); }
+    public virtual void DefaultGrabFocus() => Grid.GrabFocus();
 
     /// <summary>
     /// Завантаження списку
     /// </summary>
-    public abstract ValueTask LoadRecords();
+    public virtual async ValueTask LoadRecords() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Довантаження даних в дерево
     /// </summary>
     /// <param name="parent">Вітка родич</param>
-    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID parent)
-    {
-        return await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
-    }
+    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID parent) => await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
 
     /// <summary>
     /// Пустий рядок
@@ -446,7 +445,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Оновлення списку
     /// </summary>
-    public virtual async ValueTask UpdateRecords() { await ValueTask.FromResult(true); }
+    public virtual async ValueTask UpdateRecords() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Відображення стану відборів у Label TypeWhereStateInfo
@@ -610,7 +609,7 @@ public abstract class FormJournal : Form
     /// Додатковий ключ форми журналу для налаштувань
     /// Використовується для ідентифікації форми яка відкрита наприклад із звіту
     /// </summary>
-    public string? KeyForSetting { get; set; }
+    public string? KeyForSetting { get; set; } = null;
 
     /// <summary>
     /// Ключ форми - текстовий ключ з типу та додаткового ключа
@@ -644,7 +643,7 @@ public abstract class FormJournal : Form
     /// <summary>
     /// Подія яка виникає після зміни стану відбору
     /// </summary>
-    event EventHandler<TypeWhere>? OnTypeWhereStateChanged;
+    event EventHandler<TypeWhere>? OnTypeWhereStateChanged = null;
 
     /// <summary>
     /// Типи відборів

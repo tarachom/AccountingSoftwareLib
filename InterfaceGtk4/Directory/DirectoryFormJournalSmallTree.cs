@@ -31,16 +31,19 @@ namespace InterfaceGtk4;
 /// 
 /// Журнал довідників певного виду (Міні)
 /// </summary>
-public abstract class DirectoryFormJournalSmallTree : DirectoryFormJournalBaseTree
+[GObject.Subclass<DirectoryFormJournalBaseTree>]
+public partial class DirectoryFormJournalSmallTree : DirectoryFormJournalBaseTree
 {
-    public DirectoryFormJournalSmallTree(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         AddToolbar();
     }
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UniqueID? uniqueID = null);
+    protected virtual async ValueTask OpenPageList(UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
 
     #endregion
 
@@ -67,10 +70,7 @@ public abstract class DirectoryFormJournalSmallTree : DirectoryFormJournalBaseTr
         }
     }
 
-    async void OnOpenPageList(Button button, EventArgs args)
-    {
-        await OpenPageList(SelectPointerItem);
-    }
+    async void OnOpenPageList(Button button, EventArgs args) => await OpenPageList(SelectPointerItem);
 
     #endregion
 }

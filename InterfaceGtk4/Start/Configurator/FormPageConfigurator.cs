@@ -29,7 +29,8 @@ namespace InterfaceGtk4;
 /// Основа для сторінок в конфігураторі
 ///     
 /// </summary>
-public abstract class FormPageConfigurator : Form
+[GObject.Subclass<Form>]
+public partial class FormPageConfigurator : Form
 {
     /// <summary>
     /// 
@@ -67,8 +68,10 @@ public abstract class FormPageConfigurator : Form
     protected Button bSaveAndClose = Button.NewWithLabel("Зберегти та закрити");
     protected Button bSave = Button.NewWithLabel("Зберегти");
 
-    public FormPageConfigurator(NotebookFunction? notebookFunc) : base(notebookFunc)
+    partial void Initialize()
     {
+        if (GetType().Namespace == "InterfaceGtk4") return;
+
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
         HBoxTop.Append(bSaveAndClose);
@@ -140,7 +143,7 @@ public abstract class FormPageConfigurator : Form
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public abstract ValueTask AssignValue();
+    public virtual async ValueTask AssignValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Фокус за стандартом
@@ -150,12 +153,12 @@ public abstract class FormPageConfigurator : Form
     /// <summary>
     /// Зчитування значень
     /// </summary>
-    protected abstract ValueTask GetValue();
+    protected virtual async ValueTask GetValue() => await ValueTask.FromResult(true);
 
     /// <summary>
     /// Збереження
     /// </summary>
-    protected abstract ValueTask<bool> Save();
+    protected virtual ValueTask<bool> Save() => ValueTask.FromResult(false);
 
     #endregion
 }
