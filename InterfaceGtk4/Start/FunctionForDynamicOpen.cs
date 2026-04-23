@@ -51,13 +51,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeJournal">Тип</param>
     /// <param name="uniqueID">Елемент для позиціювання</param>
-    public bool OpenJournalByType(string typeJournal, UniqueID? uniqueID)
+    public bool OpenJournalByType(string typeJournal, UniqueID? uniqueID = null)
     {
-        object? journalInstance;
+        object? instance;
 
         try
         {
-            journalInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.Журнал_{typeJournal}");
+            instance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.Журнал_{typeJournal}");
         }
         catch (Exception ex)
         {
@@ -65,9 +65,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             return false;
         }
 
-        if (journalInstance != null)
+        if (instance != null)
         {
-            dynamic journal = journalInstance;
+            dynamic journal = instance;
 
             //Документ який потрібно виділити в списку
             journal.SelectPointerItem = uniqueID;
@@ -86,13 +86,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="typeDir">Тип</param>
     /// <param name="uniqueID">Елемент для позиціонування</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDirectoryByType(string typeDir, UniqueID? uniqueID, TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDirectoryByType(string typeDir, UniqueID? uniqueID = null, TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
             case TypeForm.Journal:
                 {
-                    object? directoryInstance = null;
+                    object? instance = null;
 
                     try
                     {
@@ -103,7 +103,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                         Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDir}_Список");
                         if (list != null)
-                            directoryInstance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
+                            instance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
                     }
                     catch (Exception ex)
                     {
@@ -111,9 +111,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         return false;
                     }
 
-                    if (directoryInstance != null)
+                    if (instance != null)
                     {
-                        dynamic directory = directoryInstance;
+                        dynamic directory = instance;
 
                         //Елемент який потрібно виділити в списку
                         directory.SelectPointerItem = uniqueID;
@@ -152,13 +152,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="uniqueID">Елемент для позиціювання</param>
     /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDocumentByType(string typeDoc, UniqueID? uniqueID, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
+    public bool OpenDocumentByType(string typeDoc, UniqueID? uniqueID = null, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
             case TypeForm.Journal:
                 {
-                    object? documentInstance = null;
+                    object? instance = null;
 
                     try
                     {
@@ -169,7 +169,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
 
                         Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.{typeDoc}_Список");
                         if (list != null)
-                            documentInstance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
+                            instance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
 
                     }
                     catch (Exception ex)
@@ -178,9 +178,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                         return false;
                     }
 
-                    if (documentInstance != null)
+                    if (instance != null)
                     {
-                        dynamic document = documentInstance;
+                        dynamic document = instance;
 
                         //Елемент який потрібно виділити в списку
                         document.SelectPointerItem = uniqueID;
@@ -221,13 +221,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID)
+    public bool OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID = null)
     {
-        object? registerInstance;
+        object? instance;
 
         try
         {
-            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриВідомостей.{typeReg}_Список");
+            instance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриВідомостей.{typeReg}_Список");
         }
         catch (Exception ex)
         {
@@ -235,9 +235,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             return false;
         }
 
-        if (registerInstance != null)
+        if (instance != null)
         {
-            dynamic register = registerInstance;
+            dynamic register = instance;
 
             //Елемент який потрібно виділити в списку
             register.SelectPointerItem = uniqueID;
@@ -263,13 +263,13 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID)
+    public bool OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID = null)
     {
-        object? registerInstance;
+        object? instance;
 
         try
         {
-            registerInstance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриНакопичення.{typeReg}_Список");
+            instance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриНакопичення.{typeReg}_Список");
         }
         catch (Exception ex)
         {
@@ -277,9 +277,9 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             return false;
         }
 
-        if (registerInstance != null)
+        if (instance != null)
         {
-            dynamic register = registerInstance;
+            dynamic register = instance;
 
             //Елемент який потрібно виділити в списку
             register.SelectPointerItem = uniqueID;

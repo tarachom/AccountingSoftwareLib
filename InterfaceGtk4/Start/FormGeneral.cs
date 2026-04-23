@@ -32,8 +32,7 @@ public partial class FormGeneral : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
     public NotebookFunction NotebookFunc { get; } = new();
-
-    Kernel Kernel { get; set; }
+    Kernel Kernel { get; set; } = new();
     protected Statusbar StatusBar = Statusbar.New();
 
     public void Init(Kernel kernel)

@@ -56,7 +56,6 @@ public partial class RegisterAccumulationFormJournalSmall : FormJournal
     {
         //Модель
         MultiSelection model = MultiSelection.New(Store);
-
         Grid.Model = model;
     }
 

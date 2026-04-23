@@ -44,7 +44,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// <summary>
     /// Сховище
     /// </summary>
-    public Gio.ListStore? Store { get; set; }
+    public Gio.ListStore? Store { get; set; } = null;
 
     /// <summary>
     /// Доступний тип контенту довідника

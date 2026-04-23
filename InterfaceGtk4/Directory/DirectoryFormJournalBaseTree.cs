@@ -36,8 +36,6 @@ namespace InterfaceGtk4;
 [GObject.Subclass<DirectoryFormJournalBase>]
 public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 {
-    //event EventHandler<TreeListModel?, UniqueID>? OnLoaded;
-
     /// <summary>
     /// Перевизначення сховища для нового типу даних
     /// </summary>
@@ -58,7 +56,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         if (GetType().Namespace == "InterfaceGtk4") return;
 
         GridModel();
-        Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
     }
 
     /// <summary>
@@ -110,14 +107,21 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     {
                         try
                         {
-                            //Завантаження нових даних    
-                            List<DirectoryHierarchicalRow> list = await LoadChildren(itemRow.UniqueID);
+                            List<DirectoryHierarchicalRow> list = [];
+                            if (TreeCache.TryGetValue(itemRow.UniqueID, out List<DirectoryHierarchicalRow>? cacheList))
+                                list = cacheList;
+                            else
+                            {
+                                list = await LoadChildren(itemRow.UniqueID);
+                                TreeCache.Add(itemRow.UniqueID, list);
+                            }
 
                             //Видалення
                             itemRow.Store.RemoveAll();
 
+                            //Заповнення
                             if (list.Count > 0)
-                                foreach (var item in list) //Заповнення
+                                foreach (var item in list)
                                     itemRow.Store.Append(item);
                             else
                             {
@@ -161,7 +165,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         return store;
     }
 
-    long LastTicksActivate = 0; //!!! Тимчасове рішення
+    Dictionary<UniqueID, List<DirectoryHierarchicalRow>> TreeCache { get; set; } = [];
 
     /// <summary>
     /// При активації
@@ -169,15 +173,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// <param name="position">Позиція</param>
     protected override async ValueTask GridOnActivate(uint position)
     {
-        //!!! Тимчасове рішення, бо відбувається двойна активація.
-        {
-            var ticks = DateTime.Now.Ticks;
-            var exit = false;
-            if (ticks - LastTicksActivate <= TimeSpan.TicksPerSecond) exit = true;
-            LastTicksActivate = ticks;
-            if (exit) return;
-        }
-
         TreeListRow? row = TreeList?.GetRow(position);
         DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
         if (rowItem != null)
@@ -195,8 +190,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     NotebookFunc?.ClosePage(GetName());
                     PopoverParent?.Hide();
                 }
-                else
-                    LastTicksActivate = 0;
         }
     }
 
@@ -251,78 +244,52 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
-    /*public override void AfterLoadRecords(Stack<UniqueID> parents)
+    public override async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null)
     {
-        if (PopoverParent == null)
-            NotebookFunc?.SpinnerOff(GetName());
+        #region Local Func
 
-        while (parents.Count > 0)
+        //Для пошуку верхнього рівня
+        (TreeListRow? Row, uint Position) FindTop(UniqueID select)
         {
-            UniqueID select = parents.Pop();
-            Console.WriteLine(select);
-        }
-
-
-        //Якщо є перший пустий рядок і нічого не вибрано тоді зразу його виділяю
-        if (InsertEmptyFirstRow && selectPosition == 0)
-        {
-            Grid.Model.SelectItem(0, false);
-            return;
-        }
-    }*/
-
-    /*
-        OpenTreeState openTreeState = new();
-        readonly Lock lock_ = new();
-
-        void AfterLoadRecordsNext()
-        {
-            Console.WriteLine("AfterLoadRecordsNext");
-
-            TreeListRow? treeListRow = null;
-            UniqueID? select = null;
-
-            lock (lock_)
+            for (uint i = 0; i < TreeList.GetNItems(); i++)
             {
-                if (openTreeState.CurrnetRow != null && openTreeState.Parents.Count > 0)
+                TreeListRow? row = TreeList.GetRow(i);
+                if (row != null)
                 {
-                    treeListRow = openTreeState.CurrnetRow;
-                    select = openTreeState.Parents.Pop();
-                }
-            }
-
-            if (treeListRow != null && select != null)
-            {
-                Console.WriteLine("next: " + select);
-
-                Gio.ListModel? children = treeListRow.GetChildren();
-                Console.WriteLine(children?.GetNItems());
-                for (uint i = 0; i < children?.GetNItems(); i++)
-                {
-                    TreeListRow? row = treeListRow?.GetChildRow(i);
-                    if (row != null)
+                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                    if (rowItem != null && rowItem.UniqueID.Equals(select))
                     {
-                        DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                        Console.WriteLine(rowItem?.IsLoading + " - " + rowItem?.UniqueID + " - " + rowItem?.Fields["Назва"] + " = " + select);
-                        if (rowItem != null && rowItem.UniqueID.Equals(select))
-                        {
-                            Console.WriteLine($"next ok: {i} " + select);
-                            lock (lock_)
-                            {
-                                openTreeState.CurrnetRow = row;
-                                openTreeState.Position += i;
-                            }
-
-                            row.Expanded = true;
-                            break;
-                        }
+                        row.Expanded = true;
+                        return (row, i);
                     }
                 }
             }
+
+            return (null, 0);
         }
-    */
-    public override void AfterLoadRecords(Stack<UniqueID> parents)
-    {
+
+        (TreeListRow? Row, uint Position) FindChild(TreeListRow? treeListRow, UniqueID select)
+        {
+            Gio.ListModel? children = treeListRow?.GetChildren();
+            for (uint j = 0; j < children?.GetNItems(); ++j)
+            {
+                TreeListRow? row = treeListRow?.GetChildRow(j);
+                if (row != null)
+                {
+                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
+                    if (rowItem != null && rowItem.UniqueID.Equals(select))
+                    {
+                        row.Expanded = true;
+                        return (row, j + 1);
+                    }
+                }
+            }
+
+            return (null, 0);
+        }
+
+        #endregion
+
         if (PopoverParent == null)
             NotebookFunc?.SpinnerOff(GetName());
 
@@ -333,140 +300,63 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             return;
         }
 
-        /*if (TreeList != null && parents.Count > 0)
+        if (TreeList != null && parents.Count > 0)
         {
-            UniqueID select;
-
-            lock (lock_)
+            //Підвантаження в кеш
+            foreach (var parent in parents)
             {
-                openTreeState.New(parents);
-                select = openTreeState.Parents.Pop();
-            }
+                //Для вибраного елементу не потрібно підвантажувати
+                if (parent.Equals(select))
+                    break;
 
-            for (uint i = 0; i < TreeList.GetNItems(); i++)
-            {
-                TreeListRow? row = TreeList.GetRow(i);
-                if (row != null)
+                if (!TreeCache.ContainsKey(parent))
                 {
-                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                    if (rowItem != null && rowItem.UniqueID.Equals(select))
-                    {
-                        Console.WriteLine("top: " + select);
-                        lock (lock_)
-                        {
-                            openTreeState.CurrnetRow = row;
-                            openTreeState.Position = i;
-                        }
-
-                        row.Expanded = true;
-                        break;
-                    }
+                    List<DirectoryHierarchicalRow> list = await LoadChildren(parent);
+                    if (list.Count > 0)
+                        TreeCache.Add(parent, list);
                 }
             }
-        }*/
-    }
 
-    /// <summary>
-    /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
-    /// </summary>
-    /// <param name="select">UniqueID елемента який треба виділити</param>
-    /*
-    public override void AfterLoadRecords(UniqueID? select = null)
-    {
-        if (PopoverParent == null)
-            NotebookFunc?.SpinnerOff(GetName());
+            uint position = 0;
+            int counter = 0;
+            TreeListRow? currentRow = null;
 
-        //Якщо є перший пустий рядок і нічого не вибрано тоді зразу його виділяю
-        if (InsertEmptyFirstRow && select == null)
-        {
-            Grid.Model.SelectItem(0, false);
-            return;
-        }
-
-        {
-            //Store.FindWithEqualFunc
-        }
-
-        if (TreeList != null && select != null && !select.IsEmpty())
-        {
-            
-            //Принцип роботи:
-            //    Рекусивно обходяться всі вітки дерева і якщо знайдений
-            //    елемент то обробка припиняється і вітки залишаються відкритими.
-            //    Вітки де не знайдено закриваються після обробки.
-            
-            for (uint i = 0; i < TreeList.GetNItems(); i++)
+            //Відкриття віток
+            foreach (var parent in parents)
             {
-                TreeListRow? row = TreeList.GetRow(i);
-                if (row != null)
+                if (counter == 0)
                 {
-                    DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                    if (rowItem != null && rowItem.IsFolder)
+                    (currentRow, position) = FindTop(parent);
+
+                    //Якщо верхня вітка не знайдено - продовжити крутити цикл
+                    if (currentRow == null) continue;
+                }
+                else
+                    if (currentRow != null)
                     {
-                        //Console.WriteLine(rowItem.Fields["Назва"]);
-                        row.Expanded = true;
-                        if (RecursionFind(row, i))
-                        {
-                            //Console.WriteLine($"Break recursion {i}");
-                            break;
-                        }
+                        await Task.Delay(10);
+                        (currentRow, uint pos) = FindChild(currentRow, parent);
+                        if (currentRow != null)
+                            position += pos;
                         else
-                            row.Expanded = false;
+                            break;
                     }
-                }
+                    else
+                        break;
+
+                counter++;
             }
 
-            //uint CountNItems(TreeListRow? row)
-            //{
-            //    if (row != null)
-            //    {
-            //        uint count = row.GetChildren()?.GetNItems() ?? 0;
-            //        return count + CountNItems(row.GetParent());
-            //    }
-            //    else
-            //        return 0;
-            //}
+            Grid.Model.SelectItem(position, false);
 
-            bool RecursionFind(TreeListRow row, uint position)
+            //Функція яка викликається після повного завантаження
+            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_DEFAULT, () =>
             {
-                //Console.WriteLine($"Start recursion {position}");
-
-                DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row.GetItem();
-                if (rowItem != null && rowItem.UniqueID.Equals(select))
-                {
-                    Grid.Model.SelectItem(position, false);
-                    ScrollToEnable = true;
-
-                    //Console.WriteLine($"Exit recursion {position}");
-                    return true;
-                }
-
-                Gio.ListModel? children = row.GetChildren();
-                for (uint j = 0; j < children?.GetNItems(); ++j)
-                {
-                    TreeListRow? childRow = row.GetChildRow(j);
-                    if (childRow != null)
-                    {
-                        DirectoryHierarchicalRow? rowItem2 = (DirectoryHierarchicalRow?)row.GetItem();
-                        if (rowItem2 != null && rowItem2.IsFolder)
-                        {
-                            //Console.WriteLine(rowItem2.Fields["Назва"]);
-                            childRow.Expanded = true;
-                            if (RecursionFind(childRow, ++position))
-                            {
-                                //Console.WriteLine($"Exit recursion {position}");
-                                return true;
-                            }
-                            else
-                                childRow.Expanded = false;
-                        }
-                    }
-                }
-
+                ScrollTo(position);
                 return false;
-            }
+            });
         }
-    }*/
+    }
 
     /// <summary>
     /// Переоприділення функції прокрутки
@@ -481,24 +371,19 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             {
                 //Видима частина
                 double pageSize = Grid.Vadjustment.PageSize;
-                //Console.WriteLine($"pageSize {pageSize}");
 
                 //Максимальне значення
                 double upper = Math.Round(Grid.Vadjustment.Upper);
-                //Console.WriteLine($"upper {upper}");
                 if (pageSize > 0 && upper > 0 && upper >= pageSize)
                 {
                     //Висота одного рядка
                     double rowHeidth = upper / rowCount;
-                    //Console.WriteLine($"rowHeidth {rowHeidth}");
 
                     //Висота для потрібної позиції
                     double value = rowHeidth * selectPosition;
-                    //Console.WriteLine($"value {value}");
 
                     //Розмір половини видимої частини
                     double pageSizePart = pageSize / 2;
-                    //Console.WriteLine($"pageSizePart {pageSizePart}");
 
                     if (value > pageSizePart)
                         Grid.Vadjustment.SetValue(value - pageSizePart);
@@ -507,18 +392,3 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 }
-
-/*record OpenTreeState
-{
-    public Stack<UniqueID> Parents { get; set; } = [];
-
-    public TreeListRow? CurrnetRow { get; set; }
-    public uint Position { get; set; }
-
-    public void New(Stack<UniqueID> parents)
-    {
-        Parents = parents;
-        CurrnetRow = null;
-        Position = 0;
-    }
-}*/

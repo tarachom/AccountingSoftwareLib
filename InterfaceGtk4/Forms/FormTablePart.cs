@@ -47,7 +47,7 @@ public partial class FormTablePart : Form
     /// <summary>
     /// Дані для табличного списку
     /// </summary>
-    protected virtual Gio.ListStore Store { get; }
+    protected virtual Gio.ListStore Store { get; } = Gio.ListStore.NewWithProperties([]);
 
     /// <summary>
     /// Верхній набір меню

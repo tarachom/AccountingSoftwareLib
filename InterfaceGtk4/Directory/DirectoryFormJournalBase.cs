@@ -425,10 +425,7 @@ public partial class DirectoryFormJournalBase : FormJournal
         */
     }
 
-    async void OnDelete(Button button, EventArgs args)
-    {
-        await Delete();
-    }
+    async void OnDelete(Button button, EventArgs args) => await Delete();
 
     void OnFilter(Button button, EventArgs args)
     {

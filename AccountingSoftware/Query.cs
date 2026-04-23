@@ -76,6 +76,11 @@ namespace AccountingSoftware
         public string ParentField { get; set; } = "";
 
         /// <summary>
+        /// Значення поля ParentField для самого верхнього рівня
+        /// </summary>
+        public UniqueID? ParentUid { get; set; } = null;
+
+        /// <summary>
         /// Поле ЦеПапка для ієрархічного довідника
         /// </summary>
         public string IsFolderField { get; set; } = "";
@@ -84,6 +89,12 @@ namespace AccountingSoftware
         /// Вибрати дані як плоский список для ієрархічного довідника, без рекурсії
         /// </summary>
         public bool FlatList { get; set; }
+
+        /// <summary>
+        /// Зворотня рекурсія - знизу вверх.
+        /// Стандартно зверху вниз.
+        /// </summary>
+        public bool Reverse { get; set; } = false;
 
         #endregion
 
@@ -199,7 +210,7 @@ namespace AccountingSoftware
                     //Псевдонім або назва таблиці
                     string aliasTable = string.IsNullOrEmpty(join.JoinTableAlias) ? join.JoinTable : join.JoinTableAlias;
 
-                    query += $"JOIN {join.JoinTable}{aliasTableQueryPart} ON {join.ParentTable}.{join.JoinField} = {aliasTable}.uid";
+                    query += $"JOIN {join.JoinTable}{aliasTableQueryPart} ON {join.ParentTable}.{join.JoinField} = {aliasTable}.{join.ParentField}";
                 }
             }
 
@@ -368,18 +379,16 @@ namespace AccountingSoftware
                 // Перша частина //
                 ///////////////////
 
-                //Відбір по пустому родичу, тобто верхній рівень
+                //Відбір по родичу
                 {
-                    Where whereEmpty = new(ParentField, Comparison.EQ, $"'{Guid.Empty}'", true);
+                    //Залежить від реверсу. 
+                    //Стандарно - зверху вниз працює відбір по полю родич (ParentField)
+                    //Знизу вверх - відбір по uid
+                    Where whereEmpty = new(Reverse switch { false => ParentField, true => "uid" }, Comparison.EQ, $"'{(ParentUid ?? new()).UGuid}'", true);
+
                     Where.Add(whereEmpty);
-
-                    /*Where whereIsNull = new(Comparison.OR, ParentField, Comparison.ISNULL, new(), true);
-                    Where.Add(whereIsNull);*/
-
                     queryFirst = Construct();
-
                     Where.Remove(whereEmpty);
-                    //Where.Remove(whereIsNull);
                 }
 
                 ///////////////////
@@ -400,7 +409,16 @@ namespace AccountingSoftware
 
                 //Приєднання рекурсії
                 {
-                    Join join = new("r", ParentField, Table, "", JoinType.INNER);
+                    //Залежить від реверсу
+                    Join join = Reverse switch
+                    {
+                        //Стандарно - зверху вниз
+                        false => new("r", ParentField, Table, "", JoinType.INNER),
+
+                        //Знизу вверх
+                        true => new("r", "uid", Table, "", JoinType.INNER) { ParentField = "parent" }
+                    };
+
                     Joins.Add(join);
                     queryRecursive = Construct();
                     Joins.Remove(join);
@@ -571,6 +589,12 @@ UNION ALL
         /// Основна таблиця
         /// </summary>
         public string ParentTable { get; set; } = "";
+
+        /// <summary>
+        /// Поле з основної таблиці.
+        /// Стандартно воно завжди uid
+        /// </summary>
+        public string ParentField { get; set; } = "uid";
 
         /// <summary>
         /// Тип приєднання

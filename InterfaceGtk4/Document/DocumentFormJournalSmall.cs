@@ -69,10 +69,7 @@ public partial class DocumentFormJournalSmall : DocumentFormJournalBase
         }
     }
 
-    async void OnOpenPageList(Button button, EventArgs args)
-    {
-        await OpenPageList(SelectPointerItem);
-    }
+    async void OnOpenPageList(Button button, EventArgs args) => await OpenPageList(SelectPointerItem);
 
     #endregion
 }

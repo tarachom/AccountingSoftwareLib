@@ -29,8 +29,10 @@ namespace InterfaceGtk4;
 [GObject.Subclass<FormProcessing>]
 public partial class Processing : FormProcessing
 {
+    /*
     partial void Initialize()
     {
         if (GetType().Namespace == "InterfaceGtk4") return;
     }
+    */
 }

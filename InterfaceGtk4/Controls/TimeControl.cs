@@ -48,6 +48,8 @@ public partial class TimeControl : Box
         Append(bOpenPopover);
     }
 
+    public static TimeControl New() => NewWithProperties([]);
+
     TimeSpan mValue;
     public TimeSpan Value
     {

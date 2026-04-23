@@ -29,8 +29,10 @@ namespace InterfaceGtk4;
 [GObject.Subclass<FormTablePart>]
 public partial class DocumentFormTablePart : FormTablePart
 {
+    /*
     partial void Initialize()
     {
         if (GetType().Namespace == "InterfaceGtk4") return;
     }
+    */
 }

@@ -34,13 +34,13 @@ namespace InterfaceGtk4;
 [GObject.Subclass<PointerControl>]
 public partial class CompositePointerControl : PointerControl
 {
-    protected Kernel? Kernel { get; set; }
+    protected Kernel? Kernel { get; set; } = null;
     protected string NamespaceProgram { get; set; } = "";
     protected string NamespaceCodeGeneration { get; set; } = "";
-    protected NotebookFunction? NotebookFunc { get; set; }
+    protected NotebookFunction? NotebookFunc { get; set; } = null;
 
     Assembly CallingAssembly { get; } = Assembly.GetCallingAssembly();
-    event EventHandler<UuidAndText>? PointerChanged;
+    event EventHandler<UuidAndText>? PointerChanged = null;
 
     partial void Initialize()
     {
@@ -130,9 +130,9 @@ public partial class CompositePointerControl : PointerControl
                 page = CallingAssembly.CreateInstance($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
                 */
 
-                Type? docw = CallingAssembly.GetType($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
-                if (docw != null)
-                    page = docw.GetMethod("New")?.Invoke(docw, null);
+                Type? list = CallingAssembly.GetType($"{NamespaceProgram}.{TypeCaption}_ШвидкийВибір");
+                if (list != null)
+                    page = list.GetMethod("New")?.Invoke(list, null);
             }
             catch (Exception ex)
             {

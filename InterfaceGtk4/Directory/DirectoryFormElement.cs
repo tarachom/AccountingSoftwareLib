@@ -41,7 +41,7 @@ public partial class DirectoryFormElement : FormElement
     /// <summary>
     /// Горизонтальний бокс для кнопок
     /// </summary>
-    protected Box HBoxTop = New(Orientation.Horizontal, 0);
+    protected Box HBoxTop = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок для полів

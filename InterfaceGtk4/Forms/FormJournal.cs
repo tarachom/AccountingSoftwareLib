@@ -166,7 +166,7 @@ public partial class FormJournal : Form
     /// <param name="select">UniqueID елемента який треба виділити</param>
     public virtual void AfterLoadRecords(UniqueID? select = null) { }
 
-    public virtual void AfterLoadRecords(Stack<UniqueID> parents) { }
+    public virtual async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await ValueTask.FromResult(true); }
 
     /// <summary>
     /// Прокрутка

@@ -41,17 +41,17 @@ public partial class DocumentFormElement : FormElement
     /// <summary>
     /// Горизонтальний бокс для кнопок
     /// </summary>
-    protected Box HBoxTop = New(Orientation.Horizontal, 0);
+    protected Box HBoxTop = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Горизонтальний бокс для назви
     /// </summary>
-    protected Box HBoxName = New(Orientation.Horizontal, 0);
+    protected Box HBoxName = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Горизонтальний бокс для коментаря
     /// </summary>
-    protected Box HBoxComment = New(Orientation.Horizontal, 0);
+    protected Box HBoxComment = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок (верх і низ)
@@ -61,7 +61,7 @@ public partial class DocumentFormElement : FormElement
     /// <summary>
     /// Верхній контейнер який вкладається в експандер "Реквізити шапки"
     /// </summary>
-    protected Box HBoxTopContainer = New(Orientation.Horizontal, 0);
+    protected Box HBoxTopContainer = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Блокнот для табличних частин і додаткових реквізитів
@@ -71,7 +71,7 @@ public partial class DocumentFormElement : FormElement
     /// <summary>
     /// Контейнер для додаткових реквізитів який вкладається у вкладку блокноту "Додаткові реквізити"
     /// </summary>
-    protected Box HBoxOtherContainer = New(Orientation.Horizontal, 0);
+    protected Box HBoxOtherContainer = Box.New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Кнопки "Зберегти та провести", "Провести", "Зберегти"

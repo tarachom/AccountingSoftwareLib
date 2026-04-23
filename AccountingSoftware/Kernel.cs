@@ -318,7 +318,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Інформація про помилки
         /// </summary>
-        public Exception? Exception { get; private set; }
+        public Exception? Exception { get; private set; } = null;
 
         #endregion
 
@@ -336,7 +336,7 @@ namespace AccountingSoftware
                 typeObject ?? "",
                 nameObject,
                 message,
-                'I'
+                'I' //Info
             );
 
             await ClearOutdatedMessages();
@@ -352,7 +352,7 @@ namespace AccountingSoftware
                 typeObject ?? "",
                 nameObject,
                 message,
-                'E'
+                'E' //Error
             );
 
             await ClearOutdatedMessages();
@@ -380,17 +380,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Після оновлення сесії
         /// </summary>
-        public event EventHandler? UpdateSession;
+        public event EventHandler? UpdateSession = null;
 
         /// <summary>
         /// Зміни в довідниках
         /// </summary>
-        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DirectoryObjectChanged;
+        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DirectoryObjectChanged = null;
 
         /// <summary>
         /// Зміни в документах
         /// </summary>
-        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DocumentObjectChanged;
+        public event EventHandler<Dictionary<string, List<ObjectChanged>>>? DocumentObjectChanged = null;
 
         #endregion
     }
