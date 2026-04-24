@@ -165,7 +165,10 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         return store;
     }
 
-    Dictionary<UniqueID, List<DirectoryHierarchicalRow>> TreeCache { get; set; } = [];
+    /// <summary>
+    /// 
+    /// </summary>
+    protected Dictionary<UniqueID, List<DirectoryHierarchicalRow>> TreeCache { get; set; } = [];
 
     /// <summary>
     /// При активації
@@ -350,8 +353,9 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             Grid.Model.SelectItem(position, false);
 
             //Функція яка викликається після повного завантаження
-            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_DEFAULT, () =>
+            GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
+                Console.WriteLine(position);
                 ScrollTo(position);
                 return false;
             });
