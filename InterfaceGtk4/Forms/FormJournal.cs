@@ -164,7 +164,7 @@ public partial class FormJournal : Form
     /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
     /// </summary>
     /// <param name="select">UniqueID елемента який треба виділити</param>
-    public virtual void AfterLoadRecords(UniqueID? select = null) { }
+    //public virtual void AfterLoadRecords(UniqueID? select = null) { }
 
     public virtual async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await ValueTask.FromResult(true); }
 

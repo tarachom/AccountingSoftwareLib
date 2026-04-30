@@ -82,7 +82,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         await BeforeSetValue();
 
         await LoadRecords();
-
         PopoverParent?.OnHide += (_, _) => GC.Collect();
     }
 
@@ -95,6 +94,8 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     {
         DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
         Gio.ListStore? store = null;
+
+        //Console.WriteLine("CreateFunc: " + itemRow.UniqueID + " = " + itemRow.IsLoading);
 
         //Якщо це вітка для завантаження
         if (itemRow.IsLoading)
@@ -109,11 +110,15 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                         {
                             List<DirectoryHierarchicalRow> list = [];
                             if (TreeCache.TryGetValue(itemRow.UniqueID, out List<DirectoryHierarchicalRow>? cacheList))
+                            {
                                 list = cacheList;
+                                //Console.WriteLine("З кешу");
+                            }
                             else
                             {
                                 list = await LoadChildren(itemRow.UniqueID);
                                 TreeCache.Add(itemRow.UniqueID, list);
+                                //Console.WriteLine("В кеш");
                             }
 
                             //Видалення
@@ -136,6 +141,8 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                     }
 
                     f();
+
+                    //Console.WriteLine("CreateFunc run async " + itemRow.UniqueID);
                     return false;
                 });
             }
@@ -309,8 +316,8 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             foreach (var parent in parents)
             {
                 //Для вибраного елементу не потрібно підвантажувати
-                if (parent.Equals(select))
-                    break;
+                //if (parent.Equals(select))
+                //    break;
 
                 if (!TreeCache.ContainsKey(parent))
                 {

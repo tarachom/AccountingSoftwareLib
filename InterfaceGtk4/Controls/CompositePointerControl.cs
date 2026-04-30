@@ -293,7 +293,7 @@ public partial class CompositePointerControl : PointerControl
     public bool TypeSelectSensetive { get; set; } = true;
 
     /// <summary>
-    /// Функція для стоворення списків вибору типу
+    /// Функція для створення списків вибору типу
     /// </summary>
     /// <param name="CallBackSelect">Функція відображення вибраного типу</param>
     /// <returns>Вертикальний Box</returns>
