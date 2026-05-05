@@ -39,7 +39,7 @@ public partial class LabelTablePartCell : Box
         SetOrientation(Orientation.Vertical);
 
         hBox.Valign = Align.Center;
-        hBox.Vexpand = true;
+        //hBox.Vexpand = true;
 
         hBox.Append(label);
 

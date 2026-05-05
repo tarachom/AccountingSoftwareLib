@@ -39,10 +39,10 @@ public partial class TextTablePartCell : Box
         SetOrientation(Orientation.Vertical);
 
         hBox.Valign = Align.Center;
-        hBox.Vexpand = true;
+        //hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => OnСhanged?.Invoke();
-        entry.Vexpand = entry.Hexpand = true;
+        /*entry.Vexpand = */entry.Hexpand = true;
         hBox.Append(entry);
 
         Append(hBox);

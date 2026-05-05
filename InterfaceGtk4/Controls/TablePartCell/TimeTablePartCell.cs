@@ -39,10 +39,10 @@ public partial class TimeTablePartCell : Box
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox.Vexpand = true;
+        //hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => IsValid();
-        entry.Vexpand = entry.Hexpand = true;
+        /*entry.Vexpand = */entry.Hexpand = true;
         hBox.Append(entry);
 
         //Select

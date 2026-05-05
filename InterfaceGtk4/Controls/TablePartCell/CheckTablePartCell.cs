@@ -38,7 +38,7 @@ public partial class CheckTablePartCell : Box
     {
         SetOrientation(Orientation.Vertical);
 
-        hBox.Vexpand = true;
+        //hBox.Vexpand = true;
 
         Check.OnToggled += (_, _) => OnСhanged?.Invoke();
         hBox.Append(Check);

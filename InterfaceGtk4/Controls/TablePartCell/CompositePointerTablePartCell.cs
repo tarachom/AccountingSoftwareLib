@@ -28,11 +28,10 @@ using System.Reflection;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Контрол для вибору з типом який потрібно вибрати.
-/// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
+/// Клітинка табличної частини - ...
 /// </summary>
-[GObject.Subclass<PointerControl>]
-public partial class CompositePointerControl : PointerControl
+[GObject.Subclass<PointerTablePartCell>]
+public partial class CompositePointerControlTablePartCell : PointerTablePartCell
 {
     protected Kernel? Kernel { get; set; } = null;
     protected string NamespaceProgram { get; set; } = "";
@@ -44,18 +43,18 @@ public partial class CompositePointerControl : PointerControl
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації для цього класу
+        //Ігнорувати виклик ініціалізації
         if (GetType().Namespace == "InterfaceGtk4") return;
 
         PointerChanged += OnPointerChanged;
 
-        WidthPresentation = 300;
-        Caption = "Основа:";
+        pointer = new UuidAndText();
 
         Button bTypeInfo = Button.NewFromIconName("go-down");
-        bTypeInfo.MarginStart = 2;
         bTypeInfo.OnClicked += OnTypeInfo;
-        Append(bTypeInfo);
+        bTypeInfo.TooltipText = "Тип";
+        bTypeInfo.AddCssClass("button");
+        hBox.Append(bTypeInfo);
     }
 
     #region Virtual & Abstract Function
@@ -75,6 +74,7 @@ public partial class CompositePointerControl : PointerControl
         {
             pointer = value;
             PointerChanged?.Invoke(this, pointer);
+            OnSelect?.Invoke();
         }
     }
     UuidAndText pointer = new();
@@ -115,7 +115,7 @@ public partial class CompositePointerControl : PointerControl
     /// </summary>
     public string BoundConfType { get; set; } = "";
 
-    protected override void OpenSelect(Button button, EventArgs args)
+    protected override void Select(Button button, EventArgs args)
     {
         //Якщо вибраний тип тоді відкриваю журнал
         if (PointerName == "Документи" || PointerName == "Довідники")
@@ -182,8 +182,6 @@ public partial class CompositePointerControl : PointerControl
             //Якщо тип не вибраний - тоді відкриваю вікно для вибору
             SelectType(button);
     }
-
-    protected override void OnClear(Button button, EventArgs args) => Pointer = new UuidAndText(GetBasisName());
 
     protected virtual void OnTypeInfo(Button button, EventArgs args)
     {

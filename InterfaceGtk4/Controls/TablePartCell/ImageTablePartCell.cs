@@ -40,7 +40,7 @@ public partial class ImageTablePartCell : Box
         SetOrientation(Orientation.Vertical);
 
         hBox.Valign = hBox.Halign = Align.Center;
-        hBox.Vexpand = true;
+        //hBox.Vexpand = true;
         hBox.Append(img);
 
         Append(hBox);

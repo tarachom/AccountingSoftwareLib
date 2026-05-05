@@ -124,9 +124,28 @@ namespace AccountingSoftware
             return result ? new NameAndText(pointerGroup, pointerType) : new NameAndText();
         }
 
+        /// <summary>
+        /// Порівняння
+        /// </summary>
+        public override bool Equals(object? obj)
+        {
+            return obj != null && obj is UuidAndText uuidAndText &&
+                uuidAndText.Text == Text && uuidAndText.Uuid == Uuid;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Uuid, Text);
+        }
+
         public override string ToString()
         {
             return $"{Uuid}:{Text}";
+        }
+
+        public UuidAndText Copy()
+        {
+            return new(Uuid, Text);
         }
     }
 }
