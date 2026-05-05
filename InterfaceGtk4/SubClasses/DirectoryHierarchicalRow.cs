@@ -66,6 +66,11 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     }
     ConfigurationDirectories.HierarchicalContentType allowedContent_ = ConfigurationDirectories.HierarchicalContentType.Folders;
 
+    /// <summary>
+    /// Унікальний ідентифікатор Родича (Використовується для динамічного підвантаження)
+    /// </summary>
+    public UniqueID Parent { get; set; } = UniqueID.NewEmpty();
+
     #endregion
 
     /// <summary>

@@ -435,7 +435,7 @@ public partial class FormJournal : Form
     /// Довантаження даних в дерево
     /// </summary>
     /// <param name="parent">Вітка родич</param>
-    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID parent) => await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
+    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID[] parents) => await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
 
     /// <summary>
     /// Пустий рядок

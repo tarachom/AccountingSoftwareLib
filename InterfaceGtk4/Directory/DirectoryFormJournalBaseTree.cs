@@ -83,6 +83,12 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         await LoadRecords();
         PopoverParent?.OnHide += (_, _) => GC.Collect();
+
+        /*
+        var gtype = Store.GetItemType();
+        var typeName = GObject.Internal.Functions.TypeName(gtype);
+        Console.WriteLine(typeName.ConvertToString());
+        */
     }
 
     /// <summary>
@@ -116,7 +122,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                             }
                             else
                             {
-                                list = await LoadChildren(itemRow.UniqueID);
+                                list = await LoadChildren([itemRow.UniqueID]);
                                 TreeCache.Add(itemRow.UniqueID, list);
                                 //Console.WriteLine("В кеш");
                             }
@@ -312,19 +318,17 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
         if (TreeList != null && parents.Count > 0)
         {
-            //Підвантаження в кеш
-            foreach (var parent in parents)
+            //Кеш
             {
-                //Для вибраного елементу не потрібно підвантажувати
-                //if (parent.Equals(select))
-                //    break;
+                //Очищення повне
+                TreeCache.Clear();
 
-                if (!TreeCache.ContainsKey(parent))
-                {
-                    List<DirectoryHierarchicalRow> list = await LoadChildren(parent);
-                    if (list.Count > 0)
-                        TreeCache.Add(parent, list);
-                }
+                //Підвантаження в кеш
+                foreach (var row in await LoadChildren([.. parents]))
+                    if (TreeCache.TryGetValue(row.Parent, out List<DirectoryHierarchicalRow>? cacheList))
+                        cacheList.Add(row);
+                    else
+                        TreeCache.Add(row.Parent, [row]);
             }
 
             uint position = 0;
@@ -362,7 +366,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             //Функція яка викликається після повного завантаження
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
-                Console.WriteLine(position);
+                //Console.WriteLine(position);
                 ScrollTo(position);
                 return false;
             });

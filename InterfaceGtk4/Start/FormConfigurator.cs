@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gio;
 using AccountingSoftware;
 using InterfaceGtkLib;
 
@@ -47,6 +48,10 @@ public partial class FormConfigurator : Window
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
+            SetTitlebar(headerBar);
+
+            //Меню
+            CreateTopMenu(headerBar);
 
             //Назва
             {
@@ -62,8 +67,6 @@ public partial class FormConfigurator : Window
 
                 headerBar.TitleWidget = box;
             }
-
-            Titlebar = headerBar;
         }
 
         Box vBox = Box.New(Orientation.Vertical, 0);
@@ -92,6 +95,84 @@ public partial class FormConfigurator : Window
     protected virtual async ValueTask PageEnum(string name, bool isNew = false) { }
     protected virtual async ValueTask PageRegisterInformation(string name, bool isNew = false) { }
     protected virtual async ValueTask PageRegisterAccumulation(string name, bool isNew = false) { }
+
+    protected virtual async ValueTask PageSaveConfiguration() { }
+
+    #endregion
+
+    #region TopMenu
+
+    void CreateTopMenu(HeaderBar headerBar)
+    {
+        if (Application == null) return;
+
+        {
+            SimpleAction action = SimpleAction.New("save_configuration", null);
+            action.OnActivate += async (_, _) => await PageSaveConfiguration();
+            Application.AddAction(action);
+        }
+
+        {
+            SimpleAction action = SimpleAction.New("settings_configuration", null);
+            action.OnActivate += async (_, _) => await PageSaveConfiguration();
+            Application.AddAction(action);
+        }
+
+        {
+            SimpleAction action = SimpleAction.New("fulltext_search_configuration", null);
+            action.OnActivate += async (_, _) => await PageSaveConfiguration();
+            Application.AddAction(action);
+        }
+
+        {
+            SimpleAction action = SimpleAction.New("quit", null);
+            action.OnActivate += (_, _) => Application.Quit();
+            Application.AddAction(action);
+        }
+
+        Menu menu = Menu.New();
+
+        //Конфігурація
+        {
+            Menu sub = Menu.New();
+            sub.Append("Зберегти конфігурацію", "app.save_configuration");
+          
+            Menu section = Menu.New();
+            section.Append("Вигрузити конфігурацію в файл", null);
+            section.Append("Загрузити конфігурацію з файлу", null);
+            section.Append("Параметри конфігураціЇ", "app.settings_configuration");
+            section.Append("Повнотекстовий пошук", "app.fulltext_search_configuration");
+            sub.AppendSection(null, section);
+
+            menu.AppendSubmenu("Конфігурація", sub);
+        }
+
+        //Користувачі
+        {
+            Menu sub = Menu.New();
+            sub.Append("Список користувачів", null);
+            sub.Append("Додати нового", null);
+
+            menu.AppendSubmenu("Користувачі", sub);
+        }
+
+        //Вигрузка і загрузка даних
+        {
+            Menu sub = Menu.New();
+            sub.Append("Вигрузити дані", null);
+            sub.Append("Загрузити дані", null);
+
+            menu.AppendSubmenu("Вигрузка і загрузка даних", sub);
+        }
+
+        menu.Append("Вихід", "app.quit");
+
+        MenuButton button = MenuButton.New();
+        button.SetIconName("open-menu-symbolic");
+        button.SetMenuModel(menu);
+
+        headerBar.PackStart(button);
+    }
 
     #endregion
 
