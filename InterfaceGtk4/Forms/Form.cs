@@ -102,12 +102,14 @@ public partial class Form : Box
     /// <param name="parent">Бокс куди буде доданий лінк</param>
     /// <param name="caption"><Назва/param>
     /// <param name="func">Процедура</param>
-    public static void CreateCaptionLink(Box parent, string caption, Action? func = null)
+    public static void CreateCaptionLink(Box parent, string caption, Action? func = null, Align halign = Align.Center)
     {
         if (func != null)
         {
             LinkButton linkButton = LinkButton.New("");
+            linkButton.Halign = halign;
             linkButton.Label = caption;
+            linkButton.MarginStart = linkButton.MarginTop = linkButton.MarginBottom = linkButton.MarginEnd = 5;
 
             parent.Append(linkButton);
 
@@ -120,7 +122,8 @@ public partial class Form : Box
         else
         {
             Label label = Label.New(caption);
-            label.MarginTop = label.MarginBottom = 5;
+            label.Halign = halign;
+            label.MarginStart = label.MarginTop = label.MarginBottom = label.MarginEnd = 5;
 
             parent.Append(label);
         }

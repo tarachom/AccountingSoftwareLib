@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using Gio;
 using AccountingSoftware;
 using InterfaceGtkLib;
 
@@ -46,6 +47,10 @@ public partial class FormGeneral : Window
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
+            SetTitlebar(headerBar);
+
+            //Меню
+            CreateTopMenu(headerBar);
 
             //Назва
             {
@@ -61,8 +66,6 @@ public partial class FormGeneral : Window
 
                 headerBar.TitleWidget = box;
             }
-
-            Titlebar = headerBar;
 
             //Блок кнопок у шапці головного вікна
             {
@@ -148,6 +151,32 @@ public partial class FormGeneral : Window
     protected virtual void MenuJournals(Box vBox) { }
     protected virtual void MenuReports(Box vBox) { }
     protected virtual void MenuRegisters(Box vBox) { }
+
+    #endregion
+
+    #region TopMenu
+
+    void CreateTopMenu(HeaderBar headerBar)
+    {
+        if (Application == null) return;
+
+        //Команда вихід
+        {
+            SimpleAction action = SimpleAction.New("quit", null);
+            action.OnActivate += (_, _) => Application.Quit();
+            Application.AddAction(action);
+        }
+
+        Menu menu = Menu.New();
+        menu.Append("Вихід", "app.quit");
+
+        //Кнопка для меню
+        MenuButton button = MenuButton.New();
+        button.SetIconName("open-menu-symbolic");
+        button.SetMenuModel(menu);
+
+        headerBar.PackStart(button);
+    }
 
     #endregion
 

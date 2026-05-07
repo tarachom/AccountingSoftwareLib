@@ -54,7 +54,7 @@ public partial class FormJournal : Form
     /// <summary>
     /// Табличний список
     /// </summary>
-    public ColumnView Grid { get; } = ColumnView.New(null);
+    public ColumnView Grid { get; } = ColumnView.NewWithProperties([]);
 
     /// <summary>
     /// Дані для табличного списку

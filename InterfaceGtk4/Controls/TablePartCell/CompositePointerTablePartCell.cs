@@ -323,9 +323,10 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
         if (!string.IsNullOrEmpty(BoundConfType))
         {
             string[] bound_conf_type = BoundConfType.Split(".", StringSplitOptions.None);
-            if (bound_conf_type.Length == 3)
+            if (bound_conf_type.Length == 4)
             {
-                string group = bound_conf_type[0], element = bound_conf_type[1], field = bound_conf_type[2];
+                string group = bound_conf_type[0], element = bound_conf_type[1],
+                    tablepart = bound_conf_type[2], field = bound_conf_type[3];
 
                 //Внутрішня функція
                 void Fill(ConfigurationField configurationField)
@@ -339,12 +340,14 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
                 if (group == "Довідники")
                 {
                     if (Kernel.Conf.Directories.TryGetValue(element, out ConfigurationDirectories? configurationDirectories) &&
-                        configurationDirectories.Fields.TryGetValue(field, out ConfigurationField? configurationField))
+                        configurationDirectories.TabularParts.TryGetValue(tablepart, out ConfigurationTablePart? configurationTablePart) &&
+                        configurationTablePart.Fields.TryGetValue(field, out ConfigurationField? configurationField))
                         Fill(configurationField);
                 }
                 else if (group == "Документи")
                     if (Kernel.Conf.Documents.TryGetValue(element, out ConfigurationDocuments? configurationDocuments) &&
-                        configurationDocuments.Fields.TryGetValue(field, out ConfigurationField? configurationField))
+                        configurationDocuments.TabularParts.TryGetValue(tablepart, out ConfigurationTablePart? configurationTablePart) &&
+                        configurationTablePart.Fields.TryGetValue(field, out ConfigurationField? configurationField))
                         Fill(configurationField);
             }
         }
@@ -382,11 +385,11 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
         }
 
         //Довідники
+        if (!NotUseDirectories)
         {
             string pinterName = "Довідники";
 
             Box vBox = New(Orientation.Vertical, 0);
-            vBox.MarginEnd = 10;
             hBox.Append(vBox);
 
             Label label = Label.New(pinterName);
@@ -415,23 +418,24 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
 
             vBox.Append(scroll);
 
-            if (!NotUseDirectories)
-                if (AllowDirectories.Count != 0)
-                {
-                    foreach (string name in AllowDirectories)
-                        if (Kernel.Conf.Directories.TryGetValue(name, out ConfigurationDirectories? directories))
-                            AddToList(list, pinterName, directories.Name, directories.FullName);
-                }
-                else
-                    foreach (ConfigurationDirectories directories in Kernel.Conf.Directories.Values)
+            if (AllowDirectories.Count != 0)
+            {
+                foreach (string name in AllowDirectories)
+                    if (Kernel.Conf.Directories.TryGetValue(name, out ConfigurationDirectories? directories))
                         AddToList(list, pinterName, directories.Name, directories.FullName);
+            }
+            else
+                foreach (ConfigurationDirectories directories in Kernel.Conf.Directories.Values)
+                    AddToList(list, pinterName, directories.Name, directories.FullName);
         }
 
         //Документи
+        if (!NotUseDocuments)
         {
             string pinterName = "Документи";
 
             Box vBox = New(Orientation.Vertical, 0);
+            vBox.MarginStart = 10;
             hBox.Append(vBox);
 
             Label label = Label.New(pinterName);
@@ -460,16 +464,15 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
 
             vBox.Append(scroll);
 
-            if (!NotUseDocuments)
-                if (AllowDocuments.Count != 0)
-                {
-                    foreach (string name in AllowDocuments)
-                        if (Kernel.Conf.Documents.TryGetValue(name, out ConfigurationDocuments? documents))
-                            AddToList(list, pinterName, documents.Name, documents.FullName);
-                }
-                else
-                    foreach (ConfigurationDocuments documents in Kernel.Conf.Documents.Values)
+            if (AllowDocuments.Count != 0)
+            {
+                foreach (string name in AllowDocuments)
+                    if (Kernel.Conf.Documents.TryGetValue(name, out ConfigurationDocuments? documents))
                         AddToList(list, pinterName, documents.Name, documents.FullName);
+            }
+            else
+                foreach (ConfigurationDocuments documents in Kernel.Conf.Documents.Values)
+                    AddToList(list, pinterName, documents.Name, documents.FullName);
         }
 
         return vBoxContainer;

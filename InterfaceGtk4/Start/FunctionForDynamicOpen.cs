@@ -223,11 +223,18 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
     public bool OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID = null)
     {
-        object? instance;
+        object? instance = null;
 
         try
         {
+            /*
+            Старий варіант
             instance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриВідомостей.{typeReg}_Список");
+            */
+
+            Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.РегістриВідомостей.{typeReg}_Список");
+            if (list != null)
+                instance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
         }
         catch (Exception ex)
         {
@@ -265,11 +272,18 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
     public bool OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID = null)
     {
-        object? instance;
+        object? instance = null;
 
         try
         {
+            /*
+            Старий варіант
             instance = ExecutingAssembly.CreateInstance($"{NamespaceProgram}.РегістриНакопичення.{typeReg}_Список");
+            */
+
+            Type? list = ExecutingAssembly.GetType($"{NamespaceProgram}.РегістриНакопичення.{typeReg}_Список");
+            if (list != null)
+                instance = list.InvokeMember("New", BindingFlags.InvokeMethod, null, list, null);
         }
         catch (Exception ex)
         {

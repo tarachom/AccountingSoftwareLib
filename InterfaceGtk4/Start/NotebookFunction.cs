@@ -32,12 +32,12 @@ public class NotebookFunction
     /// <summary>
     /// Основний блокнот
     /// </summary>
-    Notebook? Notebook { get; set; }
+    Notebook? Notebook { get; set; } = null;
 
     /// <summary>
     /// Основне вікно
     /// </summary>
-    public Window? BasicForm { get; private set; }
+    public Window? BasicForm { get; private set; } = null;
 
     /// <summary>
     /// Історія переключення вкладок для блокноту
@@ -85,6 +85,7 @@ public class NotebookFunction
         contrKey.OnKeyReleased += async (sender, args) =>
         {
             if (Notebook.IsFocus())
+                //Закриття сторінки після натиснення Escape
                 if (args.Keyval == (uint)Key.Escape)
                 {
                     Widget? wg = Notebook.GetNthPage(Notebook.GetCurrentPage());
