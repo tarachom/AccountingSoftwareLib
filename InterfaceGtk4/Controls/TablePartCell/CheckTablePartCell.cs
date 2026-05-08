@@ -51,10 +51,7 @@ public partial class CheckTablePartCell : Box
 
     public bool Value
     {
-        get
-        {
-            return value_;
-        }
+        get => value_;
         set
         {
             if (value_ != value)

@@ -41,7 +41,8 @@ public partial class IntegerTablePartCell : Box
         //hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => IsValid();
-        /*entry.Vexpand = */entry.Hexpand = true;
+        /*entry.Vexpand = */
+        entry.Hexpand = true;
         entry.SetAlignment(0.8f);
         hBox.Append(entry);
 
@@ -53,10 +54,7 @@ public partial class IntegerTablePartCell : Box
 
     public int Value
     {
-        get
-        {
-            return value_;
-        }
+        get => value_;
         set
         {
             if (value_ != value)

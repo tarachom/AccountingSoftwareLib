@@ -202,6 +202,8 @@ public partial class LogMessage : Box
         ListBoxRow row = ListBoxRow.New();
         row.Child = hBoxInfo;
 
+        listBox.Append(row);
+
         if (appendEmpty) CreateEmptyMsg();
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
 
@@ -225,6 +227,8 @@ public partial class LogMessage : Box
 
         ListBoxRow row = ListBoxRow.New();
         row.Child = hBoxInfo;
+
+        listBox.Append(row);
 
         if (appendEmpty) CreateEmptyMsg();
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;

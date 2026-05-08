@@ -41,7 +41,8 @@ public partial class ComboTextTablePartCell : Box
         //hBox.Vexpand = true;
 
         Combo.OnChanged += (_, _) => OnСhanged?.Invoke();
-        /*Combo.Vexpand = */Combo.Hexpand = true;
+        /*Combo.Vexpand = */
+        Combo.Hexpand = true;
         hBox.Append(Combo);
 
         Append(hBox);
@@ -52,10 +53,7 @@ public partial class ComboTextTablePartCell : Box
 
     public string Value
     {
-        get
-        {
-            return value_;
-        }
+        get => value_;
         set
         {
             if (value_ != value)

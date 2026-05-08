@@ -42,7 +42,8 @@ public partial class TimeTablePartCell : Box
         //hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => IsValid();
-        /*entry.Vexpand = */entry.Hexpand = true;
+        /*entry.Vexpand = */
+        entry.Hexpand = true;
         hBox.Append(entry);
 
         //Select
@@ -70,10 +71,7 @@ public partial class TimeTablePartCell : Box
 
     public TimeSpan Value
     {
-        get
-        {
-            return value_;
-        }
+        get => value_;
         set
         {
             if (value_ != value)
