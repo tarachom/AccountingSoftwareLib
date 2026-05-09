@@ -38,11 +38,10 @@ public partial class IntegerTablePartCell : Box
     {
         SetOrientation(Orientation.Vertical);
 
-        //hBox.Vexpand = true;
+        hBox.Vexpand = true;
 
         entry.OnChanged += (_, _) => IsValid();
-        /*entry.Vexpand = */
-        entry.Hexpand = true;
+        entry.Vexpand = entry.Hexpand = true;
         entry.SetAlignment(0.8f);
         hBox.Append(entry);
 

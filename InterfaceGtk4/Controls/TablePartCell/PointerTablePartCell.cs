@@ -42,7 +42,7 @@ public partial class PointerTablePartCell : Box
 
         SetOrientation(Orientation.Vertical);
 
-        hBox.Hexpand = /*hBox.Vexpand = */true;
+        hBox.Hexpand = hBox.Vexpand = true;
 
         label.Halign = Align.Start;
         label.AddCssClass("text");
