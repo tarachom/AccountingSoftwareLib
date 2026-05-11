@@ -66,6 +66,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Помилки устарівша (!!! Не використовувати)
         /// </summary>
+        [Obsolete("Не використовувати. Нова tab_special_message_error_or_info")]
         public static readonly string MessageErrorOld = "tab_special_message_error";
 
         /// <summary>
@@ -110,5 +111,17 @@ namespace AccountingSoftware
             TablePartVersionsHistory,
             TablePartVersionsHashData
         ];
+    }
+
+    /// <summary>
+    /// Назви спеціальних представленнь
+    /// </summary>
+    public static class SpecialView
+    {
+        /// <summary>
+        /// Представлення для композитного типу даних.
+        /// Збирає з усіх довідників та документів єдине представлення і використовується для композитного типу даних
+        /// </summary>
+        public static readonly string CompisitePresentation = "view_special_presentation";
     }
 }

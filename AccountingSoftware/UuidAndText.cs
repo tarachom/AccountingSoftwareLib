@@ -89,6 +89,11 @@ namespace AccountingSoftware
         public string Text { get; set; } = "";
 
         /// <summary>
+        /// Перезентація або Назва
+        /// </summary>
+        public string Name { get; set; } = "";
+
+        /// <summary>
         /// Дані у XML форматі
         /// </summary>
         /// <returns></returns>

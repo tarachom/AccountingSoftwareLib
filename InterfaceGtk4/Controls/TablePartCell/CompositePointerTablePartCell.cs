@@ -72,9 +72,12 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
         get => pointer;
         set
         {
-            pointer = value;
-            PointerChanged?.Invoke(this, pointer);
-            OnSelect?.Invoke();
+            if (!pointer.Equals(value))
+            {
+                pointer = value;
+                PointerChanged?.Invoke(this, pointer);
+                OnSelect?.Invoke();
+            }
         }
     }
     UuidAndText pointer = new();
@@ -86,11 +89,25 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
     {
         if (pointer != null)
         {
-            CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
+            //Якщо вказане значення для поля Name значить перезентація вже задана і не потрібно здійснювати додатковий пошук
+            if (!string.IsNullOrEmpty(pointer.Name))
+            {
+                (bool result, string pointerGroup, string pointerType) = Configuration.PointerParse(pointer.Text, out Exception? _);
+                if (result)
+                {
+                    Presentation = pointer.Name;
+                    PointerName = pointerGroup;
+                    TypeCaption = pointerType;
+                }
+            }
+            else
+            {
+                CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
 
-            Presentation = record.Result;
-            PointerName = record.Pointer;
-            TypeCaption = record.Type;
+                pointer.Name = Presentation = record.Result;
+                PointerName = record.Pointer;
+                TypeCaption = record.Type;
+            }
         }
         else
             Presentation = PointerName = TypeCaption = "";
