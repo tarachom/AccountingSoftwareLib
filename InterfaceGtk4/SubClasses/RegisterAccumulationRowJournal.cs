@@ -62,7 +62,12 @@ public partial class RegisterAccumulationRowJournal : IRowSubclassJournal
     /// <summary>
     /// Тип власника
     /// </summary>
-    public NameAndText? OwnerType { get; set; }
+    public NameAndText? OwnerType { get; set; } = null;
+
+    /// <summary>
+    /// Номер рядка документу
+    /// </summary>
+    public int OwnerLineNum { get; set; } = 0;
 
     /// <summary>
     /// Колекція полів

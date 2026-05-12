@@ -145,7 +145,8 @@ namespace AccountingSoftware
                 new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
                 new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
                 new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
-                new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника")
+                new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника"),
+                new ConfigurationPredefinedField("ownerlinenum", "integer", false, false, false, "Номер рядка документу"),
             ];
         }
 

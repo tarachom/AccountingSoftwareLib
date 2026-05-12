@@ -218,7 +218,7 @@ namespace AccountingSoftware
         #region RegisterAccumulation
 
         ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
         ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 

@@ -32,5 +32,10 @@ namespace AccountingSoftware
 		/// Прибуток true, Витрата false
 		/// </summary>
 		public bool Income { get; set; }
+
+		/// <summary>
+		/// Номер рядка документу
+		/// </summary>
+		public int OwnerLineNum { get; set; } = 0;
 	}
 }

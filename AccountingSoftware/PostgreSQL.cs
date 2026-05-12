@@ -3763,12 +3763,12 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
-                string query_field = "uid, period, income, owner, ownertype";
-                string query_values = "@uid, @period, @income, @owner, @ownertype";
+                string query_field = "uid, period, income, owner, ownertype, ownerlinenum";
+                string query_values = "@uid, @period, @income, @owner, @ownertype, @ownerlinenum";
 
                 if (fieldArray.Length != 0)
                 {
@@ -3786,6 +3786,7 @@ FROM
                 command.Parameters.AddWithValue("income", income);
                 command.Parameters.AddWithValue("owner", owner);
                 command.Parameters.AddWithValue("ownertype", ownertype);
+                command.Parameters.AddWithValue("ownerlinenum", ownerlinenum);
 
                 foreach (string field in fieldArray)
                     command.Parameters.AddWithValue(field, fieldValue[field]);
