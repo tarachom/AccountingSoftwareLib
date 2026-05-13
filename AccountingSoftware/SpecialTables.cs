@@ -116,12 +116,11 @@ namespace AccountingSoftware
     /// <summary>
     /// Назви спеціальних представленнь
     /// </summary>
-    public static class SpecialView
+    public static class SpecialFunc
     {
         /// <summary>
-        /// Представлення для композитного типу даних.
-        /// Збирає з усіх довідників та документів єдине представлення і використовується для композитного типу даних
+        /// Представлення для композитного типу даних
         /// </summary>
-        public static readonly string CompisitePresentation = "view_special_presentation";
+        public static readonly string CompisitePresentation = "func_special_composite_presentation";
     }
 }
