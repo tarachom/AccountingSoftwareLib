@@ -112,6 +112,7 @@ public partial class FormConfigurator : Window
             Application.AddAction(action);
         }
 
+        /*
         {
             SimpleAction action = SimpleAction.New("settings_configuration", null);
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
@@ -123,6 +124,7 @@ public partial class FormConfigurator : Window
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
             Application.AddAction(action);
         }
+        */
 
         {
             SimpleAction action = SimpleAction.New("quit", null);
@@ -137,16 +139,19 @@ public partial class FormConfigurator : Window
             Menu sub = Menu.New();
             sub.Append("Зберегти конфігурацію", "app.save_configuration");
           
+            /*
             Menu section = Menu.New();
             section.Append("Вигрузити конфігурацію в файл", null);
             section.Append("Загрузити конфігурацію з файлу", null);
             section.Append("Параметри конфігураціЇ", "app.settings_configuration");
             section.Append("Повнотекстовий пошук", "app.fulltext_search_configuration");
             sub.AppendSection(null, section);
+            */
 
             menu.AppendSubmenu("Конфігурація", sub);
         }
 
+        /*
         //Користувачі
         {
             Menu sub = Menu.New();
@@ -155,7 +160,7 @@ public partial class FormConfigurator : Window
 
             menu.AppendSubmenu("Користувачі", sub);
         }
-
+        
         //Вигрузка і загрузка даних
         {
             Menu sub = Menu.New();
@@ -164,6 +169,7 @@ public partial class FormConfigurator : Window
 
             menu.AppendSubmenu("Вигрузка і загрузка даних", sub);
         }
+        */
 
         menu.Append("Вихід", "app.quit");
 
