@@ -40,7 +40,7 @@ public partial class RegisterAccumulationRowJournal : IRowSubclassJournal
     public UniqueID UniqueID { get; set; } = new();
 
     /// <summary>
-    /// Проведений
+    /// Прихід / Розхід
     /// </summary>
     public bool Income { get; set; } = false;
 

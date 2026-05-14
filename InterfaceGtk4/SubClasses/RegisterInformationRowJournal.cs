@@ -39,12 +39,6 @@ public partial class RegisterInformationRowJournal : IRowSubclassJournal
     /// </summary>
     public UniqueID UniqueID { get; set; } = new();
 
-    /*
-    /// <summary>
-    /// Проведений
-    /// </summary>
-    public bool Income { get; set; } = false;
-
     /// <summary>
     /// Період
     /// </summary>
@@ -63,8 +57,7 @@ public partial class RegisterInformationRowJournal : IRowSubclassJournal
     /// <summary>
     /// Тип власника
     /// </summary>
-    public NameAndText? OwnerType { get; set; }
-    */
+    public NameAndText? OwnerType { get; set; } = null;
 
     /// <summary>
     /// Колекція полів

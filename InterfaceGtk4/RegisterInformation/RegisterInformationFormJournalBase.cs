@@ -27,15 +27,15 @@ using Gdk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Регістри-ФормаЖурналБазовий
+/// РегістриВідомостейФормаЖурналБазовий
 /// </summary>
 [GObject.Subclass<FormJournal>]
-public partial class RegisterAccumulationFormJournalBase : FormJournal
+public partial class RegisterInformationFormJournalBase : FormJournal
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
     /// </summary>
-    public override Gio.ListStore Store { get; } = Gio.ListStore.New(RegisterAccumulationRowJournal.GetGType());
+    public override Gio.ListStore Store { get; } = Gio.ListStore.New(RegisterInformationRowJournal.GetGType());
 
     /// <summary>
     /// Верхній бокс для додаткових кнопок

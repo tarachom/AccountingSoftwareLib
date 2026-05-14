@@ -3778,7 +3778,6 @@ namespace AccountingSoftware
         /// <param name="pathToXML">Шлях до ХМЛ файлу, який згенерований функцією Comparison</param>
         /// <param name="pathToTemplate">Шлях до шаблону</param>
         /// <param name="pathToSaveCode">Шлях файлу куди буде збережений вихідний ХМЛ файл</param>
-        /// <param name="replacementColumn">Параметр для шаблону (чи потрібно заміщати стовпчики)</param>
         public static void ComparisonAnalizeGeneration(string pathToXML, string pathToTemplate, string pathToSaveCode)
         {
             XslCompiledTransform xsltCodeGnerator = new();
@@ -3790,6 +3789,24 @@ namespace AccountingSoftware
             FileStream fileStream = new(pathToSaveCode, FileMode.Create);
 
             xsltCodeGnerator.Transform(pathToXML, xsltArgumentList, fileStream);
+
+            fileStream.Close();
+        }
+
+        /// <summary>
+        /// Функція генерує ХМЛ файл з SQL запитами на основі файлу порівняння конфігурацій.
+        /// </summary>
+        /// <param name="pathToXML">Шлях до ХМЛ файлу, який згенерований функцією Comparison</param>
+        /// <param name="pathToTemplate">Шлях до шаблону</param>
+        /// <param name="pathToSaveCode">Шлях файлу куди буде збережений вихідний ХМЛ файл</param>
+        public static void GeneratedFunc(string pathToXML, string pathToTemplate, string pathToSaveCode)
+        {
+            XslCompiledTransform xsltCodeGnerator = new();
+            xsltCodeGnerator.Load(pathToTemplate, new XsltSettings(true, true), null);
+
+            FileStream fileStream = new(pathToSaveCode, FileMode.Create);
+
+            xsltCodeGnerator.Transform(pathToXML, null, fileStream);
 
             fileStream.Close();
         }
