@@ -27,7 +27,7 @@ using AccountingSoftware;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Рух документу по регістрах
+/// Вивід повідомлень
 /// </summary>
 [GObject.Subclass<Form>]
 public partial class CommonForms_ErrorMessageOutput : Form

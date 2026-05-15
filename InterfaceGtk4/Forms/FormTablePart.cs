@@ -78,7 +78,7 @@ public partial class FormTablePart : Form
     protected virtual void Columns() { }
     public virtual async ValueTask LoadRecords() => await ValueTask.FromResult(true);
     public virtual async ValueTask SaveRecords() => await ValueTask.FromResult(true);
-    public virtual bool NewRecord() { return false; }
+    public virtual async ValueTask<bool> NewRecord() => await ValueTask.FromResult(true);
 
     #endregion
 
@@ -179,9 +179,9 @@ public partial class FormTablePart : Form
         return rows;
     }
 
-    void OnAdd(Button button, EventArgs args)
+    async void OnAdd(Button button, EventArgs args)
     {
-        if (NewRecord() && Store.GetNItems() > 0)
+        if (await NewRecord() && Store.GetNItems() > 0)
         {
             SelectPosition = Store.GetNItems() - 1;
             Grid.Model.SelectItem(SelectPosition, true);
