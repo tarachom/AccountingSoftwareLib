@@ -48,6 +48,8 @@ public partial class FormGeneral : Window
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
+            headerBar.ShowTitleButtons = true;
+            //headerBar.DecorationLayout = "icon:minimize,maximize,close";
             SetTitlebar(headerBar);
 
             //Меню

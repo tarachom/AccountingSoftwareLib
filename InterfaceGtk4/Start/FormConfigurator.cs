@@ -48,6 +48,7 @@ public partial class FormConfigurator : Window
         //HeaderBar
         {
             HeaderBar headerBar = HeaderBar.New();
+            headerBar.ShowTitleButtons = true;
             SetTitlebar(headerBar);
 
             //Меню
@@ -138,7 +139,7 @@ public partial class FormConfigurator : Window
         {
             Menu sub = Menu.New();
             sub.Append("Зберегти конфігурацію", "app.save_configuration");
-          
+
             /*
             Menu section = Menu.New();
             section.Append("Вигрузити конфігурацію в файл", null);
