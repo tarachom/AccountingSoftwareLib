@@ -317,24 +317,20 @@ public partial class FormConfigurationSelection : Window
                     //Перевірка і створення системних таблиць
                     await ConfiguratorKernel.DataBase.CreateSpecialTables();
 
-                    //Перевірка наявності системних таблиць
-                    if (await CheckSystemTables(ConfiguratorKernel))
+                    FormLogIn windowFormLogIn = FormLogIn.New();
+                    windowFormLogIn.Application = Application;
+                    windowFormLogIn.TypeOpenForm = TypeForm.Configurator;
+                    windowFormLogIn.ProgramKernel = ConfiguratorKernel;
+                    windowFormLogIn.TransientFor = this;
+                    windowFormLogIn.CallBack_ResponseOk = async () =>
                     {
-                        FormLogIn windowFormLogIn = FormLogIn.New();
-                        windowFormLogIn.Application = Application;
-                        windowFormLogIn.TypeOpenForm = TypeForm.Configurator;
-                        windowFormLogIn.ProgramKernel = ConfiguratorKernel;
-                        windowFormLogIn.TransientFor = this;
-                        windowFormLogIn.CallBack_ResponseOk = async () =>
-                        {
-                            await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
-                            Close();
-                        };
-                        windowFormLogIn.CallBack_ResponseCancel = ConfiguratorKernel.Close;
+                        await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
+                        Close();
+                    };
+                    windowFormLogIn.CallBack_ResponseCancel = ConfiguratorKernel.Close;
 
-                        await windowFormLogIn.SetValue();
-                        windowFormLogIn.Show();
-                    }
+                    await windowFormLogIn.SetValue();
+                    windowFormLogIn.Show();
                 }
                 else
                     Message.Error(Application, this, "Помилка", ConfiguratorKernel.Exception?.Message);
