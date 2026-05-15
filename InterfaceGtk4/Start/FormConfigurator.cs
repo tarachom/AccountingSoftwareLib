@@ -614,7 +614,7 @@ public partial class FormConfigurator : Window
             }
         }
 
-        Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new()
+        Box getbox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate, new()
         {
             Add = async () => await PageRegisterAccumulation("", true),
             Edit = (group, name) => Activate(group, name),

@@ -35,6 +35,7 @@ public partial class FormGeneral : Window
     public NotebookFunction NotebookFunc { get; } = new();
     Kernel Kernel { get; set; } = new();
     protected Statusbar StatusBar = Statusbar.New();
+    public Button ButtonMessage { get; private set; } = Button.New();
 
     public void Init(Kernel kernel)
     {
@@ -71,11 +72,10 @@ public partial class FormGeneral : Window
             {
                 //Повідомлення
                 {
-                    Button button = Button.New();
-                    button.Child = Image.NewFromIconName("dialog-information");
-                    button.TooltipText = "Повідомлення";
-                    button.OnClicked += (sender, args) => ButtonMessageClicked();
-                    headerBar.PackEnd(button);
+                    ButtonMessage.Child = Image.NewFromIconName("dialog-information");
+                    ButtonMessage.TooltipText = "Повідомлення";
+                    ButtonMessage.OnClicked += (sender, args) => ButtonMessageClicked();
+                    headerBar.PackEnd(ButtonMessage);
                 }
 
                 //Повнотекстовий пошук
