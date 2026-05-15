@@ -49,6 +49,7 @@ public partial class FormConfigurator : Window
         {
             HeaderBar headerBar = HeaderBar.New();
             headerBar.ShowTitleButtons = true;
+            headerBar.DecorationLayout = "icon:minimize,maximize,close";
             SetTitlebar(headerBar);
 
             //Меню
