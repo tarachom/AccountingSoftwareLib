@@ -165,7 +165,6 @@ public partial class CommonForms_ErrorMessageOutput : Form
             await Kernel.ClearAllMessages();
 
         await LoadRecords();
-
     }
 
     async void OnReload(object? sender, EventArgs args)

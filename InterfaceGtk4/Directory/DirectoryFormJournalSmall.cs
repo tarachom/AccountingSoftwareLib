@@ -41,6 +41,11 @@ public partial class DirectoryFormJournalSmall : DirectoryFormJournalBase
         AddToolbar();
     }
 
+    /// <summary>
+    /// Переоприділення фокусу
+    /// </summary>
+    public override void DefaultGrabFocus() => Search.GrabFocus();
+
     #region Virtual & Abstract Function
 
     protected virtual async ValueTask OpenPageList(UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
