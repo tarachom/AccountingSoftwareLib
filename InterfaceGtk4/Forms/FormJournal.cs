@@ -234,8 +234,9 @@ public partial class FormJournal : Form
     /// <summary>
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
-    /// <returns>Масив ІД виділених рядків</returns>
-    public UniqueID[] GetSelectionUnigueID() => [.. GetSelection().Select(x => x.UniqueID)];
+    /// <returns>Масив ІД виділених рядків. Без пустих UnigueID</returns>
+    public UniqueID[] GetSelectionUnigueID() => 
+        [.. GetSelection().Where(x => !x.UniqueID.IsEmpty()).Select(x => x.UniqueID)];
 
     /// <summary>
     /// Відкриває Popover із списком лінків. Використовується для меню

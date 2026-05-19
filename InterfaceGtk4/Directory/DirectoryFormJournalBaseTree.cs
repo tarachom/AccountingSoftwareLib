@@ -198,8 +198,8 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             else
                 if (AllowedContentSelection == null || //Вибір папок і елементів
                     AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.FoldersAndElements || //Вибір папок і елементів
-                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Folders && rowItem.IsFolder || //Вибір елементів
-                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Elements && !rowItem.IsFolder) //Вибір папок
+                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Folders && rowItem.IsFolder || //Вибір папок
+                    AllowedContentSelection == ConfigurationDirectories.HierarchicalContentType.Elements && !rowItem.IsFolder) //Вибір елементів
                 {
                     CallBack_OnSelectPointer?.Invoke(rowItem.UniqueID);
 
