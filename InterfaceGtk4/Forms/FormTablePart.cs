@@ -91,6 +91,7 @@ public partial class FormTablePart : Form
 
         {
             Button button = Button.NewFromIconName("new");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -99,6 +100,7 @@ public partial class FormTablePart : Form
 
         {
             Button button = Button.NewFromIconName("copy");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -107,6 +109,7 @@ public partial class FormTablePart : Form
 
         {
             Button button = Button.NewFromIconName("delete");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;

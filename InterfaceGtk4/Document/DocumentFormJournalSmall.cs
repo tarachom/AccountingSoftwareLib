@@ -61,6 +61,7 @@ public partial class DocumentFormJournalSmall : DocumentFormJournalBase
             //Відкрити в блокноті
             {
                 Button button = Button.NewFromIconName("go-up");
+                button.AddCssClass("toolbar");
                 button.MarginEnd = 5;
                 button.TooltipText = "Відкрити";
                 button.OnClicked += OnOpenPageList;

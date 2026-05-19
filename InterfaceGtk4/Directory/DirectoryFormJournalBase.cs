@@ -108,9 +108,11 @@ public partial class DirectoryFormJournalBase : FormJournal
     {
         if (GetType().Namespace == "InterfaceGtk4") return;
 
+        Box vBoxStart = New(Orientation.Vertical, 0);
+
         //Кнопки
         HBoxTop.MarginBottom = 6;
-        Append(HBoxTop);
+        vBoxStart.Append(HBoxTop);
 
         //Пошук
         {
@@ -160,9 +162,9 @@ public partial class DirectoryFormJournalBase : FormJournal
             Filter.FillFilterList = FillFilter;
         }
 
-        CreateToolbar();
-        GridModel();
+        CreateToolbar(vBoxStart);
 
+        GridModel();
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
 
         EventControllerKey contrKey = EventControllerKey.New();
@@ -185,8 +187,6 @@ public partial class DirectoryFormJournalBase : FormJournal
                     }
             }
         };
-
-        Box vBoxStart = New(Orientation.Vertical, 0);
 
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
@@ -302,14 +302,15 @@ public partial class DirectoryFormJournalBase : FormJournal
 
     #region Toolbar
 
-    void CreateToolbar()
+    void CreateToolbar(Box vBox)
     {
         HBoxToolbarTop.MarginBottom = 6;
-        Append(HBoxToolbarTop);
+        vBox.Append(HBoxToolbarTop);
 
         //Новий
         {
             Button button = Button.NewFromIconName("new");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -319,6 +320,7 @@ public partial class DirectoryFormJournalBase : FormJournal
         //Редагувати
         {
             Button button = Button.NewFromIconName("edit");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
@@ -327,6 +329,7 @@ public partial class DirectoryFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("refresh");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
@@ -335,6 +338,7 @@ public partial class DirectoryFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("copy");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -343,6 +347,7 @@ public partial class DirectoryFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("delete");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
@@ -351,6 +356,7 @@ public partial class DirectoryFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("view-sort-descending");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;

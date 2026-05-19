@@ -27,7 +27,7 @@ using Gdk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Регістри-ФормаЖурналБазовий
+/// РегістриФормаЖурналБазовий
 /// </summary>
 [GObject.Subclass<FormJournal>]
 public partial class RegisterAccumulationFormJournalBase : FormJournal

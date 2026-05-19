@@ -299,6 +299,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("new");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -307,6 +308,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("edit");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
@@ -315,6 +317,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("refresh");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
@@ -323,6 +326,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("copy");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -331,6 +335,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("delete");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
@@ -339,6 +344,7 @@ public partial class DocumentFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("view-sort-descending");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;
@@ -357,6 +363,7 @@ public partial class DocumentFormJournalBase : FormJournal
             }
 
             Button button = Button.NewFromIconName("edit-find");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Проводки";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());

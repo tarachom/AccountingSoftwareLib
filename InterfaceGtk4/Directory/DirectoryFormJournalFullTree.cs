@@ -63,6 +63,7 @@ public partial class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTree
     {
         {
             Button button = Button.NewFromIconName("zoom-in");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Версії";
             button.OnClicked += OnVersionsHistory;

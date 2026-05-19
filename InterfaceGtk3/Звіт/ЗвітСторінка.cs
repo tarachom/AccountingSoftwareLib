@@ -321,7 +321,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
             types[i] = typeof(string);
 
         ListStore listStore = new(types);
-        TreeViewGrid = new TreeView(listStore) { EnableGridLines = TreeViewGridLines.Both };
+        TreeViewGrid = new TreeView(listStore) { EnableGridLines = TreeViewGridLines.Both, FixedHeightMode = true };
         TreeViewGrid.ButtonPressEvent += ВідкритиДовідникАбоДокумент;
 
         if (!string.IsNullOrEmpty(TreeStyleClass))
@@ -333,7 +333,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
             if (ColumnSettings.TryGetValue(сolumnName, out ColumnsSettings? columnSettings))
             {
                 CellRendererText cell = new() { Xalign = columnSettings.Xalign };
-                TreeViewColumn treeColumn = new(columnSettings.Caption, cell, "text", i) { Alignment = columnSettings.Xalign, Resizable = true, MinWidth = 20 };
+                TreeViewColumn treeColumn = new(columnSettings.Caption, cell, "text", i) { Alignment = columnSettings.Xalign, Resizable = true, MinWidth = 20, Sizing = TreeViewColumnSizing.Fixed };
                 TreeViewGrid.AppendColumn(treeColumn);
 
                 //Привязка колонки з даними

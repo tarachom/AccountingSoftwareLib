@@ -73,6 +73,7 @@ public partial class DirectoryFormJournalFull : DirectoryFormJournalBase
     {
         {
             Button button = Button.NewFromIconName("document-print");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Друк";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetPrintMenu());
@@ -81,6 +82,7 @@ public partial class DirectoryFormJournalFull : DirectoryFormJournalBase
 
         {
             Button button = Button.NewFromIconName("process-working");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Експорт";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SetExportMenu());
@@ -89,6 +91,7 @@ public partial class DirectoryFormJournalFull : DirectoryFormJournalBase
 
         {
             Button button = Button.NewFromIconName("zoom-in");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Версії";
             button.OnClicked += OnVersionsHistory;

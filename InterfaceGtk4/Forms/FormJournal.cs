@@ -29,14 +29,11 @@ namespace InterfaceGtk4;
 
 /// <summary>
 /// Основа для класів:
-///     DocumentJournalBase (ДокументЖурналБазовий),
-///     DirectoryJournalBase (ДовідникЖурналБазовий),
-///     ... дописати
-/// 
-///     Журнал, 
-///     РегістриВідомостейЖурнал, 
-///     РегістриНакопиченняЖурнал,
-///     РегістриНакопиченняЖурнал_СпрощенийРежим
+///     DocumentFormJournalBase (ДокументФормаЖурналБазовий),
+///     DirectoryFormJournalBase (ДовідникФормаЖурналБазовий),
+///     RegisterAccumulationFormJournalBase (РегістриНакопиченняФормаЖурналБазовий)
+///     RegisterAccumulationFormJournalSmall (РегістриНакопиченняФормаЖурналБазовий)
+///     RegisterInformationFormJournalBase (РегістриІнформаціїФормаЖурналБазовий)
 /// </summary>
 [GObject.Subclass<Form>]
 public partial class FormJournal : Form
