@@ -362,7 +362,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
         }
 
         //Колонка пустишка для заповнення вільного простору
-        TreeViewGrid.AppendColumn(new TreeViewColumn());
+        TreeViewGrid.AppendColumn(new TreeViewColumn() { Sizing = TreeViewColumnSizing.Fixed });
 
         //Заповнення даними
         foreach (Dictionary<string, object> row in RecordResult.ListRow)
