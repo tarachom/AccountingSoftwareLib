@@ -125,6 +125,7 @@ public abstract class ConfiguratorTree
         if (Toolbar.Add != null)
         {
             Button button = Button.NewFromIconName("new");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += (_, _) => Toolbar.Add();
@@ -135,6 +136,7 @@ public abstract class ConfiguratorTree
         if (Toolbar.Edit != null)
         {
             Button button = Button.NewFromIconName("edit");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += (_, _) =>
@@ -148,6 +150,7 @@ public abstract class ConfiguratorTree
         //Оновити
         {
             Button button = Button.NewFromIconName("refresh");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += (_, _) => FillGrid();
@@ -158,6 +161,7 @@ public abstract class ConfiguratorTree
         if (Toolbar.Copy != null)
         {
             Button button = Button.NewFromIconName("copy");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += (_, _) =>
@@ -172,6 +176,7 @@ public abstract class ConfiguratorTree
         if (Toolbar.Delete != null)
         {
             Button button = Button.NewFromIconName("delete");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += (_, _) =>
@@ -191,6 +196,7 @@ public abstract class ConfiguratorTree
             HBoxToolbar.Append(separator);
 
             Button button = Button.NewFromIconName("go-up");
+            button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Відкрити окремо";
             button.OnClicked += (_, _) => Toolbar.OpenNewTab();
