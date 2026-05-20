@@ -43,10 +43,33 @@ public abstract class Форма : Box
     /// <param name="click">Процедура</param>
     public static void CreateLink(Box parentBox, string uri, System.Action? click = null)
     {
-        LinkButton linkButton = new LinkButton(uri, " " + uri) { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
-        parentBox.PackStart(linkButton, false, false, 0);
+        LinkButton link = CreateLink(parentBox, uri);
+        link.Clicked += (sender, args) => click?.Invoke();
+    }
 
-        linkButton.Clicked += (sender, args) => click?.Invoke();
+    /// Створює лінк з іконкою та передає в процедуру віджет LinkButton
+    /// </summary>
+    /// <param name="parentBox">Бокс куди буде доданий лінк</param>
+    /// <param name="uri">Назва</param>
+    /// <param name="click">Процедура</param>
+    public static void CreateLink(Box parentBox, string uri, System.Action<Widget>? click = null)
+    {
+        LinkButton link = CreateLink(parentBox, uri);
+        link.Clicked += (sender, args) => click?.Invoke(link);
+    }
+
+    /// <summary>
+    /// Внутрішня функція створення лінку
+    /// </summary>
+    /// <param name="parentBox">Бокс куди буде доданий лінк</param>
+    /// <param name="uri">Назва</param>
+    /// <returns></returns>
+    static LinkButton CreateLink(Box parentBox, string uri)
+    {
+        LinkButton link = new LinkButton(uri, " " + uri) { Halign = Align.Start, Image = new Image(Іконки.ДляКнопок.Doc), AlwaysShowImage = true };
+        parentBox.PackStart(link, false, false, 0);
+
+        return link;
     }
 
     /// <summary>
