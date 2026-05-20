@@ -108,11 +108,11 @@ public partial class DirectoryFormJournalBase : FormJournal
     {
         if (GetType().Namespace == "InterfaceGtk4") return;
 
-        Box vBoxStart = New(Orientation.Vertical, 0);
+        Box vBox = New(Orientation.Vertical, 0);
 
         //Кнопки
         HBoxTop.MarginBottom = 6;
-        vBoxStart.Append(HBoxTop);
+        vBox.Append(HBoxTop);
 
         //Пошук
         {
@@ -162,7 +162,7 @@ public partial class DirectoryFormJournalBase : FormJournal
             Filter.FillFilterList = FillFilter;
         }
 
-        CreateToolbar(vBoxStart);
+        CreateToolbar(vBox);
 
         GridModel();
         Grid.OnActivate += async (_, args) => await GridOnActivate(args.Position);
@@ -190,12 +190,12 @@ public partial class DirectoryFormJournalBase : FormJournal
 
         ScrollGrid.SetChild(Grid);
         ScrollGrid.Vexpand = ScrollGrid.Hexpand = true;
-        vBoxStart.Append(ScrollGrid);
+        vBox.Append(ScrollGrid);
 
         ScrollPages.SetChild(HBoxPages);
-        vBoxStart.Append(ScrollPages);
+        vBox.Append(ScrollPages);
 
-        HPanedTable.SetStartChild(vBoxStart);
+        HPanedTable.SetStartChild(vBox);
         HPanedTable.SetShrinkStartChild(false);
         HPanedTable.SetShrinkEndChild(false);
 
