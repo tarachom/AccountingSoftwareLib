@@ -42,7 +42,7 @@ public partial class IntegerTablePartCell : Box
 
         entry.OnChanged += (_, _) => IsValid();
         entry.Vexpand = entry.Hexpand = true;
-        entry.SetAlignment(0.8f);
+        entry.SetAlignment(0.5f);
         hBox.Append(entry);
 
         Append(hBox);

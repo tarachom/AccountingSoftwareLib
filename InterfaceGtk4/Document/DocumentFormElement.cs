@@ -156,13 +156,17 @@ public partial class DocumentFormElement : FormElement
     /// </summary>
     protected virtual void CreateTopBloc(Box vBox)
     {
+        HBoxName.MarginBottom = 5;
         vBox.Append(HBoxName);
 
+        /*
         Expander expanderHead = Expander.New("Реквізити шапки");
         expanderHead.Expanded = true;
         expanderHead.MarginBottom = 5;
         expanderHead.SetChild(HBoxTopContainer);
-        vBox.Append(expanderHead);
+        */
+
+        vBox.Append(HBoxTopContainer);
 
         //StarBloc
         Box vBoxStart = New(Orientation.Vertical, 0);
@@ -178,6 +182,7 @@ public partial class DocumentFormElement : FormElement
 
         CreateTopEnd(vBoxEnd);
 
+        HBoxComment.MarginTop = 5;
         HBoxComment.MarginBottom = 10;
         vBox.Append(HBoxComment);
     }
