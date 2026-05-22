@@ -22,6 +22,7 @@ limitations under the License.
 */
 
 using Gtk;
+using System.Globalization;
 
 namespace InterfaceGtk4;
 
@@ -33,12 +34,14 @@ public partial class NumericTablePartCell : Box
 {
     Box hBox = New(Orientation.Horizontal, 0);
     Entry entry = Entry.New();
+    NumberFormatInfo numberFormatUA = new CultureInfo("uk-UA", false).NumberFormat;
 
     partial void Initialize()
     {
         SetOrientation(Orientation.Vertical);
 
-        //hBox.Vexpand = true;
+        numberFormatUA.NumberGroupSeparator = " ";
+        numberFormatUA.NumberDecimalDigits = 2;
 
         entry.OnChanged += (_, _) => IsValid();
         entry.Vexpand = entry.Hexpand = true;
@@ -59,7 +62,7 @@ public partial class NumericTablePartCell : Box
             if (value_ != value)
             {
                 value_ = value;
-                entry.SetText(value_ == 0 ? "" : value_.ToString());
+                entry.SetText(value_ == 0 ? "" : value_.ToString("N", numberFormatUA));
                 entry.TooltipText = entry.GetText();
             }
         }

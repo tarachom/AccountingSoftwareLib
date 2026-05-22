@@ -73,6 +73,91 @@ public partial class PointerTablePartCell : Box
         };
         */
 
+        {
+            /*
+            // 1. Створюємо звичайний Popover (не PopoverMenu)
+            var popover = Popover.New();
+            popover.SetParent(hBox);
+
+            // 2. Створюємо контейнер для "пунктів меню"
+            var box =  Box.New(Orientation.Vertical, 0);
+            popover.SetChild(box);
+
+            // 3. Створюємо "пункт меню" як звичайну кнопку
+            var clearButton = Button.NewWithLabel("Очистити");
+            clearButton.HasFrame = false; // Робимо її плоскою, щоб була схожа на пункт меню
+
+            // Прямий обробник події кліку
+            clearButton.OnClicked += (s, e) =>
+            {
+                label.SetText(""); // Очищаємо текст
+                popover.Popdown(); // Закриваємо меню після натискання
+            };
+
+            box.Append(clearButton);
+
+            // 4. Додаємо жест для виклику меню правою кнопкою
+            GestureClick gesture = GestureClick.New();
+            gesture.Button = 3;
+            gesture.OnPressed += (s, e) =>
+            {
+                var rect = new Gdk.Rectangle
+                {
+                    X = (int)e.X,
+                    Y = (int)e.Y,
+                    Width = 1,
+                    Height = 1
+                };
+                popover.SetPointingTo(rect);
+                popover.Popup();
+            };
+
+            hBox.AddController(gesture);
+*/
+
+            /*
+            // 1. Створюємо модель меню
+            var menuModel = Gio.Menu.New();
+            menuModel.Append("Очистити поле", "app.clear_text");
+
+            // 2. Створюємо PopoverMenu на основі моделі
+            var popover = PopoverMenu.NewFromModel(menuModel);
+            popover.SetParent(label); // Прив'язуємо до поля
+            popover.HasArrow = true;
+
+            GestureClick gesture = GestureClick.New();
+            gesture.Button = 3; // 1 - ліва, 2 - середня, 3 - права
+
+            // 4. Обробка натискання
+            gesture.OnPressed += (s, e) =>
+            {
+                // Встановлюємо координати, де з'явиться меню (там, де клікнули)
+                var rect = new Gdk.Rectangle
+                {
+                    X = (int)e.X,
+                    Y = (int)e.Y,
+                    Width = 1,
+                    Height = 1
+                };
+
+                Console.WriteLine(rect);
+
+                popover.SetPointingTo(rect);
+                popover.Popup();
+            };
+
+            hBox.AddController(gesture);
+
+            // 5. Додаємо логіку для дії
+            var clearAction = SimpleAction.New("clear_text", null);
+            clearAction.OnActivate += (s, e) =>
+            {
+                entry.Text = "";
+            };
+            application.AddAction(clearAction);
+            */
+        }
+
         //Select
         {
             buttonSelect.Child = Image.NewFromPixbuf(Icon.ForButton.Find);

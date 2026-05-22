@@ -88,5 +88,5 @@ public partial class NumericControl : Box
         }
     }
 
-    public static decimal FormatUA(decimal value) => Math.Round(decimal.Parse(value.ToString("N", new CultureInfo("uk-UA", false).NumberFormat)), 2);
+    //public static decimal FormatUA(decimal value) => Math.Round(decimal.Parse(value.ToString("N", new CultureInfo("uk-UA", false).NumberFormat)), 2);
 }
