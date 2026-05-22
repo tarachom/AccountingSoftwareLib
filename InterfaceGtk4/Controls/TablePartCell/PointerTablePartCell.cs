@@ -75,7 +75,7 @@ public partial class PointerTablePartCell : Box
 
         //Select
         {
-            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForInformation.Grid);
+            buttonSelect.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
             buttonSelect.OnClicked += Select;
             buttonSelect.TooltipText = "Вибрати";
             buttonSelect.AddCssClass("button");
