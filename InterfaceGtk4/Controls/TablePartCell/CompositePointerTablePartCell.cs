@@ -28,7 +28,7 @@ using System.Reflection;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Клітинка табличної частини - ...
+/// Клітинка табличної частини - для композитного типу даних, типу який задається користувачем
 /// </summary>
 [GObject.Subclass<PointerTablePartCell>]
 public partial class CompositePointerControlTablePartCell : PointerTablePartCell

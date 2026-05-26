@@ -160,9 +160,9 @@ public partial class FormJournal : Form
     /// Для дерева. Саме тіло функції реалізується у класі який відповідає за дерево (наприклад клас DirectoryFormJournalBaseTree)
     /// Функція викликається після завантаження даних в Store (в кінці LoadRecords) і передає UniqueID
     /// </summary>
+    /// <param name="parents">Колекція родичів</param>
     /// <param name="select">UniqueID елемента який треба виділити</param>
-    //public virtual void AfterLoadRecords(UniqueID? select = null) { }
-
+    /// <returns></returns>
     public virtual async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await ValueTask.FromResult(true); }
 
     /// <summary>
@@ -235,7 +235,7 @@ public partial class FormJournal : Form
     /// Функція повертає ІД виділених рядків які бере з функції GetSelection()
     /// </summary>
     /// <returns>Масив ІД виділених рядків. Без пустих UnigueID</returns>
-    public UniqueID[] GetSelectionUnigueID() => 
+    public UniqueID[] GetSelectionUnigueID() =>
         [.. GetSelection().Where(x => !x.UniqueID.IsEmpty()).Select(x => x.UniqueID)];
 
     /// <summary>

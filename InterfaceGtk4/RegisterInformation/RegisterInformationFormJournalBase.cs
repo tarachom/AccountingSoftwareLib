@@ -22,7 +22,6 @@ limitations under the License.
 */
 
 using Gtk;
-using Gdk;
 
 namespace InterfaceGtk4;
 

@@ -32,6 +32,9 @@ using Gdk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для пошуку
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class SearchControl : Box
 {

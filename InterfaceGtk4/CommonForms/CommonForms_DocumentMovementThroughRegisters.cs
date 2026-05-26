@@ -49,10 +49,8 @@ public partial class CommonForms_DocumentMovementThroughRegisters : Form
     /// Додає контрол віджет для відображення документу
     /// </summary>
     /// <param name="documentPointer">Вказівник на документ</param>
-    protected void AddDocument(DocumentPointer documentPointer)
-    {
+    protected void AddDocument(DocumentPointer documentPointer) =>
         CreateField(this, null, Document_PointerControl(documentPointer), Align.Start);
-    }
 
     /// <summary>
     /// Добавляє блок даних на форму

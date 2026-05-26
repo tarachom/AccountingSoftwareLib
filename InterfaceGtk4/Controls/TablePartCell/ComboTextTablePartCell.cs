@@ -26,7 +26,7 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Клітинка табличної частини - Ціле число
+/// Клітинка табличної частини - Випадаючий список
 /// </summary>
 [GObject.Subclass<Box>]
 public partial class ComboTextTablePartCell : Box

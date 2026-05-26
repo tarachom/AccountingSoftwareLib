@@ -25,6 +25,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для часу
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class TimeControl : Box
 {

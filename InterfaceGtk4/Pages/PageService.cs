@@ -34,6 +34,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Сервісна сторінка (очищення помічених на видалення і перепроведення документів)
+/// </summary>
 [GObject.Subclass<Form>]
 public partial class PageService : Form
 {

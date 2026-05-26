@@ -25,6 +25,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для дати та часу
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class DateTimeControl : Box
 {

@@ -4,6 +4,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для відображення блокування об'єкту (довідника чи документу)
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class LockControl : Box
 {

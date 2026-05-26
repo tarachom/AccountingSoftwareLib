@@ -25,6 +25,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для цілого числа
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class IntegerControl : Box
 {

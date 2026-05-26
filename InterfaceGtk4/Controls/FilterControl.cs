@@ -31,6 +31,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для фільтрів в журналах
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class FilterControl : Box
 {

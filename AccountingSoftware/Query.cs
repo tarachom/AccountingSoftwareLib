@@ -287,7 +287,7 @@ namespace AccountingSoftware
                                 query += " LIKE " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
                             }
-                        case Comparison.QT:
+                        //case Comparison.QT:
                         case Comparison.GT:
                             {
                                 query += " > " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
@@ -298,7 +298,7 @@ namespace AccountingSoftware
                                 query += " < " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
                             }
-                        case Comparison.QT_EQ:
+                        //case Comparison.QT_EQ:
                         case Comparison.GT_EQ:
                         case Comparison.GE:
                             {
@@ -681,8 +681,8 @@ UNION ALL
         /// <summary>
         /// Більше
         /// </summary>
-        [Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT (Greater Than)")]
-        QT,
+        //[Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT (Greater Than)")]
+        //QT,
 
         /// <summary>
         /// Більше
@@ -697,8 +697,8 @@ UNION ALL
         /// <summary>
         /// Більше або рівне
         /// </summary>
-        [Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT_EQ або GE (Greater Than or Equal)")]
-        QT_EQ,
+        //[Obsolete("Не використовувати через орфографічну помилку. Правильно буде GT_EQ або GE (Greater Than or Equal)")]
+        //QT_EQ,
 
         /// <summary>
         /// Більше або рівне. 

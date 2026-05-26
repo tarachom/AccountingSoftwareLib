@@ -26,6 +26,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Основа для контрола Вказівник
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class PointerControl : Box
 {

@@ -101,8 +101,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         DirectoryHierarchicalRow itemRow = (DirectoryHierarchicalRow)item;
         Gio.ListStore? store = null;
 
-        //Console.WriteLine("CreateFunc: " + itemRow.UniqueID + " = " + itemRow.IsLoading);
-
         //Якщо це вітка для завантаження
         if (itemRow.IsLoading)
         {
@@ -116,15 +114,11 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
                         {
                             List<DirectoryHierarchicalRow> list = [];
                             if (TreeCache.TryGetValue(itemRow.UniqueID, out List<DirectoryHierarchicalRow>? cacheList))
-                            {
                                 list = cacheList;
-                                //Console.WriteLine("З кешу");
-                            }
                             else
                             {
                                 list = await LoadChildren([itemRow.UniqueID]);
                                 TreeCache.Add(itemRow.UniqueID, list);
-                                //Console.WriteLine("В кеш");
                             }
 
                             //Видалення
@@ -148,7 +142,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
                     f();
 
-                    //Console.WriteLine("CreateFunc run async " + itemRow.UniqueID);
                     return false;
                 });
             }
@@ -179,7 +172,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     }
 
     /// <summary>
-    /// 
+    /// Кеш для завантажених віток
     /// </summary>
     protected Dictionary<UniqueID, List<DirectoryHierarchicalRow>> TreeCache { get; set; } = [];
 
@@ -366,7 +359,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
             //Функція яка викликається після повного завантаження
             GLib.Functions.IdleAdd(GLib.Constants.PRIORITY_LOW, () =>
             {
-                //Console.WriteLine(position);
                 ScrollTo(position);
                 return false;
             });

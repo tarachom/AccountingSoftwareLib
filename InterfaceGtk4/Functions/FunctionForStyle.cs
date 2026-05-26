@@ -32,6 +32,9 @@ using Gdk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Стандартний стиль для всієї програми
+/// </summary>
 public static class FunctionForStyle
 {
     public static void LoadDefault()

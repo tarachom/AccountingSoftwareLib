@@ -26,6 +26,9 @@ using System.Globalization;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для числа з комою
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class NumericControl : Box
 {

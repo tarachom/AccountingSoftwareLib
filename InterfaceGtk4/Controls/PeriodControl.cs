@@ -31,6 +31,9 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Контрол для встановлення періоду
+/// </summary>
 [GObject.Subclass<Box>]
 public partial class PeriodControl : Box
 {

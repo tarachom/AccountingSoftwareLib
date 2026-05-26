@@ -27,6 +27,9 @@ using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
+/// <summary>
+/// Для основного блокноту
+/// </summary>
 public class NotebookFunction
 {
     /// <summary>

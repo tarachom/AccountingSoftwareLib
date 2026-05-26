@@ -26,7 +26,7 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Клітинка табличної частини - Ціле число
+/// Клітинка табличної частини - Галочка
 /// </summary>
 [GObject.Subclass<Box>]
 public partial class CheckTablePartCell : Box
