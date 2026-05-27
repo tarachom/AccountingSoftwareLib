@@ -94,12 +94,12 @@ public partial class LockObjectsView : Box
 
     #region Virtual Function
 
-    protected virtual ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-        ValueTask.FromResult<CompositePointerPresentation_Record>(new());
+    protected virtual Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
+        Task.FromResult<CompositePointerPresentation_Record>(new());
 
     #endregion
 
-    async ValueTask LoadRecords()
+    async Task LoadRecords()
     {
         if (Kernel == null) throw new Exception("Kernel null");
         

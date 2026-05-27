@@ -100,7 +100,7 @@ public partial class ActiveUsersView : Box
         return view;
     }
 
-    static async ValueTask LoadRecords(ActiveUsersView view)
+    static async Task LoadRecords(ActiveUsersView view)
     {
         if (view.Kernel == null) throw new Exception("Kernel null");
 

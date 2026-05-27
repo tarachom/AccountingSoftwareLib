@@ -53,7 +53,7 @@ public partial class LockControl : Box
     /// <summary>
     /// Функція для відображення інформації про блокування
     /// </summary>
-    public async ValueTask LockInfo()
+    public async Task LockInfo()
     {
         if (Element != null)
         {

@@ -45,7 +45,7 @@ public abstract class MultiplePointerControl : PointerControl
     /// </summary>
     /// <param name="listBox">Список</param>
     /// <returns></returns>
-    protected abstract ValueTask FillList(ListBox listBox);
+    protected abstract Task FillList(ListBox listBox);
 
     protected virtual async void OnMultiple(object? sender, EventArgs args)
     {

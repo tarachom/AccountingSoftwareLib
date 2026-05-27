@@ -82,7 +82,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// <summary>
     /// Функція для отримання інформації про блокування
     /// </summary>
-    Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
+    Func<Task<LockedObject_Record>>? FuncLockInfo;
 
     public ДокументЕлемент()
     {
@@ -256,7 +256,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// Функція для відображення інформації про блокування
     /// </summary>
     /// <param name="accountingObject">Обєкт</param>
-    public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
+    public async Task LockInfo(AccountingSoftware.Object accountingObject)
     {
         bool isLock = await accountingObject.IsLock();
         bSaveAndSpend.Sensitive = bSpend.Sensitive = bSave.Sensitive = isLock;
@@ -309,7 +309,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// Проведення
     /// </summary>
     /// <param name="spendDoc">Провести</param>
-    protected abstract ValueTask<bool> SpendTheDocument(bool spendDoc);
+    protected abstract Task<bool> SpendTheDocument(bool spendDoc);
 
     /// <summary>
     /// Для звіту Проводки
@@ -319,7 +319,7 @@ public abstract class ДокументЕлемент : ФормаЕлемент
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual async ValueTask InJournal(UniqueID uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual async Task InJournal(UniqueID uniqueID) { await Task.FromResult(true); }
 
     #endregion
 }

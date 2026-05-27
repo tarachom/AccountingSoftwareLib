@@ -83,7 +83,7 @@ public abstract class PageService : Форма
         ShowAll();
     }
 
-    public async ValueTask SetValue()
+    public async Task SetValue()
     {
         await BeforeSetValue();
     }
@@ -241,7 +241,7 @@ public abstract class PageService : Форма
 
     protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
 
-    protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+    protected virtual async Task BeforeSetValue() { await Task.FromResult(true); }
 
     protected abstract void PeriodChanged();
 
@@ -249,7 +249,7 @@ public abstract class PageService : Форма
 
     #region ПроведенняДокументів
 
-    async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
+    async Task SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
     {
         object? journalSelectInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Журнали.JournalSelect");
         if (journalSelectInstance != null)
@@ -336,7 +336,7 @@ public abstract class PageService : Форма
 
     #region ОчисткаПоміченихНаВидалення
 
-    async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
+    async Task ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
     {
         //Шаблон запиту для вибірки елементів помічених на видалення
         string querySelectDeletion = "SELECT uid FROM @TABLE WHERE deletion_label = true";
@@ -424,7 +424,7 @@ public abstract class PageService : Форма
         Лог.CreateEmptyMsg();
     }
 
-    async ValueTask<long> SearchDependencies(List<ConfigurationDependencies> listDependencies, Guid uid, string name)
+    async Task<long> SearchDependencies(List<ConfigurationDependencies> listDependencies, Guid uid, string name)
     {
         long allCountDependencies = 0;
         bool existUse = false;

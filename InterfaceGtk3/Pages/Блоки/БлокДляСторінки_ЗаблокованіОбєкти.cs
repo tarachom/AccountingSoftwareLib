@@ -83,11 +83,11 @@ public abstract class БлокДляСторінки_ЗаблокованіОб�
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
 
     #endregion
 
-    async ValueTask LoadRecords()
+    async Task LoadRecords()
     {
         var recordResult = await Kernel.DataBase.SpetialTableLockedObjectSelect();
 

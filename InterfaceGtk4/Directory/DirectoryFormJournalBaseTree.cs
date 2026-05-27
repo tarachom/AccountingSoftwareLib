@@ -76,7 +76,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// <summary>
     /// Перша функція яка викликається після створення форми
     /// </summary>
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
         await BeforeSetValue();
@@ -180,7 +180,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// При активації
     /// </summary>
     /// <param name="position">Позиція</param>
-    protected override async ValueTask GridOnActivate(uint position)
+    protected override async Task GridOnActivate(uint position)
     {
         TreeListRow? row = TreeList?.GetRow(position);
         DirectoryHierarchicalRow? rowItem = (DirectoryHierarchicalRow?)row?.GetItem();
@@ -253,7 +253,7 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
-    public override async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null)
+    public override async Task AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null)
     {
         #region Local Func
 

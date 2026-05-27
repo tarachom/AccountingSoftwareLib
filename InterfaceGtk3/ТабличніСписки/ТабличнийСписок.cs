@@ -105,7 +105,7 @@ public abstract class ТабличнийСписок
     /// <param name="querySelect"></param>
     /// <param name="uniqueID"></param>
     /// <returns></returns>
-    public static async ValueTask ЗаповнитиСторінки(Func<UniqueID?, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesFunc,
+    public static async Task ЗаповнитиСторінки(Func<UniqueID?, int, Task<SplitSelectToPages_Record>> splitSelectToPagesFunc,
         Сторінки.Налаштування settings, Query querySelect, UniqueID? uniqueID)
     {
         if (!settings.Calculated)
@@ -135,7 +135,7 @@ public abstract class ТабличнийСписок
     /// <param name="query"></param>
     /// <param name="paramQuery"></param>
     /// <returns></returns>
-    public static async ValueTask<string> ЗаповнитиСторінки(Func<string, Dictionary<string, object>, int, ValueTask<SplitSelectToPages_Record>> splitSelectToPagesForJournalFunc,
+    public static async Task<string> ЗаповнитиСторінки(Func<string, Dictionary<string, object>, int, Task<SplitSelectToPages_Record>> splitSelectToPagesForJournalFunc,
         Сторінки.Налаштування settings, string query, Dictionary<string, object> paramQuery)
     {
         if (!settings.Calculated)

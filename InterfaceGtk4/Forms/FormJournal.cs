@@ -163,7 +163,7 @@ public partial class FormJournal : Form
     /// <param name="parents">Колекція родичів</param>
     /// <param name="select">UniqueID елемента який треба виділити</param>
     /// <returns></returns>
-    public virtual async ValueTask AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await ValueTask.FromResult(true); }
+    public virtual async Task AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await Task.CompletedTask; }
 
     /// <summary>
     /// Прокрутка
@@ -291,7 +291,7 @@ public partial class FormJournal : Form
     /// <summary>
     /// Оновлення таблиці і скидання всіх відборів
     /// </summary>
-    protected async ValueTask Refresh()
+    protected async Task Refresh()
     {
         TypeWhereState = TypeWhere.Standart;
         WhereList = null;
@@ -412,12 +412,12 @@ public partial class FormJournal : Form
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public virtual async ValueTask SetValue() => await ValueTask.FromResult(true);
+    public virtual Task SetValue() => Task.CompletedTask;
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    protected virtual async ValueTask BeforeSetValue() => await ValueTask.FromResult(true);
+    protected virtual Task BeforeSetValue() => Task.CompletedTask;
 
     /// <summary>
     /// Фокус за стандартом
@@ -427,13 +427,13 @@ public partial class FormJournal : Form
     /// <summary>
     /// Завантаження списку
     /// </summary>
-    public virtual async ValueTask LoadRecords() => await ValueTask.FromResult(true);
+    public virtual Task LoadRecords() => Task.CompletedTask;
 
     /// <summary>
     /// Довантаження даних в дерево
     /// </summary>
     /// <param name="parent">Вітка родич</param>
-    public virtual async ValueTask<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID[] parents) => await ValueTask.FromResult(new List<DirectoryHierarchicalRow>());
+    public virtual Task<List<DirectoryHierarchicalRow>> LoadChildren(UniqueID[] parents) => Task.FromResult(new List<DirectoryHierarchicalRow>());
 
     /// <summary>
     /// Пустий рядок
@@ -443,7 +443,7 @@ public partial class FormJournal : Form
     /// <summary>
     /// Оновлення списку
     /// </summary>
-    public virtual async ValueTask UpdateRecords() => await ValueTask.FromResult(true);
+    public virtual Task UpdateRecords() => Task.CompletedTask;
 
     /// <summary>
     /// Відображення стану відборів у Label TypeWhereStateInfo
@@ -509,7 +509,7 @@ public partial class FormJournal : Form
     /// <param name="querySelect">Вибірка для задання меж</param>
     /// <param name="uniqueID">Вибраний елемент для позиціювання вибіоки</param>
     /// <returns></returns>
-    public async ValueTask SplitPages(Func<UniqueID? /* Вибраний елемент */, int /* Розмір вибірки */, ValueTask<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UniqueID? uniqueID)
+    public async Task SplitPages(Func<UniqueID? /* Вибраний елемент */, int /* Розмір вибірки */, Task<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UniqueID? uniqueID)
     {
         if (!PagesSettings.Calculated)
         {

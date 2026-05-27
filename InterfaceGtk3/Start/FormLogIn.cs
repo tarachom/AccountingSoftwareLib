@@ -73,7 +73,7 @@ class FormLogIn : Window
         ShowAll();
     }
 
-    public async ValueTask SetValue()
+    public async Task SetValue()
     {
         if (ProgramKernel != null)
         {

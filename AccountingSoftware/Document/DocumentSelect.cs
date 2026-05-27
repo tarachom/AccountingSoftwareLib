@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати
 		/// </summary>
-		protected async ValueTask<bool> BaseSelect()
+		protected async Task<bool> BaseSelect()
 		{
 			Position = 0;
 			CurrentPointerPosition = null;
@@ -45,7 +45,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати один вказівник
 		/// </summary>
-		protected async ValueTask<bool> BaseSelectSingle()
+		protected async Task<bool> BaseSelectSingle()
 		{
 			long? oldLimit = QuerySelect.Limit;
 			QuerySelect.Limit = 1;
@@ -65,7 +65,7 @@ namespace AccountingSoftware
 		/// <param name="funcToField">Функція для поля</param>
 		/// <param name="funcToField_Param1">Перший параметр для функції</param>
 		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected async ValueTask<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
+		protected async Task<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
 			Query querySelect = new(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
@@ -81,7 +81,7 @@ namespace AccountingSoftware
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
 		/// <returns>Повертає список знайдених вказівників</returns>
-		protected async ValueTask<List<(UniqueID UniqueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		protected async Task<List<(UniqueID UniqueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
 			List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> documentPointerList = [];
 

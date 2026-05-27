@@ -90,12 +90,12 @@ public abstract class ФормаЖурнал : Форма
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public abstract ValueTask SetValue();
+    public abstract Task SetValue();
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+    protected virtual async Task BeforeSetValue() { await Task.FromResult(true); }
 
     /// <summary>
     /// Фокус за стандартом
@@ -105,23 +105,23 @@ public abstract class ФормаЖурнал : Форма
     /// <summary>
     /// Завантаження списку
     /// </summary>
-    public abstract ValueTask LoadRecords();
+    public abstract Task LoadRecords();
 
     /// <summary>
     /// Завантаження списку при пошуку
     /// </summary>
-    public virtual async ValueTask LoadRecords_OnSearch(string searchText) { await ValueTask.FromResult(true); }
+    public virtual async Task LoadRecords_OnSearch(string searchText) { await Task.FromResult(true); }
 
     /// <summary>
     /// Фільтер
     /// </summary>
-    public virtual async ValueTask LoadRecords_OnFilter() { await ValueTask.FromResult(true); }
+    public virtual async Task LoadRecords_OnFilter() { await Task.FromResult(true); }
 
     /// <summary>
     /// Для дерева
     /// </summary>
     /// <returns></returns>
-    public virtual async ValueTask LoadRecords_OnTree() { await ValueTask.FromResult(true); }
+    public virtual async Task LoadRecords_OnTree() { await Task.FromResult(true); }
 
     #endregion
 
@@ -177,7 +177,7 @@ public abstract class ФормаЖурнал : Форма
     /// Інформація про кількість сторінок береться із самого TreeViewGrid
     /// </summary>
     /// <param name="funcLoadRecords">Функція яка спрацьовує при виборі сторінки</param>
-    void PagesShow(Func<ValueTask>? funcLoadRecords = null)
+    void PagesShow(Func<Task>? funcLoadRecords = null)
     {
         const int offset = 5;
 
@@ -216,12 +216,12 @@ public abstract class ФормаЖурнал : Форма
         HBoxPages.ShowAll();
     }
 
-    protected async ValueTask BeforeLoadRecords()
+    protected async Task BeforeLoadRecords()
     {
         Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
         SpinnerOn(notebook);
 
-        async ValueTask PageNavigation()
+        async Task PageNavigation()
         {
             SpinnerOn(notebook);
 
@@ -238,12 +238,12 @@ public abstract class ФормаЖурнал : Форма
         SpinnerOff(notebook);
     }
 
-    protected async ValueTask BeforeLoadRecords_OnSearch(string searchText)
+    protected async Task BeforeLoadRecords_OnSearch(string searchText)
     {
         Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
         SpinnerOn(notebook);
 
-        async ValueTask PageNavigation()
+        async Task PageNavigation()
         {
             SpinnerOn(notebook);
 
@@ -260,12 +260,12 @@ public abstract class ФормаЖурнал : Форма
         SpinnerOff(notebook);
     }
 
-    protected async ValueTask BeforeLoadRecords_OnFilter()
+    protected async Task BeforeLoadRecords_OnFilter()
     {
         Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
         SpinnerOn(notebook);
 
-        async ValueTask PageNavigation()
+        async Task PageNavigation()
         {
             SpinnerOn(notebook);
 
@@ -282,12 +282,12 @@ public abstract class ФормаЖурнал : Форма
         SpinnerOff(notebook);
     }
 
-    protected async ValueTask BeforeLoadRecords_OnTree()
+    protected async Task BeforeLoadRecords_OnTree()
     {
         Notebook? notebook = NotebookFunction.GetNotebookFromWidget(this);
         SpinnerOn(notebook);
 
-        async ValueTask PageNavigation()
+        async Task PageNavigation()
         {
             SpinnerOn(notebook);
 

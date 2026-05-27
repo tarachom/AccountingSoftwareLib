@@ -39,7 +39,7 @@ namespace AccountingSoftware
         /// <param name="Database">База даних</param>
         /// <param name="variantLoadConf">Варіант завантаження конфігурації</param>
         /// <returns>True якщо підключення відбулось нормально</returns>
-        public async ValueTask<bool> Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database,
+        public async Task<bool> Open(string PathToXmlFileConfiguration, string Server, string UserId, string Password, int Port, string Database,
             Configuration.VariantLoadConf variantLoadConf = Configuration.VariantLoadConf.Full)
         {
             bool result = await OpenOnlyDataBase(Server, UserId, Password, Port, Database);
@@ -73,7 +73,7 @@ namespace AccountingSoftware
         /// <param name="Database">База даних</param>
         /// <param name="exception"Помилка></param>
         /// <returns>True якщо підключення відбулось нормально</returns>
-        public async ValueTask<bool> OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> OpenOnlyDataBase(string Server, string UserId, string Password, int Port, string Database)
         {
             DataBase = new PostgreSQL();
             bool result = await DataBase.Open(Server, UserId, Password, Port, Database);
@@ -96,7 +96,7 @@ namespace AccountingSoftware
         /// <param name="Port">Порт</param>
         /// <param name="Database">База даних</param>
         /// <returns>True якщо все ок</returns>
-        public async ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
         {
             DataBase = new PostgreSQL();
             bool result = await DataBase.TryConnectToServer(Server, UserId, Password, Port, Database);
@@ -114,7 +114,7 @@ namespace AccountingSoftware
         /// <param name="Port">Порт</param>
         /// <param name="Database">База даних</param>
         /// <returns>True якщо все ок</returns>
-        public async ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
         {
             DataBase = new PostgreSQL();
             bool result = await DataBase.IfExistDatabase(Server, UserId, Password, Port, Database);
@@ -132,7 +132,7 @@ namespace AccountingSoftware
         /// <param name="Port">Порт</param>
         /// <param name="Database">База даних</param>
         /// <returns>True якщо все ок</returns>
-        public async ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
         {
             DataBase = new PostgreSQL();
             bool result = await DataBase.CreateDatabaseIfNotExist(Server, UserId, Password, Port, Database);
@@ -187,7 +187,7 @@ namespace AccountingSoftware
         /// <param name="user">Користувач</param>
         /// <param name="password">Пароль</param>
         /// <returns></returns>
-        public async ValueTask<bool> UserLogIn(string user, string password, TypeForm typeForm)
+        public async Task<bool> UserLogIn(string user, string password, TypeForm typeForm)
         {
             (Guid User, Guid Session)? userSession = await DataBase.SpetialTableUsersLogIn(user, password, typeForm);
             if (userSession != null)
@@ -326,7 +326,7 @@ namespace AccountingSoftware
 
         /* Запис і зчитування повідомлень про помилки та інформаційних повідомлень */
 
-        public async ValueTask MessageInfoAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
+        public async Task MessageInfoAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
         {
             await DataBase.SpetialTableMessageErrorAdd
             (
@@ -342,7 +342,7 @@ namespace AccountingSoftware
             await ClearOutdatedMessages();
         }
 
-        public async ValueTask MessageErrorAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
+        public async Task MessageErrorAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
         {
             await DataBase.SpetialTableMessageErrorAdd
             (
@@ -358,17 +358,17 @@ namespace AccountingSoftware
             await ClearOutdatedMessages();
         }
 
-        public async ValueTask ClearAllMessages()
+        public async Task ClearAllMessages()
         {
             await DataBase.SpetialTableMessageErrorClear(User);
         }
 
-        public async ValueTask ClearOutdatedMessages()
+        public async Task ClearOutdatedMessages()
         {
             await DataBase.SpetialTableMessageErrorClearOld(User);
         }
 
-        public async ValueTask<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null)
+        public async Task<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null)
         {
             return await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
         }

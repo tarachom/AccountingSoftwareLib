@@ -75,7 +75,7 @@ public abstract class ФормаЕлемент : Форма
     /// <summary>
     /// Збереження
     /// </summary>
-    protected abstract ValueTask<bool> Save();
+    protected abstract Task<bool> Save();
 
     #endregion
 }

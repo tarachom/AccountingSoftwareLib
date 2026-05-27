@@ -131,8 +131,8 @@ public abstract class FormConfigurationSelection : Window
 
     #region Virtual Functions
 
-    public virtual async ValueTask<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await ValueTask.FromResult(false); }
-    public abstract ValueTask<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
+    public virtual async Task<bool> OpenProgram(ConfigurationParam? openConfigurationParam) { return await Task.FromResult(false); }
+    public abstract Task<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam);
 
     #endregion
 
@@ -375,7 +375,7 @@ public abstract class FormConfigurationSelection : Window
     /// </summary>
     /// <param name="kernel">Ядро</param>
     /// <returns>true якщо всі перевірки пройдено</returns>
-    async ValueTask<bool> CheckSystemTables(Kernel kernel)
+    async Task<bool> CheckSystemTables(Kernel kernel)
     {
         string help = "\n\nПотрібно відкрити Конфігуратор і зберегти конфігурацію - " +
         "(Меню: Конфігурація/Зберегти конфігурацію - дальше Збереження змін. Крок 1, Збереження змін. Крок 2)";

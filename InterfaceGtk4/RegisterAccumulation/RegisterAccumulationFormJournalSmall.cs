@@ -59,7 +59,7 @@ public partial class RegisterAccumulationFormJournalSmall : FormJournal
         Grid.Model = model;
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         await BeforeSetValue();
         await LoadRecords();

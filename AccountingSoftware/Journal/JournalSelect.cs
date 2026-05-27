@@ -93,7 +93,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Зчитати
 		/// </summary>
-		public async ValueTask<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
+		public async Task<bool> Select(DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
 		{
 			Position = 0;
 			Current = null;

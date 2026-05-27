@@ -102,21 +102,21 @@ public abstract class ДовідникШвидкийВибір : ФормаЖу�
         ShowAll();
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         await BeforeSetValue();
     }
 
-    protected override async ValueTask BeforeSetValue()
+    protected override async Task BeforeSetValue()
     {
         await BeforeLoadRecords();
     }
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageList(UniqueID? uniqueID = null);
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
-    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
+    protected abstract Task OpenPageList(UniqueID? uniqueID = null);
+    protected abstract Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected abstract Task SetDeletionLabel(UniqueID uniqueID);
 
     #endregion
 

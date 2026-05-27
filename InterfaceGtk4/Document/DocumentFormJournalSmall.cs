@@ -43,7 +43,7 @@ public partial class DocumentFormJournalSmall : DocumentFormJournalBase
 
     #region Virtual & Abstract Function
 
-    protected virtual async ValueTask OpenPageList(UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
+    protected virtual Task OpenPageList(UniqueID? uniqueID = null) => Task.CompletedTask;
 
     #endregion
 

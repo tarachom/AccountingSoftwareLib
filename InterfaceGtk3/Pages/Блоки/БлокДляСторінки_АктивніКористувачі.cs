@@ -81,7 +81,7 @@ public class БлокДляСторінки_АктивніКористувачі
         ShowAll();
     }
 
-    async ValueTask LoadRecords()
+    async Task LoadRecords()
     {
         var recordResult = await Kernel.DataBase.SpetialTableActiveUsersSelect();
 

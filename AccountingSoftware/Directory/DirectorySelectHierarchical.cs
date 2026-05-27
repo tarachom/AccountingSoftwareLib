@@ -58,7 +58,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Вибрати дані
 		/// </summary>
-		protected async ValueTask<bool> BaseSelect()
+		protected async Task<bool> BaseSelect()
 		{
 			Position = 0;
 			CurrentPointerPositionHierarchical = null;
@@ -72,7 +72,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Вибрати один запис з бази даних
 		/// </summary>
-		protected async ValueTask<bool> BaseSelectSingle()
+		protected async Task<bool> BaseSelectSingle()
 		{
 			long? oldLimitValue = QuerySelect.Limit;
 			QuerySelect.Limit = 1;

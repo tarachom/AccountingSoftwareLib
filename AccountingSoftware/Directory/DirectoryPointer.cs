@@ -37,7 +37,7 @@ namespace AccountingSoftware
         /// Отримати представлення вказівника
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
-        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
+        protected async Task<string> BasePresentation(string[] fieldPresentation)
         {
             if (!IsEmpty() && fieldPresentation.Length != 0)
             {
@@ -55,7 +55,7 @@ namespace AccountingSoftware
         /// Повертає мітку на видалення або null якщо вказівник пустий або не вдалось прочитати
         /// </summary>
         /// <returns></returns>
-        protected async ValueTask<bool?> BaseGetDeletionLabel()
+        protected async Task<bool?> BaseGetDeletionLabel()
         {
             if (!IsEmpty())
             {
@@ -70,7 +70,7 @@ namespace AccountingSoftware
         /// Встановлення мітки на видалення
         /// </summary>
         /// <param name="label">Мітка</param>
-        protected async ValueTask BaseDeletionLabel(bool label)
+        protected async Task BaseDeletionLabel(bool label)
         {
             if (!IsEmpty())
             {

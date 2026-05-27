@@ -855,7 +855,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="Kernel">Ядро</param>
         /// <returns>Повертає унікальну назву таблиці</returns>
-        public static async ValueTask<string> GetNewUnigueTableName(Kernel Kernel)
+        public static async Task<string> GetNewUnigueTableName(Kernel Kernel)
         {
             string[] englishAlphabet = GetEnglishAlphabet();
             List<string> tableList = await Kernel.DataBase.GetTableList();

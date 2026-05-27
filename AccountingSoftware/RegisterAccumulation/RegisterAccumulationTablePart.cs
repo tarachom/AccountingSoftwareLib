@@ -77,7 +77,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Прочитати значення у вн. масив
         /// </summary>
-        protected async ValueTask BaseRead()
+        protected async Task BaseRead()
         {
             BaseClear();
             await Kernel.DataBase.SelectRegisterAccumulationTablePartRecords(Table, FieldArray, FieldValueList);
@@ -87,18 +87,18 @@ namespace AccountingSoftware
 
         private byte TransactionID = 0;
 
-        protected async ValueTask BaseBeginTransaction()
+        protected async Task BaseBeginTransaction()
         {
             TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected async ValueTask BaseCommitTransaction()
+        protected async Task BaseCommitTransaction()
         {
             await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected async ValueTask BaseRollbackTransaction()
+        protected async Task BaseRollbackTransaction()
         {
             await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
@@ -109,7 +109,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID">Ключ</param>
         /// <exception cref="Exception"></exception>
-        protected async ValueTask BaseRemove(Guid UID)
+        protected async Task BaseRemove(Guid UID)
         {
             UniqueID uniqueID = new(UID);
             if (!uniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(uniqueID, Table))
@@ -119,7 +119,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Очистити табличну частину
         /// </summary>
-        protected async ValueTask BaseDelete()
+        protected async Task BaseDelete()
         {
             await Kernel.DataBase.DeleteRegisterAccumulationTablePartRecords(Table, TransactionID);
         }
@@ -129,7 +129,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="UID"></param>
         /// <param name="fieldValue"></param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, Dictionary<string, object> fieldValue)
+        protected async Task<Guid> BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertRegisterAccumulationTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);

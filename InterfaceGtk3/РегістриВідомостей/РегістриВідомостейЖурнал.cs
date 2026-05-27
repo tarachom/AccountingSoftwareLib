@@ -80,7 +80,7 @@ public abstract class РегістриВідомостейЖурнал : Фор�
         ShowAll();
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
 
@@ -131,11 +131,11 @@ public abstract class РегістриВідомостейЖурнал : Фор�
 
     #region Virtual Function
 
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected abstract Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
-    protected virtual ValueTask Delete(UniqueID uniqueID) { return new ValueTask(); }
+    protected virtual Task Delete(UniqueID uniqueID) => Task.CompletedTask;
 
-    protected virtual ValueTask<UniqueID?> Copy(UniqueID uniqueID) { return new ValueTask<UniqueID?>(); }
+    protected virtual Task<UniqueID?> Copy(UniqueID uniqueID) => Task.FromResult<UniqueID?>(null);
 
     protected virtual async void CallBack_LoadRecords(UniqueID? selectPointer)
     {

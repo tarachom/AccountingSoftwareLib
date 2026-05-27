@@ -74,7 +74,7 @@ public static class NotebookFunction
 
         //Структура для функцій реакцій на зміни об'єктів
         notebook.Data.Add(DataKey_ObjectChangeEvents,
-            new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] pointersType)>>
+            new Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, Task> func, string[] pointersType)>>
             {
                     { GroupObjectChangeEvents.Directory, [] },
                     { GroupObjectChangeEvents.Document, [] }
@@ -82,7 +82,7 @@ public static class NotebookFunction
         );
 
         //Структура для функцій розблокування об'єктів
-        notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<ValueTask>>());
+        notebook.Data.Add(DataKey_LockObjectPageFunc, new Dictionary<string, Func<Task>>());
 
         return notebook;
     }
@@ -239,7 +239,7 @@ public static class NotebookFunction
 
                     //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
                     var lockObjectPageFunc = GetDataLockObjectFunc(notebook);
-                    if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                    if (lockObjectPageFunc != null && lockObjectPageFunc.TryGetValue(codePage, out Func<Task>? unlockFunc))
                     {
                         await unlockFunc.Invoke();
                         lockObjectPageFunc.Remove(codePage);
@@ -435,10 +435,10 @@ public static class NotebookFunction
     /// <summary>
     /// Функція повертає колекцію функцій реакції на зміни об'єктів
     /// </summary>
-    static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
+    static Dictionary<GroupObjectChangeEvents, List<(string codePage, Func<List<ObjectChanged>, Task> func, string[] pointersType)>>? GetDataObjectChangeEvents(Notebook? notebook)
     {
         var object_change_events = notebook?.Data[DataKey_ObjectChangeEvents];
-        return object_change_events != null ? (Dictionary<GroupObjectChangeEvents, List<(string, Func<List<ObjectChanged>, ValueTask>, string[])>>)object_change_events : null;
+        return object_change_events != null ? (Dictionary<GroupObjectChangeEvents, List<(string, Func<List<ObjectChanged>, Task>, string[])>>)object_change_events : null;
     }
 
     /// <summary>
@@ -448,7 +448,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="func">Функція</param>
     /// <param name="pointerPattern">Фільтр по типу даних</param>
-    public static void AddChangeFunc(Notebook? notebook, string codePage, Func<List<ObjectChanged>, ValueTask> func, string pointerPattern)
+    public static void AddChangeFunc(Notebook? notebook, string codePage, Func<List<ObjectChanged>, Task> func, string pointerPattern)
     {
         var (_, pointerGroup, pointerType) = Configuration.PointerParse(pointerPattern, out Exception? ex);
 
@@ -470,7 +470,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="func">Функція</param>
     /// <param name="typeDocs">Типи документів які належать журналу</param>
-    public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Func<List<ObjectChanged>, ValueTask> func, string[] allowDocument)
+    public static void AddChangeFuncJournal(Notebook? notebook, string codePage, Func<List<ObjectChanged>, Task> func, string[] allowDocument)
     {
         var objectChangeEvents = GetDataObjectChangeEvents(notebook);
         objectChangeEvents?[GroupObjectChangeEvents.Document].Add((codePage, func, allowDocument));
@@ -486,10 +486,10 @@ public static class NotebookFunction
 
     #region Lock Element
 
-    static Dictionary<string, Func<ValueTask>>? GetDataLockObjectFunc(Notebook? notebook)
+    static Dictionary<string, Func<Task>>? GetDataLockObjectFunc(Notebook? notebook)
     {
         var lock_object_page_func = notebook?.Data[DataKey_LockObjectPageFunc];
-        return lock_object_page_func != null ? (Dictionary<string, Func<ValueTask>>)lock_object_page_func : null;
+        return lock_object_page_func != null ? (Dictionary<string, Func<Task>>)lock_object_page_func : null;
     }
 
     /// <summary>
@@ -499,7 +499,7 @@ public static class NotebookFunction
     /// <param name="codePage">Код сторінки</param>
     /// <param name="lockFunc">Функція блокування</param>
     /// <param name="unlockFunc">Функція розблокування</param>
-    public static async ValueTask AddLockObjectFunc(Notebook? notebook, string codePage, AccountingSoftware.Object accountingObject)
+    public static async Task AddLockObjectFunc(Notebook? notebook, string codePage, AccountingSoftware.Object accountingObject)
     {
         //Функція розблокування після закриття сторінки
         var lockObjectPageFunc = GetDataLockObjectFunc(notebook);

@@ -78,12 +78,12 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
     protected abstract CompositePointerControl CreateCompositControl();
 
     #endregion
 
-    public async ValueTask Load(Guid versionID, UuidAndText obj)
+    public async Task Load(Guid versionID, UuidAndText obj)
     {
         var (result, pointerGroup, pointerType) = Configuration.PointerParse(obj.Text, out Exception? _);
         if (!result) return;

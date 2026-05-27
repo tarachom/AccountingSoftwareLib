@@ -149,7 +149,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Заблокувати
         /// </summary>
-        public async ValueTask<bool> Lock()
+        public async Task<bool> Lock()
         {
             LockKey = await Kernel.DataBase.SpetialTableLockedObjectAdd(Kernel.User, Kernel.Session, GetBasis());
             return !LockKey.IsEmpty();
@@ -158,7 +158,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Розблокувати
         /// </summary>
-        public async ValueTask UnLock()
+        public async Task UnLock()
         {
             await Kernel.DataBase.SpetialTableLockedObjectClear(LockKey);
             LockKey.Clear();
@@ -167,7 +167,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Чи заблокований?
         /// </summary>
-        public async ValueTask<bool> IsLock()
+        public async Task<bool> IsLock()
         {
             return await Kernel.DataBase.SpetialTableLockedObjectIsLock(LockKey);
         }
@@ -176,7 +176,7 @@ namespace AccountingSoftware
         /// Розширена версія Чи заблокований?
         /// </summary>
         /// <returns>Набір даних</returns>
-        public async ValueTask<LockedObject_Record> LockInfo()
+        public async Task<LockedObject_Record> LockInfo()
         {
             return await Kernel.DataBase.SpetialTableLockedObjectLockInfo(GetBasis());
         }

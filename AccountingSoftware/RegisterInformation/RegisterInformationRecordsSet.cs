@@ -91,7 +91,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Зчитування даних
         /// </summary>
-        protected async ValueTask BaseRead()
+        protected async Task BaseRead()
         {
             BaseClear();
             JoinValue.Clear();
@@ -107,25 +107,25 @@ namespace AccountingSoftware
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
         {
             return await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
         }
 
         private byte TransactionID = 0;
 
-        protected async ValueTask BaseBeginTransaction()
+        protected async Task BaseBeginTransaction()
         {
             TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected async ValueTask BaseCommitTransaction()
+        protected async Task BaseCommitTransaction()
         {
             await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected async ValueTask BaseRollbackTransaction()
+        protected async Task BaseRollbackTransaction()
         {
             await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
@@ -135,7 +135,7 @@ namespace AccountingSoftware
         /// Видалити запис
         /// </summary>
         /// <param name="UID">Ключ запису</param>
-        protected async ValueTask BaseRemove(Guid UID)
+        protected async Task BaseRemove(Guid UID)
         {
             UniqueID uniqueID = new(UID);
             if (!uniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(uniqueID, Table))
@@ -146,7 +146,7 @@ namespace AccountingSoftware
         /// Видалення записів для власника
         /// </summary>
         /// <param name="owner">Унікальний ідентифікатор власника</param>
-        protected async ValueTask BaseDelete(Guid owner)
+        protected async Task BaseDelete(Guid owner)
         {
             await Kernel.DataBase.DeleteRegisterInformationRecords(Table, owner, TransactionID);
         }
@@ -158,7 +158,7 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, Guid owner, NameAndText ownertype, Dictionary<string, object> fieldValue)
+        protected async Task<Guid> BaseSave(Guid UID, DateTime period, Guid owner, NameAndText ownertype, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, ownertype, FieldArray, fieldValue, TransactionID);

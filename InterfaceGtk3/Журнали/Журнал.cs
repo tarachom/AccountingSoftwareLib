@@ -75,7 +75,7 @@ public abstract class Журнал : ФормаЖурнал
         ShowAll();
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
 
@@ -338,7 +338,7 @@ public abstract class Журнал : ФормаЖурнал
 
     #region Проведення
 
-    async ValueTask SpendTheDocument(string uid, string typeDoc, bool spendDoc)
+    async Task SpendTheDocument(string uid, string typeDoc, bool spendDoc)
     {
         UniqueID uniqueID = new(uid);
 

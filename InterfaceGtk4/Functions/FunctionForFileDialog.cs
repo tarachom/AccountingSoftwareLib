@@ -62,7 +62,7 @@ public static class FunctionForFileDialog
     /// </summary>
     /// <param name="filters">Фільтри</param>
     /// <param name="callBackSelect">Функція обробки вибору</param>
-    public static async ValueTask SelectFile(List<FileFilter> filters, Func<string?, ValueTask> callBackSelect, Window? parent)
+    public static async Task SelectFile(List<FileFilter> filters, Func<string?, Task> callBackSelect, Window? parent)
     {
         if (Functions.CheckVersion(4, 10, 0) != null)
         {
@@ -123,7 +123,7 @@ public static class FunctionForFileDialog
     /// </summary>
     /// <param name="filters">Фільтри</param>
     /// <param name="callBackSelect">Функція обробки вибору</param>
-    public static async ValueTask SelectFiles(List<FileFilter> filters, Func<string[]?, ValueTask> callBackSelect, Window? parent)
+    public static async Task SelectFiles(List<FileFilter> filters, Func<string[]?, Task> callBackSelect, Window? parent)
     {
         if (Functions.CheckVersion(4, 10, 0) != null)
         {

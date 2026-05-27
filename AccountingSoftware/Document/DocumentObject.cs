@@ -62,7 +62,7 @@ namespace AccountingSoftware
         /// Зчитати дані
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор </param>
-        protected async ValueTask<bool> BaseRead(UniqueID uid)
+        protected async Task<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -86,7 +86,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Зберегти дані
         /// </summary>
-        protected async ValueTask<bool> BaseSave()
+        protected async Task<bool> BaseSave()
         {
             bool result;
 
@@ -135,23 +135,23 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="obj">Обєкт</param>
         /// <param name="values">Масив значень полів</param>
-        protected async ValueTask BaseWriteFullTextSearch(UuidAndText obj, string[] values)
+        protected async Task BaseWriteFullTextSearch(UuidAndText obj, string[] values)
         {
             if (values.Length != 0)
                 await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values), Kernel.Conf.DictTSearch);
         }
 
-        protected async ValueTask BaseAddIgnoreDocumentList()
+        protected async Task BaseAddIgnoreDocumentList()
         {
             await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UniqueID.UGuid, "");
         }
 
-        protected async ValueTask BaseRemoveIgnoreDocumentList()
+        protected async Task BaseRemoveIgnoreDocumentList()
         {
             await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UniqueID.UGuid);
         }
 
-        protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
+        protected async Task BaseSpend(bool spend, DateTime spend_date)
         {
             Spend = spend;
             SpendDate = spend_date;
@@ -172,7 +172,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected async ValueTask BaseDeletionLabel(bool label)
+        protected async Task BaseDeletionLabel(bool label)
         {
             DeletionLabel = label;
 
@@ -192,7 +192,7 @@ namespace AccountingSoftware
         /// Видалити запис
         /// </summary>
         /// <param name="tablePartsTables">Список таблиць табличних частин</param>
-        protected async ValueTask BaseDelete(string[] tablePartsTables)
+        protected async Task BaseDelete(string[] tablePartsTables)
         {
             byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
@@ -222,7 +222,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
         /// <returns>Представлення обєкта</returns>
-        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
+        protected async Task<string> BasePresentation(string[] fieldPresentation)
         {
             if (!UniqueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {

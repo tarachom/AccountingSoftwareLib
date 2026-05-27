@@ -117,7 +117,7 @@ public abstract class ДокументЖурнал : ФормаЖурнал
         ShowAll();
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
 
@@ -304,11 +304,11 @@ public abstract class ДокументЖурнал : ФормаЖурнал
 
     protected virtual void PrintingSubMenu(Menu Menu) { }
 
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected abstract Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
-    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
+    protected abstract Task SetDeletionLabel(UniqueID uniqueID);
 
-    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
+    protected abstract Task<UniqueID?> Copy(UniqueID uniqueID);
 
     protected virtual async void CallBack_LoadRecords(UniqueID? selectPointer)
     {
@@ -320,21 +320,21 @@ public abstract class ДокументЖурнал : ФормаЖурнал
 
     protected abstract void PeriodChanged();
 
-    protected abstract ValueTask SpendTheDocument(UniqueID uniqueID, bool spendDoc);
+    protected abstract Task SpendTheDocument(UniqueID uniqueID, bool spendDoc);
 
     protected abstract void ReportSpendTheDocument(UniqueID uniqueID);
 
     protected virtual bool IsExportXML() { return false; } //Дозволити експорт
 
-    protected virtual async ValueTask ExportXML(UniqueID uniqueID, string pathToFolder) { await ValueTask.FromResult(true); }
+    protected virtual Task ExportXML(UniqueID uniqueID, string pathToFolder) => Task.CompletedTask;
 
     protected virtual bool IsExportExcel() { return false; } //Дозволити експорт
 
-    protected virtual async ValueTask ExportExcel(UniqueID uniqueID, string pathToFolder) { await ValueTask.FromResult(true); }
+    protected virtual Task ExportExcel(UniqueID uniqueID, string pathToFolder) => Task.CompletedTask;
 
-    protected virtual async ValueTask PrintingDoc(UniqueID uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual Task PrintingDoc(UniqueID uniqueID) => Task.CompletedTask;
 
-    protected virtual async ValueTask VersionsHistory(UniqueID uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual Task VersionsHistory(UniqueID uniqueID) => Task.CompletedTask;
 
     #endregion
 

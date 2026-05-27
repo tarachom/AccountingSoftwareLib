@@ -140,7 +140,7 @@ partial class FormLogIn : Window
         return window;
     }
 
-    public async ValueTask SetValue()
+    public async Task SetValue()
     {
         if (ProgramKernel != null)
         {

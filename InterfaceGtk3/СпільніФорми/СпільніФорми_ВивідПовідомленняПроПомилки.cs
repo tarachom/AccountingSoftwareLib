@@ -62,7 +62,7 @@ public abstract class СпільніФорми_ВивідПовідомленн�
 
     #endregion
 
-    public async ValueTask LoadRecords(UniqueID? objectUnigueID = null, int? limit = null)
+    public async Task LoadRecords(UniqueID? objectUnigueID = null, int? limit = null)
     {
         foreach (Widget Child in vBoxMessage.Children)
             vBoxMessage.Remove(Child);

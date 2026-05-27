@@ -76,12 +76,12 @@ public partial class FormElement : Form
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public virtual async ValueTask SetValue() => await ValueTask.FromResult(true);
+    public virtual Task SetValue() => Task.CompletedTask;
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public virtual async ValueTask AssignValue() => await ValueTask.FromResult(true);
+    public virtual Task AssignValue() => Task.CompletedTask;
 
     /// <summary>
     /// Фокус за стандартом
@@ -96,7 +96,7 @@ public partial class FormElement : Form
     /// <summary>
     /// Збереження
     /// </summary>
-    protected virtual async ValueTask<bool> Save() => await ValueTask.FromResult(true);
+    protected virtual Task<bool> Save() => Task.FromResult(true);
 
     #endregion
 }

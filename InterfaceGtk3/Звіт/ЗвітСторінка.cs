@@ -77,7 +77,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     /// <summary>
     /// Додаткова інформація для звіту
     /// </summary>
-    public Func<ValueTask<string>>? GetInfo { get; set; } = null;
+    public Func<Task<string>>? GetInfo { get; set; } = null;
 
     #region Event
 
@@ -186,7 +186,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     /// <summary>
     /// Вибірка даних
     /// </summary>
-    public async ValueTask Select()
+    public async Task Select()
     {
         RecordResult = await Kernel.DataBase.SelectRequest(Query, ParamQuery);
     }
@@ -380,7 +380,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     /// </summary>
     /// <param name="notebook">Блокнот</param>
     /// <param name="insertPage"></param>
-    public async ValueTask View(Notebook? notebook, bool insertPage = false)
+    public async Task View(Notebook? notebook, bool insertPage = false)
     {
         Box vBox = new Box(Orientation.Vertical, 0);
 
@@ -494,7 +494,7 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     /// <param name="hBox">Бокс</param>
     /// <param name="heightRequest">Висота</param>
     /// <returns></returns>
-    public async ValueTask ViewToBox(Box hBox, int heightRequest = 100)
+    public async Task ViewToBox(Box hBox, int heightRequest = 100)
     {
         Box vBox = new Box(Orientation.Vertical, 0);
 
@@ -608,9 +608,9 @@ public abstract class ЗвітСторінка(Kernel kernel) : Форма
     protected abstract void ВідкритиДокументВідповідноДоВиду(string name, UniqueID? uniqueID, string keyForSetting = "", ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
     protected abstract void ВідкритиДовідникВідповідноДоВиду(string name, UniqueID? uniqueID, ФункціїДляДинамічногоВідкриття.TypeForm typeForm = ФункціїДляДинамічногоВідкриття.TypeForm.Journal);
 
-    protected virtual async void AppendToolbar(Toolbar toolbar) { await ValueTask.FromResult(true); }
-    protected virtual async ValueTask ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
-    protected virtual async ValueTask ВигрузитиВФайл_Excel(ЗвітСторінка звіт, (Dictionary<string, ExcelColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) { await ValueTask.FromResult(true); }
+    protected virtual async void AppendToolbar(Toolbar toolbar) { await Task.FromResult(true); }
+    protected virtual Task ВигрузитиВФайл_PDF(ЗвітСторінка звіт, (Dictionary<string, PDFColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) => Task.CompletedTask;
+    protected virtual Task ВигрузитиВФайл_Excel(ЗвітСторінка звіт, (Dictionary<string, ExcelColumnsSettings> Settings, List<string[]> Rows) settingsAndRows) => Task.CompletedTask;
 
     #endregion
 

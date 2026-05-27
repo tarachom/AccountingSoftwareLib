@@ -52,7 +52,7 @@ namespace AccountingSoftware
         /// Зчитування полів обєкту з бази даних
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
-        protected async ValueTask<bool> BaseRead(UniqueID uid)
+        protected async Task<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -74,7 +74,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected async ValueTask<bool> BaseSave()
+        protected async Task<bool> BaseSave()
         {
             bool result;
 
@@ -122,7 +122,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="obj">Обєкт</param>
         /// <param name="values">Масив значень полів</param>
-        protected async ValueTask BaseWriteFullTextSearch(UuidAndText obj, string[] values)
+        protected async Task BaseWriteFullTextSearch(UuidAndText obj, string[] values)
         {
             if (values.Length != 0)
                 await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values), Kernel.Conf.DictTSearch);
@@ -133,7 +133,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected async ValueTask BaseDeletionLabel(bool label)
+        protected async Task BaseDeletionLabel(bool label)
         {
             DeletionLabel = label;
 
@@ -152,7 +152,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Видалення з бази даних
         /// </summary>
-        protected async ValueTask BaseDelete(string[] tablePartsTables)
+        protected async Task BaseDelete(string[] tablePartsTables)
         {
             byte TransactionID = await Kernel.DataBase.BeginTransaction();
 
@@ -181,7 +181,7 @@ namespace AccountingSoftware
         /// Отримати представлення вказівника
         /// </summary>
         /// <param name="fieldPresentation">Список полів які представляють вказівник (Назва, опис і т.д)</param>
-        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
+        protected async Task<string> BasePresentation(string[] fieldPresentation)
         {
             if (!UniqueID.IsEmpty() && IsSave && fieldPresentation.Length != 0)
             {

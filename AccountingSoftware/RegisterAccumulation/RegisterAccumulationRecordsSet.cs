@@ -91,7 +91,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Зчитування даних
         /// </summary>
-        protected async ValueTask BaseRead()
+        protected async Task BaseRead()
         {
             BaseClear();
             JoinValue.Clear();
@@ -107,25 +107,25 @@ namespace AccountingSoftware
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
         {
             return await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
         }
 
         private byte TransactionID = 0;
 
-        protected async ValueTask BaseBeginTransaction()
+        protected async Task BaseBeginTransaction()
         {
             TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected async ValueTask BaseCommitTransaction()
+        protected async Task BaseCommitTransaction()
         {
             await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected async ValueTask BaseRollbackTransaction()
+        protected async Task BaseRollbackTransaction()
         {
             await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
@@ -135,7 +135,7 @@ namespace AccountingSoftware
         /// Видалення записів для власника
         /// </summary>
         /// <param name="owner">Унікальний ідентифікатор власника</param>
-        protected async ValueTask BaseDelete(Guid owner)
+        protected async Task BaseDelete(Guid owner)
         {
             await Kernel.DataBase.DeleteRegisterAccumulationRecords(Table, owner, TransactionID);
             BaseClear();
@@ -149,7 +149,7 @@ namespace AccountingSoftware
         /// <param name="income">Тип запису - прибуток чи зменшення</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="fieldValue">Значення полів</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, Dictionary<string, object> fieldValue)
+        protected async Task<Guid> BaseSave(Guid UID, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertRegisterAccumulationRecords(recordUnigueID, Table, period, income, owner, ownertype, ownerlinenum, FieldArray, fieldValue, TransactionID);
@@ -162,7 +162,7 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="regAccumName">Назва регістру</param>
-        protected async ValueTask BaseTrigerAdd(DateTime period, Guid owner)
+        protected async Task BaseTrigerAdd(DateTime period, Guid owner)
         {
             await Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
         }
@@ -175,7 +175,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="owner">Власник запису</param>
         /// <param name="periodCurrent">Поточний період запису</param>
-        protected async ValueTask BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
+        protected async Task BaseSelectPeriodForOwner(Guid owner, DateTime? periodCurrent = null)
         {
             List<DateTime>? recordPeriod = await Kernel.DataBase.SelectRegisterAccumulationRecordPeriodForOwner(Table, owner, periodCurrent, TransactionID);
 

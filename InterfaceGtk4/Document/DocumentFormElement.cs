@@ -129,7 +129,7 @@ public partial class DocumentFormElement : FormElement
         Append(HPanedTop);
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         //Блокування
         {
@@ -290,7 +290,7 @@ public partial class DocumentFormElement : FormElement
     /// Проведення
     /// </summary>
     /// <param name="spendDoc">Провести</param>
-    protected virtual async ValueTask<bool> SpendTheDocument(bool spendDoc) => await ValueTask.FromResult(true);
+    protected virtual Task<bool> SpendTheDocument(bool spendDoc) => Task.FromResult(true);
 
     /// <summary>
     /// Для звіту Проводки
@@ -300,7 +300,7 @@ public partial class DocumentFormElement : FormElement
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual async ValueTask InJournal(UniqueID uniqueID) => await ValueTask.FromResult(true);
+    protected virtual Task InJournal(UniqueID uniqueID) => Task.CompletedTask;
 
     #endregion
 }

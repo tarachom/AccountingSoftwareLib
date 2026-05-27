@@ -121,7 +121,7 @@ public partial class FormPageConfigurator : Form
         }
     }
 
-    public async ValueTask SetValue()
+    public async Task SetValue()
     {
         NotebookFunc?.SpinnerOn(GetName());
         await AssignValue();
@@ -143,7 +143,7 @@ public partial class FormPageConfigurator : Form
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public virtual async ValueTask AssignValue() => await ValueTask.FromResult(true);
+    public virtual async Task AssignValue() => await Task.FromResult(true);
 
     /// <summary>
     /// Фокус за стандартом
@@ -153,12 +153,12 @@ public partial class FormPageConfigurator : Form
     /// <summary>
     /// Зчитування значень
     /// </summary>
-    protected virtual async ValueTask GetValue() => await ValueTask.FromResult(true);
+    protected virtual async Task GetValue() => await Task.FromResult(true);
 
     /// <summary>
     /// Збереження
     /// </summary>
-    protected virtual ValueTask<bool> Save() => ValueTask.FromResult(false);
+    protected virtual Task<bool> Save() => Task.FromResult(false);
 
     #endregion
 }

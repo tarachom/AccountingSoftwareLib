@@ -132,7 +132,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
         ShowAll();
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
 
@@ -146,7 +146,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
     /// </summary>
     public void AddIsHierarchy()
     {
-        if (HBoxTop.Children.Where(x => x.Name == "IsHierarchy").Any())
+        if (HBoxTop.Children.Any(x => x.Name == "IsHierarchy"))
             return;
 
         //Враховувати ієрархію папок
@@ -257,11 +257,11 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
+    protected abstract Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
-    protected abstract ValueTask SetDeletionLabel(UniqueID uniqueID);
+    protected abstract Task SetDeletionLabel(UniqueID uniqueID);
 
-    protected abstract ValueTask<UniqueID?> Copy(UniqueID uniqueID);
+    protected abstract Task<UniqueID?> Copy(UniqueID uniqueID);
 
     protected virtual async void CallBack_LoadRecords(UniqueID? selectPointer)
     {
@@ -271,7 +271,7 @@ public abstract class ДовідникЖурнал : ФормаЖурнал
 
     protected virtual void FillFilterList(ListFilterControl filterControl) { }
 
-    protected virtual async ValueTask VersionsHistory(UniqueID uniqueID) { await ValueTask.FromResult(true); }
+    protected virtual Task VersionsHistory(UniqueID uniqueID) => Task.CompletedTask;
 
     #endregion
 

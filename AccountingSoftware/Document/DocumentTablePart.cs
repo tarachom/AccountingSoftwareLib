@@ -105,7 +105,7 @@ namespace AccountingSoftware
         /// Зчитати дані з бази даних
         /// </summary>
         /// <param name="ownerUnigueID"></param>
-        protected async ValueTask BaseRead(UniqueID ownerUnigueID)
+        protected async Task BaseRead(UniqueID ownerUnigueID)
         {
             BaseClear();
             JoinValue.Clear();
@@ -123,18 +123,18 @@ namespace AccountingSoftware
 
         private byte TransactionID = 0;
 
-        protected async ValueTask BaseBeginTransaction()
+        protected async Task BaseBeginTransaction()
         {
             TransactionID = await Kernel.DataBase.BeginTransaction();
         }
 
-        protected async ValueTask BaseCommitTransaction()
+        protected async Task BaseCommitTransaction()
         {
             await Kernel.DataBase.CommitTransaction(TransactionID);
             TransactionID = 0;
         }
 
-        protected async ValueTask BaseRollbackTransaction()
+        protected async Task BaseRollbackTransaction()
         {
             await Kernel.DataBase.RollbackTransaction(TransactionID);
             TransactionID = 0;
@@ -144,7 +144,7 @@ namespace AccountingSoftware
         /// Видалити всі дані з таб. частини
         /// </summary>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
-        protected async ValueTask BaseDelete(UniqueID ownerUnigueID)
+        protected async Task BaseDelete(UniqueID ownerUnigueID)
         {
             await Kernel.DataBase.DeleteDocumentTablePartRecords(ownerUnigueID, Table, TransactionID);
         }
@@ -154,7 +154,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="ownerUnigueID">Ід власника</param>
         /// <param name="ownerTable">Таблиця власника</param>
-        protected async ValueTask<bool> IsExistOwner(UniqueID ownerUnigueID, string ownerTable)
+        protected async Task<bool> IsExistOwner(UniqueID ownerUnigueID, string ownerTable)
         {
             return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
         }
@@ -165,7 +165,7 @@ namespace AccountingSoftware
         /// <param name="UID">Унікальний ідентифікатор запису</param>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
         /// <param name="fieldValue">Список значень полів</param>
-        protected async ValueTask<Guid> BaseSave(Guid UID, UniqueID ownerUnigueID, Dictionary<string, object> fieldValue)
+        protected async Task<Guid> BaseSave(Guid UID, UniqueID ownerUnigueID, Dictionary<string, object> fieldValue)
         {
             Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
             await Kernel.DataBase.InsertDocumentTablePartRecords(recordUnigueID, ownerUnigueID, Table, FieldArray, fieldValue, TransactionID);
@@ -177,7 +177,7 @@ namespace AccountingSoftware
         /// Записати в історію поточну версію значень полів
         /// </summary>
         /// <param name="listFieldValue">Всі поля</param>
-        protected async ValueTask BaseSaveVersion(Dictionary<Guid, Dictionary<string, object>> listFieldValue)
+        protected async Task BaseSaveVersion(Dictionary<Guid, Dictionary<string, object>> listFieldValue)
         {
             if (VersionsHistory && OwnerVersionID != Guid.Empty && !OwnerBasis.IsEmpty())
                 await Kernel.DataBase.SpetialTableTablePartVersionsHistoryAdd(OwnerVersionID, Kernel.User, OwnerBasis, Table, listFieldValue);

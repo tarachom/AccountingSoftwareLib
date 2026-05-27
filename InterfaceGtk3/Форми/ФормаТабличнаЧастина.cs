@@ -282,8 +282,8 @@ public abstract class ФормаТабличнаЧастина : Форма
 
     #region Virtual & Abstract 
 
-    public abstract ValueTask LoadRecords();
-    public virtual async ValueTask SaveRecords() { await ValueTask.FromResult(true); }
+    public abstract Task LoadRecords();
+    public virtual async Task SaveRecords() { await Task.FromResult(true); }
     protected virtual ФормаЖурнал? OpenSelect(TreeIter iter, int rowNumber, int colNumber) { return null; }
     protected virtual ФормаСпливаючеВікно? OpenForm(TreeIter iter, int rowNumber, int colNumber) { return null; }
     protected virtual void ClearCell(TreeIter iter, int rowNumber, int colNumber) { }

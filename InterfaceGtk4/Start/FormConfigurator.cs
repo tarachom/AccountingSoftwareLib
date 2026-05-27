@@ -22,7 +22,6 @@ limitations under the License.
 */
 
 using Gtk;
-using Gio;
 using AccountingSoftware;
 using InterfaceGtkLib;
 
@@ -89,16 +88,16 @@ public partial class FormConfigurator : Window
     protected virtual void Service(LinkButton link) { }
     protected virtual void Settings(LinkButton link) { }
 
-    protected virtual async ValueTask PageConstantBlock(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageConstant(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageDirectory(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageDocument(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageJournal(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageEnum(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageRegisterInformation(string name, bool isNew = false) { }
-    protected virtual async ValueTask PageRegisterAccumulation(string name, bool isNew = false) { }
+    protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
+    protected virtual async Task PageConstant(string name, bool isNew = false) { }
+    protected virtual async Task PageDirectory(string name, bool isNew = false) { }
+    protected virtual async Task PageDocument(string name, bool isNew = false) { }
+    protected virtual async Task PageJournal(string name, bool isNew = false) { }
+    protected virtual async Task PageEnum(string name, bool isNew = false) { }
+    protected virtual async Task PageRegisterInformation(string name, bool isNew = false) { }
+    protected virtual async Task PageRegisterAccumulation(string name, bool isNew = false) { }
 
-    protected virtual async ValueTask PageSaveConfiguration() { }
+    protected virtual async Task PageSaveConfiguration() { }
 
     #endregion
 
@@ -109,7 +108,7 @@ public partial class FormConfigurator : Window
         if (Application == null) return;
 
         {
-            SimpleAction action = SimpleAction.New("save_configuration", null);
+            Gio.SimpleAction action = Gio.SimpleAction.New("save_configuration", null);
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
             Application.AddAction(action);
         }
@@ -129,16 +128,16 @@ public partial class FormConfigurator : Window
         */
 
         {
-            SimpleAction action = SimpleAction.New("quit", null);
+            Gio.SimpleAction action = Gio.SimpleAction.New("quit", null);
             action.OnActivate += (_, _) => Application.Quit();
             Application.AddAction(action);
         }
 
-        Menu menu = Menu.New();
+        Gio.Menu menu = Gio.Menu.New();
 
         //Конфігурація
         {
-            Menu sub = Menu.New();
+            Gio.Menu sub = Gio.Menu.New();
             sub.Append("Зберегти конфігурацію", "app.save_configuration");
 
             /*

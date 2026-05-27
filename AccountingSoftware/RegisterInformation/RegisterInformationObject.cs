@@ -48,7 +48,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="uid">Унікальний ідентифікатор обєкту</param>
         /// <returns></returns>
-        protected async ValueTask<bool> BaseRead(UniqueID uid)
+        protected async Task<bool> BaseRead(UniqueID uid)
         {
             BaseClear();
 
@@ -73,7 +73,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Збереження даних в базу даних
         /// </summary>
-        protected async ValueTask<bool> BaseSave()
+        protected async Task<bool> BaseSave()
         {
             bool result;
 
@@ -100,7 +100,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Видалення з бази даних
         /// </summary>
-        protected async ValueTask BaseDelete()
+        protected async Task BaseDelete()
         {
             await Kernel.DataBase.DeleteRegisterInformationObject(Table, UniqueID);
             BaseClear();

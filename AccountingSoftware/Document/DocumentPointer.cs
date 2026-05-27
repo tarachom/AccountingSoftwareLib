@@ -38,7 +38,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="fieldPresentation">Масив полів які представляють обєкт (Наприклад Назва, Дата, Номер і т.д)</param>
         /// <returns>Представлення обєкта</returns>
-        protected async ValueTask<string> BasePresentation(string[] fieldPresentation)
+        protected async Task<string> BasePresentation(string[] fieldPresentation)
         {
             if (!IsEmpty() && fieldPresentation.Length != 0)
             {
@@ -55,7 +55,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Повертає признак що документ проведений
         /// </summary>
-        protected async ValueTask<bool?> BaseIsSpend()
+        protected async Task<bool?> BaseIsSpend()
         {
             if (!IsEmpty())
             {
@@ -69,7 +69,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Повертає признак що документ проведний і дату проведення
         /// </summary>
-        protected async ValueTask<(bool? Spend, DateTime SpendDate)> BaseGetSpend()
+        protected async Task<(bool? Spend, DateTime SpendDate)> BaseGetSpend()
         {
             if (!IsEmpty())
             {
@@ -85,7 +85,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="spend">Мітка проведення</param>
         /// <param name="spend_date">Дата проведення</param>
-        protected async ValueTask BaseSpend(bool spend, DateTime spend_date)
+        protected async Task BaseSpend(bool spend, DateTime spend_date)
         {
             if (!IsEmpty())
             {
@@ -99,7 +99,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Повертає мітку на видалення або null якщо вказівник пустий або не вдалось прочитати
         /// </summary>
-        protected async ValueTask<bool?> BaseGetDeletionLabel()
+        protected async Task<bool?> BaseGetDeletionLabel()
         {
             if (!IsEmpty())
             {
@@ -115,7 +115,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="label">Мітка</param>
         /// <exception cref="Exception">Не записаний</exception>
-        protected async ValueTask BaseDeletionLabel(bool label)
+        protected async Task BaseDeletionLabel(bool label)
         {
             if (Kernel != null && !IsEmpty())
             {

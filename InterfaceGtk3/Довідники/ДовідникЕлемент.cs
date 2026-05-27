@@ -57,7 +57,7 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
     /// <summary>
     /// Функція для отримання інформації про блокування
     /// </summary>
-    Func<ValueTask<LockedObject_Record>>? FuncLockInfo;
+    Func<Task<LockedObject_Record>>? FuncLockInfo;
 
     public ДовідникЕлемент()
     {
@@ -148,7 +148,7 @@ public abstract class ДовідникЕлемент : ФормаЕлемент
     /// Функція для відображення інформації про блокування
     /// </summary>
     /// <param name="accountingObject">Обєкт</param>
-    public async ValueTask LockInfo(AccountingSoftware.Object accountingObject)
+    public async Task LockInfo(AccountingSoftware.Object accountingObject)
     {
         bool isLock = await accountingObject.IsLock();
         bSaveAndClose.Sensitive = bSave.Sensitive = isLock;

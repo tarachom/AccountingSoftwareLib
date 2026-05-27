@@ -76,9 +76,9 @@ public partial class FormTablePart : Form
     #region Virtual & Abstract Function
 
     protected virtual void Columns() { }
-    public virtual async ValueTask LoadRecords() => await ValueTask.FromResult(true);
-    public virtual async ValueTask SaveRecords() => await ValueTask.FromResult(true);
-    public virtual async ValueTask<bool> NewRecord() => await ValueTask.FromResult(true);
+    public virtual Task LoadRecords() => Task.CompletedTask;
+    public virtual Task SaveRecords() => Task.CompletedTask;
+    public virtual Task<bool> NewRecord() => Task.FromResult(true);
 
     #endregion
 

@@ -60,8 +60,8 @@ public partial class CompositePointerControl : PointerControl
 
     #region Virtual & Abstract Function
 
-    protected virtual ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-        ValueTask.FromResult<CompositePointerPresentation_Record>(new());
+    protected virtual Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
+        Task.FromResult<CompositePointerPresentation_Record>(new());
 
     #endregion
 

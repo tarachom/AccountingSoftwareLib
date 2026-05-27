@@ -57,7 +57,7 @@ public partial class CommonForms_DocumentMovementThroughRegisters : Form
     /// </summary>
     /// <param name="name">Назва</param>
     /// <param name="getForm">Функція яка повертає віджет</param>
-    protected virtual async ValueTask AddForm(string name, Func<bool, ValueTask<Widget>> getForm)
+    protected virtual async Task AddForm(string name, Func<bool, Task<Widget>> getForm)
     {
         Box vBox = New(Orientation.Vertical, 0);
         vBox.MarginTop = vBox.MarginBottom = 10;

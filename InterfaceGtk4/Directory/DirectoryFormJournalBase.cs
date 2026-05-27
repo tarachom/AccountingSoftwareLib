@@ -217,7 +217,7 @@ public partial class DirectoryFormJournalBase : FormJournal
     /// <summary>
     /// Перша функція яка викликається після створення форми
     /// </summary>
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
         await BeforeSetValue();
@@ -237,21 +237,21 @@ public partial class DirectoryFormJournalBase : FormJournal
     /// <param name="IsNew">Чи це новий?</param>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
+    protected virtual Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => Task.CompletedTask;
 
     /// <summary>
     /// Помітка на видалення
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask SetDeletionLabel(UniqueID uniqueID) => await ValueTask.FromResult(true);
+    protected virtual Task SetDeletionLabel(UniqueID uniqueID) => Task.CompletedTask;
 
     /// <summary>
     /// Копіювання
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask<UniqueID?> Copy(UniqueID uniqueID) => await ValueTask.FromResult(UniqueID.NewEmpty());
+    protected virtual async Task<UniqueID?> Copy(UniqueID uniqueID) => await Task.FromResult(UniqueID.NewEmpty());
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -283,7 +283,7 @@ public partial class DirectoryFormJournalBase : FormJournal
     /// При активації
     /// </summary>
     /// <param name="position">Позиція</param>
-    protected virtual async ValueTask GridOnActivate(uint position)
+    protected virtual async Task GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
         if (model.GetObject(position) is DirectoryRowJournal row)
@@ -410,7 +410,7 @@ public partial class DirectoryFormJournalBase : FormJournal
         */
     }
 
-    async ValueTask Delete()
+    async Task Delete()
     {
         UniqueID[] rows = GetSelectionUnigueID();
         if (rows.Length > 0)

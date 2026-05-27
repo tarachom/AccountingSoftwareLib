@@ -121,7 +121,7 @@ public partial class RegisterInformationFormJournalBase : FormJournal
         Grid.Model = model;
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
         await BeforeSetValue();

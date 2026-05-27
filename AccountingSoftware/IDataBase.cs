@@ -30,11 +30,11 @@ namespace AccountingSoftware
     {
         #region Open
 
-        ValueTask<bool> Open(string Server, string UserId, string Password, int Port, string Database);
-        ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database);
-        ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database);
-        ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database);
-        ValueTask CreateSpecialTables();
+        Task<bool> Open(string Server, string UserId, string Password, int Port, string Database);
+        Task<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database);
+        Task<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database);
+        Task<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database);
+        Task CreateSpecialTables();
         void Close();
 
         #endregion
@@ -46,207 +46,207 @@ namespace AccountingSoftware
 
         #region SpetialTable MessageError
 
-        ValueTask SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0);
-        ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null);
-        ValueTask SpetialTableMessageErrorClear(Guid user_uid);
-        ValueTask SpetialTableMessageErrorClearOld(Guid user_uid);
+        Task SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0);
+        Task<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null);
+        Task SpetialTableMessageErrorClear(Guid user_uid);
+        Task SpetialTableMessageErrorClearOld(Guid user_uid);
 
         #endregion
 
         #region SpetialTable RegAccumTriger
 
-        ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
-        ValueTask SpetialTableRegAccumTrigerExecute(Guid session, Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation);
+        Task SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0);
+        Task SpetialTableRegAccumTrigerExecute(Guid session, Func<DateTime, string, Task> ExecuteСalculation, Func<List<string>, Task> ExecuteFinalСalculation);
 
-        ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid users, Guid session, Guid document, string info, byte transactionID = 0);
-        ValueTask SpetialTableRegAccumTrigerDocIgnoreClear(Guid users, Guid session, Guid? document = null, byte transactionID = 0);
+        Task SpetialTableRegAccumTrigerDocIgnoreAdd(Guid users, Guid session, Guid document, string info, byte transactionID = 0);
+        Task SpetialTableRegAccumTrigerDocIgnoreClear(Guid users, Guid session, Guid? document = null, byte transactionID = 0);
 
         #endregion
 
         #region SpetialTable Users
 
-        ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
-        ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect();
-        ValueTask<SelectRequest_Record> SpetialTableUsersExtendetList();
-        ValueTask<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid);
-        ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
-        ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name);
-        ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid);
-        ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm);
+        Task<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info);
+        Task<Dictionary<string, string>> SpetialTableUsersShortSelect();
+        Task<SelectRequest_Record> SpetialTableUsersExtendetList();
+        Task<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid);
+        Task<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null);
+        Task<bool> SpetialTableUsersDelete(Guid user_uid, string name);
+        Task<string> SpetialTableUsersGetFullName(Guid user_uid);
+        Task<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm);
 
         #endregion
 
         #region SpetialTable ActiveUsers
 
-        ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid);
-        ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid);
-        ValueTask<SelectRequest_Record> SpetialTableActiveUsersSelect();
+        Task<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid);
+        Task SpetialTableActiveUsersCloseSession(Guid session_uid);
+        Task<SelectRequest_Record> SpetialTableActiveUsersSelect();
 
         #endregion
 
         #region SpetialTable FullTextSearch
 
-        ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch);
-        ValueTask SpetialTableFullTextSearchDelete(UniqueID uid, byte transactionID = 0);
-        ValueTask<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch);
-        ValueTask<SelectRequest_Record> SpetialTableFullTextSearchDictList();
-        ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch);
+        Task SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch);
+        Task SpetialTableFullTextSearchDelete(UniqueID uid, byte transactionID = 0);
+        Task<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch);
+        Task<SelectRequest_Record> SpetialTableFullTextSearchDictList();
+        Task<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch);
 
         #endregion
 
         #region SpetialTable ObjectUpdateTriger
 
-        ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation);
-        ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after);
-        ValueTask SpetialTableObjectUpdateTrigerClear();
-        ValueTask SpetialTableObjectUpdateTrigerClearOld();
+        Task SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation);
+        Task<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after);
+        Task SpetialTableObjectUpdateTrigerClear();
+        Task SpetialTableObjectUpdateTrigerClearOld();
 
         #endregion
 
         #region SpetialTable LockedObject
 
-        ValueTask<UniqueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj);
-        ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect();
-        ValueTask<bool> SpetialTableLockedObjectIsLock(UniqueID lockKey);
-        ValueTask<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj);
-        ValueTask SpetialTableLockedObjectClear(UniqueID uid);
+        Task<UniqueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj);
+        Task<SelectRequest_Record> SpetialTableLockedObjectSelect();
+        Task<bool> SpetialTableLockedObjectIsLock(UniqueID lockKey);
+        Task<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj);
+        Task SpetialTableLockedObjectClear(UniqueID uid);
 
         #endregion
 
         #region SpetialTable VersionsHistory
 
-        ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0);
-        ValueTask<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj);
-        ValueTask<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj);
-        ValueTask SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0);
-        ValueTask SpetialTableObjectVersionsHistoryRemoveAll(UuidAndText obj, byte transactionID = 0);
+        Task SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0);
+        Task<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj);
+        Task<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj);
+        Task SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0);
+        Task SpetialTableObjectVersionsHistoryRemoveAll(UuidAndText obj, byte transactionID = 0);
 
-        ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<Guid, Dictionary<string, object>> listFieldValue, byte transactionID = 0);
-        ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText obj);
+        Task SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<Guid, Dictionary<string, object>> listFieldValue, byte transactionID = 0);
+        Task<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText obj);
 
         #endregion
 
         #region Transaction
 
-        ValueTask<byte> BeginTransaction();
-        ValueTask CommitTransaction(byte transactionID);
-        ValueTask RollbackTransaction(byte transactionID);
+        Task<byte> BeginTransaction();
+        Task CommitTransaction(byte transactionID);
+        Task RollbackTransaction(byte transactionID);
 
         #endregion
 
         #region Constants
 
-        ValueTask<SelectConstants_Record> SelectConstants(string table, string field);
-        ValueTask SaveConstants(string table, string field, object fieldValue);
+        Task<SelectConstants_Record> SelectConstants(string table, string field);
+        Task SaveConstants(string table, string field, object fieldValue);
 
-        ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0);
-        ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
+        Task SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
+        Task InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0);
+        Task DeleteConstantsTablePartRecords(string table, byte transactionID = 0);
 
         #endregion
 
         #region Func (Directory, Document)
 
-        ValueTask<bool> IsExistUniqueID(UniqueID uniqueID, string table);
-        ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000);
-        ValueTask<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000);
+        Task<bool> IsExistUniqueID(UniqueID uniqueID, string table);
+        Task<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000);
+        Task<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000);
 
         #endregion
 
         #region Directory
 
-        ValueTask<bool> InsertDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<bool> UpdateDirectoryObject(UniqueID uniqueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null);
-        ValueTask DeleteDirectoryObject(UniqueID uniqueID, string table, byte transactionID = 0);
+        Task<bool> InsertDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        Task<bool> UpdateDirectoryObject(UniqueID uniqueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
+        Task<SelectDirectoryObject_Record> SelectDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null);
+        Task DeleteDirectoryObject(UniqueID uniqueID, string table, byte transactionID = 0);
 
-        ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
-        ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers);
-        ValueTask<UniqueID?> FindDirectoryPointer(Query QuerySelect);
-        ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
-        ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect);
+        Task SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
+        Task SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers);
+        Task<UniqueID?> FindDirectoryPointer(Query QuerySelect);
+        Task<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
+        Task DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
-        ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
+        Task SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
-        ValueTask InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
-        ValueTask DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);
+        Task InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
+        Task DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
 
         #region Document
 
-        ValueTask<bool> InsertDocumentObject(UniqueID uniqueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<bool> UpdateDocumentObject(UniqueID uniqueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
-        ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null);
-        ValueTask DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0);
+        Task<bool> InsertDocumentObject(UniqueID uniqueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        Task<bool> UpdateDocumentObject(UniqueID uniqueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue);
+        Task<SelectDocumentObject_Record> SelectDocumentObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null);
+        Task DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0);
 
-        ValueTask SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
-        ValueTask<UniqueID?> FindDocumentPointer(Query QuerySelect);
-        ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
+        Task SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
+        Task<UniqueID?> FindDocumentPointer(Query QuerySelect);
+        Task<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
-        ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
+        Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
 
-        ValueTask InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
-        ValueTask DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);
+        Task InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
+        Task DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);
 
         #endregion
 
         #region Journal
 
-        ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
+        Task SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listDocumentPointer,
             DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null);
 
         #endregion
 
         #region RegisterInformation
 
-        ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
+        Task SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
+        Task InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0);
 
-        ValueTask<bool> InsertRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<bool> UpdateRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
-        ValueTask RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0);
-        ValueTask DeleteRegisterInformationObject(string table, UniqueID uid);
+        Task<bool> InsertRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        Task<bool> UpdateRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        Task<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue);
+        Task RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0);
+        Task DeleteRegisterInformationObject(string table, UniqueID uid);
 
         #endregion
 
         #region RegisterAccumulation
 
-        ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-        ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
-        ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
+        Task SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
+        Task InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0);
+        Task DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0);
 
-        ValueTask SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
-        ValueTask InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
-        ValueTask RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0);
-        ValueTask DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0);
+        Task SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList);
+        Task InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
+        Task RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0);
+        Task DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0);
 
         #endregion
 
         #region InformationShema
 
-        ValueTask<ConfigurationInformationSchema> SelectInformationSchema();
-        ValueTask<bool> IfExistsTable(string tableName);
-        ValueTask<bool> IfExistsColumn(string tableName, string columnName);
-        ValueTask<List<string>> GetTableList();
-        ValueTask<List<string>> GetSpecialTableList();
+        Task<ConfigurationInformationSchema> SelectInformationSchema();
+        Task<bool> IfExistsTable(string tableName);
+        Task<bool> IfExistsColumn(string tableName, string columnName);
+        Task<List<string>> GetTableList();
+        Task<List<string>> GetSpecialTableList();
 
         #endregion
 
         #region SQL
 
-        ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0);
-        ValueTask<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0);
-        ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0);
-        ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0);
-        ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0);
-        ValueTask<DateTime> SelectCurrentTimestamp();
+        Task<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0);
+        Task<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0);
+        Task<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0);
+        Task<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0);
+        Task<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0);
+        Task<DateTime> SelectCurrentTimestamp();
 
         #endregion
     }

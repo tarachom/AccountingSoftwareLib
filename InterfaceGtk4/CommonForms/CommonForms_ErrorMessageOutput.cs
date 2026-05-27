@@ -65,7 +65,7 @@ public partial class CommonForms_ErrorMessageOutput : Form
 
     #endregion
 
-    public async ValueTask LoadRecords(UniqueID? objectUnigueID = null, int? limit = null)
+    public async Task LoadRecords(UniqueID? objectUnigueID = null, int? limit = null)
     {
         if (Kernel != null)
         {

@@ -63,7 +63,7 @@ public class NotebookFunction
     /// Функції розблокування які будуть викликані після закриття сторінки блокноту
     /// Словник - код сторінки і функція
     /// </summary>
-    readonly Dictionary<string, Func<ValueTask>> LockObjectPageFunc = [];
+    readonly Dictionary<string, Func<Task>> LockObjectPageFunc = [];
 
     /// <summary>
     /// Функція створює блокнот з верхнім положенням вкладок
@@ -277,7 +277,7 @@ public class NotebookFunction
                     RemoveChangeFunc(codePage);
 
                     //Розблокування об'єкту після закриття сторінки шляхом виклику відповідної функції
-                    if (LockObjectPageFunc.TryGetValue(codePage, out Func<ValueTask>? unlockFunc))
+                    if (LockObjectPageFunc.TryGetValue(codePage, out Func<Task>? unlockFunc))
                         RemoveLockObjectFunc(codePage, unlockFunc);
 
                     Notebook.DetachTab(wg);
@@ -546,7 +546,7 @@ public class NotebookFunction
     /// </summary>
     /// <param name="codePage">Код сторінки</param>
     /// <param name="accountingObject">Об'єкт</param>
-    public async ValueTask AddLockObjectFunc(string codePage, AccountingSoftware.Object accountingObject)
+    public async Task AddLockObjectFunc(string codePage, AccountingSoftware.Object accountingObject)
     {
         //Функція розблокування після закриття сторінки
         LockObjectPageFunc.Add(codePage, accountingObject.UnLock);
@@ -560,7 +560,7 @@ public class NotebookFunction
     /// </summary>
     /// <param name="codePage">Код сторінки</param>
     /// <param name="unlockFunc">Функція розблокування</param>
-    public async void RemoveLockObjectFunc(string codePage, Func<ValueTask> unlockFunc)
+    public async void RemoveLockObjectFunc(string codePage, Func<Task> unlockFunc)
     {
         await unlockFunc.Invoke();
         LockObjectPageFunc.Remove(codePage);

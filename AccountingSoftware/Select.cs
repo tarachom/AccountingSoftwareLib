@@ -72,7 +72,7 @@ namespace AccountingSoftware
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000) =>
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000) =>
             await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
 
         /// <summary>

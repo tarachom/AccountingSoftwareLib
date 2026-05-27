@@ -91,7 +91,7 @@ public partial class PageService : Form
         Append(Log);
     }
 
-    public async ValueTask SetValue()
+    public async Task SetValue()
     {
         await BeforeSetValue();
     }
@@ -259,7 +259,7 @@ public partial class PageService : Form
 
     protected virtual CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText) { return CompositePointerControl.NewWithProperties([]); }
 
-    protected virtual async ValueTask BeforeSetValue() { await ValueTask.FromResult(true); }
+    protected virtual Task BeforeSetValue() => Task.CompletedTask;
 
     protected virtual void PeriodChanged() { }
 
@@ -267,7 +267,7 @@ public partial class PageService : Form
 
     #region ПроведенняДокументів
 
-    async ValueTask SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
+    async Task SpendTheDocument(CancellationTokenSource cancellationToken, (string[] Filter, string[] Info)? filterAllowDoc, System.Action CallBack)
     {
         if (Kernel == null) throw new Exception("Kernel null");
 
@@ -356,7 +356,7 @@ public partial class PageService : Form
 
     #region ОчисткаПоміченихНаВидалення
 
-    async ValueTask ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
+    async Task ClearDeletionLabel(CancellationTokenSource cancellationToken, System.Action CallBack)
     {
         if (Kernel == null) throw new Exception("Kernel null");
 
@@ -446,7 +446,7 @@ public partial class PageService : Form
         Log.CreateEmptyMsg();
     }
 
-    async ValueTask<long> SearchDependencies(List<ConfigurationDependencies> listDependencies, Guid uid, string name)
+    async Task<long> SearchDependencies(List<ConfigurationDependencies> listDependencies, Guid uid, string name)
     {
         if (Kernel == null) throw new Exception("Kernel null");
 

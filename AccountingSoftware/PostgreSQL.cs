@@ -37,7 +37,7 @@ namespace AccountingSoftware
         #region Connect
         NpgsqlDataSource? DataSource { get; set; }
 
-        public async ValueTask<bool> Open(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> Open(string Server, string UserId, string Password, int Port, string Database)
         {
             Exception = null;
 
@@ -55,7 +55,7 @@ namespace AccountingSoftware
             }
         }
 
-        async ValueTask Open(string connectionString, bool startScript = true)
+        async Task Open(string connectionString, bool startScript = true)
         {
             NpgsqlDataSourceBuilder dataBuilder = new(connectionString);
             dataBuilder.MapComposite<UuidAndText>("uuidtext");
@@ -67,7 +67,7 @@ namespace AccountingSoftware
                 await StartScript();
         }
 
-        public async ValueTask<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> TryConnectToServer(string Server, string UserId, string Password, int Port, string Database)
         {
             string conString = $"Server={Server};Username={UserId};Password={Password};Port={Port};Database={Database};SSLMode=Prefer;";
 
@@ -89,7 +89,7 @@ namespace AccountingSoftware
             }
         }
 
-        public async ValueTask<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> IfExistDatabase(string Server, string UserId, string Password, int Port, string Database)
         {
             Exception = null;
 
@@ -108,7 +108,7 @@ namespace AccountingSoftware
             return await IfExistDatabase(Database);
         }
 
-        async ValueTask<bool> IfExistDatabase(string Database)
+        async Task<bool> IfExistDatabase(string Database)
         {
             if (DataSource != null)
             {
@@ -141,7 +141,7 @@ SELECT EXISTS
                 return false;
         }
 
-        public async ValueTask<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
+        public async Task<bool> CreateDatabaseIfNotExist(string Server, string UserId, string Password, int Port, string Database)
         {
             if (!Regex.IsMatch(Database, "^[0-9a-z_]+$"))
             {
@@ -193,7 +193,7 @@ SELECT EXISTS
             }
         }
 
-        async ValueTask StartScript()
+        async Task StartScript()
         {
             bool reloadTypes = false;
 
@@ -230,7 +230,7 @@ SELECT EXISTS
             await ExecuteSQL(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
         }
 
-        public async ValueTask CreateSpecialTables()
+        public async Task CreateSpecialTables()
         {
             //Список системних таблиць
             List<string> specialTable = await GetSpecialTableList();
@@ -657,7 +657,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_tablepart_i
 
         #region SpetialTable MessageError
 
-        public async ValueTask SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0)
+        public async Task SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0)
         {
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.MessageError} 
@@ -695,7 +695,7 @@ new Dictionary<string, object>
 transactionID);
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null)
+        public async Task<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
@@ -722,14 +722,14 @@ LIMIT {limit ?? 100}
             return await SelectRequest(query, queryParam);
         }
 
-        public async ValueTask SpetialTableMessageErrorClear(Guid user_uid)
+        public async Task SpetialTableMessageErrorClear(Guid user_uid)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
             await ExecuteSQL($@"DELETE FROM {SpecialTables.MessageError} WHERE users = @users", queryParam);
         }
 
-        public async ValueTask SpetialTableMessageErrorClearOld(Guid user_uid)
+        public async Task SpetialTableMessageErrorClearOld(Guid user_uid)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
@@ -750,7 +750,7 @@ WHERE users = @users AND datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '7
         /// <param name="regAccumName">Назва регістру</param>
         /// <param name="info">Додаткова інфа</param>
         /// <param name="transactionID">Ід транзакції</param>
-        public async ValueTask SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
+        public async Task SpetialTableRegAccumTrigerAdd(DateTime period, Guid document, string regAccumName, string info, byte transactionID = 0)
         {
             await ExecuteSQL($@"
 INSERT INTO {SpecialTables.RegAccumTriger} 
@@ -787,8 +787,8 @@ transactionID);
         /// <param name="session">Сесія з якої викликана дана процедура</param>
         /// <param name="ExecuteСalculation">Процедура обчислень</param>
         /// <param name="ExecuteFinalСalculation">Фінальна процедура обчислень</param>
-        public async ValueTask SpetialTableRegAccumTrigerExecute(Guid session,
-            Func<DateTime, string, ValueTask> ExecuteСalculation, Func<List<string>, ValueTask> ExecuteFinalСalculation)
+        public async Task SpetialTableRegAccumTrigerExecute(Guid session,
+            Func<DateTime, string, Task> ExecuteСalculation, Func<List<string>, Task> ExecuteFinalСalculation)
         {
             if (DataSource != null)
             {
@@ -877,7 +877,7 @@ ORDER BY period
         /// <summary>
         /// Очищення завдань. Пока не використовується.
         /// </summary>
-        public async ValueTask ClearSpetialTableRegAccumTriger()
+        public async Task ClearSpetialTableRegAccumTriger()
         {
             string query = $"DELETE FROM {SpecialTables.RegAccumTriger}";
             await ExecuteSQL(query);
@@ -889,7 +889,7 @@ ORDER BY period
         /// <param name="document">Документ</param>
         /// <param name="info">Додаткова інформація</param>
         /// <param name="transactionID">Ід транзакції</param>
-        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreAdd(Guid users, Guid session, Guid document, string info, byte transactionID = 0)
+        public async Task SpetialTableRegAccumTrigerDocIgnoreAdd(Guid users, Guid session, Guid document, string info, byte transactionID = 0)
         {
             //Очистка запису для документу, щоб не було лишніх дублів
             await SpetialTableRegAccumTrigerDocIgnoreClear(users, session, document);
@@ -911,7 +911,7 @@ VALUES(CURRENT_TIMESTAMP, @users, @session, @document, @info)", queryParam, tran
         /// <summary>
         /// Очистка таблиці документів які потрібно проігнорувати при виконанні тригерів
         /// </summary>
-        public async ValueTask SpetialTableRegAccumTrigerDocIgnoreClear(Guid users, Guid session, Guid? document = null, byte transactionID = 0)
+        public async Task SpetialTableRegAccumTrigerDocIgnoreClear(Guid users, Guid session, Guid? document = null, byte transactionID = 0)
         {
             Dictionary<string, object> queryParam = new()
             {
@@ -931,7 +931,7 @@ WHERE users = @users AND session = @session" + (document != null ? " AND documen
 
         #region SpetialTable Users
 
-        async ValueTask SpetialTableUsersAddSuperUser()
+        async Task SpetialTableUsersAddSuperUser()
         {
             Dictionary<string, object> paramQuery = new() { { "password", "" }, { "pass_hash", PasswordFunc.HashPassword("") } };
 
@@ -951,7 +951,7 @@ ON CONFLICT (name) DO NOTHING;
 ", paramQuery);
         }
 
-        public async ValueTask<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
+        public async Task<Guid?> SpetialTableUsersAddOrUpdate(bool isNew, Guid? uid, string name, string fullname, string password, string info)
         {
             Dictionary<string, object> paramQuery = new()
             {
@@ -1014,7 +1014,7 @@ WHERE
             }
         }
 
-        public async ValueTask<Dictionary<string, string>> SpetialTableUsersShortSelect()
+        public async Task<Dictionary<string, string>> SpetialTableUsersShortSelect()
         {
             Dictionary<string, string> users = [];
 
@@ -1041,7 +1041,7 @@ WHERE
             return users;
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableUsersExtendetList()
+        public async Task<SelectRequest_Record> SpetialTableUsersExtendetList()
         {
             string query = $@"
 SELECT 
@@ -1059,7 +1059,7 @@ ORDER BY
             return await SelectRequest(query, null);
         }
 
-        public async ValueTask<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid)
+        public async Task<SelectRequest_Record?> SpetialTableUsersExtendetUser(Guid user_uid)
         {
             string query = $@"
 SELECT 
@@ -1078,7 +1078,7 @@ ORDER BY
             return recordResult.Result ? recordResult : null;
         }
 
-        public async ValueTask<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
+        public async Task<bool> SpetialTableUsersIsExistUser(string name, Guid? uid = null, Guid? not_uid = null)
         {
             if (DataSource != null)
             {
@@ -1106,7 +1106,7 @@ ORDER BY
                 return false;
         }
 
-        public async ValueTask<string> SpetialTableUsersGetFullName(Guid user_uid)
+        public async Task<string> SpetialTableUsersGetFullName(Guid user_uid)
         {
             if (DataSource != null)
             {
@@ -1123,7 +1123,7 @@ ORDER BY
                 return "";
         }
 
-        public async ValueTask<bool> SpetialTableUsersDelete(Guid user_uid, string name)
+        public async Task<bool> SpetialTableUsersDelete(Guid user_uid, string name)
         {
             if (DataSource != null)
             {
@@ -1146,7 +1146,7 @@ ORDER BY
                 return false;
         }
 
-        public async ValueTask<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm)
+        public async Task<(Guid User, Guid Session)?> SpetialTableUsersLogIn(string user, string password, TypeForm typeForm)
         {
             if (DataSource != null)
             {
@@ -1187,7 +1187,7 @@ ORDER BY
 
         #region SpetialTable ActiveUsers
 
-        async ValueTask<Guid> SpetialTableActiveUsersAddSession(Guid user_uid, TypeForm typeForm)
+        async Task<Guid> SpetialTableActiveUsersAddSession(Guid user_uid, TypeForm typeForm)
         {
             Guid session_uid = Guid.NewGuid();
 
@@ -1213,7 +1213,7 @@ VALUES
             return session_uid;
         }
 
-        async ValueTask<bool> SpetialTableActiveUsersIsMaster(Guid session_uid)
+        async Task<bool> SpetialTableActiveUsersIsMaster(Guid session_uid)
         {
             if (DataSource != null)
             {
@@ -1230,7 +1230,7 @@ VALUES
                 return false;
         }
 
-        async ValueTask<bool> SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
+        async Task<bool> SpetialTableActiveUsersIsExistSessionToUpdate(Guid session_uid)
         {
             string query = $@"
 WITH update_session AS (
@@ -1250,7 +1250,7 @@ SELECT count(*) FROM update_session
                 return false;
         }
 
-        public async ValueTask<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid)
+        public async Task<bool> SpetialTableActiveUsersUpdateSession(Guid session_uid)
         {
             int life_old = 60; //Устарівша сесія якщо останнє обновлення більше заданого часу
             int life_active = 10; //Активна сесія якщо останнє обновлення більше заданого часу
@@ -1349,7 +1349,7 @@ COMMIT;
             return session_update;
         }
 
-        public async ValueTask SpetialTableActiveUsersCloseSession(Guid session_uid)
+        public async Task SpetialTableActiveUsersCloseSession(Guid session_uid)
         {
             if (DataSource != null)
             {
@@ -1364,7 +1364,7 @@ DELETE FROM {SpecialTables.ActiveUsers} WHERE uid = @session";
             }
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableActiveUsersSelect()
+        public async Task<SelectRequest_Record> SpetialTableActiveUsersSelect()
         {
             string query = $@"
 SELECT 
@@ -1391,7 +1391,7 @@ ORDER BY
 
         #region SpetialTable FullTextSearch
 
-        public async ValueTask SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch)
+        public async Task SpetialTableFullTextSearchAddValue(UuidAndText obj, string value, string dictTSearch = Configuration.DefaultDictTSearch)
         {
             if (DataSource != null)
             {
@@ -1446,7 +1446,7 @@ ON CONFLICT (uidobj) DO UPDATE SET
             }
         }
 
-        public async ValueTask SpetialTableFullTextSearchDelete(UniqueID uid, byte transactionID = 0)
+        public async Task SpetialTableFullTextSearchDelete(UniqueID uid, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -1462,7 +1462,7 @@ DELETE FROM {SpecialTables.FullTextSearch} WHERE uidobj = @uid";
             }
         }
 
-        public async ValueTask<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch)
+        public async Task<SelectRequest_Record?> SpetialTableFullTextSearchSelect(string findtext, uint offset = 0, string dictTSearch = Configuration.DefaultDictTSearch)
         {
             if (DataSource != null)
             {
@@ -1497,12 +1497,12 @@ FROM
                 return null;
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableFullTextSearchDictList()
+        public async Task<SelectRequest_Record> SpetialTableFullTextSearchDictList()
         {
             return await SelectRequest("SELECT cfgname FROM pg_ts_config");
         }
 
-        public async ValueTask<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch)
+        public async Task<bool> SpetialTableFullTextSearchIfExistDict(string dictTSearch)
         {
             object? count = await ExecuteSQLScalar(@$"
 SELECT 
@@ -1519,7 +1519,7 @@ WHERE
 
         #region SpetialTable ObjectUpdateTriger
 
-        public async ValueTask SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation)
+        public async Task SpetialTableObjectUpdateTrigerAdd(UuidAndText obj, char operation)
         {
             Dictionary<string, object> paramQuery = new()
             {
@@ -1542,7 +1542,7 @@ VALUES
 )", paramQuery);
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after)
+        public async Task<SelectRequest_Record> SpetialTableObjectUpdateTrigerSelect(DateTime after)
         {
             Dictionary<string, object> queryParam = new() { { "after", after } };
 
@@ -1571,12 +1571,12 @@ GROUP BY
             return await SelectRequest(query, queryParam);
         }
 
-        public async ValueTask SpetialTableObjectUpdateTrigerClear()
+        public async Task SpetialTableObjectUpdateTrigerClear()
         {
             await ExecuteSQL($@"DELETE FROM {SpecialTables.ObjectUpdateTriger}");
         }
 
-        public async ValueTask SpetialTableObjectUpdateTrigerClearOld()
+        public async Task SpetialTableObjectUpdateTrigerClearOld()
         {
             int life_old = 1; //Устарівші дані
 
@@ -1589,7 +1589,7 @@ WHERE datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '{life_old} minutes')
 
         #region SpetialTable LockedObject
 
-        public async ValueTask<UniqueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
+        public async Task<UniqueID> SpetialTableLockedObjectAdd(Guid user_uid, Guid session_uid, UuidAndText obj)
         {
             UniqueID uniqueID = new UniqueID();
 
@@ -1632,7 +1632,7 @@ VALUES
             return uniqueID;
         }
 
-        public async ValueTask<bool> SpetialTableLockedObjectIsLock(UniqueID lockKey)
+        public async Task<bool> SpetialTableLockedObjectIsLock(UniqueID lockKey)
         {
             if (!lockKey.IsEmpty())
             {
@@ -1648,7 +1648,7 @@ VALUES
                 return false;
         }
 
-        public async ValueTask<SelectRequest_Record> SpetialTableLockedObjectSelect()
+        public async Task<SelectRequest_Record> SpetialTableLockedObjectSelect()
         {
             string query = $@"
 SELECT 
@@ -1665,7 +1665,7 @@ ORDER BY
             return await SelectRequest(query);
         }
 
-        public async ValueTask<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj)
+        public async Task<LockedObject_Record> SpetialTableLockedObjectLockInfo(UuidAndText obj)
         {
             LockedObject_Record record = new();
 
@@ -1699,7 +1699,7 @@ WHERE (LockedObject.obj).uuid = @obj
             return record;
         }
 
-        public async ValueTask SpetialTableLockedObjectClear(UniqueID lockKey)
+        public async Task SpetialTableLockedObjectClear(UniqueID lockKey)
         {
             if (!lockKey.IsEmpty())
             {
@@ -1724,11 +1724,11 @@ WHERE (LockedObject.obj).uuid = @obj
         /// <param name="fieldValue">Поля із значеннями</param>
         /// <param name="operation">Операція</param>
         /// <param name="info">Додаткова інформація</param>
-        public async ValueTask SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0)
+        public async Task SpetialTableObjectVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText obj, Dictionary<string, object>? fieldValue, char operation, string info = "", byte transactionID = 0)
         {
             #region Local Func
 
-            async ValueTask<string?> GetOldHashData(Guid version_id, UuidAndText obj)
+            async Task<string?> GetOldHashData(Guid version_id, UuidAndText obj)
             {
                 Dictionary<string, object> paramQuery = new() { { "version_id", version_id }, { "uuid", obj.Uuid }, { "text", obj.Text } };
 
@@ -1825,7 +1825,7 @@ ON CONFLICT (uid) DO UPDATE SET
         /// </summary>
         /// <param name="obj">Обєкт</param>
         /// <returns>Колекція змін</returns>
-        public async ValueTask<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj)
+        public async Task<SelectVersionsHistoryList_Record> SpetialTableObjectVersionsHistoryList(UuidAndText obj)
         {
             SelectVersionsHistoryList_Record record = new();
 
@@ -1880,13 +1880,13 @@ ORDER BY
         /// <param name="version_id">Версія</param>
         /// <param name="obj">Обєкт</param>
         /// <returns>Колекція</returns>
-        public async ValueTask<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj)
+        public async Task<SelectVersionsHistoryItem_Record> SpetialTableObjectVersionsHistorySelect(Guid version_id, UuidAndText obj)
         {
             SelectVersionsHistoryItem_Record record = new();
 
             #region Local Func
 
-            async ValueTask<NameAndText[]> GetPreviousFields(DateTime datewrite)
+            async Task<NameAndText[]> GetPreviousFields(DateTime datewrite)
             {
                 Dictionary<string, object> paramQuery = new()
                 {
@@ -1966,7 +1966,7 @@ WHERE
         /// </summary>
         /// <param name="version_id">Версія</param>
         /// <param name="obj">Обєкт</param>
-        public async ValueTask SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0)
+        public async Task SpetialTableObjectVersionsHistoryRemove(Guid version_id, UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
             {
@@ -1994,7 +1994,7 @@ WHERE
         /// Видалення всіх записів в історії для обєкту
         /// </summary>
         /// <param name="obj">Обєкт</param>
-        public async ValueTask SpetialTableObjectVersionsHistoryRemoveAll(UuidAndText obj, byte transactionID = 0)
+        public async Task SpetialTableObjectVersionsHistoryRemoveAll(UuidAndText obj, byte transactionID = 0)
         {
             if (!obj.IsEmpty())
             {
@@ -2018,12 +2018,12 @@ WHERE
 
         // TablePartVersionsHistory
 
-        public async ValueTask SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<Guid, Dictionary<string, object>> listFieldValue, byte transactionID = 0)
+        public async Task SpetialTableTablePartVersionsHistoryAdd(Guid version_id, Guid user_uid, UuidAndText objowner, string tablepart, Dictionary<Guid, Dictionary<string, object>> listFieldValue, byte transactionID = 0)
         {
             #region Local Func
 
             // Перевірка запису в основній таблиці і добавлення якщо немає
-            async ValueTask AddGeneralRecord()
+            async Task AddGeneralRecord()
             {
                 Dictionary<string, object> paramQuery = new() { { "version_id", version_id } };
                 string query = $@"
@@ -2040,7 +2040,7 @@ WHERE
             }
 
             // Очистка попередніх записів
-            async ValueTask Clean()
+            async Task Clean()
             {
                 Dictionary<string, object> paramQuery = new()
                 {
@@ -2060,7 +2060,7 @@ WHERE
             }
 
             // Отримати попередній хеш для таб частини
-            async ValueTask<string?> GetOldHashDataRecord()
+            async Task<string?> GetOldHashDataRecord()
             {
                 Dictionary<string, object> paramQuery = new()
                 {
@@ -2088,7 +2088,7 @@ LIMIT 1
             }
 
             // Добавлення хешу для таб частини
-            async ValueTask AddHashDataRecord(string hashdata)
+            async Task AddHashDataRecord(string hashdata)
             {
                 Dictionary<string, object> paramQuery = new()
                 {
@@ -2124,7 +2124,7 @@ VALUES
             }
 
             // Добавлення запису в історію
-            async ValueTask AddRecord(NameAndText[] nameAndText)
+            async Task AddRecord(NameAndText[] nameAndText)
             {
                 Dictionary<string, object> paramQuery = new()
                     {
@@ -2199,7 +2199,7 @@ VALUES
         /// </summary>
         /// <param name="version_id">Версія</param>
         /// <param name="objowner">Обєкт-власник</param>
-        public async ValueTask<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText objowner)
+        public async Task<SelectVersionsHistoryTablePart_Record> SpetialTableTablePartVersionsHistorySelect(Guid version_id, UuidAndText objowner)
         {
             SelectVersionsHistoryTablePart_Record record = new();
 
@@ -2249,7 +2249,7 @@ WHERE
         /// </summary>
         /// <param name="version_id">Версія</param>
         /// <param name="objowner">Обєкт-власник</param>
-        async ValueTask SpetialTableTablePartVersionsHistoryRemove(Guid version_id, UuidAndText objowner, byte transactionID = 0)
+        async Task SpetialTableTablePartVersionsHistoryRemove(Guid version_id, UuidAndText objowner, byte transactionID = 0)
         {
             if (!objowner.IsEmpty())
             {
@@ -2282,7 +2282,7 @@ WHERE
         /// Очищає всі записи для обєкту-влаcника
         /// </summary>
         /// <param name="objowner">Обєкт-власник</param>
-        async ValueTask SpetialTableTablePartVersionsHistoryRemoveAll(UuidAndText objowner, byte transactionID = 0)
+        async Task SpetialTableTablePartVersionsHistoryRemoveAll(UuidAndText objowner, byte transactionID = 0)
         {
             if (!objowner.IsEmpty())
             {
@@ -2354,7 +2354,7 @@ WHERE
         readonly Dictionary<byte, NpgsqlTransaction> OpenTransaction = [];
         volatile byte TransactionCounter = 0;
 
-        public async ValueTask<byte> BeginTransaction()
+        public async Task<byte> BeginTransaction()
         {
             if (DataSource != null)
             {
@@ -2376,7 +2376,7 @@ WHERE
                 return 0;
         }
 
-        public async ValueTask CommitTransaction(byte transactionID)
+        public async Task CommitTransaction(byte transactionID)
         {
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
@@ -2397,7 +2397,7 @@ WHERE
                 throw new IndexOutOfRangeException("Невірний номер транзації");
         }
 
-        public async ValueTask RollbackTransaction(byte transactionID)
+        public async Task RollbackTransaction(byte transactionID)
         {
             if (transactionID == 0)
                 throw new IndexOutOfRangeException("Не задана транзація");
@@ -2428,7 +2428,7 @@ WHERE
 
         #region Constants
 
-        public async ValueTask<SelectConstants_Record> SelectConstants(string table, string field)
+        public async Task<SelectConstants_Record> SelectConstants(string table, string field)
         {
             SelectConstants_Record recordResult = new();
 
@@ -2452,7 +2452,7 @@ WHERE
             return recordResult;
         }
 
-        public async ValueTask SaveConstants(string table, string field, object fieldValue)
+        public async Task SaveConstants(string table, string field, object fieldValue)
         {
             if (DataSource != null)
             {
@@ -2468,7 +2468,7 @@ WHERE
             }
         }
 
-        public async ValueTask SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async Task SelectConstantsTablePartRecords(Query QuerySelect, string[] fieldArray, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -2504,7 +2504,7 @@ WHERE
             }
         }
 
-        public async ValueTask InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertConstantsTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2531,7 +2531,7 @@ WHERE
             }
         }
 
-        public async ValueTask RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0)
+        public async Task RemoveConstantsTablePartRecords(Guid UID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2546,7 +2546,7 @@ WHERE
             }
         }
 
-        public async ValueTask DeleteConstantsTablePartRecords(string table, byte transactionID = 0)
+        public async Task DeleteConstantsTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2563,7 +2563,7 @@ WHERE
 
         #region Func (Directory, Document)
 
-        public async ValueTask<bool> IsExistUniqueID(UniqueID uniqueID, string table)
+        public async Task<bool> IsExistUniqueID(UniqueID uniqueID, string table)
         {
             if (DataSource != null)
             {
@@ -2580,7 +2580,7 @@ WHERE
         /// <param name="QuerySelect">Запит</param>
         /// <param name="uniqueID">Елемент на який треба спозиціонуватися</param>
         /// <param name="pageSize">Розмір сторінки</param>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000)
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000)
         {
             SplitSelectToPages_Record record = new() { PageSize = pageSize };
 
@@ -2718,7 +2718,7 @@ FROM
         /// <param name="paramQuery">Параметри</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async ValueTask<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000)
+        public async Task<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000)
         {
             SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
 
@@ -2750,7 +2750,7 @@ FROM
 
         #region Directory
 
-        public async ValueTask<bool> InsertDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async Task<bool> InsertDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -2781,7 +2781,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateDirectoryObject(UniqueID uniqueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async Task<bool> UpdateDirectoryObject(UniqueID uniqueID, bool deletion_label, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -2810,7 +2810,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectDirectoryObject_Record> SelectDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
+        public async Task<SelectDirectoryObject_Record> SelectDirectoryObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDirectoryObject_Record record = new();
 
@@ -2843,7 +2843,7 @@ FROM
             return record;
         }
 
-        public async ValueTask DeleteDirectoryObject(UniqueID uniqueID, string table, byte transactionID = 0)
+        public async Task DeleteDirectoryObject(UniqueID uniqueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -2858,7 +2858,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
+        public async Task SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -2892,7 +2892,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers)
+        public async Task SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -2931,7 +2931,7 @@ FROM
             }
         }
 
-        public async ValueTask<UniqueID?> FindDirectoryPointer(Query QuerySelect)
+        public async Task<UniqueID?> FindDirectoryPointer(Query QuerySelect)
         {
             UniqueID? directoryPointer = null;
 
@@ -2959,7 +2959,7 @@ FROM
             return directoryPointer;
         }
 
-        public async ValueTask<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
+        public async Task<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)
             {
@@ -2986,7 +2986,7 @@ FROM
                 return "";
         }
 
-        public async ValueTask DeleteDirectoryTempTable(DirectorySelect directorySelect)
+        public async Task DeleteDirectoryTempTable(DirectorySelect directorySelect)
         {
             /*
             Створення тимчасових таблиць на даний момент не використовується,
@@ -3007,7 +3007,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async Task SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -3043,7 +3043,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3071,7 +3071,7 @@ FROM
             }
         }
 
-        public async ValueTask RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
+        public async Task RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3087,7 +3087,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
+        public async Task DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3106,7 +3106,7 @@ FROM
 
         #region Document
 
-        public async ValueTask<SelectDocumentObject_Record> SelectDocumentObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
+        public async Task<SelectDocumentObject_Record> SelectDocumentObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object>? fieldValue = null)
         {
             SelectDocumentObject_Record record = new();
 
@@ -3142,7 +3142,7 @@ FROM
             return record;
         }
 
-        public async ValueTask<bool> InsertDocumentObject(UniqueID uniqueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async Task<bool> InsertDocumentObject(UniqueID uniqueID, bool spend, DateTime spend_date, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3175,7 +3175,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateDocumentObject(UniqueID uniqueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
+        public async Task<bool> UpdateDocumentObject(UniqueID uniqueID, bool? deletion_label, bool? spend, DateTime? spend_date, string table, string[]? fieldArray, Dictionary<string, object>? fieldValue)
         {
             if (DataSource != null)
             {
@@ -3222,7 +3222,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0)
+        public async Task DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3237,7 +3237,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
+        public async Task SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers)
         {
             if (DataSource != null)
             {
@@ -3271,7 +3271,7 @@ FROM
             }
         }
 
-        public async ValueTask<UniqueID?> FindDocumentPointer(Query QuerySelect)
+        public async Task<UniqueID?> FindDocumentPointer(Query QuerySelect)
         {
             UniqueID? documentPointer = null;
 
@@ -3299,7 +3299,7 @@ FROM
             return documentPointer;
         }
 
-        public async ValueTask<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
+        public async Task<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
         {
             if (DataSource != null)
             {
@@ -3326,7 +3326,7 @@ FROM
                 return "";
         }
 
-        public async ValueTask SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -3362,7 +3362,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3390,7 +3390,7 @@ FROM
             }
         }
 
-        public async ValueTask RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
+        public async Task RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3406,7 +3406,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
+        public async Task DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3425,7 +3425,7 @@ FROM
 
         #region Journal
 
-        public async ValueTask SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
+        public async Task SelectJournalDocumentPointer(string[] tables, string[] typeDocument, List<JournalDocument> listJournalDocument,
             DateTime periodStart, DateTime periodEnd, string[]? typeDocSelect = null, bool? spendDocSelect = null)
         {
             if (DataSource != null)
@@ -3510,7 +3510,7 @@ FROM
 
         #region RegistersInformation
 
-        public async ValueTask SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async Task SelectRegisterInformationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -3549,7 +3549,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertRegisterInformationRecords(Guid UID, string table, DateTime period, Guid owner, NameAndText ownertype, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3579,7 +3579,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0)
+        public async Task DeleteRegisterInformationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3594,7 +3594,7 @@ FROM
             }
         }
 
-        public async ValueTask<bool> InsertRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async Task<bool> InsertRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3627,7 +3627,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> UpdateRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async Task<bool> UpdateRegisterInformationObject(UniqueID uniqueID, DateTime period, Guid owner, NameAndText ownertype, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             if (DataSource != null)
             {
@@ -3656,7 +3656,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
+        public async Task<SelectRegisterInformationObject_Record> SelectRegisterInformationObject(UniqueID uniqueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue)
         {
             SelectRegisterInformationObject_Record record = new();
 
@@ -3691,7 +3691,7 @@ FROM
             return record;
         }
 
-        public async ValueTask RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0)
+        public async Task RemoveRegisterInformationRecords(Guid UID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3706,7 +3706,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteRegisterInformationObject(string table, UniqueID uid)
+        public async Task DeleteRegisterInformationObject(string table, UniqueID uid)
         {
             if (DataSource != null)
             {
@@ -3724,7 +3724,7 @@ FROM
 
         #region RegistersAccumulation
 
-        public async ValueTask SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
+        public async Task SelectRegisterAccumulationRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
         {
             if (DataSource != null)
             {
@@ -3763,7 +3763,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertRegisterAccumulationRecords(Guid UID, string table, DateTime period, bool income, Guid owner, NameAndText ownertype, int ownerlinenum, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3795,7 +3795,7 @@ FROM
             }
         }
 
-        public async ValueTask<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0)
+        public async Task<List<DateTime>?> SelectRegisterAccumulationRecordPeriodForOwner(string table, Guid owner, DateTime? periodCurrent = null, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3833,7 +3833,7 @@ FROM
                 return null;
         }
 
-        public async ValueTask DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
+        public async Task DeleteRegisterAccumulationRecords(string table, Guid owner, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3848,7 +3848,7 @@ FROM
             }
         }
 
-        public async ValueTask SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
+        public async Task SelectRegisterAccumulationTablePartRecords(string table, string[] fieldArray, List<Dictionary<string, object>> fieldValueList)
         {
             if (DataSource != null)
             {
@@ -3877,7 +3877,7 @@ FROM
             }
         }
 
-        public async ValueTask InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
+        public async Task InsertRegisterAccumulationTablePartRecords(Guid UID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3904,7 +3904,7 @@ FROM
             }
         }
 
-        public async ValueTask RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0)
+        public async Task RemoveRegisterAccumulationTablePartRecords(Guid UID, string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3919,7 +3919,7 @@ FROM
             }
         }
 
-        public async ValueTask DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0)
+        public async Task DeleteRegisterAccumulationTablePartRecords(string table, byte transactionID = 0)
         {
             if (DataSource != null)
             {
@@ -3937,7 +3937,7 @@ FROM
 
         #region InformationShema
 
-        public async ValueTask<bool> IfExistsTable(string tableName)
+        public async Task<bool> IfExistsTable(string tableName)
         {
             if (DataSource != null)
             {
@@ -3960,7 +3960,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<bool> IfExistsColumn(string tableName, string columnName)
+        public async Task<bool> IfExistsColumn(string tableName, string columnName)
         {
             if (DataSource != null)
             {
@@ -3984,7 +3984,7 @@ FROM
                 return false;
         }
 
-        public async ValueTask<ConfigurationInformationSchema> SelectInformationSchema()
+        public async Task<ConfigurationInformationSchema> SelectInformationSchema()
         {
             ConfigurationInformationSchema informationSchema = new ConfigurationInformationSchema();
 
@@ -4033,7 +4033,7 @@ FROM
             return informationSchema;
         }
 
-        public async ValueTask<List<string>> GetTableList()
+        public async Task<List<string>> GetTableList()
         {
             List<string> tables = [];
 
@@ -4058,7 +4058,7 @@ FROM
             return tables;
         }
 
-        public async ValueTask<List<string>> GetSpecialTableList()
+        public async Task<List<string>> GetSpecialTableList()
         {
             List<string> tables = [];
 
@@ -4093,7 +4093,7 @@ FROM
         /// <param name="table">Таблиця</param>
         /// <param name="paramQuery">Поля і значення</param>
         /// <returns></returns>
-        public async ValueTask<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0)
+        public async Task<int> InsertSQL(string table, Dictionary<string, object> paramQuery, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
@@ -4122,7 +4122,7 @@ FROM
         /// </summary>
         /// <param name="sqlQuery">Запит</param>
         /// <returns></returns>
-        public async ValueTask<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0)
+        public async Task<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0)
         {
             return await ExecuteSQL(query, null, transactionID, commandTimeout);
         }
@@ -4133,7 +4133,7 @@ FROM
         /// <param name="sqlQuery">Запит</param>
         /// <param name="paramQuery">Параметри</param>
         /// <returns></returns>
-        public async ValueTask<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0)
+        public async Task<int> ExecuteSQL(string query, Dictionary<string, object>? paramQuery, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
@@ -4151,7 +4151,7 @@ FROM
                 return -1;
         }
 
-        public async ValueTask<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0)
+        public async Task<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
             {
@@ -4169,7 +4169,7 @@ FROM
                 return null;
         }
 
-        public async ValueTask<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0)
+        public async Task<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0)
         {
             SelectRequest_Record record = new();
 
@@ -4207,7 +4207,7 @@ FROM
             return record;
         }
 
-        public async ValueTask<DateTime> SelectCurrentTimestamp()
+        public async Task<DateTime> SelectCurrentTimestamp()
         {
             if (DataSource != null)
             {

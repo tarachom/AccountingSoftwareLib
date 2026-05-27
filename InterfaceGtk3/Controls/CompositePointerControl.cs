@@ -54,7 +54,7 @@ public abstract class CompositePointerControl : PointerControl
 
     #region Virtual & Abstract Function
 
-    protected abstract ValueTask<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
     protected abstract void CreateNotebookPage(string tabName, Func<Widget>? pageWidget);
 
     #endregion

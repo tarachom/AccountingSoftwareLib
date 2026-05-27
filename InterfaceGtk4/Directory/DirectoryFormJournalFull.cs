@@ -57,7 +57,7 @@ public partial class DirectoryFormJournalFull : DirectoryFormJournalBase
     /// Історія версій
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
-    protected virtual async ValueTask VersionsHistory(UniqueID[] uniqueID) => await ValueTask.FromResult(true);
+    protected virtual Task VersionsHistory(UniqueID[] uniqueID) => Task.CompletedTask;
 
     #endregion
 

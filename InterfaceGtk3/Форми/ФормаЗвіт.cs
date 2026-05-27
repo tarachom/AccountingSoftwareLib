@@ -103,7 +103,7 @@ public abstract class ФормаЗвіт : Форма
 
     protected virtual void CreateContainer1(Box vBox) { }
     protected virtual void CreateContainer2(Box vBox) { }
-    public abstract ValueTask SetValue();
+    public abstract Task SetValue();
     protected abstract void PeriodChanged();
 
     #endregion

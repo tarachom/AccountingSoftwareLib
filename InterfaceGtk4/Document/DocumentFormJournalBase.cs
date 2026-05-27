@@ -192,7 +192,7 @@ public partial class DocumentFormJournalBase : FormJournal
         Grid.Model = model;
     }
 
-    public override async ValueTask SetValue()
+    public override async Task SetValue()
     {
         DefaultGrabFocus();
         await BeforeSetValue();
@@ -208,21 +208,21 @@ public partial class DocumentFormJournalBase : FormJournal
     /// <param name="IsNew">Чи це новий?</param>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => await ValueTask.FromResult(true);
+    protected virtual Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => Task.CompletedTask;
 
     /// <summary>
     /// При встановленні помітки на видалення
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask SetDeletionLabel(UniqueID uniqueID) => await ValueTask.FromResult(true);
+    protected virtual Task SetDeletionLabel(UniqueID uniqueID) => Task.CompletedTask;
 
     /// <summary>
     /// При копіюванні об'єкту
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async ValueTask<UniqueID?> Copy(UniqueID uniqueID) => await ValueTask.FromResult(UniqueID.NewEmpty());
+    protected virtual async Task<UniqueID?> Copy(UniqueID uniqueID) => await Task.FromResult(UniqueID.NewEmpty());
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -256,7 +256,7 @@ public partial class DocumentFormJournalBase : FormJournal
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
     /// <param name="spendDoc">Провести / відмінити</param>
-    protected virtual async ValueTask SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) => await ValueTask.FromResult(true);
+    protected virtual Task SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) => Task.CompletedTask;
 
     /// <summary>
     /// Друк проводок
@@ -272,7 +272,7 @@ public partial class DocumentFormJournalBase : FormJournal
     /// При активації
     /// </summary>
     /// <param name="position">Позиція</param>
-    async ValueTask GridOnActivate(uint position)
+    async Task GridOnActivate(uint position)
     {
         MultiSelection model = (MultiSelection)Grid.Model;
 
@@ -417,7 +417,7 @@ public partial class DocumentFormJournalBase : FormJournal
         */
     }
 
-    async ValueTask Delete()
+    async Task Delete()
     {
         UniqueID[] rows = GetSelectionUnigueID();
         if (rows.Length > 0)
