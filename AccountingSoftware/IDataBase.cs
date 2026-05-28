@@ -147,7 +147,7 @@ namespace AccountingSoftware
         #endregion
 
         #region Func (Directory, Document)
-
+        Task<string> GetPresentation(Query QuerySelect, string[] fieldPresentation);
         Task<bool> IsExistUniqueID(UniqueID uniqueID, string table);
         Task<SplitSelectToPages_Record> SplitSelectToPages(Query QuerySelect, UniqueID? uniqueID, int pageSize = 1000);
         Task<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000);
@@ -164,11 +164,10 @@ namespace AccountingSoftware
         Task SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
         Task SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers);
         Task<UniqueID?> FindDirectoryPointer(Query QuerySelect);
-        Task<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation);
+
         Task DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
         Task SelectDirectoryTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-
         Task InsertDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         Task RemoveDirectoryTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
         Task DeleteDirectoryTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);
@@ -184,10 +183,8 @@ namespace AccountingSoftware
 
         Task SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
         Task<UniqueID?> FindDocumentPointer(Query QuerySelect);
-        Task<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation);
 
         Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
-
         Task InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);
         Task RemoveDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, byte transactionID = 0);
         Task DeleteDocumentTablePartRecords(UniqueID ownerUnigueID, string table, byte transactionID = 0);

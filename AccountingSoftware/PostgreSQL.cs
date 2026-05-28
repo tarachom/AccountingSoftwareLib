@@ -2563,6 +2563,45 @@ WHERE
 
         #region Func (Directory, Document)
 
+        /// <summary>
+        /// Представлення для довідника або документа
+        /// </summary>
+        /// <param name="QuerySelect">Запит</param>
+        /// <param name="fieldPresentation">Поля для презентації</param>
+        /// <returns>Тектове представлення або пусто</returns>
+        public async Task<string> GetPresentation(Query QuerySelect, string[] fieldPresentation)
+        {
+            if (DataSource != null)
+            {
+                string query = QuerySelect.Construct();
+
+                NpgsqlCommand command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+
+                foreach (Where field in QuerySelect.Where)
+                    command.Parameters.AddWithValue(field.Alias, field.Value);
+
+                string presentation = "";
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                    for (int i = 0; i < fieldPresentation.Length; i++)
+                        presentation += (i > 0 ? ", " : "") + reader[fieldPresentation[i]].ToString();
+
+                await reader.CloseAsync();
+
+                return presentation;
+            }
+            else
+                return "";
+        }
+
+        /// <summary>
+        /// Перевірити наявність поля по uid
+        /// </summary>
+        /// <param name="uniqueID">uid</param>
+        /// <param name="table">Таблиця</param>
+        /// <returns></returns>
         public async Task<bool> IsExistUniqueID(UniqueID uniqueID, string table)
         {
             if (DataSource != null)
@@ -2959,33 +2998,6 @@ FROM
             return directoryPointer;
         }
 
-        public async Task<string> GetDirectoryPresentation(Query QuerySelect, string[] fieldPresentation)
-        {
-            if (DataSource != null)
-            {
-                string query = QuerySelect.Construct();
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.CommandTimeout = DefaultCommandTimeout;
-
-                foreach (Where field in QuerySelect.Where)
-                    command.Parameters.AddWithValue(field.Alias, field.Value);
-
-                string presentation = "";
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
-                    for (int i = 0; i < fieldPresentation.Length; i++)
-                        presentation += (i > 0 ? ", " : "") + reader[fieldPresentation[i]].ToString();
-
-                await reader.CloseAsync();
-
-                return presentation;
-            }
-            else
-                return "";
-        }
-
         public async Task DeleteDirectoryTempTable(DirectorySelect directorySelect)
         {
             /*
@@ -3297,33 +3309,6 @@ FROM
             }
 
             return documentPointer;
-        }
-
-        public async Task<string> GetDocumentPresentation(Query QuerySelect, string[] fieldPresentation)
-        {
-            if (DataSource != null)
-            {
-                string query = QuerySelect.Construct();
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.CommandTimeout = DefaultCommandTimeout;
-
-                foreach (Where field in QuerySelect.Where)
-                    command.Parameters.AddWithValue(field.Alias, field.Value);
-
-                string presentation = "";
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
-                    for (int i = 0; i < fieldPresentation.Length; i++)
-                        presentation += (i > 0 ? ", " : "") + reader[fieldPresentation[i]].ToString();
-
-                await reader.CloseAsync();
-
-                return presentation;
-            }
-            else
-                return "";
         }
 
         public async Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
@@ -3937,6 +3922,11 @@ FROM
 
         #region InformationShema
 
+        /// <summary>
+        /// Перевірити наявність таблиці в схемі public
+        /// </summary>
+        /// <param name="tableName">Назва таблиці</param>
+        /// <returns></returns>
         public async Task<bool> IfExistsTable(string tableName)
         {
             if (DataSource != null)
@@ -4122,10 +4112,8 @@ FROM
         /// </summary>
         /// <param name="sqlQuery">Запит</param>
         /// <returns></returns>
-        public async Task<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0)
-        {
-            return await ExecuteSQL(query, null, transactionID, commandTimeout);
-        }
+        public async Task<int> ExecuteSQL(string query, byte transactionID = 0, int commandTimeout = 0) =>
+            await ExecuteSQL(query, null, transactionID, commandTimeout);
 
         /// <summary>
         /// Виконує запит з параметрами без повернення даних
@@ -4138,7 +4126,7 @@ FROM
             if (DataSource != null)
             {
                 NpgsqlTransaction? transaction = GetTransactionByID(transactionID);
-                await using NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
+                NpgsqlCommand command = (transaction != null) ? new NpgsqlCommand(query, transaction.Connection, transaction) : DataSource.CreateCommand(query);
                 command.CommandTimeout = commandTimeout > DefaultCommandTimeout ? commandTimeout : DefaultCommandTimeout;
 
                 if (paramQuery != null)
@@ -4151,6 +4139,14 @@ FROM
                 return -1;
         }
 
+        /// <summary>
+        /// Вибірка одного значення
+        /// </summary>
+        /// <param name="query">Запит</param>
+        /// <param name="paramQuery">Параметри</param>
+        /// <param name="transactionID">Тразакція</param>
+        /// <param name="commandTimeout"></param>
+        /// <returns>Значення або null</returns>
         public async Task<object?> ExecuteSQLScalar(string query, Dictionary<string, object>? paramQuery = null, byte transactionID = 0, int commandTimeout = 0)
         {
             if (DataSource != null)
@@ -4169,6 +4165,13 @@ FROM
                 return null;
         }
 
+        /// <summary>
+        /// Вибірка даних
+        /// </summary>
+        /// <param name="selectQuery">Запит</param>
+        /// <param name="paramQuery">Параметри</param>
+        /// <param name="commandTimeout"></param>
+        /// <returns>Струткуру</returns>
         public async Task<SelectRequest_Record> SelectRequest(string selectQuery, Dictionary<string, object>? paramQuery = null, int commandTimeout = 0)
         {
             SelectRequest_Record record = new();
@@ -4207,6 +4210,10 @@ FROM
             return record;
         }
 
+        /// <summary>
+        /// Повертає дату на сервері бази даних
+        /// </summary>
+        /// <returns>Дата та час</returns>
         public async Task<DateTime> SelectCurrentTimestamp()
         {
             if (DataSource != null)
