@@ -487,15 +487,11 @@ public partial class PageService : Form
                         "</i>", LogMessage.TypeMessage.None);
 
                     foreach (Dictionary<string, object> row in recordResult.ListRow)
-                    {
-                        Console.WriteLine(dependence.ConfigurationGroupName);
                         if (dependence.ConfigurationGroupName == "Довідники" || dependence.ConfigurationGroupName == "Документи")
                         {
                             Widget? composit = CreateCompositeControl("", new UuidAndText((Guid)row["uid"], $"{dependence.ConfigurationGroupName}.{dependence.ConfigurationObjectName}"));
-                            Console.WriteLine(composit);
                             Log.CreateWidget(composit, LogMessage.TypeMessage.None, false);
                         }
-                    }
                 }
             }
         }

@@ -39,10 +39,12 @@ public partial class LockControl : Box
                 hBox.Append(Label.New(info));
 
                 Popover popover = Popover.New();
+                popover.Autohide = true;
+                popover.FocusOnClick = true;
                 popover.MarginStart = popover.MarginEnd = popover.MarginTop = popover.MarginBottom = 5;
                 popover.SetParent(button);
                 popover.SetChild(vBox);
-                popover.Show();
+                popover.Popup();
             }
         };
         Append(button);

@@ -1183,7 +1183,7 @@ namespace AccountingSoftware
         /// Довжина ключа менше 21 символу
         /// </summary>
         /// <returns>Ключ</returns>
-        public static string GetShortGuid() => Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "").Replace("+", "")[..^2];
+        public static string GetShortGuid() => Convert.ToBase64String(Guid.CreateVersion7().ToByteArray()).Replace("/", "").Replace("+", "")[..^2];
 
         /// <summary>
         /// Перетворює стрічку в тип ConfigurationDirectories.HierarchicalContentType
@@ -3627,7 +3627,7 @@ namespace AccountingSoftware
             if (File.Exists(pathToConf))
             {
                 string? dirName = Path.GetDirectoryName(pathToConf) ?? throw new Exception($"Не вдалось отримати шлях до папки із шляху конфігурації: {pathToConf}");
-                string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + Guid.NewGuid().ToString().Replace("-", "") + ".xml";
+                string fileTempName = Path.GetFileNameWithoutExtension(pathToConf) + Guid.CreateVersion7().ToString().Replace("-", "") + ".xml";
                 string pathToTempConf = Path.Combine(dirName, fileTempName);
 
                 if (!string.IsNullOrEmpty(oldTempConf) && File.Exists(oldTempConf))

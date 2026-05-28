@@ -226,8 +226,12 @@ SELECT EXISTS
                 await conn.ReloadTypesAsync();
             }
 
+            //28.05.2026 
+            //Перехід на використання функції uuidv7() замість uuid_generate_v4()
+            //Додаток_UUID_OSSP більше не потрібний
+            //
             //Підключити Додаток_UUID_OSSP
-            await ExecuteSQL(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
+            //await ExecuteSQL(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp""");
         }
 
         public async Task CreateSpecialTables()
@@ -964,7 +968,7 @@ ON CONFLICT (name) DO NOTHING;
 
             if (isNew)
             {
-                Guid user_uid = Guid.NewGuid();
+                Guid user_uid = Guid.CreateVersion7();
                 paramQuery.Add("uid", user_uid);
 
                 await ExecuteSQL($@"
@@ -1189,7 +1193,7 @@ ORDER BY
 
         async Task<Guid> SpetialTableActiveUsersAddSession(Guid user_uid, TypeForm typeForm)
         {
-            Guid session_uid = Guid.NewGuid();
+            Guid session_uid = Guid.CreateVersion7();
 
             Dictionary<string, object> paramQuery = new()
             {
@@ -2092,7 +2096,7 @@ LIMIT 1
             {
                 Dictionary<string, object> paramQuery = new()
                 {
-                    { "uid", Guid.NewGuid() },
+                    { "uid", Guid.CreateVersion7() },
                     { "objversionid", version_id },
                     { "user", user_uid },
                     { "objowner", objowner },
@@ -2128,7 +2132,7 @@ VALUES
             {
                 Dictionary<string, object> paramQuery = new()
                     {
-                        { "uid", Guid.NewGuid() },
+                        { "uid", Guid.CreateVersion7() },
                         { "objversionid", version_id },
                         { "user", user_uid },
                         { "objowner", objowner },

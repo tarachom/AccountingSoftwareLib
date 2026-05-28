@@ -139,6 +139,8 @@ public partial class DateTimeTablePartCell : Box
     void OnOpenSelect(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
+        popover.Autohide = true;
+        popover.FocusOnClick = true;
         popover.SetParent(buttonSelect);
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
@@ -249,6 +251,6 @@ public partial class DateTimeTablePartCell : Box
         }
 
         popover.SetChild(vBox);
-        popover.Show();
+        popover.Popup();
     }
 }

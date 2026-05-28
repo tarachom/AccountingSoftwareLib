@@ -445,7 +445,7 @@ public partial class DocumentFormJournalBase : FormJournal
         if (!Filter.IsFilterCreated)
             Filter.CreatePopover(button);
 
-        Filter.PopoverParent?.Show();
+        Filter.PopoverParent?.Popup();
     }
 
     #endregion

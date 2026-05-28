@@ -148,11 +148,11 @@ public partial class FormGeneral : Window
     protected virtual void Service(LinkButton link) { }
     protected virtual void Processing(LinkButton link) { }
 
-    protected virtual void MenuDocuments(Box vBox) { }
-    protected virtual void MenuDirectory(Box vBox) { }
-    protected virtual void MenuJournals(Box vBox) { }
-    protected virtual void MenuReports(Box vBox) { }
-    protected virtual void MenuRegisters(Box vBox) { }
+    protected virtual void MenuDocuments(Box vBox, Popover? popover = null) { }
+    protected virtual void MenuDirectory(Box vBox, Popover? popover = null) { }
+    protected virtual void MenuJournals(Box vBox, Popover? popover = null) { }
+    protected virtual void MenuReports(Box vBox, Popover? popover = null) { }
+    protected virtual void MenuRegisters(Box vBox, Popover? popover = null) { }
 
     #endregion
 
@@ -237,6 +237,7 @@ public partial class FormGeneral : Window
     void Documents(LinkButton linkButton)
     {
         Popover popover = Popover.New();
+        popover.Autohide = true;
         popover.Position = PositionType.Right;
         popover.SetParent(linkButton);
 
@@ -296,7 +297,7 @@ public partial class FormGeneral : Window
             }
         }
 
-        MenuDocuments(vBox);
+        MenuDocuments(vBox, popover);
 
         popover.Show();
     }
@@ -363,7 +364,7 @@ public partial class FormGeneral : Window
             }
         }
 
-        MenuDirectory(vBox);
+        MenuDirectory(vBox, popover);
 
         popover.Show();
     }
@@ -430,7 +431,7 @@ public partial class FormGeneral : Window
             }
         }
 
-        MenuJournals(vBox);
+        MenuJournals(vBox, popover);
 
         popover.Show();
     }
@@ -444,7 +445,7 @@ public partial class FormGeneral : Window
         Box vBox = Box.New(Orientation.Vertical, 0);
         popover.Child = vBox;
 
-        MenuReports(vBox);
+        MenuReports(vBox, popover);
 
         popover.Show();
     }
@@ -565,7 +566,7 @@ public partial class FormGeneral : Window
             }
         }
 
-        MenuRegisters(vBox);
+        MenuRegisters(vBox, popover);
 
         popover.Show();
     }

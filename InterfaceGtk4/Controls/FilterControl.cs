@@ -200,6 +200,8 @@ public partial class FilterControl : Box
         if (!IsFilterCreated)
         {
             PopoverParent = Popover.New();
+            PopoverParent.Autohide = true;
+            PopoverParent.FocusOnClick = true;
             PopoverParent.SetParent(button);
             PopoverParent.Position = PositionType.Bottom;
             PopoverParent.MarginTop = PopoverParent.MarginEnd = PopoverParent.MarginBottom = PopoverParent.MarginStart = 2;

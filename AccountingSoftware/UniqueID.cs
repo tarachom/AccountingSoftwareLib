@@ -88,7 +88,7 @@ namespace AccountingSoftware
         /// </summary>
         public void New()
         {
-            UGuid = Guid.NewGuid();
+            UGuid = Guid.CreateVersion7();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace AccountingSoftware
         /// </summary>
         public static UniqueID NewUnigueID()
         {
-            return new UniqueID(Guid.NewGuid());
+            return new UniqueID(Guid.CreateVersion7());
         }
 
         public static UniqueID NewEmpty()

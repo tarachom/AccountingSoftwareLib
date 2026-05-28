@@ -159,6 +159,8 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
             if (page != null)
             {
                 Popover popover = Popover.New();
+                popover.Autohide = true;
+                popover.FocusOnClick = true;
                 popover.SetParent(button);
                 popover.WidthRequest = 800;
                 popover.HeightRequest = 400;
@@ -189,7 +191,7 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
                     page.GetType().GetProperty("CallBack_OnSelectPointer")?.SetValue(page, callBackAction);
                 }
 
-                popover.Show();
+                popover.Popup();
 
                 //Заповнення сторінки даними після відкриття
                 page.GetType().InvokeMember("SetValue", BindingFlags.InvokeMethod, null, page, null);
@@ -205,6 +207,8 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
         Box vBox = New(Orientation.Vertical, 0);
 
         Popover popover = Popover.New();
+        popover.Autohide = true;
+        popover.FocusOnClick = true;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
         popover.SetParent(button);
         popover.SetChild(vBox);
@@ -281,7 +285,7 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
             hBoxSelect.Append(bClear);
         }
 
-        popover.Show();
+        popover.Popup();
 
         //Внутрішня функція
         void Info()
@@ -502,11 +506,13 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
     void SelectType(Button button)
     {
         Popover popover = Popover.New();
+        popover.Autohide = true;
+        popover.FocusOnClick = true;
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 2;
         popover.SetParent(button);
 
         popover.SetChild(BoxSelectType(() => popover.Hide()));
-        popover.Show();
+        popover.Popup();
     }
 
     /// <summary>

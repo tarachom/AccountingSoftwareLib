@@ -173,7 +173,7 @@ public partial class RegisterInformationFormJournalBase : FormJournal
         if (!Filter.IsFilterCreated)
             Filter.CreatePopover(button);
 
-        Filter.PopoverParent?.Show();
+        Filter.PopoverParent?.Popup();
     }
 
     #endregion

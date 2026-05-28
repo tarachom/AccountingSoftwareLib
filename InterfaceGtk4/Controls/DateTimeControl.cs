@@ -144,6 +144,8 @@ public partial class DateTimeControl : Box
     void OnOpenCalendar(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
+        popover.Autohide = true;
+        popover.FocusOnClick = true;
         popover.SetParent(bOpenCalendar);
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
@@ -253,6 +255,6 @@ public partial class DateTimeControl : Box
         }
 
         popover.SetChild(vBox);
-        popover.Show();
+        popover.Popup();
     }
 }

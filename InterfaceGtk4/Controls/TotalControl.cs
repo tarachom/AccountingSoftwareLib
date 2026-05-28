@@ -49,7 +49,6 @@ public partial class TotalControl : Box
 
         numberFormatUA.NumberGroupSeparator = " ";
         numberFormatUA.NumberDecimalDigits = 2;
-        Console.WriteLine("Init");
 
         Label caption = Label.New("<b>Підсумки:</b> ");
         caption.UseMarkup = true;

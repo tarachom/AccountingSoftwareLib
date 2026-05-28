@@ -146,7 +146,7 @@ namespace AccountingSoftware
         /// <param name="fieldValue"></param>
         protected async Task<Guid> BaseSave(Guid UID, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.CreateVersion7() : UID;
             await Kernel.DataBase.InsertConstantsTablePartRecords(recordUnigueID, Table, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }

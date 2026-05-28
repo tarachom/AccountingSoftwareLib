@@ -111,6 +111,8 @@ public partial class TimeControl : Box
     void OnOpenPopover(object? sender, EventArgs args)
     {
         Popover popover = Popover.New();
+        popover.Autohide = true;
+        popover.FocusOnClick = true;
         popover.SetParent(bOpenPopover);
         popover.MarginTop = popover.MarginEnd = popover.MarginBottom = popover.MarginStart = 5;
 
@@ -184,6 +186,6 @@ public partial class TimeControl : Box
         }
 
         popover.SetChild(vBox);
-        popover.Show();
+        popover.Popup();
     }
 }

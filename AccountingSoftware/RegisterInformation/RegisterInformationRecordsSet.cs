@@ -160,7 +160,7 @@ namespace AccountingSoftware
         /// <param name="fieldValue">Значення полів</param>
         protected async Task<Guid> BaseSave(Guid UID, DateTime period, Guid owner, NameAndText ownertype, Dictionary<string, object> fieldValue)
         {
-            Guid recordUnigueID = UID == Guid.Empty ? Guid.NewGuid() : UID;
+            Guid recordUnigueID = UID == Guid.Empty ? Guid.CreateVersion7() : UID;
             await Kernel.DataBase.InsertRegisterInformationRecords(recordUnigueID, Table, period, owner, ownertype, FieldArray, fieldValue, TransactionID);
             return recordUnigueID;
         }

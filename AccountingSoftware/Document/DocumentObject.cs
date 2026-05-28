@@ -51,7 +51,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Унікальний ідентифікатор для збереження версій
         /// </summary>
-        public Guid VersionID { get; private set; } = Guid.NewGuid();
+        public Guid VersionID { get; private set; } = Guid.CreateVersion7();
 
         /// <summary>
         /// Вести історію версій значень полів
@@ -249,7 +249,7 @@ namespace AccountingSoftware
         /// </summary>
         protected override void BeforeBaseNew()
         {
-            VersionID = Guid.NewGuid();
+            VersionID = Guid.CreateVersion7();
         }
 
     }

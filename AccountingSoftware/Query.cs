@@ -63,7 +63,7 @@ namespace AccountingSoftware
         public string CreateTempTableName()
         {
             UseTempTable = true;
-            TempTable = "tmp_" + Guid.NewGuid().ToString().Replace("-", "");
+            TempTable = "tmp_" + Guid.CreateVersion7().ToString().Replace("-", "");
 
             return TempTable;
         }
