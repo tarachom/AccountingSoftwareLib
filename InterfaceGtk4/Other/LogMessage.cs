@@ -280,7 +280,7 @@ public partial class LogMessage : Box
     /// <summary>
     /// Максимальна кількість рядків в Лог
     /// </summary>
-    public int MaxLine { get; set; } = 100;
+    public int MaxLine { get; set; } = 500;
 
     /// <summary>
     ///  Максимальна кількість рядків в текстовому терміналі
