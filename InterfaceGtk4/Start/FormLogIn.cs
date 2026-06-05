@@ -184,7 +184,7 @@ partial class FormLogIn : Window
 
     void ThisClose()
     {
-        this.Hide();
-        this.Destroy();
+        this.Close();
+        //this.Destroy();
     }
 }

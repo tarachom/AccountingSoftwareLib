@@ -263,20 +263,21 @@ public partial class FormConfigurationSelection : Window
                 {
                     if (await CheckSystemTables(ProgramKernel)) //Перевірка наявності системних таблиць
                     {
-                        FormLogIn windowFormLogIn = FormLogIn.New();
-                        windowFormLogIn.Application = Application;
-                        windowFormLogIn.TypeOpenForm = TypeForm.WorkingProgram;
-                        windowFormLogIn.ProgramKernel = ProgramKernel;
-                        windowFormLogIn.TransientFor = this;
-                        windowFormLogIn.CallBack_ResponseOk = async () =>
+                        FormLogIn window = FormLogIn.New();
+                        window.Application = Application;
+                        window.Modal = true;
+                        window.TypeOpenForm = TypeForm.WorkingProgram;
+                        window.ProgramKernel = ProgramKernel;
+                        window.TransientFor = this;
+                        window.CallBack_ResponseOk = async () =>
                         {
                             await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
                             Close();
                         };
-                        windowFormLogIn.CallBack_ResponseCancel = ProgramKernel.Close;
+                        window.CallBack_ResponseCancel = ProgramKernel.Close;
 
-                        await windowFormLogIn.SetValue();
-                        windowFormLogIn.Show();
+                        await window.SetValue();
+                        window.Show();
                     }
                 }
                 else
@@ -317,20 +318,21 @@ public partial class FormConfigurationSelection : Window
                     //Перевірка і створення системних таблиць
                     await ConfiguratorKernel.DataBase.CreateSpecialTables();
 
-                    FormLogIn windowFormLogIn = FormLogIn.New();
-                    windowFormLogIn.Application = Application;
-                    windowFormLogIn.TypeOpenForm = TypeForm.Configurator;
-                    windowFormLogIn.ProgramKernel = ConfiguratorKernel;
-                    windowFormLogIn.TransientFor = this;
-                    windowFormLogIn.CallBack_ResponseOk = async () =>
+                    FormLogIn window = FormLogIn.New();
+                    window.Application = Application;
+                    window.Modal = true;
+                    window.TypeOpenForm = TypeForm.Configurator;
+                    window.ProgramKernel = ConfiguratorKernel;
+                    window.TransientFor = this;
+                    window.CallBack_ResponseOk = async () =>
                     {
                         await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
                         Close();
                     };
-                    windowFormLogIn.CallBack_ResponseCancel = ConfiguratorKernel.Close;
+                    window.CallBack_ResponseCancel = ConfiguratorKernel.Close;
 
-                    await windowFormLogIn.SetValue();
-                    windowFormLogIn.Show();
+                    await window.SetValue();
+                    window.Show();
                 }
                 else
                     Message.Error(Application, this, "Помилка", ConfiguratorKernel.Exception?.Message);
@@ -424,14 +426,15 @@ public partial class FormConfigurationSelection : Window
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
         {
-            FormConfigurationSelectionParam configurationSelectionParam = FormConfigurationSelectionParam.New();
-            configurationSelectionParam.Application = Application;
-            configurationSelectionParam.TransientFor = this;
-            configurationSelectionParam.OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name);
-            configurationSelectionParam.CallBackUpdate = CallBackUpdate;
+            FormConfigurationSelectionParam window = FormConfigurationSelectionParam.New();
+            window.Application = Application;
+            window.TransientFor = this;
+            window.Modal = true;
+            window.OpenConfigurationParam = ConfigurationParamCollection.GetConfigurationParam(selectedRow.Name);
+            window.CallBackUpdate = CallBackUpdate;
 
-            configurationSelectionParam.SetValue();
-            configurationSelectionParam.Show();
+            window.SetValue();
+            window.Show();
         }
     }
 }

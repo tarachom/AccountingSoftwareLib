@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
             else
             {
                 /* !!! В таблицю додано нове поле */
-                await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.Users} ADD COLUMN IF NOT EXISTS pass_hash text NOT NULL DEFAULT ''");
+                //await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.Users} ADD COLUMN IF NOT EXISTS pass_hash text NOT NULL DEFAULT ''");
             }
 
             if (!specialTable.Contains(SpecialTables.ActiveUsers))
@@ -387,6 +387,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.Users}
                 @datelogin - дата входу в систему
                 @dateupdate - дата підтвердження активного стану
                 @master - головний. Він виконує обчислення
+                @type_form - тип відкритої програми
 
                 */
 
@@ -416,7 +417,7 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.ActiveUsers}
                 @groupname - група пріоритету (A, B, C) - сортується для виводу
                 @dateadd - дата додавання (не використовується)
                 @dateupdate - дата останнього обновлення (не використовується)
-                @processed - запис опрацьований (не використовується)
+                -- @processed - запис опрацьований (не використовується)
 
                 */
 
@@ -506,7 +507,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectUpdateTriger}_datewrite_idx ON {
             else
             {
                 /* !!! В таблицю додано нове поле */
-                await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
+                //await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.ObjectUpdateTriger} ADD COLUMN IF NOT EXISTS operation ""char"" NOT NULL DEFAULT ''");
             }
 
             if (!specialTable.Contains(SpecialTables.ObjectVersionsHistory))
@@ -555,8 +556,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.ObjectVersionsHistory}_objtext_idx ON 
             else
             {
                 /* !!! В таблицю додано нове поле */
-                await ExecuteSQL($@"
-ALTER TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory} ADD COLUMN IF NOT EXISTS hashdata text NOT NULL DEFAULT ''", 0, 120);
+                //await ExecuteSQL($@"ALTER TABLE IF EXISTS {SpecialTables.ObjectVersionsHistory} ADD COLUMN IF NOT EXISTS hashdata text NOT NULL DEFAULT ''", 0, 120);
             }
 
             if (!specialTable.Contains(SpecialTables.TablePartVersionsHistory))
@@ -943,7 +943,7 @@ WHERE users = @users AND session = @session" + (document != null ? " AND documen
 INSERT INTO {SpecialTables.Users} (uid, name, fullname, dateadd, dateupdate, password, pass_hash) 
 VALUES 
 (
-    uuid_generate_v4(),
+    uuidv7(),
     'admin',
     'Admin',
     CURRENT_TIMESTAMP::timestamp,
