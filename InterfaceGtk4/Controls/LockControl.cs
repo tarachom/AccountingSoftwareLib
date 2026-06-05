@@ -33,7 +33,7 @@ public partial class LockControl : Box
                 vBox.Append(hBox);
 
                 string info = recordResult.Result ?
-                    $"Заблоковано користувачем {recordResult.UserName} - {recordResult.DateLock:dd:MM:yyyy} о {recordResult.DateLock:HH:mm:ss}" :
+                    $"Заблоковано користувачем {recordResult.UserName}\n\nДата: {recordResult.DateLock:dd:MM:yyyy HH:mm:ss}" :
                     "Не заблоковано";
 
                 hBox.Append(Label.New(info));
@@ -60,11 +60,9 @@ public partial class LockControl : Box
         if (Element != null)
         {
             bool isLock = await Element.IsLock();
-
-            string color = isLock ? "green" : "red";
-            string text = isLock ? "Редагування" : "Тільки для читання";
-
-            label.SetMarkup($"<span color='{color}'>{text}</span>");
+            Visible = !isLock; //Якщо все ок, тоді контрол взагалі ховається
+            
+            label.SetMarkup($"<span color='red'>Тільки для читання</span>");
         }
     }
 }
