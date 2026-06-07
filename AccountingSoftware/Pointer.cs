@@ -57,16 +57,14 @@ namespace AccountingSoftware
         /// </summary>
         public string Name { get; set; } = "";
 
-        /// <summary>
-        /// Ініціалізація вказівника
-        /// </summary>
-        /// <param name="uid">Унікальний ідентифікатор</param>
-        /// <param name="fields">Поля які потрібно додатково зчитати</param>
-        protected void Init(UniqueID uid, Dictionary<string, object>? fields = null)
+        protected void Init(UniqueID uid) => Init(uid, null, null);
+        protected void Init(UniqueID uid, Dictionary<string, object>? fields) => Init(uid, fields, null);
+        protected void Init(UniqueID uid, string? name) => Init(uid, null, name);
+        protected void Init(UniqueID uid, Dictionary<string, object>? fields, string? name)
         {
             UniqueID = uid;
             Fields = fields ?? [];
-            Name = "";
+            Name = name ?? "";
         }
 
         /// <summary>

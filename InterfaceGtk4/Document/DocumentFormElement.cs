@@ -59,7 +59,7 @@ public partial class DocumentFormElement : FormElement
     protected Paned HPanedTop = Paned.New(Orientation.Vertical);
 
     /// <summary>
-    /// Верхній контейнер який вкладається в експандер "Реквізити шапки"
+    /// Верхній контейнер
     /// </summary>
     protected Box HBoxTopContainer = Box.New(Orientation.Horizontal, 0);
 
