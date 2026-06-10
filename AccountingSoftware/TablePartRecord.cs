@@ -31,7 +31,7 @@ namespace AccountingSoftware
 		/// <summary>
 		/// Унікальний ідентифікатор запису
 		/// </summary>
-		public Guid UID { get; set; }
+		public Guid UID { get; set; } = Guid.Empty;
 
 		/// <summary>
 		/// Колекція додаткових полів FieldAndAlias із запиту

@@ -330,77 +330,65 @@ public partial class FormJournal : Form
         PopoverParent?.OnHide += (_, _) =>
         {
             NotebookFunc?.RemoveChangeFunc(codePage);
-            GC.Collect();
+            //GC.Collect();
         };
 
-        NotebookFunc?.AddChangeFunc(codePage,
-            //Записи які були змінені
-            records =>
+        NotebookFunc?.AddChangeFunc(codePage, records => //Записи які були змінені
+        {
+            if (records.Count == 0) return;
+
+            //Групування записів за типом
+            List<ObjectChanged> filtered = [];
+            List<Guid> deleted = [];
+            Dictionary<Guid, ObjectChanged> updated = [];
+
+            foreach (var record in records)
             {
-                //Нові записи зразу поміщаються у список
-                List<ObjectChanged> added = records.FindAll(x => x.Type == TypeObjectChanged.Add);
-                List<ObjectChanged> filtered = added;
-
-                //та видаляються
-                if (added.Count > 0)
-                    records.RemoveAll(x => x.Type == TypeObjectChanged.Add);
-
-                //Видалення записів із Store які були видалені
-                if (records.Count > 0)
+                switch (record.Type)
                 {
-                    List<ObjectChanged> delete = records.FindAll(x => x.Type == TypeObjectChanged.Delete);
-                    if (delete.Count > 0)
+                    case TypeObjectChanged.Add:
+                        filtered.Add(record);
+                        break;
+                    case TypeObjectChanged.Delete:
+                        deleted.Add(record.Uid);
+                        break;
+                    case TypeObjectChanged.Update:
+                        updated[record.Uid] = record;
+                        break;
+                }
+            }
+
+            //Видалення записів із Store які були видалені в базі
+            if (deleted.Count > 0)
+                for (int i = (int)Store.GetNItems() - 1; i >= 0; i--)
+                    if (Store.GetObject((uint)i) is IRowSubclassJournal row && deleted.Contains(row.UniqueID.UGuid))
                     {
-                        foreach (var record in delete)
-                            for (uint i = 0; i < Store.GetNItems(); i++)
-                            {
-                                IRowSubclassJournal? row = (IRowSubclassJournal?)Store.GetObject(i);
-                                if (row != null && row.UniqueID.UGuid.Equals(record.Uid))
-                                {
-                                    Store.Remove(i);
-                                    break;
-                                }
-                            }
-
-                        records.RemoveAll(x => x.Type == TypeObjectChanged.Delete);
-
-                        //Додатково треба буде перерахувати сторінки
-                        PagesClear();
+                        Store.Remove((uint)i);
+                        deleted.Remove(row.UniqueID.UGuid);
                     }
+
+            //Перевірка чи присутні в таблиці записи які були змінені
+            if (updated.Count > 0)
+                for (uint i = 0; i < Store.GetNItems(); i++)
+                    if (Store.GetObject(i) is IRowSubclassJournal row && updated.TryGetValue(row.UniqueID.UGuid, out var obj))
+                    {
+                        filtered.Add(obj);
+                        updated.Remove(row.UniqueID.UGuid);
+                    }
+
+            if (filtered.Count > 0)
+            {
+                //Добавлення в чергу
+                lock (Loсked)
+                {
+                    RecordsChangedQueue.Enqueue(filtered);
                 }
 
-                //Перевірка чи присутні у таблиці записи які були змінені
-                if (records.Count > 0)
-                    for (uint i = 0; i < Store.GetNItems(); i++)
-                    {
-                        if (records.Count == 0)
-                            break;
-
-                        IRowSubclassJournal? row = (IRowSubclassJournal?)Store.GetObject(i);
-                        if (row != null)
-                        {
-                            ObjectChanged? obj = records.Find(x => x.Uid.Equals(row.UniqueID.UGuid));
-                            if (obj != null)
-                            {
-                                filtered.Add(obj);
-                                records.RemoveAll(x => x.Uid.Equals(row.UniqueID.UGuid));
-                            }
-                        }
-                    }
-
-                if (filtered.Count > 0)
-                {
-                    //Добавлення в чергу
-                    lock (Loсked)
-                    {
-                        RecordsChangedQueue.Enqueue(filtered);
-                    }
-
-                    OnEnqueueRecordsChangedQueue?.Invoke(null, new());
-                }
-            },
-            //Відбір по типу як задано в конфігураторі Довідники.<Назва> або Документи.<Назва>
-            TypeName);
+                OnEnqueueRecordsChangedQueue?.Invoke(null, EventArgs.Empty);
+            }
+        },
+        //Відбір по типу як задано в конфігураторі Довідники.<Назва> або Документи.<Назва>
+        TypeName);
     }
 
     #endregion
@@ -507,7 +495,7 @@ public partial class FormJournal : Form
     /// </summary>
     /// <param name="splitSelectToPagesFunc">Функція для обчислення сторінок</param>
     /// <param name="querySelect">Вибірка для задання меж</param>
-    /// <param name="uniqueID">Вибраний елемент для позиціювання вибіоки</param>
+    /// <param name="uniqueID">Вибраний елемент для позиціювання вибірки</param>
     /// <returns></returns>
     public async Task SplitPages(Func<UniqueID? /* Вибраний елемент */, int /* Розмір вибірки */, Task<SplitSelectToPages_Record /* Результат */>> splitSelectToPagesFunc, Query querySelect, UniqueID? uniqueID)
     {

@@ -281,7 +281,7 @@ public class NotebookFunction
                         RemoveLockObjectFunc(codePage, unlockFunc);
 
                     Notebook.DetachTab(wg);
-                    GC.Collect();
+                    //GC.Collect();
 
                     break;
                 }
