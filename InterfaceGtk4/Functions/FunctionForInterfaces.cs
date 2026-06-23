@@ -36,16 +36,16 @@ namespace InterfaceGtk4;
 /// </summary>
 public static class FunctionForInterfaces
 {
-    static Builder GetBuilder(string file) =>
-        Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, "Interfaces/Directory/", file));
+    static Builder GetBuilder(string file, string group) =>
+        Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, $"Interfaces{Path.DirectorySeparatorChar}{group}", file));
 
-    public class FunctionForInterfacesException(string name) : Exception($"Не знайдено об'єкт {name} при побудові інтерфейсу")  {}
+    public class FunctionForInterfacesException(string name) : Exception($"Не знайдено об'єкт {name} при побудові інтерфейсу") { }
 
     #region Document
 
     public static DocumentElement ForDocument()
     {
-        Builder builder = GetBuilder("DocumentBase.xml");
+        Builder builder = GetBuilder("DocumentBase.xml", "Document");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new FunctionForInterfacesException("MainBox");
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -71,7 +71,7 @@ public static class FunctionForInterfaces
 
     public static DocumentElementSmall ForDocumentSmall()
     {
-        Builder builder = GetBuilder("DocumentSmall.xml");
+        Builder builder = GetBuilder("DocumentSmall.xml", "Document");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -116,7 +116,7 @@ public static class FunctionForInterfaces
 
     public static DirectoryElement ForDirectory()
     {
-        Builder builder = GetBuilder("DirectoryBase.xml");
+        Builder builder = GetBuilder("DirectoryBase.xml", "Directory");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Paned Paned = builder.GetObject("Paned") as Paned ?? throw new Exception();
@@ -128,7 +128,7 @@ public static class FunctionForInterfaces
 
     public static DirectoryElementSmall ForDirectorySmall()
     {
-        Builder builder = GetBuilder("DirectorySmall.xml");
+        Builder builder = GetBuilder("DirectorySmall.xml", "Directory");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -139,7 +139,7 @@ public static class FunctionForInterfaces
 
     public static DirectoryElementTwoBoxes ForDirectoryTwoBoxes()
     {
-        Builder builder = GetBuilder("DirectoryTwoBoxes.xml");
+        Builder builder = GetBuilder("DirectoryTwoBoxes.xml", "Directory");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
