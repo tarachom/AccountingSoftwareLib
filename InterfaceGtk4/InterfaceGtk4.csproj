@@ -18,4 +18,8 @@
     <ProjectReference Include="..\InterfaceGtkLib\InterfaceGtkLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Interfaces/**/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

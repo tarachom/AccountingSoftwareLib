@@ -108,25 +108,7 @@ public partial class DocumentFormElement : FormElement
         HBoxTop.MarginBottom = 10;
         Append(HBoxTop);
 
-        NotebookTablePart.Scrollable = true;
-        NotebookTablePart.ShowBorder = false;
-        NotebookTablePart.TabPos = PositionType.Top;
-        NotebookTablePart.EnablePopup = true;
-
-        //TopBloc
-        Box vBoxTop = New(Orientation.Vertical, 0);
-        HPanedTop.SetStartChild(vBoxTop);
-        CreateTopBloc(vBoxTop);
-
-        //BottomBloc
-        Box vBoxBottom = New(Orientation.Vertical, 0);
-        HPanedTop.SetEndChild(vBoxBottom);
-        CreateBottomBloc(vBoxBottom);
-
-        HPanedTop.SetShrinkStartChild(false);
-        HPanedTop.SetShrinkEndChild(false);
-        HPanedTop.Position = 0;
-        Append(HPanedTop);
+        BuildInterface();
     }
 
     public override async Task SetValue()
@@ -150,80 +132,6 @@ public partial class DocumentFormElement : FormElement
         await AssignValue();
         NotebookFunc?.SpinnerOff(GetName());
     }
-
-    /// <summary>
-    /// Верхній Блок
-    /// </summary>
-    protected virtual void CreateTopBloc(Box vBox)
-    {
-        HBoxName.MarginBottom = 5;
-        vBox.Append(HBoxName);
-
-        /*
-        Expander expanderHead = Expander.New("Реквізити шапки");
-        expanderHead.Expanded = true;
-        expanderHead.MarginBottom = 5;
-        expanderHead.SetChild(HBoxTopContainer);
-        */
-
-        vBox.Append(HBoxTopContainer);
-
-        //StarBloc
-        Box vBoxStart = New(Orientation.Vertical, 0);
-        vBoxStart.WidthRequest = 500;
-        HBoxTopContainer.Append(vBoxStart);
-
-        CreateTopStart(vBoxStart);
-
-        //EndBloc
-        Box vBoxEnd = New(Orientation.Vertical, 0);
-        vBoxEnd.WidthRequest = 500;
-        HBoxTopContainer.Append(vBoxEnd);
-
-        CreateTopEnd(vBoxEnd);
-
-        HBoxComment.MarginTop = 5;
-        HBoxComment.MarginBottom = 10;
-        vBox.Append(HBoxComment);
-    }
-
-    /// <summary>
-    /// Нижній Блок
-    /// </summary>
-    protected virtual void CreateBottomBloc(Box vBox)
-    {
-        NotebookTablePart.Vexpand = true;
-        vBox.Append(NotebookTablePart);
-
-        Box vBoxPage = New(Orientation.Vertical, 0);
-
-        ScrolledWindow scroll = ScrolledWindow.New();
-        scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        scroll.SetChild(vBoxPage);
-
-        NotebookTablePart.AppendPage(scroll, Label.New("Додаткові реквізити"));
-
-        vBoxPage.Append(HBoxOtherContainer);
-
-        //StarBloc
-        Box vBoxStart = New(Orientation.Vertical, 0);
-        vBoxStart.WidthRequest = 500;
-        HBoxOtherContainer.Append(vBoxStart);
-
-        CreateBottomStart(vBoxStart);
-
-        //EndBloc
-        Box vBoxEnd = New(Orientation.Vertical, 0);
-        vBoxEnd.WidthRequest = 500;
-        HBoxOtherContainer.Append(vBoxEnd);
-
-        CreateBottomEnd(vBoxEnd);
-    }
-
-    protected virtual void CreateTopStart(Box vBox) { }
-    protected virtual void CreateTopEnd(Box vBox) { }
-    protected virtual void CreateBottomStart(Box vBox) { }
-    protected virtual void CreateBottomEnd(Box vBox) { }
 
     /// <summary>
     /// Назва документу

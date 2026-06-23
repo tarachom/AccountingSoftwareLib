@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Базовий основний інтерфейс для документу, який складається із двох верхніх блоків, 
+блоку для коментаря та блокноту для таб частин і двох нижніх блоків які розміщені в окремій сторінці в блокноті.
+-->
+<interface>
+  <!-- Основний вертикальний бокс -->
+  <object class="GtkBox" id="MainBox">
+    <property name="orientation">vertical</property>
+    <property name="hexpand">1</property>
+    <property name="vexpand">1</property>
+
+    <!-- Верхній горизонтальний бокс -->
+    <child>
+      <object class="GtkBox" id="TopBox">
+        <property name="orientation">horizontal</property>
+
+        <!-- Лівий вертикальний бокс -->
+        <child>
+          <object class="GtkBox" id="TopStartBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+          </object>
+        </child>
+
+        <!-- Правий вертикальний бокс -->
+        <child>
+          <object class="GtkBox" id="TopEndBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+          </object>
+        </child>
+
+      </object>
+    </child>
+
+    <!-- Горизонтальний бокс для коментаря -->
+    <child>
+      <object class="GtkBox" id="CommentBox">
+        <property name="orientation">horizontal</property>
+        <property name="margin-top">5</property>
+        <property name="margin-bottom">10</property>
+      </object>
+    </child>
+
+    <!-- Нижній горизонтальний бокс -->
+    <child>
+      <object class="GtkBox" id="BottomBox">
+        <property name="orientation">horizontal</property>
+        <property name="vexpand">1</property>
+        <property name="hexpand">1</property>
+
+        <!-- Блокнот для табличних частин -->
+        <child>
+          <object class="GtkNotebook" id="Notebook">
+            <property name="vexpand">1</property>
+            <property name="hexpand">1</property>
+            <property name="scrollable">true</property>
+            <property name="show-border">false</property>
+            <property name="tab-pos">top</property>
+            <property name="enable-popup">true</property>
+
+            <!-- Прокрутка для блокноту -->
+            <child>
+              <object class="GtkScrolledWindow">
+
+                <!-- Горизонтальний бокс в прокрутці -->
+                <child>
+                  <object class="GtkBox" id="BottomPageBox">
+                    <property name="orientation">horizontal</property>
+
+                    <!-- Лівий вертикальний бокс -->
+                    <child>
+                      <object class="GtkBox" id="BottomStartBox">
+                        <property name="orientation">vertical</property>
+                        <property name="width-request">500</property>
+                      </object>
+                    </child>
+
+                    <!-- Правий вертикальний бокс -->
+                    <child>
+                      <object class="GtkBox" id="BottomEndBox">
+                        <property name="orientation">vertical</property>
+                        <property name="width-request">500</property>
+                      </object>
+                    </child>
+
+                  </object>
+                </child>
+
+              </object>
+            </child>
+
+            <!-- Назва сторінки в блокноті -->
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">Додатково</property>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+      </object>
+    </child>
+
+  </object>
+</interface>

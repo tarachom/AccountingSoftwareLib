@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Полегшений інтерфейс для документу, який складається із двох блоків та блоку для коментаря
+-->
+<interface>
+  <!-- Основний вертикальний бокс -->
+  <object class="GtkBox" id="MainBox">
+    <property name="orientation">vertical</property>
+    <property name="hexpand">1</property>
+    <property name="vexpand">1</property>
+
+    <!-- Верхній горизонтальний бокс -->
+    <child>
+      <object class="GtkBox" id="TopBox">
+        <property name="orientation">horizontal</property>
+
+        <!-- Лівий вертикальний бокс -->
+        <child>
+          <object class="GtkBox" id="TopStartBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+          </object>
+        </child>
+
+        <!-- Правий вертикальний бокс -->
+        <child>
+          <object class="GtkBox" id="TopEndBox">
+            <property name="orientation">vertical</property>
+            <property name="width-request">500</property>
+          </object>
+        </child>
+
+      </object>
+    </child>
+
+    <!-- Горизонтальний бокс для коментаря -->
+    <child>
+      <object class="GtkBox" id="CommentBox">
+        <property name="orientation">horizontal</property>
+        <property name="margin-top">5</property>
+        <property name="margin-bottom">10</property>
+      </object>
+    </child>
+    
+  </object>
+</interface>

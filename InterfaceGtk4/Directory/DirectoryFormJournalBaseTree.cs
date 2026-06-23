@@ -63,14 +63,22 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
     /// </summary>
     protected override void GridModel()
     {
-        //Модель для дерева
-        TreeList = TreeListModel.New(Store, false, false, CreateFunc);
+        /*
+        Реальний клас/[DirectoryFormJournalFullTree | DirectoryFormJournalSmallTree]/DirectoryFormJournalBaseTree
+        Ця перевірка потрібна щоб функція GridModel() не викликалась два рази (з цього класу із DirectoryFormJournalBase)
+        */
 
-        //Модель
-        MultiSelection model = MultiSelection.New(TreeList);
-        model.OnSelectionChanged += GridOnSelectionChanged;
+        if (GetType().BaseType?.BaseType?.Name == "DirectoryFormJournalBaseTree" && TreeList == null)
+        {
+            //Модель для дерева
+            TreeList = TreeListModel.New(Store, false, false, CreateFunc);
 
-        Grid.Model = model;
+            //Модель
+            MultiSelection model = MultiSelection.New(TreeList);
+            model.OnSelectionChanged += GridOnSelectionChanged;
+
+            Grid.Model = model;
+        }
     }
 
     /// <summary>

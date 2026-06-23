@@ -74,6 +74,11 @@ public partial class FormElement : Form
     #region Abstract Function
 
     /// <summary>
+    /// Побудова інтерфейсу
+    /// </summary>
+    protected virtual void BuildInterface() { }
+
+    /// <summary>
     /// Присвоєння значень
     /// </summary>
     public virtual Task SetValue() => Task.CompletedTask;
