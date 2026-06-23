@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Полегшений інтерфейс для сторінки елементу документа, який складається із двох блоків та блоку для коментаря
+Полегшений інтерфейс для сторінки елементу довідника
 -->
 <interface>
   <!-- Основний вертикальний бокс -->
@@ -33,14 +33,5 @@
       </object>
     </child>
 
-    <!-- Горизонтальний бокс для коментаря -->
-    <child>
-      <object class="GtkBox" id="CommentBox">
-        <property name="orientation">horizontal</property>
-        <property name="margin-top">5</property>
-        <property name="margin-bottom">10</property>
-      </object>
-    </child>
-    
   </object>
 </interface>

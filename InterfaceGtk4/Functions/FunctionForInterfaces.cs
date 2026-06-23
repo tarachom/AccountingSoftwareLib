@@ -36,11 +36,19 @@ namespace InterfaceGtk4;
 /// </summary>
 public static class FunctionForInterfaces
 {
+    static Builder GetBuilder(string file) =>
+        Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, "Interfaces/Directory/", file));
+
+    public class FunctionForInterfacesException(string name) : Exception($"Не знайдено об'єкт {name} при побудові інтерфейсу")  {}
+
+    #region Document
+
     public static DocumentElement ForDocument()
     {
-        Builder builder = Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, "Interfaces/Document/DocumentBase.xml"));
+        Builder builder = GetBuilder("DocumentBase.xml");
 
-        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
+        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new FunctionForInterfacesException("MainBox");
+        Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
         Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
         Box TopEndBox = builder.GetObject("TopEndBox") as Box ?? throw new Exception();
         Box BottomStartBox = builder.GetObject("BottomStartBox") as Box ?? throw new Exception();
@@ -51,6 +59,7 @@ public static class FunctionForInterfaces
         return new()
         {
             MainBox = MainBox,
+            TopBox = TopBox,
             TopStartBox = TopStartBox,
             TopEndBox = TopEndBox,
             BottomStartBox = BottomStartBox,
@@ -62,9 +71,10 @@ public static class FunctionForInterfaces
 
     public static DocumentElementSmall ForDocumentSmall()
     {
-        Builder builder = Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, "Interfaces/Document/DocumentSmall.xml"));
+        Builder builder = GetBuilder("DocumentSmall.xml");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
+        Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
         Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
         Box TopEndBox = builder.GetObject("TopEndBox") as Box ?? throw new Exception();
         Box CommentBox = builder.GetObject("CommentBox") as Box ?? throw new Exception();
@@ -72,17 +82,17 @@ public static class FunctionForInterfaces
         return new()
         {
             MainBox = MainBox,
+            TopBox = TopBox,
             TopStartBox = TopStartBox,
             TopEndBox = TopEndBox,
             CommentBox = CommentBox,
         };
     }
 
-    #region Records
-
     public record DocumentElement()
     {
         public required Box MainBox;
+        public required Box TopBox;
         public required Box TopStartBox;
         public required Box TopEndBox;
         public required Box BottomStartBox;
@@ -94,10 +104,54 @@ public static class FunctionForInterfaces
     public record DocumentElementSmall()
     {
         public required Box MainBox;
+        public required Box TopBox;
         public required Box TopStartBox;
         public required Box TopEndBox;
         public required Box CommentBox;
     }
+
+    #endregion
+
+    #region Directory
+
+    public static DirectoryElement ForDirectory()
+    {
+        Builder builder = GetBuilder("DirectoryBase.xml");
+
+        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
+        Paned Paned = builder.GetObject("Paned") as Paned ?? throw new Exception();
+        Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
+        Box TopEndBox = builder.GetObject("TopEndBox") as Box ?? throw new Exception();
+
+        return new(MainBox, Paned, TopStartBox, TopEndBox);
+    }
+
+    public static DirectoryElementSmall ForDirectorySmall()
+    {
+        Builder builder = GetBuilder("DirectorySmall.xml");
+
+        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
+        Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
+        Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
+
+        return new(MainBox, TopBox, TopStartBox);
+    }
+
+    public static DirectoryElementTwoBoxes ForDirectoryTwoBoxes()
+    {
+        Builder builder = GetBuilder("DirectoryTwoBoxes.xml");
+
+        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
+        Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
+        Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
+        Box TopEndBox = builder.GetObject("TopEndBox") as Box ?? throw new Exception();
+
+        return new(MainBox, TopBox, TopStartBox, TopEndBox);
+    }
+
+    public record DirectoryElement(Box MainBox, Paned Paned, Box TopStartBox, Box TopEndBox);
+    public record DirectoryElementSmall(Box MainBox, Box TopBox, Box TopStartBox);
+    public record DirectoryElementTwoBoxes(Box MainBox, Box TopBox, Box TopStartBox, Box TopEndBox);
 
     #endregion
 }

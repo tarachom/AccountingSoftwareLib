@@ -71,20 +71,7 @@ public partial class DirectoryFormElement : FormElement
 
         Append(HBoxTop);
 
-        //StarBloc
-        Box vBoxStart = New(Orientation.Vertical, 0);
-        HPanedTop.SetStartChild(vBoxStart);
-        CreateStart(vBoxStart);
-
-        //EndBloc
-        Box vBoxEnd = New(Orientation.Vertical, 0);
-        HPanedTop.SetEndChild(vBoxEnd);
-        CreateEnd(vBoxEnd);
-
-        HPanedTop.SetShrinkStartChild(false);
-        HPanedTop.SetShrinkEndChild(false);
-        HPanedTop.Position = 500;
-        Append(HPanedTop);
+        BuildInterface();
     }
 
     public override async Task SetValue()
@@ -108,20 +95,6 @@ public partial class DirectoryFormElement : FormElement
         await AssignValue();
         NotebookFunc?.SpinnerOff(GetName());
     }
-
-    #region Virtual Function
-
-    /// <summary>
-    /// Лівий Блок
-    /// </summary>
-    protected virtual void CreateStart(Box vBox) { }
-
-    /// <summary>
-    /// Правий Блок
-    /// </summary>
-    protected virtual void CreateEnd(Box vBox) { }
-
-    #endregion
 
     /// <summary>
     /// Функція обробки перед збереження та після збереження
