@@ -58,9 +58,9 @@ namespace AccountingSoftware
         /// Унікальний ідентифікатор у формі тексту. Використовується Guid.Parse(uGuid).
         /// </summary>
         /// <param name="uGuid">Унікальний ідентифікатор</param>
-        public UniqueID(string uGuid)
+        public UniqueID(string? uGuid)
         {
-            if (Guid.TryParse(uGuid, out Guid result))
+            if (!string.IsNullOrEmpty(uGuid) && Guid.TryParse(uGuid, out Guid result))
                 UGuid = result;
             else
                 UGuid = Guid.Empty;

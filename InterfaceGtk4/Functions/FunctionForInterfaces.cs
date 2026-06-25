@@ -32,22 +32,30 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Функції для стандартних інтерфейсів довідників або документів
 /// </summary>
 public static class FunctionForInterfaces
 {
-    static Builder GetBuilder(string file, string group) =>
+    static Builder GetBuilder(Group group, string file) =>
         Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, $"Interfaces{Path.DirectorySeparatorChar}{group}", file));
 
-    public class FunctionForInterfacesException(string name) : Exception($"Не знайдено об'єкт {name} при побудові інтерфейсу") { }
+    enum Group
+    {
+        Document,
+        Directory
+    }
 
     #region Document
 
+    /// <summary>
+    /// Для документу базовий
+    /// </summary>
+    /// <returns>record DocumentElement</returns>
     public static DocumentElement ForDocument()
     {
-        Builder builder = GetBuilder("DocumentBase.xml", "Document");
+        Builder builder = GetBuilder(Group.Document, "DocumentBase.xml");
 
-        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new FunctionForInterfacesException("MainBox");
+        Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
         Box TopStartBox = builder.GetObject("TopStartBox") as Box ?? throw new Exception();
         Box TopEndBox = builder.GetObject("TopEndBox") as Box ?? throw new Exception();
@@ -69,9 +77,13 @@ public static class FunctionForInterfaces
         };
     }
 
+    /// <summary>
+    /// Для документу мінімальний
+    /// </summary>
+    /// <returns>record DocumentElementSmall</returns>
     public static DocumentElementSmall ForDocumentSmall()
     {
-        Builder builder = GetBuilder("DocumentSmall.xml", "Document");
+        Builder builder = GetBuilder(Group.Document, "DocumentSmall.xml");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -114,9 +126,13 @@ public static class FunctionForInterfaces
 
     #region Directory
 
+    /// <summary>
+    /// Для довідника базовий
+    /// </summary>
+    /// <returns>record DirectoryElement</returns>
     public static DirectoryElement ForDirectory()
     {
-        Builder builder = GetBuilder("DirectoryBase.xml", "Directory");
+        Builder builder = GetBuilder(Group.Directory, "DirectoryBase.xml");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Paned Paned = builder.GetObject("Paned") as Paned ?? throw new Exception();
@@ -126,9 +142,13 @@ public static class FunctionForInterfaces
         return new(MainBox, Paned, TopStartBox, TopEndBox);
     }
 
+    /// <summary>
+    /// Для довідника мінімальний
+    /// </summary>
+    /// <returns>record DirectoryElementSmall</returns>
     public static DirectoryElementSmall ForDirectorySmall()
     {
-        Builder builder = GetBuilder("DirectorySmall.xml", "Directory");
+        Builder builder = GetBuilder(Group.Directory, "DirectorySmall.xml");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -137,9 +157,13 @@ public static class FunctionForInterfaces
         return new(MainBox, TopBox, TopStartBox);
     }
 
+    /// <summary>
+    /// Для довідника з двома блоками
+    /// </summary>
+    /// <returns>record DirectoryElementTwoBoxes</returns>
     public static DirectoryElementTwoBoxes ForDirectoryTwoBoxes()
     {
-        Builder builder = GetBuilder("DirectoryTwoBoxes.xml", "Directory");
+        Builder builder = GetBuilder(Group.Directory, "DirectoryTwoBoxes.xml");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();

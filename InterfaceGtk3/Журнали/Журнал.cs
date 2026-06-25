@@ -342,7 +342,7 @@ public abstract class Журнал : ФормаЖурнал
     {
         UniqueID uniqueID = new(uid);
 
-        object? documentObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Objest");
+        object? documentObjestInstance = ExecutingAssembly.CreateInstance($"{NameSpageCodeGeneration}.Документи.{typeDoc}_Object");
         if (documentObjestInstance != null)
         {
             dynamic documentObjest = documentObjestInstance;

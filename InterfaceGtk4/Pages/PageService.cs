@@ -375,7 +375,7 @@ public partial class PageService : Form
                 Log.AppendMessage(hBoxInfo, $"Помічених на видалення: {recordResult.ListRow.Count}", LogMessage.TypeMessage.Ok);
                 List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Довідники." + confDirectories.Name); //Пошук залежностей
 
-                object? directoryObjectInstance = ExecutingAssembly.CreateInstance($"{NamespaceCodeGeneration}.Довідники.{confDirectories.Name}_Objest");
+                object? directoryObjectInstance = ExecutingAssembly.CreateInstance($"{NamespaceCodeGeneration}.Довідники.{confDirectories.Name}_Object");
                 if (directoryObjectInstance != null)
                 {
                     dynamic directoryObject = directoryObjectInstance;
@@ -414,7 +414,7 @@ public partial class PageService : Form
                 //Залежності
                 List<ConfigurationDependencies> listDependencies = Kernel.Conf.SearchDependencies("Документи." + confDocuments.Name);
 
-                object? documentObjectInstance = ExecutingAssembly.CreateInstance($"{NamespaceCodeGeneration}.Документи.{confDocuments.Name}_Objest");
+                object? documentObjectInstance = ExecutingAssembly.CreateInstance($"{NamespaceCodeGeneration}.Документи.{confDocuments.Name}_Object");
                 if (documentObjectInstance != null)
                 {
                     dynamic documentObject = documentObjectInstance;
