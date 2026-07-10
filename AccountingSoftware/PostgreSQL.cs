@@ -226,6 +226,8 @@ SELECT EXISTS
                 await conn.ReloadTypesAsync();
             }
 
+            //Console.WriteLine($"Головна версія: {(await DataSource.OpenConnectionAsync()).ServerVersion}");
+
             //28.05.2026 
             //Перехід на використання функції uuidv7() замість uuid_generate_v4()
             //Додаток_UUID_OSSP більше не потрібний

@@ -108,6 +108,9 @@ public partial class DocumentFormElement : FormElement
         HBoxTop.MarginBottom = 10;
         Append(HBoxTop);
 
+        HBoxName.MarginBottom = 5;
+        Append(HBoxName);
+
         BuildInterface();
     }
 
