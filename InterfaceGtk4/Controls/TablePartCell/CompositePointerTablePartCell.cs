@@ -72,12 +72,9 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
         get => pointer;
         set
         {
-            if (!pointer.Equals(value))
-            {
-                pointer = value;
-                PointerChanged?.Invoke(this, pointer);
-                OnSelect?.Invoke();
-            }
+            pointer = value;
+            PointerChanged?.Invoke(this, pointer);
+            OnSelect?.Invoke();
         }
     }
     UuidAndText pointer = new();
@@ -99,12 +96,15 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
                     PointerName = pointerGroup;
                     TypeCaption = pointerType;
                 }
+                else
+                    Presentation = PointerName = TypeCaption = "";
             }
             else
             {
                 CompositePointerPresentation_Record record = await CompositePointerPresentation(pointer);
 
-                pointer.Name = Presentation = record.Result;
+                pointer.Name = "";
+                Presentation = record.Result;
                 PointerName = record.Pointer;
                 TypeCaption = record.Type;
             }
