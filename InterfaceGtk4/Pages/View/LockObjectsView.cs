@@ -171,7 +171,7 @@ public abstract partial class LockObjectsView : Box
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
             factory.OnSetup += OnSetupText;
-            factory.OnBind += (_, args) => OnBindText(args, x => x.ObjValue.ToString());
+            factory.OnBind += (_, args) => OnBindText(args, x => x.ObjValue.Text);
             ColumnViewColumn column = ColumnViewColumn.New("Тип", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
