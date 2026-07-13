@@ -28,6 +28,7 @@ limitations under the License.
 */
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
 
 namespace InterfaceGtk4;
 
@@ -47,16 +48,36 @@ public static class FunctionForNativeMethods
     /// Задає шлях до бібліотек GTK
     /// </summary>
     /// <param name="path">Шлях</param>
-    public static void SetMsysDirectory(string path)
+    public static void SetMsysDirectory(string? path = null)
     {
         //Для Windows реєструється шлях до бібліотек Gtk
         if (OperatingSystem.IsWindows())
-            if (Directory.Exists(path))
+        {
+            string msysPath;
+            if (string.IsNullOrEmpty(path))
             {
-                if (!NativeMethods.SetDllDirectory(path))
+                //Пошук шляху в конфігурації
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json", false, true)
+                    .Build();
+
+                // Стандартний шлях до папки MSYS
+                const string defMsysPath = "C:\\msys64\\ucrt64\\bin";
+
+                // Шлях до папки MSYS з конфігураційного файлу
+                msysPath = configuration["MsysDirectory"] ?? defMsysPath;
+            }
+            else
+                msysPath = path;
+
+            if (Directory.Exists(msysPath))
+            {
+                if (!NativeMethods.SetDllDirectory(msysPath))
                     Console.WriteLine("Warning: Failed to set DLL directory.");
             }
             else
-                Console.WriteLine($"Warning: MSYS2 path not found at {path}");
+                Console.WriteLine($"Warning: MSYS2 path not found at {msysPath}");
+        }
     }
 }
