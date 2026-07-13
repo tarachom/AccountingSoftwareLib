@@ -69,9 +69,6 @@ namespace AccountingSoftware
 		/// Базис для композитного типу
 		/// </summary>
 		/// <returns></returns>
-		public UuidAndText GetBasis()
-		{
-			return new UuidAndText(UniqueID.UGuid, $"Документи.{TypeDocument}");
-		}
+		public UuidAndText GetBasis() => new(UniqueID.UGuid, $"Документи.{TypeDocument}");
 	}
 }

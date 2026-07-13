@@ -141,15 +141,9 @@ namespace AccountingSoftware
                 await Kernel.DataBase.SpetialTableFullTextSearchAddValue(obj, string.Join(" ", values), Kernel.Conf.DictTSearch);
         }
 
-        protected async Task BaseAddIgnoreDocumentList()
-        {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UniqueID.UGuid, "");
-        }
+        protected async Task BaseAddIgnoreDocumentList() => await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreAdd(Kernel.User, Kernel.Session, UniqueID.UGuid, "");
 
-        protected async Task BaseRemoveIgnoreDocumentList()
-        {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UniqueID.UGuid);
-        }
+        protected async Task BaseRemoveIgnoreDocumentList() => await Kernel.DataBase.SpetialTableRegAccumTrigerDocIgnoreClear(Kernel.User, Kernel.Session, UniqueID.UGuid);
 
         protected async Task BaseSpend(bool spend, DateTime spend_date)
         {
@@ -239,18 +233,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public override UuidAndText GetBasis()
-        {
-            return new UuidAndText(UniqueID, $"Документи.{TypeDocument}");
-        }
+        public override UuidAndText GetBasis() => new(UniqueID, $"Документи.{TypeDocument}");
 
         /// <summary>
         /// При створенні нового об'єкту змінюється і VersionID версії
         /// </summary>
-        protected override void BeforeBaseNew()
-        {
-            VersionID = Guid.CreateVersion7();
-        }
-
+        protected override void BeforeBaseNew() => VersionID = Guid.CreateVersion7();
     }
 }

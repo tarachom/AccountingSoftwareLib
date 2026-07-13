@@ -57,10 +57,7 @@ public partial class ImageTablePartCell : Box
         return img;
     }
 
-    public void SetImage(Pixbuf? pixbuf)
-    {
-        img.SetFromPixbuf(pixbuf);
-    }
+    public void SetImage(Pixbuf? pixbuf) => img.SetFromPixbuf(pixbuf);
 
     /// <summary>
     /// Видаляє із hBox віджет img і замість нього ставить Spinner.

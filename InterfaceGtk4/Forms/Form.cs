@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 ///      Form*
 /// </summary>
 [GObject.Subclass<Box>]
-public partial class Form : Box
+public abstract partial class Form : Box
 {
     /// <summary>
     /// Оновний блокнот
@@ -50,8 +50,6 @@ public partial class Form : Box
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         SetOrientation(Orientation.Vertical);
     }
 

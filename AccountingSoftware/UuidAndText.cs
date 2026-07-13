@@ -97,28 +97,19 @@ namespace AccountingSoftware
         /// Дані у XML форматі
         /// </summary>
         /// <returns></returns>
-        public string ToXml()
-        {
-            return $"<uuid>{Uuid}</uuid><text>{Text}</text>";
-        }
+        public string ToXml() => $"<uuid>{Uuid}</uuid><text>{Text}</text>";
 
         /// <summary>
         /// Чи пустий?
         /// </summary>
         /// <returns>true якщо пустий</returns>
-        public bool IsEmpty()
-        {
-            return Uuid == Guid.Empty;
-        }
+        public bool IsEmpty() => Uuid == Guid.Empty;
 
         /// <summary>
         /// Унікальний ідентифікатор
         /// </summary>
         /// <returns>Новий UniqueID</returns>
-        public UniqueID UniqueID()
-        {
-            return new UniqueID(Uuid);
-        }
+        public UniqueID UniqueID() => new(Uuid);
 
         /// <summary>
         /// Функція повертає тип у форматі NameAndText, де Назва це група а Текст це тип даних
@@ -130,27 +121,18 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Копіювання
+        /// </summary>
+        /// <returns>Новий</returns>
+        public UuidAndText Copy() => new(Uuid, Text);
+
+        /// <summary>
         /// Порівняння
         /// </summary>
-        public override bool Equals(object? obj)
-        {
-            return obj != null && obj is UuidAndText uuidAndText &&
-                uuidAndText.Text == Text && uuidAndText.Uuid == Uuid;
-        }
+        public override bool Equals(object? obj) => obj != null && obj is UuidAndText uuidAndText && uuidAndText.Text == Text && uuidAndText.Uuid == Uuid;
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Uuid, Text);
-        }
+        public override int GetHashCode() => HashCode.Combine(Uuid, Text);
 
-        public override string ToString()
-        {
-            return $"{Uuid}:{Text}";
-        }
-
-        public UuidAndText Copy()
-        {
-            return new(Uuid, Text);
-        }
+        public override string ToString() => $"{Uuid}:{Text}";
     }
 }

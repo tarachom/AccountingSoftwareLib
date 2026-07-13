@@ -85,9 +85,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public virtual UuidAndText GetBasis()
-        {
-            return new UuidAndText(UniqueID, $"Довідники.{TypeDirectory}");
-        }
+        public virtual UuidAndText GetBasis() => new(UniqueID, $"Довідники.{TypeDirectory}");
     }
 }

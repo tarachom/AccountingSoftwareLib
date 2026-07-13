@@ -36,7 +36,7 @@ namespace InterfaceGtk4;
 ///     RegisterInformationFormJournalBase (РегістриІнформаціїФормаЖурналБазовий)
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class FormJournal : Form
+public abstract partial class FormJournal : Form
 {
     /// <summary>
     /// Вспливаюче вікно власник даної форми (у випадку якщо форма поміщена у Popover)
@@ -91,8 +91,6 @@ public partial class FormJournal : Form
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         //Не переміщати стовпчики
         Grid.Reorderable = false;
 
@@ -163,7 +161,7 @@ public partial class FormJournal : Form
     /// <param name="parents">Колекція родичів</param>
     /// <param name="select">UniqueID елемента який треба виділити</param>
     /// <returns></returns>
-    public virtual async Task AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) { await Task.CompletedTask; }
+    public virtual async Task AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null) => await Task.CompletedTask;
 
     /// <summary>
     /// Прокрутка

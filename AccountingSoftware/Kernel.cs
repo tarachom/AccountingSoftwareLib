@@ -358,20 +358,12 @@ namespace AccountingSoftware
             await ClearOutdatedMessages();
         }
 
-        public async Task ClearAllMessages()
-        {
-            await DataBase.SpetialTableMessageErrorClear(User);
-        }
+        public async Task ClearAllMessages() => await DataBase.SpetialTableMessageErrorClear(User);
 
-        public async Task ClearOutdatedMessages()
-        {
-            await DataBase.SpetialTableMessageErrorClearOld(User);
-        }
+        public async Task ClearOutdatedMessages() => await DataBase.SpetialTableMessageErrorClearOld(User);
 
-        public async Task<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null)
-        {
-            return await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
-        }
+        public async Task<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null) =>
+            await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
 
         #endregion
 

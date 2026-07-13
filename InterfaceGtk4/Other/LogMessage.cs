@@ -162,10 +162,7 @@ public partial class LogMessage : Box
         scrollMessage.Vadjustment?.Value = scrollMessage.Vadjustment.Upper;
     }
 
-    public void CreateEmptyMsg()
-    {
-        CreateMessage("", TypeMessage.None);
-    }
+    public void CreateEmptyMsg() => CreateMessage("", TypeMessage.None);
 
     public void AppendLine(string message = "")
     {

@@ -198,17 +198,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public override UuidAndText GetBasis()
-        {
-            return new UuidAndText(UniqueID, $"Довідники.{TypeDirectory}");
-        }
+        public override UuidAndText GetBasis() => new(UniqueID, $"Довідники.{TypeDirectory}");
 
         /// <summary>
         /// При створенні нового об'єкту змінюється і VersionID версії
         /// </summary>
-        protected override void BeforeBaseNew()
-        {
-            VersionID = Guid.CreateVersion7();
-        }
+        protected override void BeforeBaseNew() => VersionID = Guid.CreateVersion7();
     }
 }

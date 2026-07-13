@@ -32,12 +32,10 @@ namespace InterfaceGtk4;
 /// Журнал довідників певного виду (Міні)
 /// </summary>
 [GObject.Subclass<DirectoryFormJournalBase>]
-public partial class DirectoryFormJournalSmall : DirectoryFormJournalBase
+public abstract partial class DirectoryFormJournalSmall : DirectoryFormJournalBase
 {
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         AddToolbar();
     }
 
@@ -48,7 +46,7 @@ public partial class DirectoryFormJournalSmall : DirectoryFormJournalBase
 
     #region Virtual & Abstract Function
 
-    protected virtual Task OpenPageList(UniqueID? uniqueID = null) => Task.CompletedTask;
+    protected abstract Task OpenPageList(UniqueID? uniqueID = null);
 
     #endregion
 
@@ -63,16 +61,14 @@ public partial class DirectoryFormJournalSmall : DirectoryFormJournalBase
     /// </summary>
     void AddToolbar()
     {
+        //Відкрити в блокноті
         {
-            //Відкрити в блокноті
-            {
-                Button button = Button.NewFromIconName("go-up");
-                button.AddCssClass("toolbar");
-                button.MarginEnd = 5;
-                button.TooltipText = "Відкрити";
-                button.OnClicked += OnOpenPageList;
-                HBoxToolbarTop.Append(button);
-            }
+            Button button = Button.NewFromIconName("go-up");
+            button.AddCssClass("toolbar");
+            button.MarginEnd = 5;
+            button.TooltipText = "Відкрити";
+            button.OnClicked += OnOpenPageList;
+            HBoxToolbarTop.Append(button);
         }
     }
 

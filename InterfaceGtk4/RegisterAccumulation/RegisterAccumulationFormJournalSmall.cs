@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 /// РегістриВідомостейФормаЖурналМіні
 /// </summary>
 [GObject.Subclass<FormJournal>]
-public partial class RegisterAccumulationFormJournalSmall : FormJournal
+public abstract partial class RegisterAccumulationFormJournalSmall : FormJournal
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних 

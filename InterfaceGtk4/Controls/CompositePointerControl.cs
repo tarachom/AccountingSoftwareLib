@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
 /// </summary>
 [GObject.Subclass<PointerControl>]
-public partial class CompositePointerControl : PointerControl
+public abstract partial class CompositePointerControl : PointerControl
 {
     protected Kernel? Kernel { get; set; } = null;
     protected string NamespaceProgram { get; set; } = "";
@@ -44,9 +44,6 @@ public partial class CompositePointerControl : PointerControl
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації для цього класу
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         PointerChanged += OnPointerChanged;
 
         WidthPresentation = 300;
@@ -60,8 +57,7 @@ public partial class CompositePointerControl : PointerControl
 
     #region Virtual & Abstract Function
 
-    protected virtual Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-        Task.FromResult<CompositePointerPresentation_Record>(new());
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
 
     #endregion
 

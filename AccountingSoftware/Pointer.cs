@@ -70,44 +70,26 @@ namespace AccountingSoftware
         /// <summary>
         /// Очищення
         /// </summary>
-        public void Clear()
-        {
-            Init(new UniqueID());
-        }
+        public void Clear() => Init(new UniqueID());
 
         /// <summary>
         /// Чи це пустий ідентифікатор
         /// </summary>
-        public bool IsEmpty()
-        {
-            return UniqueID.IsEmpty();
-        }
+        public bool IsEmpty() => UniqueID.IsEmpty();
 
         /// <summary>
         /// Отримати ідентифікатор
         /// </summary>
-        public Guid GetPointer()
-        {
-            return UniqueID.UGuid;
-        }
+        public Guid GetPointer() => UniqueID.UGuid;
 
         /// <summary>
         /// Переоприділення базової функції
         /// </summary>
         /// <returns>Ідентифікатор у вигляді тексту</returns>
-        public override string ToString()
-        {
-            return UniqueID.UGuid.ToString();
-        }
+        public override string ToString() => UniqueID.UGuid.ToString();
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(UniqueID.UGuid);
-        }
+        public override int GetHashCode() => HashCode.Combine(UniqueID.UGuid);
 
-        public override bool Equals(object? obj)
-        {
-            return obj != null && UniqueID.UGuid == ((Pointer)obj).UniqueID.UGuid;
-        }
+        public override bool Equals(object? obj) => obj != null && UniqueID.UGuid == ((Pointer)obj).UniqueID.UGuid;
     }
 }

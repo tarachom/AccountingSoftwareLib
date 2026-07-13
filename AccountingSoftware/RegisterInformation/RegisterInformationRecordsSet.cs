@@ -107,10 +107,7 @@ namespace AccountingSoftware
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
-        {
-            return await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
-        }
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000) => await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
 
         private byte TransactionID = 0;
 
@@ -139,17 +136,14 @@ namespace AccountingSoftware
         {
             UniqueID uniqueID = new(UID);
             if (!uniqueID.IsEmpty() && await Kernel.DataBase.IsExistUniqueID(uniqueID, Table))
-                await Kernel.DataBase.RemoveRegisterInformationRecords(UID,  Table, TransactionID);
+                await Kernel.DataBase.RemoveRegisterInformationRecords(UID, Table, TransactionID);
         }
 
         /// <summary>
         /// Видалення записів для власника
         /// </summary>
         /// <param name="owner">Унікальний ідентифікатор власника</param>
-        protected async Task BaseDelete(Guid owner)
-        {
-            await Kernel.DataBase.DeleteRegisterInformationRecords(Table, owner, TransactionID);
-        }
+        protected async Task BaseDelete(Guid owner) => await Kernel.DataBase.DeleteRegisterInformationRecords(Table, owner, TransactionID);
 
         /// <summary>
         /// Запис даних в регістр

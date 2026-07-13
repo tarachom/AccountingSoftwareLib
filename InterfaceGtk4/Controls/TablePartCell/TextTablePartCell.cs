@@ -83,10 +83,7 @@ public partial class TextTablePartCell : Box
     /// </summary>
     public Action? OnСhanged { get; set; } = null;
 
-    public void SetText(string? text)
-    {
-        entry.SetText(text ?? "");
-    }
+    public void SetText(string? text) => entry.SetText(text ?? "");
 
     void OnOpenSelect(object? sender, EventArgs args)
     {
@@ -99,7 +96,7 @@ public partial class TextTablePartCell : Box
         Box vBox = New(Orientation.Vertical, 0);
 
         TextView textView = TextView.New();
-        
+
         if (textView.Buffer != null)
         {
             textView.WrapMode = WrapMode.Word;

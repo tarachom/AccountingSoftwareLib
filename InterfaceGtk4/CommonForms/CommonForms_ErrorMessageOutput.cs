@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// Вивід повідомлень
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class CommonForms_ErrorMessageOutput : Form
+public abstract partial class CommonForms_ErrorMessageOutput : Form
 {
     Kernel? Kernel { get; set; } = null;
     Box vBoxMessage = Box.New(Orientation.Vertical, 0);
@@ -61,7 +61,7 @@ public partial class CommonForms_ErrorMessageOutput : Form
 
     #region Virtual & Abstract Function
 
-    protected virtual CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText) { return CompositePointerControl.NewWithProperties([]); }
+    protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
 
     #endregion
 
@@ -167,8 +167,5 @@ public partial class CommonForms_ErrorMessageOutput : Form
         await LoadRecords();
     }
 
-    async void OnReload(object? sender, EventArgs args)
-    {
-        await LoadRecords();
-    }
+    async void OnReload(object? sender, EventArgs args) => await LoadRecords();
 }

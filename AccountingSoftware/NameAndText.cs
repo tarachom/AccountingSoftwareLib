@@ -71,14 +71,8 @@ namespace AccountingSoftware
         /// Дані у XML форматі
         /// </summary>
         /// <returns></returns>
-        public string ToXml()
-        {
-            return $"<name>{Name}</name><text>{Text}</text>";
-        }
+        public string ToXml() => $"<name>{Name}</name><text>{Text}</text>";
 
-        public override string ToString()
-        {
-            return $"{Name}.{Text}";
-        }
+        public override string ToString() => $"{Name}.{Text}";
     }
 }

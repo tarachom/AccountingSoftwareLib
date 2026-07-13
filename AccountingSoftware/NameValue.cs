@@ -68,9 +68,6 @@ namespace AccountingSoftware
                 return Value.ToString() == value.ToString();
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

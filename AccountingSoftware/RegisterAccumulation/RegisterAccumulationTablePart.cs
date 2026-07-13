@@ -119,10 +119,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Очистити табличну частину
         /// </summary>
-        protected async Task BaseDelete()
-        {
-            await Kernel.DataBase.DeleteRegisterAccumulationTablePartRecords(Table, TransactionID);
-        }
+        protected async Task BaseDelete() => await Kernel.DataBase.DeleteRegisterAccumulationTablePartRecords(Table, TransactionID);
 
         /// <summary>
         /// Записати значення в базу

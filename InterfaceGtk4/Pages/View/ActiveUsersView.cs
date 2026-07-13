@@ -124,31 +124,31 @@ public partial class ActiveUsersView : Box
 
     void Columns()
     {
-        //Користувач 
+        //Користувач
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_UserName;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.UserName);
             ColumnViewColumn column = ColumnViewColumn.New("Користувач", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
 
-        //Авторизація 
+        //Авторизація
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_DateLogin;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.DateLogin.ToString("dd.MM.yy HH:mm"));
             ColumnViewColumn column = ColumnViewColumn.New("Авторизація", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
 
-        //Підтвердження 
+        //Підтвердження
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_DateUp;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.DateUp.ToString("HH:mm:ss"));
             ColumnViewColumn column = ColumnViewColumn.New("Підтвердження", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
@@ -157,16 +157,21 @@ public partial class ActiveUsersView : Box
         //Розрахунок
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnBind += OnBind_Master;
+            factory.OnBind += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                ItemRow? itemrow = (ItemRow?)listItem.Item;
+                listItem.SetChild(ImageTablePartCell.NewFromPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
+            };
             ColumnViewColumn column = ColumnViewColumn.New("Розрахунок", factory);
             Grid.AppendColumn(column);
         }
 
-        //Тип 
+        //Тип
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_TypeForm;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.TypeForm.ToString());
             ColumnViewColumn column = ColumnViewColumn.New("Тип", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
@@ -181,61 +186,23 @@ public partial class ActiveUsersView : Box
         }
     }
 
-    #region OnSetup
+    #region OnSetup & OnBind
 
-    void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
+    void OnSetupText(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
         LabelTablePartCell label = LabelTablePartCell.New();
         listItem.Child = label;
     }
 
-    #endregion
-
-    #region OnBind
-
-    void OnBind_UserName(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
+    static void OnBindText(SignalListItemFactory.BindSignalArgs args, Func<ItemRow, string> func)
     {
         ListItem listItem = (ListItem)args.Object;
         LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
-            label.SetText(itemrow.UserName.ToString());
+            label.SetText(func.Invoke(itemrow));
     }
-
-    void OnBind_DateLogin(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.DateLogin.ToString("dd.MM.yy HH:mm"));
-    }
-
-    void OnBind_DateUp(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.DateUp.ToString("HH:mm:ss"));
-    }
-
-    void OnBind_Master(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        listItem.SetChild(ImageTablePartCell.NewFromPixbuf((itemrow?.Master ?? false) ? Icon.ForInformation.Check : null));
-    }
-
-    void OnBind_TypeForm(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.TypeForm.ToString());
-    }
-
+    
     #endregion
 }

@@ -38,7 +38,7 @@ namespace InterfaceGtk4;
 /// Це клас є базовим і потребує наслідування і переоприділення віртуальних функцій.
 /// </summary>
 [GObject.Subclass<Box>]
-public partial class LockObjectsView : Box
+public abstract partial class LockObjectsView : Box
 {
     [GObject.Subclass<GObject.Object>]
     public partial class ItemRow
@@ -94,15 +94,15 @@ public partial class LockObjectsView : Box
 
     #region Virtual Function
 
-    protected virtual Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-        Task.FromResult<CompositePointerPresentation_Record>(new());
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
 
     #endregion
 
     async Task LoadRecords()
     {
-        if (Kernel == null) throw new Exception("Kernel null");
-        
+        if (Kernel == null)
+            throw new Exception("Kernel null");
+
         var recordResult = await Kernel.DataBase.SpetialTableLockedObjectSelect();
 
         //Очистка через певний час
@@ -137,41 +137,41 @@ public partial class LockObjectsView : Box
 
     void Columns()
     {
-        //Користувач 
+        //Користувач
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_UserName;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.UserName);
             ColumnViewColumn column = ColumnViewColumn.New("Користувач", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
 
-        //Об'єкт 
+        //Об'єкт
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_ObjPresentation;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.ObjPresentation);
             ColumnViewColumn column = ColumnViewColumn.New("Об'єкт", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
 
-        //Дата блокування 
+        //Дата блокування
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_DateLock;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.DateLock.ToString("HH:mm:ss"));
             ColumnViewColumn column = ColumnViewColumn.New("Дата", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
 
-        //Тип 
+        //Тип
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += OnSetup;
-            factory.OnBind += OnBind_Type;
+            factory.OnSetup += OnSetupText;
+            factory.OnBind += (_, args) => OnBindText(args, x => x.ObjValue.ToString());
             ColumnViewColumn column = ColumnViewColumn.New("Тип", factory);
             column.Resizable = true;
             Grid.AppendColumn(column);
@@ -186,53 +186,22 @@ public partial class LockObjectsView : Box
         }
     }
 
-    #region OnSetup
+    #region OnSetup & OnBind
 
-    void OnSetup(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
+    void OnSetupText(SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args)
     {
         ListItem listItem = (ListItem)args.Object;
         LabelTablePartCell label = LabelTablePartCell.New();
         listItem.Child = label;
     }
 
-    #endregion
-
-    #region OnBind
-
-    void OnBind_UserName(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
+    static void OnBindText(SignalListItemFactory.BindSignalArgs args, Func<ItemRow, string> func)
     {
         ListItem listItem = (ListItem)args.Object;
         LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
         ItemRow? itemrow = (ItemRow?)listItem.Item;
         if (label != null && itemrow != null)
-            label.SetText(itemrow.UserName.ToString());
-    }
-
-    void OnBind_ObjPresentation(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.ObjPresentation);
-    }
-
-    void OnBind_DateLock(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.DateLock.ToString("HH:mm:ss"));
-    }
-
-    void OnBind_Type(SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args)
-    {
-        ListItem listItem = (ListItem)args.Object;
-        LabelTablePartCell? label = (LabelTablePartCell?)listItem.Child;
-        ItemRow? itemrow = (ItemRow?)listItem.Item;
-        if (label != null && itemrow != null)
-            label.SetText(itemrow.ObjValue.Text);
+            label.SetText(func.Invoke(itemrow));
     }
 
     #endregion

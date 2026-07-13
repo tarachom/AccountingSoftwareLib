@@ -34,7 +34,7 @@ namespace InterfaceGtk4;
 ///     DirectoryFormJournalSmallTree (ДовідникФормаЖурналМініДерево),
 /// </summary>
 [GObject.Subclass<DirectoryFormJournalBase>]
-public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
+public abstract partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних
@@ -53,8 +53,6 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         GridModel();
     }
 
@@ -261,6 +259,12 @@ public partial class DirectoryFormJournalBaseTree : DirectoryFormJournalBase
         }
     }
 
+    /// <summary>
+    /// Функція викликається після завантаження даних в Store
+    /// </summary>
+    /// <param name="parents">Колекція родичів</param>
+    /// <param name="select">Виділити елемент</param>
+    /// <returns></returns>
     public override async Task AfterLoadRecords(List<UniqueID> parents, UniqueID? select = null)
     {
         #region Local Func

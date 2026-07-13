@@ -33,10 +33,7 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="password">Пароль</param>
         /// <returns>Хеш і сіль в одній стрічці</returns>
-        public static string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
-        }
+        public static string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
 
         /// <summary>
         /// Порівняння пароля і хеша
@@ -44,9 +41,6 @@ namespace AccountingSoftware
         /// <param name="password">Пароль</param>
         /// <param name="hashedPassword">Хеш і сіль</param>
         /// <returns>Пароль підходить тоді true</returns>
-        public static bool VerifyPassword(string password, string hashedPassword)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-        }
+        public static bool VerifyPassword(string password, string hashedPassword) => BCrypt.Net.BCrypt.Verify(password, hashedPassword);
     }
 }

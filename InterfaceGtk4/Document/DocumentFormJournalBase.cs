@@ -35,7 +35,7 @@ namespace InterfaceGtk4;
 ///     DocumentFormJournalSmall (ДокументФормаЖурналМіні)
 /// </summary>
 [GObject.Subclass<FormJournal>]
-public partial class DocumentFormJournalBase : FormJournal
+public abstract partial class DocumentFormJournalBase : FormJournal
 {
     /// <summary>
     /// Для вибору і позиціювання
@@ -84,8 +84,6 @@ public partial class DocumentFormJournalBase : FormJournal
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
@@ -208,21 +206,21 @@ public partial class DocumentFormJournalBase : FormJournal
     /// <param name="IsNew">Чи це новий?</param>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null) => Task.CompletedTask;
+    protected abstract Task OpenPageElement(bool IsNew, UniqueID? uniqueID = null);
 
     /// <summary>
     /// При встановленні помітки на видалення
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual Task SetDeletionLabel(UniqueID uniqueID) => Task.CompletedTask;
+    protected abstract Task SetDeletionLabel(UniqueID uniqueID);
 
     /// <summary>
     /// При копіюванні об'єкту
     /// </summary>
     /// <param name="uniqueID">Ід об'єкту</param>
     /// <returns></returns>
-    protected virtual async Task<UniqueID?> Copy(UniqueID uniqueID) => await Task.FromResult(UniqueID.NewEmpty());
+    protected abstract Task<UniqueID?> Copy(UniqueID uniqueID);
 
     /// <summary>
     /// Функція зворотнього виклику для перевантаження списку
@@ -238,31 +236,31 @@ public partial class DocumentFormJournalBase : FormJournal
     /// Формування відборів для пошуку
     /// </summary>
     /// <param name="searchText">Текст для пошуку</param>
-    protected virtual void SetSearch(string searchText) { }
+    protected abstract void SetSearch(string searchText);
 
     /// <summary>
     /// Заповнити поля для фільтру
     /// </summary>
     /// <param name="filterControl">Контрол Фільтр</param>
-    protected virtual void FillFilter(FilterControl filterControl) { }
+    protected abstract void FillFilter(FilterControl filterControl);
 
     /// <summary>
     /// При зміні періоду в контролі Period
     /// </summary>
-    protected virtual void PeriodChanged() { }
+    protected abstract void PeriodChanged();
 
     /// <summary>
     /// Провести / відмінити проведення документів
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
     /// <param name="spendDoc">Провести / відмінити</param>
-    protected virtual Task SpendTheDocument(UniqueID[] uniqueID, bool spendDoc) => Task.CompletedTask;
+    protected abstract Task SpendTheDocument(UniqueID[] uniqueID, bool spendDoc);
 
     /// <summary>
     /// Друк проводок
     /// </summary>
     /// <param name="uniqueID">Вибрані елементи</param>
-    protected virtual void ReportSpendTheDocument(UniqueID[] uniqueID) { }
+    protected abstract void ReportSpendTheDocument(UniqueID[] uniqueID);
 
     #endregion
 

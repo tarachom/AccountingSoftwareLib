@@ -71,15 +71,9 @@ public partial class LabelTablePartCell : Box
         set => label.SetText(value);
     }
 
-    public void SetText(string? text)
-    {
-        label.SetText(text ?? "");
-    }
+    public void SetText(string? text) => label.SetText(text ?? "");
 
-    public void SetText(object? text)
-    {
-        label.SetText(text?.ToString() ?? "");
-    }
+    public void SetText(object? text) => label.SetText(text?.ToString() ?? "");
 
     public void SetType(string type)
     {

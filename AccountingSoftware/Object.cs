@@ -167,30 +167,18 @@ namespace AccountingSoftware
         /// <summary>
         /// Чи заблокований?
         /// </summary>
-        public async Task<bool> IsLock()
-        {
-            return await Kernel.DataBase.SpetialTableLockedObjectIsLock(LockKey);
-        }
+        public async Task<bool> IsLock() => await Kernel.DataBase.SpetialTableLockedObjectIsLock(LockKey);
 
         /// <summary>
         /// Розширена версія Чи заблокований?
         /// </summary>
         /// <returns>Набір даних</returns>
-        public async Task<LockedObject_Record> LockInfo()
-        {
-            return await Kernel.DataBase.SpetialTableLockedObjectLockInfo(GetBasis());
-        }
+        public async Task<LockedObject_Record> LockInfo() => await Kernel.DataBase.SpetialTableLockedObjectLockInfo(GetBasis());
 
         #endregion
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(UniqueID.UGuid);
-        }
+        public override int GetHashCode() => HashCode.Combine(UniqueID.UGuid);
 
-        public override bool Equals(object? obj)
-        {
-            return obj != null && UniqueID.UGuid == ((Object)obj).UniqueID.UGuid;
-        }
+        public override bool Equals(object? obj) => obj != null && UniqueID.UGuid == ((Object)obj).UniqueID.UGuid;
     }
 }

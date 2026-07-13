@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 ///         DirectoryFormTablePart (Довідник таблична частина)
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class FormTablePart : Form
+public abstract partial class FormTablePart : Form
 {
     /// <summary>
     /// Елемент на який треба спозиціонувати список при обновленні
@@ -56,8 +56,6 @@ public partial class FormTablePart : Form
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         Append(HBoxToolbarTop);
         CreateToolbar();
 
@@ -75,10 +73,10 @@ public partial class FormTablePart : Form
 
     #region Virtual & Abstract Function
 
-    protected virtual void Columns() { }
-    public virtual Task LoadRecords() => Task.CompletedTask;
-    public virtual Task SaveRecords() => Task.CompletedTask;
-    public virtual Task<bool> NewRecord() => Task.FromResult(true);
+    protected abstract void Columns();
+    public abstract Task LoadRecords();
+    public abstract Task SaveRecords();
+    public abstract Task<bool> NewRecord();
 
     #endregion
 

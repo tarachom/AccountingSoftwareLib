@@ -144,20 +144,14 @@ namespace AccountingSoftware
         /// Видалити всі дані з таб. частини
         /// </summary>
         /// <param name="ownerUnigueID">Унікальний ідентифікатор власника таб. частини</param>
-        protected async Task BaseDelete(UniqueID ownerUnigueID)
-        {
-            await Kernel.DataBase.DeleteDocumentTablePartRecords(ownerUnigueID, Table, TransactionID);
-        }
+        protected async Task BaseDelete(UniqueID ownerUnigueID) => await Kernel.DataBase.DeleteDocumentTablePartRecords(ownerUnigueID, Table, TransactionID);
 
         /// <summary>
         /// Перевірка наявності запису власника
         /// </summary>
         /// <param name="ownerUnigueID">Ід власника</param>
         /// <param name="ownerTable">Таблиця власника</param>
-        protected async Task<bool> IsExistOwner(UniqueID ownerUnigueID, string ownerTable)
-        {
-            return await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
-        }
+        protected async Task<bool> IsExistOwner(UniqueID ownerUnigueID, string ownerTable) => await Kernel.DataBase.IsExistUniqueID(ownerUnigueID, ownerTable);
 
         /// <summary>
         /// Зберегти один запис таб частини

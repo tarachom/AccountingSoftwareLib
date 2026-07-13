@@ -32,12 +32,10 @@ namespace InterfaceGtk4;
 /// Основа для журналів документів певного виду (Повний)
 /// </summary>
 [GObject.Subclass<DocumentFormJournalBase>]
-public partial class DocumentFormJournalFull : DocumentFormJournalBase
+public abstract partial class DocumentFormJournalFull : DocumentFormJournalBase
 {
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         AddToolbar();
     }
 
@@ -67,8 +65,6 @@ public partial class DocumentFormJournalFull : DocumentFormJournalBase
     #endregion
 
     #region Grid
-
-
 
     #endregion
 

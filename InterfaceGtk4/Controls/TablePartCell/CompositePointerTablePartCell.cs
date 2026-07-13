@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 /// Клітинка табличної частини - для композитного типу даних, типу який задається користувачем
 /// </summary>
 [GObject.Subclass<PointerTablePartCell>]
-public partial class CompositePointerControlTablePartCell : PointerTablePartCell
+public abstract partial class CompositePointerControlTablePartCell : PointerTablePartCell
 {
     protected Kernel? Kernel { get; set; } = null;
     protected string NamespaceProgram { get; set; } = "";
@@ -43,9 +43,6 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         PointerChanged += OnPointerChanged;
 
         pointer = new UuidAndText();
@@ -59,8 +56,7 @@ public partial class CompositePointerControlTablePartCell : PointerTablePartCell
 
     #region Virtual & Abstract Function
 
-    protected virtual Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText) =>
-        Task.FromResult<CompositePointerPresentation_Record>(new());
+    protected abstract Task<CompositePointerPresentation_Record> CompositePointerPresentation(UuidAndText uuidAndText);
 
     #endregion
 

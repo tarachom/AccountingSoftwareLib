@@ -27,12 +27,7 @@ namespace InterfaceGtk4;
 /// Обробка
 /// </summary>
 [GObject.Subclass<FormProcessing>]
-public partial class Processing : FormProcessing
+public abstract  partial class Processing : FormProcessing
 {
-    /*
-    partial void Initialize()
-    {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-    }
-    */
+    partial void Initialize(){}
 }

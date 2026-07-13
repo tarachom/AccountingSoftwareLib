@@ -38,7 +38,7 @@ namespace InterfaceGtk4;
 /// Сервісна сторінка (очищення помічених на видалення і перепроведення документів)
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class PageService : Form
+public abstract partial class PageService : Form
 {
     Kernel? Kernel { get; set; } = null;
     string NamespaceProgram { get; set; } = "";
@@ -257,11 +257,9 @@ public partial class PageService : Form
 
     #region Virtual & Abstract Function
 
-    protected virtual CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText) { return CompositePointerControl.NewWithProperties([]); }
-
-    protected virtual Task BeforeSetValue() => Task.CompletedTask;
-
-    protected virtual void PeriodChanged() { }
+    protected abstract CompositePointerControl CreateCompositeControl(string caption, UuidAndText uuidAndText);
+    protected abstract Task BeforeSetValue();
+    protected abstract void PeriodChanged();
 
     #endregion
 

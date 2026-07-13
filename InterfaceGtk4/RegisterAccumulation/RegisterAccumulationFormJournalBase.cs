@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 /// РегістриФормаЖурналБазовий
 /// </summary>
 [GObject.Subclass<FormJournal>]
-public partial class RegisterAccumulationFormJournalBase : FormJournal
+public abstract partial class RegisterAccumulationFormJournalBase : FormJournal
 {
     /// <summary>
     /// Перевизначення сховища для нового типу даних 
@@ -133,12 +133,12 @@ public partial class RegisterAccumulationFormJournalBase : FormJournal
     /// Заповнити поля для фільтру
     /// </summary>
     /// <param name="filterControl">Контрол Фільтр</param>
-    protected virtual void FillFilter(FilterControl filterControl) { }
+    protected abstract void FillFilter(FilterControl filterControl);
 
     /// <summary>
     /// При зміні періоду в контролі Period
     /// </summary>
-    protected virtual void PeriodChanged() { }
+    protected abstract void PeriodChanged();
 
     #endregion
 

@@ -29,7 +29,7 @@ using InterfaceGtkLib;
 namespace InterfaceGtk4;
 
 [GObject.Subclass<Window>]
-public partial class FormGeneral : Window
+public abstract partial class FormGeneral : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
     public NotebookFunction NotebookFunc { get; } = new();

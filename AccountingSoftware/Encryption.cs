@@ -33,9 +33,6 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="text">Текст</param>
         /// <returns>Хеш</returns>
-        public static string MD5HashData(string text)
-        {
-            return Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
-        }
+        public static string MD5HashData(string text) => Convert.ToHexStringLower(MD5.HashData(Encoding.UTF8.GetBytes(text)));
     }
 }

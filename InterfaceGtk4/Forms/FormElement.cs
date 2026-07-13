@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 ///      РегістриВідомостейФормаЕлемент
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class FormElement : Form
+public abstract partial class FormElement : Form
 {
     /// <summary>
     /// Об'єкт який привязується до форми
@@ -64,12 +64,10 @@ public partial class FormElement : Form
     /// </summary>
     protected LockControl LockInfo = LockControl.New();
 
-    /*
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
+
     }
-    */
 
     #region Abstract Function
 
@@ -81,12 +79,12 @@ public partial class FormElement : Form
     /// <summary>
     /// Присвоєння значень
     /// </summary>
-    public virtual Task SetValue() => Task.CompletedTask;
+    public abstract Task SetValue();
 
     /// <summary>
     /// Додаткова функція яка викликається із SetValue
     /// </summary>
-    public virtual Task AssignValue() => Task.CompletedTask;
+    public abstract Task AssignValue();
 
     /// <summary>
     /// Фокус за стандартом
@@ -96,12 +94,12 @@ public partial class FormElement : Form
     /// <summary>
     /// Зчитування значень
     /// </summary>
-    protected virtual void GetValue() { }
+    protected abstract void GetValue();
 
     /// <summary>
     /// Збереження
     /// </summary>
-    protected virtual Task<bool> Save() => Task.FromResult(true);
+    protected abstract Task<bool> Save();
 
     #endregion
 }

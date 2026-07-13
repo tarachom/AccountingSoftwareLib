@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// ДовідникФормаЕлемент
 /// </summary>
 [GObject.Subclass<FormElement>]
-public partial class DirectoryFormElement : FormElement
+public abstract partial class DirectoryFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
@@ -56,8 +56,6 @@ public partial class DirectoryFormElement : FormElement
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
         HBoxTop.Append(bSaveAndClose);

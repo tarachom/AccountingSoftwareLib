@@ -70,44 +70,32 @@ namespace AccountingSoftware
         /// Чи це пустий вказівник?
         /// </summary>
         /// <returns></returns>
-        public bool IsEmpty()
-        {
-            return UGuid == Guid.Empty;
-        }
+        public bool IsEmpty() => UGuid == Guid.Empty;
 
         /// <summary>
         /// Опустошити, обнулити
         /// </summary>
-        public void Clear()
-        {
-            UGuid = Guid.Empty;
-        }
+        public void Clear() => UGuid = Guid.Empty;
 
         /// <summary>
         /// Згенерувати новий ідентифікатор
         /// </summary>
-        public void New()
-        {
-            UGuid = Guid.CreateVersion7();
-        }
+        public void New() => UGuid = Guid.CreateVersion7();
 
         /// <summary>
         /// Новий UniqueID
         /// </summary>
-        public static UniqueID NewUnigueID()
-        {
-            return new UniqueID(Guid.CreateVersion7());
-        }
+        public static UniqueID NewUnigueID() => new(Guid.CreateVersion7());
 
-        public static UniqueID NewEmpty()
-        {
-            return new UniqueID(Guid.Empty);
-        }
+        /// <summary>
+        /// Новий пустий
+        /// </summary>
+        public static UniqueID NewEmpty() => new(Guid.Empty);
 
         /// <summary>
         /// Пустий ідентифікатор
         /// </summary>
-        public static readonly Guid Empty = Guid.Empty;
+        public static Guid Empty { get; } = Guid.Empty;
 
         /// <summary>
         /// Унікальний ідентифікатор
@@ -117,22 +105,13 @@ namespace AccountingSoftware
         /// <summary>
         /// Порівняння
         /// </summary>
-        public override bool Equals(object? obj)
-        {
-            return obj != null && UGuid == ((UniqueID)obj).UGuid;
-        }
+        public override bool Equals(object? obj) => obj != null && UGuid == ((UniqueID)obj).UGuid;
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(UGuid);
-        }
+        public override int GetHashCode() => HashCode.Combine(UGuid);
 
         /// <summary>
         /// ToString
         /// </summary>
-        public override string ToString()
-        {
-            return UGuid.ToString();
-        }
+        public override string ToString() => UGuid.ToString();
     }
 }

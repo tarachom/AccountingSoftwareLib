@@ -30,7 +30,7 @@ namespace InterfaceGtk4;
 /// ДокументФормаЕлемент
 /// </summary>
 [GObject.Subclass<FormElement>]
-public partial class DocumentFormElement : FormElement
+public abstract partial class DocumentFormElement : FormElement
 {
     /// <summary>
     /// Функція зворотнього виклику для вибору елементу
@@ -82,8 +82,6 @@ public partial class DocumentFormElement : FormElement
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         bSaveAndSpend.MarginEnd = 10;
         bSaveAndSpend.OnClicked += (_, _) => BeforeAndAfterSave(true, true);
         HBoxTop.Append(bSaveAndSpend);
@@ -201,17 +199,17 @@ public partial class DocumentFormElement : FormElement
     /// Проведення
     /// </summary>
     /// <param name="spendDoc">Провести</param>
-    protected virtual Task<bool> SpendTheDocument(bool spendDoc) => Task.FromResult(true);
+    protected abstract Task<bool> SpendTheDocument(bool spendDoc);
 
     /// <summary>
     /// Для звіту Проводки
     /// </summary>
-    protected virtual void ReportSpendTheDocument(UniqueID uniqueID) { }
+    protected abstract void ReportSpendTheDocument(UniqueID uniqueID);
 
     /// <summary>
     /// Знайти в журналі
     /// </summary>
-    protected virtual Task InJournal(UniqueID uniqueID) => Task.CompletedTask;
+    protected abstract Task InJournal(UniqueID uniqueID);
 
     #endregion
 }

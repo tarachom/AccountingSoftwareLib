@@ -130,9 +130,6 @@ namespace AccountingSoftware
         /// <summary>
         /// Для композитного типу даних
         /// </summary>
-        public virtual UuidAndText GetBasis()
-        {
-            return new UuidAndText(UniqueID, $"Документи.{TypeDocument}");
-        }
+        public virtual UuidAndText GetBasis() => new(UniqueID, $"Документи.{TypeDocument}");
     }
 }

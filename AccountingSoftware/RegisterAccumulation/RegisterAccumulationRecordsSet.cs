@@ -107,10 +107,7 @@ namespace AccountingSoftware
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
         /// <returns></returns>
-        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000)
-        {
-            return await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
-        }
+        public async Task<SplitSelectToPages_Record> SplitSelectToPages(UniqueID? uniqueID, int pageSize = 1000) => await Kernel.DataBase.SplitSelectToPages(QuerySelect, uniqueID, pageSize);
 
         private byte TransactionID = 0;
 
@@ -162,10 +159,7 @@ namespace AccountingSoftware
         /// <param name="period">Період - дата запису або дата документу</param>
         /// <param name="owner">Власник запису</param>
         /// <param name="regAccumName">Назва регістру</param>
-        protected async Task BaseTrigerAdd(DateTime period, Guid owner)
-        {
-            await Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
-        }
+        protected async Task BaseTrigerAdd(DateTime period, Guid owner) => await Kernel.DataBase.SpetialTableRegAccumTrigerAdd(period, owner, TypeRegAccum, "add", TransactionID);
 
         /// <summary>
         /// Вибірка періоду (або періодів) для запису крім поточного якщо такий заданий.

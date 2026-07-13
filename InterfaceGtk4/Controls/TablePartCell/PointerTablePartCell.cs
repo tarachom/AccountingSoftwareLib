@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 /// Клітинка табличної частини - Вказівник
 /// </summary>
 [GObject.Subclass<Box>]
-public partial class PointerTablePartCell : Box
+public abstract partial class PointerTablePartCell : Box
 {
     protected Box hBox = New(Orientation.Horizontal, 0);
     Label label = Label.New(null);
@@ -37,9 +37,6 @@ public partial class PointerTablePartCell : Box
 
     partial void Initialize()
     {
-        //Ігнорувати виклик ініціалізації
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         SetOrientation(Orientation.Vertical);
 
         hBox.Hexpand = hBox.Vexpand = true;

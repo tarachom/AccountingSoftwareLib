@@ -32,12 +32,10 @@ namespace InterfaceGtk4;
 /// Журнал довідників певного виду (Повний)
 /// </summary>
 [GObject.Subclass<DirectoryFormJournalBaseTree>]
-public partial class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTree
+public abstract partial class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTree
 {
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         AddToolbar();
     }
 
@@ -52,8 +50,6 @@ public partial class DirectoryFormJournalFullTree : DirectoryFormJournalBaseTree
     #endregion
 
     #region Grid
-
-
 
     #endregion
 
