@@ -277,7 +277,5 @@ partial class FormConfigurationSelectionParam : Window
     void ThisClose()
     {
         this.Close();
-        //this.de
-        //this.Destroy();
     }
 }

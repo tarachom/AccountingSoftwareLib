@@ -28,7 +28,7 @@ using InterfaceGtkLib;
 namespace InterfaceGtk4;
 
 [GObject.Subclass<Window>]
-public partial class FormConfigurator : Window
+public abstract partial class FormConfigurator : Window
 {
     public ConfigurationParam? OpenConfigurationParam { get; set; }
     public NotebookFunction NotebookFunc { get; } = new();

@@ -29,7 +29,7 @@ using InterfaceGtkLib;
 namespace InterfaceGtk4;
 
 [GObject.Subclass<Window>]
-public partial class FormConfigurationSelection : Window
+public abstract partial class FormConfigurationSelection : Window
 {
     TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
     Kernel? ProgramKernel { get; set; } = null;
