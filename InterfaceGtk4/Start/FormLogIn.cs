@@ -30,11 +30,6 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Window>]
 partial class FormLogIn : Window
 {
-    public TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
-    public Kernel? ProgramKernel { get; set; } = null;
-    public Action? CallBack_ResponseOk { get; set; } = null;
-    public Action? CallBack_ResponseCancel { get; set; } = null;
-
     ComboBoxText comboBoxAllUsers = ComboBoxText.New();
     PasswordEntry passwordUser = PasswordEntry.New();
     Button? buttonAuth = null;
@@ -133,6 +128,11 @@ partial class FormLogIn : Window
 
         Child = vBox;
     }
+
+    public TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
+    public Kernel? ProgramKernel { get; set; } = null;
+    public Action? CallBack_ResponseOk { get; set; } = null;
+    public Action? CallBack_ResponseCancel { get; set; } = null;
 
     public static new FormLogIn New()
     {

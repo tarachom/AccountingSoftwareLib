@@ -31,9 +31,6 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Window>]
 partial class FormConfigurationSelectionParam : Window
 {
-    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
-    public Action<ConfigurationParam>? CallBackUpdate { get; set; } = null;
-
     #region Fields
 
     Entry ConfName = Entry.New();
@@ -184,6 +181,9 @@ partial class FormConfigurationSelectionParam : Window
         FormConfigurationSelectionParam window = NewWithProperties([]);
         return window;
     }
+
+    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
+    public Action<ConfigurationParam>? CallBackUpdate { get; set; } = null;
 
     public void SetValue()
     {

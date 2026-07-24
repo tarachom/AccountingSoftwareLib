@@ -31,26 +31,18 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Window>]
 public abstract partial class FormConfigurationSelection : Window
 {
-    TypeForm TypeOpenForm { get; set; } = TypeForm.Configurator;
-    Kernel? ProgramKernel { get; set; } = null;
-    Kernel? ConfiguratorKernel { get; set; } = null;
-
     Box? toolbarBox = null;
     ListBox listBox = ListBox.New();
     Button? buttonOpen = null;
     Button buttonConfigurator = Button.NewWithLabel("Конфігуратор");
     Spinner spinner = Spinner.New();
 
-    public void Init(Kernel? programKernel, Kernel? configuratorKernel, TypeForm typeOpenForm)
+    partial void Initialize()
     {
         Title = "Вибір бази даних";
         Resizable = false;
 
         SetIconName("program_logo");
-
-        ProgramKernel = programKernel;
-        ConfiguratorKernel = configuratorKernel;
-        TypeOpenForm = typeOpenForm;
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         vBox.MarginStart = vBox.MarginEnd = vBox.MarginTop = vBox.MarginBottom = 10;
@@ -133,8 +125,12 @@ public abstract partial class FormConfigurationSelection : Window
         FillListBoxDataBase();
     }
 
+    protected Kernel? ProgramKernel { get; set; } = null;
+    protected Kernel? ConfiguratorKernel { get; set; } = null;
+
     #region Virtual Functions
 
+    public abstract TypeForm TypeOpenForm { get; set; }
     public virtual Task<bool> OpenProgram(ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
     public virtual Task<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
 
@@ -271,8 +267,8 @@ public abstract partial class FormConfigurationSelection : Window
                         window.TransientFor = this;
                         window.CallBack_ResponseOk = async () =>
                         {
-                            await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
-                            Close();
+                            if (await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
+                                Close();
                         };
                         window.CallBack_ResponseCancel = ProgramKernel.Close;
 
@@ -326,8 +322,8 @@ public abstract partial class FormConfigurationSelection : Window
                     window.TransientFor = this;
                     window.CallBack_ResponseOk = async () =>
                     {
-                        await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName()));
-                        Close();
+                        if (await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
+                            Close();
                     };
                     window.CallBack_ResponseCancel = ConfiguratorKernel.Close;
 

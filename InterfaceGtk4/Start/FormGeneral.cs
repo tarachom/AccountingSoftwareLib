@@ -31,29 +31,21 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Window>]
 public abstract partial class FormGeneral : Window
 {
-    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
-    public NotebookFunction NotebookFunc { get; } = new();
-    Kernel Kernel { get; set; } = new();
     protected Statusbar StatusBar = Statusbar.New();
+    protected HeaderBar HeaderBar = HeaderBar.New();
     public Button ButtonMessage { get; private set; } = Button.New();
 
-    public void Init(Kernel kernel)
+    partial void Initialize()
     {
-        Kernel = kernel;
-
         SetDefaultSize(1200, 900);
         SetIconName("program_logo");
         Maximized = true;
 
         //HeaderBar
         {
-            HeaderBar headerBar = HeaderBar.New();
-            headerBar.ShowTitleButtons = true;
-            headerBar.DecorationLayout = "icon:minimize,maximize,close";
-            SetTitlebar(headerBar);
-
-            //Меню
-            CreateTopMenu(headerBar);
+            HeaderBar.ShowTitleButtons = true;
+            HeaderBar.DecorationLayout = "icon:minimize,maximize,close";
+            SetTitlebar(HeaderBar);
 
             //Назва
             {
@@ -67,7 +59,7 @@ public abstract partial class FormGeneral : Window
                 subtitle.AddCssClass("subtitle");
                 box.Append(subtitle);
 
-                headerBar.TitleWidget = box;
+                HeaderBar.TitleWidget = box;
             }
 
             //Блок кнопок у шапці головного вікна
@@ -77,7 +69,7 @@ public abstract partial class FormGeneral : Window
                     ButtonMessage.Child = Image.NewFromIconName("dialog-information");
                     ButtonMessage.TooltipText = "Повідомлення";
                     ButtonMessage.OnClicked += (sender, args) => ButtonMessageClicked();
-                    headerBar.PackEnd(ButtonMessage);
+                    HeaderBar.PackEnd(ButtonMessage);
                 }
 
                 //Повнотекстовий пошук
@@ -86,7 +78,7 @@ public abstract partial class FormGeneral : Window
                     button.Child = Image.NewFromIconName("edit-find");
                     button.TooltipText = "Пошук";
                     button.OnClicked += OnFindClicked;
-                    headerBar.PackEnd(button);
+                    HeaderBar.PackEnd(button);
                 }
             }
         }
@@ -101,10 +93,22 @@ public abstract partial class FormGeneral : Window
         hBox.Append(NotebookFunc.CreateNotebook(this, true));
 
         //Приєднання до подій ядра
-        NotebookFunc.ConnectingToKernelEvent(kernel);
+        NotebookFunc.ConnectingToKernelEvent(Kernel);
 
         vBox.Append(StatusBar);
         SetChild(vBox);
+    }
+
+    public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
+    public NotebookFunction NotebookFunc { get; } = new();
+
+    /// <summary>
+    /// Ініціалізація меню, статус бару
+    /// </summary>
+    public void SetValue()
+    {
+        CreateTopMenu();
+        SetStatusBar();
     }
 
     #region FullTextSearch
@@ -137,6 +141,8 @@ public abstract partial class FormGeneral : Window
 
     #region Virtual & Abstract Function
 
+    protected abstract Kernel Kernel { get; set; }
+
     protected virtual void ButtonMessageClicked() { }
     protected virtual void ButtonFindClicked(string text) { }
     protected virtual bool OpenDocumentByType(string name) => false;
@@ -158,7 +164,7 @@ public abstract partial class FormGeneral : Window
 
     #region TopMenu
 
-    void CreateTopMenu(HeaderBar headerBar)
+    void CreateTopMenu()
     {
         if (Application == null) return;
 
@@ -177,7 +183,7 @@ public abstract partial class FormGeneral : Window
         button.SetIconName("open-menu-symbolic");
         button.SetMenuModel(menu);
 
-        headerBar.PackStart(button);
+        HeaderBar.PackStart(button);
     }
 
     #endregion
@@ -575,7 +581,7 @@ public abstract partial class FormGeneral : Window
 
     #region StatusBar
 
-    public void SetStatusBar()
+    void SetStatusBar()
     {
         StatusBar.Push(1, $" {Kernel.GetCurrentTypeForm()}, сервер: {OpenConfigurationParam?.DataBaseServer}, база даних: {OpenConfigurationParam?.DataBaseBaseName}");
     }
