@@ -95,6 +95,12 @@ public abstract partial class FormJournal : Form
         Grid.Reorderable = false;
 
         ScrollGrid.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+
+        //Для Popover - дозволяємо поповеру розширюватися до природного розміру вмісту, якщо є місце
+        ScrollGrid.PropagateNaturalHeight = true;
+        ScrollGrid.PropagateNaturalWidth = true;
+        ScrollGrid.MaxContentHeight = 500; //Максимальна межа
+
         ScrollPages.SetPolicy(PolicyType.Automatic, PolicyType.Never);
 
         EventControllerKey contrKey = EventControllerKey.New();
