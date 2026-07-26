@@ -27,6 +27,9 @@ limitations under the License.
 
 */
 
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Text;
 using Gtk;
 
 namespace InterfaceGtk4;
@@ -36,13 +39,19 @@ namespace InterfaceGtk4;
 /// </summary>
 public static class FunctionForInterfaces
 {
-    static Builder GetBuilder(Group group, string file) =>
-        Builder.NewFromFile(Path.Combine(AppContext.BaseDirectory, $"Interfaces{Path.DirectorySeparatorChar}{group}", file));
+    private static readonly ConcurrentDictionary<string, string> Cache = new();
 
-    enum Group
+    static Builder GetBuilder(string template)
     {
-        Document,
-        Directory
+        var assembly = Assembly.GetCallingAssembly();
+        string xml = Cache.GetOrAdd(template, t =>
+        {
+            using var stream = assembly.GetManifestResourceStream(t) ?? throw new Exception($"Помилка завантаження шаблону '{t}' з ресурсів");
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return reader.ReadToEnd();
+        });
+
+        return Builder.NewFromString(xml, -1);
     }
 
     #region Document
@@ -53,7 +62,7 @@ public static class FunctionForInterfaces
     /// <returns>record DocumentElement</returns>
     public static DocumentElement ForDocument()
     {
-        Builder builder = GetBuilder(Group.Document, "DocumentBase.xml");
+        Builder builder = GetBuilder("DocumentBase.ui");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -83,7 +92,7 @@ public static class FunctionForInterfaces
     /// <returns>record DocumentElementSmall</returns>
     public static DocumentElementSmall ForDocumentSmall()
     {
-        Builder builder = GetBuilder(Group.Document, "DocumentSmall.xml");
+        Builder builder = GetBuilder("DocumentSmall.ui");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -132,7 +141,7 @@ public static class FunctionForInterfaces
     /// <returns>record DirectoryElement</returns>
     public static DirectoryElement ForDirectory()
     {
-        Builder builder = GetBuilder(Group.Directory, "DirectoryBase.xml");
+        Builder builder = GetBuilder("DirectoryBase.ui");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Paned Paned = builder.GetObject("Paned") as Paned ?? throw new Exception();
@@ -148,7 +157,7 @@ public static class FunctionForInterfaces
     /// <returns>record DirectoryElementSmall</returns>
     public static DirectoryElementSmall ForDirectorySmall()
     {
-        Builder builder = GetBuilder(Group.Directory, "DirectorySmall.xml");
+        Builder builder = GetBuilder("DirectorySmall.ui");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();
@@ -163,7 +172,7 @@ public static class FunctionForInterfaces
     /// <returns>record DirectoryElementTwoBoxes</returns>
     public static DirectoryElementTwoBoxes ForDirectoryTwoBoxes()
     {
-        Builder builder = GetBuilder(Group.Directory, "DirectoryTwoBoxes.xml");
+        Builder builder = GetBuilder("DirectoryTwoBoxes.ui");
 
         Box MainBox = builder.GetObject("MainBox") as Box ?? throw new Exception();
         Box TopBox = builder.GetObject("TopBox") as Box ?? throw new Exception();

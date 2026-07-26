@@ -23,7 +23,13 @@
 
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="Interfaces/**/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.ui" />
+    <EmbeddedResource Include="**\*.ui">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
