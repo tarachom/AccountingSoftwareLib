@@ -57,6 +57,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
             row.Group = "Directories";
             row.Name = directory.Name;
             row.Obj = directory;
+            row.TableOrField = directory.Table;
 
             Store.Append(row);
         }
@@ -83,6 +84,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 
@@ -110,6 +112,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.TableOrField = tablePart.Table;
 
                         store.Append(row);
                     }
@@ -125,6 +128,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 

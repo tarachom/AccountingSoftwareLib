@@ -27,6 +27,11 @@ partial class ConfiguratorItemRow
     public object? Obj { get; set; } = null;
 
     /// <summary>
+    /// Назва таблиці чи поля
+    /// </summary>
+    public string TableOrField { get; set; } = "";
+
+    /// <summary>
     /// Тип даних
     /// </summary>
     public string Type { get; set; } = "";

@@ -241,6 +241,33 @@ public abstract class ConfiguratorTree
             columnView.AppendColumn(column);
         }
 
+        //Назва таблиці чи поля
+        {
+            SignalListItemFactory factory = SignalListItemFactory.New();
+            factory.OnSetup += (_, args) =>
+            {
+                var listItem = (ListItem)args.Object;
+                var cell = LabelTablePartCell.NewWithString(null);
+                listItem.SetChild(cell);
+
+            };
+            factory.OnBind += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                TreeListRow? row = (TreeListRow?)listItem.GetItem();
+                if (row != null)
+                {
+                    var cell = (LabelTablePartCell?)listItem.Child;
+                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.GetItem();
+                    if (cell != null && itemRow != null)
+                        cell.SetText(itemRow.TableOrField);
+                }
+            };
+            var column = ColumnViewColumn.New("Таблиця / поле", factory);
+            column.Resizable = true;
+            columnView.AppendColumn(column);
+        }
+
         //Тип даних
         {
             SignalListItemFactory factory = SignalListItemFactory.New();
@@ -314,6 +341,14 @@ public abstract class ConfiguratorTree
                     Activate?.Invoke(itemRow.Group, itemRow.Name);
             }
         };
+    }
+
+    protected static string SubstringDesc(string desc)
+    {
+        if (string.IsNullOrEmpty(desc))
+            return string.Empty;
+
+        return desc.Replace("\n", "").Replace("\r", "");
     }
 
     /// <summary>
