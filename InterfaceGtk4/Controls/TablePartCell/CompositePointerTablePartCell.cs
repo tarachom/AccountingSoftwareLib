@@ -148,7 +148,7 @@ public abstract partial class CompositePointerControlTablePartCell : PointerTabl
             }
             catch (Exception ex)
             {
-                Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                Message.Error(NotebookFunc?.BasicForm, ex.Message);
                 return;
             }
 

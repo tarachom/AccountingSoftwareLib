@@ -61,7 +61,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            Message.Error(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 
@@ -107,7 +107,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                        Message.Error(NotebookFunc?.BasicForm, ex.Message);
                         return false;
                     }
 
@@ -174,7 +174,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                        Message.Error(NotebookFunc?.BasicForm, ex.Message);
                         return false;
                     }
 
@@ -238,7 +238,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            Message.Error(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 
@@ -287,7 +287,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+            Message.Error(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 

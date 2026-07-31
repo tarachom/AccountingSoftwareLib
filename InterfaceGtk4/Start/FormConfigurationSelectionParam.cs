@@ -202,7 +202,7 @@ partial class FormConfigurationSelectionParam : Window
     {
         if (!int.TryParse(Port.Text_, out int portInteger))
         {
-            Message.Error(Application, this, "Помилка", "Порт має бути цілим числом!");
+            Message.Error(this, "Помилка", "Порт має бути цілим числом!");
             return false;
         }
 
@@ -248,7 +248,7 @@ partial class FormConfigurationSelectionParam : Window
             );
 
             if (ifExistsDatabase)
-                Message.Info(Application, this, "Повідомлення", "База даних вже існує");
+                Message.Info(this, "Повідомлення", "База даних вже існує");
             else
             {
                 bool result = await kernel.CreateDatabaseIfNotExist(
@@ -260,9 +260,9 @@ partial class FormConfigurationSelectionParam : Window
                 );
 
                 if (result)
-                    Message.Info(Application, this, "Повідомлення", "OK.\n\nБаза даних створена");
+                    Message.Info(this, "Повідомлення", "OK.\n\nБаза даних створена");
                 else
-                    Message.Error(Application, this, "Помилка", kernel.Exception?.Message);
+                    Message.Error(this, "Помилка", kernel.Exception?.Message);
             }
 
             button.Sensitive = true;

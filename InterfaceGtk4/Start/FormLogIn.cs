@@ -169,7 +169,7 @@ partial class FormLogIn : Window
             else
             {
                 passwordUser.SelectRegion(0, passwordUser.GetText().Length);
-                Message.Error(Application, this, "Невірний пароль", "Помилка");
+                Message.Error(this, "Невірний пароль", "Помилка");
             }
 
             button?.Sensitive = true;

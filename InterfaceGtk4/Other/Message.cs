@@ -39,16 +39,15 @@ public class Message
     /// <summary>
     /// Внітрішня функція - створює базове діалогове вікно
     /// </summary>
-    /// <param name="app"></param>
     /// <param name="win"></param>
     /// <param name="text"></param>
     /// <param name="secondaryText"></param>
     /// <returns>MessageDialog</returns>
-    static MessageDialog Create(Application? app, Window? win, string text, string? secondaryText = null)
+    static MessageDialog Create(Window? win, string text, string? secondaryText = null)
     {
         MessageDialog md = MessageDialog.NewWithProperties([]);
+        md.Application = win?.Application;
         md.TransientFor = win;
-        md.Application = app;
         md.Modal = true;
         md.Valign = Align.Center;
         md.Halign = Align.Center;
@@ -58,9 +57,9 @@ public class Message
         return md;
     }
 
-    public static void Info(Application? app, Window? win, string text, string? secondaryText = null)
+    public static void Info(Window? win, string text, string? secondaryText = null)
     {
-        MessageDialog message = Create(app, win, text, secondaryText);
+        MessageDialog message = Create(win, text, secondaryText);
         message.AddButton("Закрити", 1);
 
         message.OnResponse += (_, _) =>
@@ -72,9 +71,9 @@ public class Message
         message.Show();
     }
 
-    public static void Error(Application? app, Window? win, string text, string? secondaryText = null)
+    public static void Error(Window? win, string text, string? secondaryText = null)
     {
-        MessageDialog message = Create(app, win, text, secondaryText);
+        MessageDialog message = Create(win, text, secondaryText);
         message.AddButton("Закрити", 1);
 
         message.OnResponse += (_, _) =>
@@ -92,9 +91,9 @@ public class Message
     /// <param name="pwin">Вікно власник</param>
     /// <param name="message">Текст</param>
     /// <returns>Так або Ні</returns>
-    public static void Request(Application? app, Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
+    public static void Request(Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
     {
-        MessageDialog message = Create(app, win, text, secondaryText);
+        MessageDialog message = Create(win, text, secondaryText);
         Button buttonYes = (Button)message.AddButton("Так", (int)YesNo.Yes);
         message.AddButton("Ні", (int)YesNo.No);
 

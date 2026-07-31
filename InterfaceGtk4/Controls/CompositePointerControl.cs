@@ -131,7 +131,7 @@ public abstract partial class CompositePointerControl : PointerControl
             }
             catch (Exception ex)
             {
-                Message.Error(NotebookFunc?.BasicForm?.Application, NotebookFunc?.BasicForm, ex.Message);
+                Message.Error(NotebookFunc?.BasicForm, ex.Message);
                 return;
             }
 

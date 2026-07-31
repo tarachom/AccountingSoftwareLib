@@ -277,7 +277,7 @@ public abstract partial class FormConfigurationSelection : Window
                     }
                 }
                 else
-                    Message.Error(Application, this, "Помилка", ProgramKernel.Exception?.Message);
+                    Message.Error(this, "Помилка", ProgramKernel.Exception?.Message);
             }
         }
 
@@ -331,7 +331,7 @@ public abstract partial class FormConfigurationSelection : Window
                     window.Show();
                 }
                 else
-                    Message.Error(Application, this, "Помилка", ConfiguratorKernel.Exception?.Message);
+                    Message.Error(this, "Помилка", ConfiguratorKernel.Exception?.Message);
             }
         }
 
@@ -350,7 +350,7 @@ public abstract partial class FormConfigurationSelection : Window
 
         if (!await kernel.DataBase.IfExistsTable(SpecialTables.Constants))
         {
-            Message.Error(Application, this, "Помилка", $"Відсутня таблиця tab_constants.{help}");
+            Message.Error(this, "Помилка", $"Відсутня таблиця tab_constants.{help}");
             return false;
         }
 
@@ -360,7 +360,7 @@ public abstract partial class FormConfigurationSelection : Window
         foreach (string table in SpecialTables.SpecialTablesList)
             if (!specialTable.Contains(SpecialTables.Users))
             {
-                Message.Error(Application, this, "Помилка", $"Відсутня системна таблиця {table}.{help}");
+                Message.Error(this, "Помилка", $"Відсутня системна таблиця {table}.{help}");
                 return false;
             }
 
@@ -406,7 +406,7 @@ public abstract partial class FormConfigurationSelection : Window
     {
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
-            Message.Request(Application, this, "Видалити?", "Видалити підключення до бази даних?", x =>
+            Message.Request(this, "Видалити?", "Видалити підключення до бази даних?", x =>
             {
                 if (x == Message.YesNo.Yes)
                     if (ConfigurationParamCollection.RemoveConfigurationParam(selectedRow.Name))
