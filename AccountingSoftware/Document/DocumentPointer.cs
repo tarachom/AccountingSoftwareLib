@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Документ Вказівник
     /// </summary>
-    public abstract class DocumentPointer(Kernel kernel, string table, string typeDocument) : Pointer(kernel, table)
+    public abstract class DocumentPointer(Kernel kernel, string table, string typeDocument) : Pointer(kernel, table, $"Документи.{typeDocument}")
     {
         /// <summary>
         /// Назва типу як задано в конфігураторі
@@ -126,10 +126,5 @@ namespace AccountingSoftware
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
         }
-
-        /// <summary>
-        /// Для композитного типу даних
-        /// </summary>
-        public virtual UuidAndText GetBasis() => new(UniqueID, $"Документи.{TypeDocument}");
     }
 }

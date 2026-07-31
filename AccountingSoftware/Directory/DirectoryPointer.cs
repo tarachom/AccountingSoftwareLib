@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник Вказівник
     /// </summary>
-    public abstract class DirectoryPointer(Kernel kernel, string table, string typeDirectory) : Pointer(kernel, table)
+    public abstract class DirectoryPointer(Kernel kernel, string table, string typeDirectory) : Pointer(kernel, table, $"Довідники.{typeDirectory}")
     {
         /// <summary>
         /// Назва типу як задано в конфігураторі
@@ -81,10 +81,5 @@ namespace AccountingSoftware
                 await Kernel.DataBase.SpetialTableObjectUpdateTrigerAdd(GetBasis(), 'U');
             }
         }
-
-        /// <summary>
-        /// Для композитного типу даних
-        /// </summary>
-        public virtual UuidAndText GetBasis() => new(UniqueID, $"Довідники.{TypeDirectory}");
     }
 }

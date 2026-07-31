@@ -77,6 +77,27 @@ namespace AccountingSoftware
         }
 
         /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="uniqueID">Вказівник</param>
+        /// <param name="text">Текст</param>
+        public UuidAndText(Pointer pointer, string text)
+        {
+            Uuid = pointer.UniqueID.UGuid;
+            Text = text;
+        }
+
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
+        /// <param name="uniqueID">Вказівник</param>
+        public UuidAndText(Pointer pointer)
+        {
+            Uuid = pointer.UniqueID.UGuid;
+            Text = pointer.PointerType;
+        }
+
+        /// <summary>
         /// Вказівник
         /// </summary>
         [PgName("uuid")]

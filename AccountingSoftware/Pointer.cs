@@ -30,8 +30,13 @@ namespace AccountingSoftware
     ///     DirectoryPointer
     ///     DocumentPointer
     /// </summary>
-    public abstract class Pointer(Kernel kernel, string table)
+    public abstract class Pointer(Kernel kernel, string table, string pointerType)
     {
+        /// <summary>
+        /// Повна назва типу як задано в конфігураторі
+        /// </summary>
+        public string PointerType { get; private set; } = pointerType;
+
         /// <summary>
         /// Ядро
         /// </summary>
@@ -53,7 +58,7 @@ namespace AccountingSoftware
         public Dictionary<string, object> Fields { get; protected set; } = [];
 
         /// <summary>
-        /// Назва
+        /// Назва, представлення
         /// </summary>
         public string Name { get; set; } = "";
 
@@ -81,6 +86,11 @@ namespace AccountingSoftware
         /// Отримати ідентифікатор
         /// </summary>
         public Guid GetPointer() => UniqueID.UGuid;
+
+        /// <summary>
+        /// Для композитного типу даних
+        /// </summary>
+        public virtual UuidAndText GetBasis() => new(UniqueID, PointerType);
 
         /// <summary>
         /// Переоприділення базової функції
