@@ -34,27 +34,51 @@ namespace AccountingSoftware
     /// <param name="kernel">Ядро</param>
     /// <param name="table">Таблиця</param>
     /// <param name="parentField">Батьківське поле</param>
-    public abstract class Select(Kernel kernel, string table, string parentField = "", string isFolderField = "")
+    public abstract class Select
     {
+        /// <summary>
+        /// Назва тимчасового поля для вибірки презентації вказівника
+        /// </summary>
+        const string PresentationTmpFieldName = "fld_special_presentation";
+
+        public Select(Kernel kernel, string table, string parentField = "", string isFolderField = "", string[]? fieldPresentation = null)
+        {
+            Kernel = kernel;
+            Table = table;
+            QuerySelect = new(table) { ParentField = parentField, IsFolderField = isFolderField };
+            FieldPresentation = fieldPresentation;
+
+            //Добавляється додаткове поле для отримання презентація вказівника
+            if (FieldPresentation != null)
+                QuerySelect.SpecialСoncatFields.Add(new ValueName<string[]>(FieldPresentation, PresentationTmpFieldName));
+        }
+
         /// <summary>
         /// Ядро
         /// </summary>
-        protected Kernel Kernel { get; set; } = kernel;
+        protected Kernel Kernel { get; private set; }
 
         /// <summary>
         /// Таблиця
         /// </summary>
-        public string Table { get; protected set; } = table;
+        public string Table { get; protected set; }
 
         /// <summary>
 		/// Запит SELECT
 		/// </summary>
-		public Query QuerySelect { get; set; } = new(table) { ParentField = parentField, IsFolderField = isFolderField };
+		public Query QuerySelect { get; set; }
 
         /// <summary>
         /// Поточна позиція
         /// </summary>
         protected int Position { get; set; } = 0;
+
+        /// <summary>
+        /// Презентація для поточного вказівника
+        /// </summary>
+        protected object? CurrentPointerPresentation { get; set; } = null;
+
+        string[]? FieldPresentation { get; set; } = null;
 
         /// <summary>
         /// Поточний вказівник
@@ -67,7 +91,7 @@ namespace AccountingSoftware
 		protected List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
 
         /// <summary>
-        /// Обчислення розміру вибірки і обчислнення кількості сторінок
+        /// Обчислення розміру вибірки і обчислення кількості сторінок
         /// </summary>
         /// <param name="uniqueID">Вибраний елемент</param>
         /// <param name="pageSize">Розмір сторінки</param>
@@ -92,11 +116,26 @@ namespace AccountingSoftware
             if (Position < BaseSelectList.Count)
             {
                 CurrentPointerPosition = BaseSelectList[Position++];
+
+                if (FieldPresentation != null)
+                {
+                    (_, Dictionary<string, object>? Fields) = CurrentPointerPosition.Value;
+                    if (Fields != null && Fields.TryGetValue(PresentationTmpFieldName, out object? presentation))
+                    {
+                        // Отримую значення презентації
+                        CurrentPointerPresentation = presentation;
+
+                        //Видаляю поле презентації
+                        Fields.Remove(PresentationTmpFieldName);
+                    }
+                }
+
                 return true;
             }
             else
             {
                 CurrentPointerPosition = null;
+                CurrentPointerPresentation = null;
                 return false;
             }
         }

@@ -109,6 +109,12 @@ namespace AccountingSoftware
         public List<ValueName<string>> FieldAndAlias { get; set; } = [];
 
         /// <summary>
+        /// Спеціальні поля з автоматичною конкатенацією масиву внутрішніх полів в одне поле
+        /// Використовується для вибірки щоб вибирати представлення для елементів довідників чи документів
+        /// </summary>
+        public List<ValueName<string[]>> SpecialСoncatFields { get; set; } = [];
+
+        /// <summary>
         /// Таблиці які потрібно приєднати
         /// </summary>
         public List<Join> Joins { get; set; } = [];
@@ -187,6 +193,29 @@ namespace AccountingSoftware
                 //Поля з псевдонімами
                 foreach (ValueName<string> field in FieldAndAlias)
                     query += ", " + field.Value + " AS " + field.Name;
+            }
+
+            if (SpecialСoncatFields.Count > 0)
+            {
+                query += "\n";
+
+                //Спеціальні поля з автоматичною конкатенацією масиву внутрішніх полів в одне поле
+                foreach (ValueName<string[]> field in SpecialСoncatFields)
+                    if (field.Value != null)
+                    {
+                        string[] innerFields = [.. field.Value];
+
+                        if (Joins.Count > 0)
+                            for (int i = 0; i < innerFields.Length; i++)
+                                innerFields[i] = $"{Table}.{innerFields[i]}";
+
+                        query += ", " + innerFields.Length switch
+                        {
+                            1 => innerFields[0],
+                            > 1 => $"concat_ws (', ', " + string.Join(", ", innerFields) + ")",
+                            _ => "'#'"
+                        } + " AS " + field.Name;
+                    }
             }
 
             query += "\nFROM " + Table;

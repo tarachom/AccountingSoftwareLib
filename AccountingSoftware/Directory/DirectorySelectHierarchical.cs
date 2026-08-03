@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField, string isFolder) : Select(kernel, table, parentField, isFolder)
+	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField = "", string isFolder = "", string[]? fieldPresentation = null) : Select(kernel, table, parentField, isFolder, fieldPresentation)
 	{
 		/// <summary>
 		/// Поточний вказівник
@@ -62,6 +62,7 @@ namespace AccountingSoftware
 		{
 			Position = 0;
 			CurrentPointerPositionHierarchical = null;
+			CurrentPointerPresentation = null;
 			BaseSelectListHierarchical.Clear();
 
 			await Kernel.DataBase.SelectDirectoryPointersHierarchical(QuerySelect, BaseSelectListHierarchical);

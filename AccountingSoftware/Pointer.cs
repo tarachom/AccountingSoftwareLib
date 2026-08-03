@@ -96,7 +96,7 @@ namespace AccountingSoftware
         /// Переоприділення базової функції
         /// </summary>
         /// <returns>Ідентифікатор у вигляді тексту</returns>
-        public override string ToString() => UniqueID.UGuid.ToString();
+        public override string ToString() => $"{{\"uid\": \"{UniqueID}\", \"name\": \"{Name}\"}}";
 
         public override int GetHashCode() => HashCode.Combine(UniqueID.UGuid);
 

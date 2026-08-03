@@ -2920,7 +2920,7 @@ FROM
                 {
                     Dictionary<string, object>? fields = null;
 
-                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0 || QuerySelect.SpecialСoncatFields.Count > 0)
                     {
                         fields = [];
 
@@ -2928,6 +2928,9 @@ FROM
                             fields.Add(field, reader[field]);
 
                         foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
+
+                        foreach (ValueName<string[]> field in QuerySelect.SpecialСoncatFields)
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
@@ -2959,7 +2962,7 @@ FROM
 
                     Dictionary<string, object>? fields = null;
 
-                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0 || QuerySelect.SpecialСoncatFields.Count > 0)
                     {
                         fields = [];
 
@@ -2967,6 +2970,9 @@ FROM
                             fields.Add(field, reader[field]);
 
                         foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
+
+                        foreach (ValueName<string[]> field in QuerySelect.SpecialСoncatFields)
                             fields.Add(field.Name, reader[field.Name]);
                     }
 
@@ -3272,7 +3278,7 @@ FROM
                 {
                     Dictionary<string, object>? fields = null;
 
-                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0)
+                    if (QuerySelect.Field.Count > 0 || QuerySelect.FieldAndAlias.Count > 0 || QuerySelect.SpecialСoncatFields.Count > 0)
                     {
                         fields = [];
 
@@ -3280,6 +3286,9 @@ FROM
                             fields.Add(field, reader[field]);
 
                         foreach (ValueName<string> field in QuerySelect.FieldAndAlias)
+                            fields.Add(field.Name, reader[field.Name]);
+
+                        foreach (ValueName<string[]> field in QuerySelect.SpecialСoncatFields)
                             fields.Add(field.Name, reader[field.Name]);
                     }
 

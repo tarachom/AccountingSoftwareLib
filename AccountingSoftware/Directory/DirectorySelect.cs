@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelect(Kernel kernel, string table) : Select(kernel, table)
+	public abstract class DirectorySelect(Kernel kernel, string table, string[]? fieldPresentation = null) : Select(kernel, table, "", "", fieldPresentation)
 	{
 		/// <summary>
 		/// Вибрати дані
@@ -35,6 +35,7 @@ namespace AccountingSoftware
 		{
 			Position = 0;
 			CurrentPointerPosition = null;
+			CurrentPointerPresentation = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
@@ -68,7 +69,7 @@ namespace AccountingSoftware
 		protected async Task<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
 			Query querySelect = new(Table);
-			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
+			querySelect.Where.Add(new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
 
 			return await Kernel.DataBase.FindDirectoryPointer(querySelect);
 		}
@@ -86,7 +87,7 @@ namespace AccountingSoftware
 			List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> directoryPointerList = [];
 
 			Query querySelect = new(Table) { Limit = limit, Offset = offset };
-			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
+			querySelect.Where.Add(new(fieldName, Comparison.EQ, fieldValue));
 
 			await Kernel.DataBase.SelectDirectoryPointers(querySelect, directoryPointerList);
 

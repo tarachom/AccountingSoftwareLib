@@ -26,7 +26,7 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Документ Вибірка вказівників
 	/// </summary>
-	public abstract class DocumentSelect(Kernel kernel, string table) : Select(kernel, table)
+	public abstract class DocumentSelect(Kernel kernel, string table, string[]? fieldPresentation = null) : Select(kernel, table, "", "", fieldPresentation)
 	{
 		/// <summary>
 		/// Зчитати
@@ -35,6 +35,7 @@ namespace AccountingSoftware
 		{
 			Position = 0;
 			CurrentPointerPosition = null;
+			CurrentPointerPresentation = null;
 			BaseSelectList.Clear();
 
 			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
@@ -67,6 +68,7 @@ namespace AccountingSoftware
 		/// <returns>Повертає перший знайдений вказівник</returns>
 		protected async Task<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
+			///!!! переробити щоб використовувати основний querySelect
 			Query querySelect = new(Table);
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
 
@@ -84,7 +86,7 @@ namespace AccountingSoftware
 		protected async Task<List<(UniqueID UniqueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
 		{
 			List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> documentPointerList = [];
-
+			///!!! переробити щоб використовувати основний querySelect
 			Query querySelect = new(Table) { Limit = limit, Offset = offset };
 			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
 
