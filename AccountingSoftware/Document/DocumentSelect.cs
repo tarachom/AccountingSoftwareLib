@@ -65,14 +65,17 @@ namespace AccountingSoftware
 		/// <param name="fieldValue">Значення поля</param>
 		/// <param name="funcToField">Функція для поля</param>
 		/// <param name="funcToField_Param1">Перший параметр для функції</param>
-		/// <returns>Повертає перший знайдений вказівник</returns>
-		protected async Task<UniqueID?> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
+		/// <returns>Повертає true якщо є елемент у вибірці</returns>
+		protected async Task<bool> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
-			///!!! переробити щоб використовувати основний querySelect
-			Query querySelect = new(Table);
-			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 });
+			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			QuerySelect.Where.Add(where);
 
-			return await Kernel.DataBase.FindDocumentPointer(querySelect);
+			bool result = await BaseSelectSingle();
+
+			QuerySelect.Where.Remove(where);
+
+			return result;
 		}
 
 		/// <summary>
@@ -82,17 +85,27 @@ namespace AccountingSoftware
 		/// <param name="fieldValue">Значення поля</param>
 		/// <param name="limit">Кількість елементів які можна вибрати</param>
 		/// <param name="offset">Зміщення від початку вибірки</param>
-		/// <returns>Повертає список знайдених вказівників</returns>
-		protected async Task<List<(UniqueID UniqueID, Dictionary<string, object>? Fields)>> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0)
+		/// <param name="funcToField">Функція для поля</param>
+		/// <param name="funcToField_Param1">Перший параметр для функції</param>
+		/// <returns>Повертає true якщо є елементи у вибірці</returns>
+		protected async Task<bool> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0, string funcToField = "", string funcToField_Param1 = "")
 		{
-			List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> documentPointerList = [];
-			///!!! переробити щоб використовувати основний querySelect
-			Query querySelect = new(Table) { Limit = limit, Offset = offset };
-			querySelect.Where.Add(new Where(fieldName, Comparison.EQ, fieldValue));
+			long? oldLimit = QuerySelect.Limit;
+			long? oldOffset = QuerySelect.Offset;
 
-			await Kernel.DataBase.SelectDocumentPointer(querySelect, documentPointerList);
+			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			QuerySelect.Where.Add(where);
 
-			return documentPointerList;
+			if (limit > 0) QuerySelect.Limit = limit;
+			if (offset > 0) QuerySelect.Offset = offset;
+
+			bool result = await BaseSelect();
+
+			QuerySelect.Where.Remove(where);
+			QuerySelect.Limit = oldLimit;
+			QuerySelect.Offset = oldOffset;
+
+			return result;
 		}
 	}
 }

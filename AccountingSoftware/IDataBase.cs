@@ -163,7 +163,6 @@ namespace AccountingSoftware
 
         Task SelectDirectoryPointers(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
         Task SelectDirectoryPointersHierarchical(Query QuerySelect, List<(UniqueID UniqueID, UniqueID Parent, int Level, bool IsFolder, Dictionary<string, object>? Fields)> listPointers);
-        Task<UniqueID?> FindDirectoryPointer(Query QuerySelect);
 
         Task DeleteDirectoryTempTable(DirectorySelect directorySelect);
 
@@ -182,7 +181,6 @@ namespace AccountingSoftware
         Task DeleteDocumentObject(UniqueID uniqueID, string table, byte transactionID = 0);
 
         Task SelectDocumentPointer(Query QuerySelect, List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> listPointers);
-        Task<UniqueID?> FindDocumentPointer(Query QuerySelect);
 
         Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList);
         Task InsertDocumentTablePartRecords(Guid UID, UniqueID ownerUnigueID, string table, string[] fieldArray, Dictionary<string, object> fieldValue, byte transactionID = 0);

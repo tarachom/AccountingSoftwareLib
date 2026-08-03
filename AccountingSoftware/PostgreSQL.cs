@@ -2982,34 +2982,6 @@ FROM
             }
         }
 
-        public async Task<UniqueID?> FindDirectoryPointer(Query QuerySelect)
-        {
-            UniqueID? directoryPointer = null;
-
-            if (DataSource != null)
-            {
-                QuerySelect.Limit = 1;
-
-                string query = QuerySelect.Construct();
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.CommandTimeout = DefaultCommandTimeout;
-
-                if (QuerySelect.Where.Count > 0)
-                    foreach (Where field in QuerySelect.Where)
-                        command.Parameters.AddWithValue(field.Alias, field.Value);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                    directoryPointer = new UniqueID(reader["uid"]);
-
-                await reader.CloseAsync();
-            }
-
-            return directoryPointer;
-        }
-
         public async Task DeleteDirectoryTempTable(DirectorySelect directorySelect)
         {
             /*
@@ -3296,34 +3268,6 @@ FROM
                 }
                 await reader.CloseAsync();
             }
-        }
-
-        public async Task<UniqueID?> FindDocumentPointer(Query QuerySelect)
-        {
-            UniqueID? documentPointer = null;
-
-            if (DataSource != null)
-            {
-                QuerySelect.Limit = 1;
-
-                string query = QuerySelect.Construct();
-
-                NpgsqlCommand command = DataSource.CreateCommand(query);
-                command.CommandTimeout = DefaultCommandTimeout;
-
-                if (QuerySelect.Where.Count > 0)
-                    foreach (Where field in QuerySelect.Where)
-                        command.Parameters.AddWithValue(field.Alias, field.Value);
-
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                    documentPointer = new UniqueID(reader["uid"]);
-
-                await reader.CloseAsync();
-            }
-
-            return documentPointer;
         }
 
         public async Task SelectDocumentTablePartRecords(Query QuerySelect, List<Dictionary<string, object>> fieldValueList, Dictionary<string, Dictionary<string, string>> joinValueList)
