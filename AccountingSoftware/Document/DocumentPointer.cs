@@ -40,6 +40,9 @@ namespace AccountingSoftware
         /// <returns>Представлення обєкта</returns>
         protected async Task<string> BasePresentation(string[] fieldPresentation)
         {
+            //Якщо назва вже задана тоді повертаю цю назву
+            if (!string.IsNullOrEmpty(Name)) return Name;
+            
             if (!IsEmpty() && fieldPresentation.Length != 0)
             {
                 Query query = new(Table);
