@@ -26,8 +26,19 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelectHierarchical(Kernel kernel, string table, string parentField = "", string isFolder = "", string[]? fieldPresentation = null) : Select(kernel, table, parentField, isFolder, fieldPresentation)
+	public abstract class DirectorySelectHierarchical : Select
 	{
+		public DirectorySelectHierarchical(Kernel kernel, string table, string typeDirectory, string parentField, string isFolder, string[] fieldPresentation) : base(kernel, table, parentField, isFolder, fieldPresentation)
+		{
+			TypeDirectory = typeDirectory;
+			ConfFields = Kernel.Conf.Directories[TypeDirectory].Fields.Values;
+		}
+
+		/// <summary>
+		/// Назва типу як задано в конфігураторі
+		/// </summary>
+		public string TypeDirectory { get; private set; }
+
 		/// <summary>
 		/// Поточний вказівник
 		/// </summary>
@@ -46,6 +57,17 @@ namespace AccountingSoftware
 			if (Position < BaseSelectListHierarchical.Count)
 			{
 				CurrentPointerPositionHierarchical = BaseSelectListHierarchical[Position++];
+
+				(_, _, _, _, Dictionary<string, object>? Fields) = CurrentPointerPositionHierarchical.Value;
+				if (Fields != null && Fields.TryGetValue(PresentationTmpFieldName, out object? presentation))
+				{
+					// Отримую значення презентації
+					CurrentPointerPresentation = presentation;
+
+					//Видаляю поле презентації
+					Fields.Remove(PresentationTmpFieldName);
+				}
+
 				return true;
 			}
 			else
@@ -64,6 +86,8 @@ namespace AccountingSoftware
 			CurrentPointerPositionHierarchical = null;
 			CurrentPointerPresentation = null;
 			BaseSelectListHierarchical.Clear();
+
+			ExistFields();
 
 			await Kernel.DataBase.SelectDirectoryPointersHierarchical(QuerySelect, BaseSelectListHierarchical);
 

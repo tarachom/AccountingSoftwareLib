@@ -26,8 +26,19 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Документ Вибірка вказівників
 	/// </summary>
-	public abstract class DocumentSelect(Kernel kernel, string table, string[]? fieldPresentation = null) : Select(kernel, table, "", "", fieldPresentation)
+	public abstract class DocumentSelect : Select
 	{
+		public DocumentSelect(Kernel kernel, string table, string typeDocument, string[] fieldPresentation) : base(kernel, table, "", "", fieldPresentation)
+		{
+			TypeDocument = typeDocument;
+			ConfFields = Kernel.Conf.Documents[TypeDocument].Fields.Values;
+		}
+
+		/// <summary>
+		/// Назва типу як задано в конфігураторі
+		/// </summary>
+		public string TypeDocument { get; private set; }
+
 		/// <summary>
 		/// Зчитати
 		/// </summary>
@@ -37,6 +48,8 @@ namespace AccountingSoftware
 			CurrentPointerPosition = null;
 			CurrentPointerPresentation = null;
 			BaseSelectList.Clear();
+
+			ExistFields();
 
 			await Kernel.DataBase.SelectDocumentPointer(QuerySelect, BaseSelectList);
 
@@ -68,7 +81,7 @@ namespace AccountingSoftware
 		/// <returns>Повертає true якщо є елемент у вибірці</returns>
 		protected async Task<bool> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
-			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
 			QuerySelect.Where.Add(where);
 
 			bool result = await BaseSelectSingle();
@@ -93,7 +106,7 @@ namespace AccountingSoftware
 			long? oldLimit = QuerySelect.Limit;
 			long? oldOffset = QuerySelect.Offset;
 
-			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
 			QuerySelect.Where.Add(where);
 
 			if (limit > 0) QuerySelect.Limit = limit;

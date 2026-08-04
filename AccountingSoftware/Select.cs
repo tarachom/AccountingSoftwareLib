@@ -39,9 +39,9 @@ namespace AccountingSoftware
         /// <summary>
         /// Назва тимчасового поля для вибірки презентації вказівника
         /// </summary>
-        const string PresentationTmpFieldName = "fld_special_presentation";
+        protected const string PresentationTmpFieldName = "fld_special_presentation";
 
-        public Select(Kernel kernel, string table, string parentField = "", string isFolderField = "", string[]? fieldPresentation = null)
+        public Select(Kernel kernel, string table, string parentField, string isFolderField, string[] fieldPresentation)
         {
             Kernel = kernel;
             Table = table;
@@ -49,8 +49,7 @@ namespace AccountingSoftware
             FieldPresentation = fieldPresentation;
 
             //Добавляється додаткове поле для отримання презентація вказівника
-            if (FieldPresentation != null)
-                QuerySelect.SpecialСoncatFields.Add(new ValueName<string[]>(FieldPresentation, PresentationTmpFieldName));
+            QuerySelect.SpecialСoncatFields.Add(new ValueName<string[]>(FieldPresentation, PresentationTmpFieldName));
         }
 
         /// <summary>
@@ -78,7 +77,10 @@ namespace AccountingSoftware
         /// </summary>
         protected object? CurrentPointerPresentation { get; set; } = null;
 
-        string[]? FieldPresentation { get; set; } = null;
+        /// <summary>
+        /// Поля для презентації
+        /// </summary>
+        protected string[] FieldPresentation { get; set; }
 
         /// <summary>
         /// Поточний вказівник
@@ -89,6 +91,46 @@ namespace AccountingSoftware
 		/// Вибірка вказівників
 		/// </summary>
 		protected List<(UniqueID UniqueID, Dictionary<string, object>? Fields)> BaseSelectList { get; private set; } = [];
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Dictionary<string, ConfigurationField>.ValueCollection? ConfFields { get; set; } = null;
+
+        /// <summary>
+        /// Опрацьовує колекцію полів і перевіряє наявність полів
+        /// </summary>
+        protected void ExistFields()
+        {
+            List<string> newFields = new(QuerySelect.Field.Count);
+            bool changed = false;
+
+            //HashSet<string> set = [.. ConfigurationDocuments.GetPredefinedFields().Select(x => x.NameInTable)];
+            //set.Add([.. ConfigurationDirectories.GetPredefinedFields().Select(x => x.NameInTable)]);
+
+            foreach (var field in QuerySelect.Field)
+            {
+                string nameInTable = field switch { "deletion_label" or "spend" => field, _ => ExistField(field) };
+                newFields.Add(nameInTable);
+                if (nameInTable != field && !changed) changed = true;
+            }
+
+            if (changed)
+            {
+                QuerySelect.Field.Clear();
+                QuerySelect.Field.AddRange(newFields);
+            }
+        }
+
+        // <summary>
+        /// Перевіряє чи є в колекції полів поле з даною назвою. 
+        /// Шукає як по назві в базі даних так і по звичайній назві. 
+        /// Повертає назву поля як у базі даних.
+        /// </summary>
+        /// <param name="name">Назва поля</param>
+        /// <returns>Назва поля як у базі даних</returns>
+        /// <exception cref="KeyNotFoundException">Вибиває помилку якщо поле не знайдено</exception>
+        protected string ExistField(string name) => ConfFields?.FirstOrDefault(x => x.NameInTable == name || x.Name == name)?.NameInTable ?? throw new KeyNotFoundException($"Не знайдено поле '{name}' в колекції полів!");
 
         /// <summary>
         /// Обчислення розміру вибірки і обчислення кількості сторінок
@@ -117,17 +159,14 @@ namespace AccountingSoftware
             {
                 CurrentPointerPosition = BaseSelectList[Position++];
 
-                if (FieldPresentation != null)
+                (_, Dictionary<string, object>? Fields) = CurrentPointerPosition.Value;
+                if (Fields != null && Fields.TryGetValue(PresentationTmpFieldName, out object? presentation))
                 {
-                    (_, Dictionary<string, object>? Fields) = CurrentPointerPosition.Value;
-                    if (Fields != null && Fields.TryGetValue(PresentationTmpFieldName, out object? presentation))
-                    {
-                        // Отримую значення презентації
-                        CurrentPointerPresentation = presentation;
+                    // Отримую значення презентації
+                    CurrentPointerPresentation = presentation;
 
-                        //Видаляю поле презентації
-                        Fields.Remove(PresentationTmpFieldName);
-                    }
+                    //Видаляю поле презентації
+                    Fields.Remove(PresentationTmpFieldName);
                 }
 
                 return true;

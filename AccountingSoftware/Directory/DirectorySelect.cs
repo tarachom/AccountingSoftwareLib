@@ -26,8 +26,19 @@ namespace AccountingSoftware
 	/// <summary>
 	/// Довідник Вибірка Вказівників
 	/// </summary>
-	public abstract class DirectorySelect(Kernel kernel, string table, string[]? fieldPresentation = null) : Select(kernel, table, "", "", fieldPresentation)
+	public abstract class DirectorySelect : Select
 	{
+		public DirectorySelect(Kernel kernel, string table, string typeDirectory, string[] fieldPresentation) : base(kernel, table, "", "", fieldPresentation)
+		{
+			TypeDirectory = typeDirectory;
+			ConfFields = Kernel.Conf.Directories[TypeDirectory].Fields.Values;
+		}
+
+		/// <summary>
+		/// Назва типу як задано в конфігураторі
+		/// </summary>
+		public string TypeDirectory { get; private set; }
+
 		/// <summary>
 		/// Вибрати дані
 		/// </summary>
@@ -37,6 +48,8 @@ namespace AccountingSoftware
 			CurrentPointerPosition = null;
 			CurrentPointerPresentation = null;
 			BaseSelectList.Clear();
+
+			ExistFields();
 
 			await Kernel.DataBase.SelectDirectoryPointers(QuerySelect, BaseSelectList);
 
@@ -68,7 +81,7 @@ namespace AccountingSoftware
 		/// <returns>Повертає true якщо є елемент у вибірці</returns>
 		protected async Task<bool> BaseFindByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
-			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
 			QuerySelect.Where.Add(where);
 
 			bool result = await BaseSelectSingle();
@@ -93,7 +106,7 @@ namespace AccountingSoftware
 			long? oldLimit = QuerySelect.Limit;
 			long? oldOffset = QuerySelect.Offset;
 
-			Where where = new(fieldName, Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
 			QuerySelect.Where.Add(where);
 
 			if (limit > 0) QuerySelect.Limit = limit;
@@ -107,5 +120,6 @@ namespace AccountingSoftware
 
 			return result;
 		}
+
 	}
 }
