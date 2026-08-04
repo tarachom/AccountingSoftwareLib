@@ -101,16 +101,13 @@ namespace AccountingSoftware
 		/// <param name="funcToField">Функція для поля</param>
 		/// <param name="funcToField_Param1">Перший параметр для функції</param>
 		/// <returns>Повертає true якщо є елементи у вибірці</returns>
-		protected async Task<bool> BaseFindListByField(string fieldName, object fieldValue, int limit = 0, int offset = 0, string funcToField = "", string funcToField_Param1 = "")
+		protected async Task<bool> BaseFindListByField(string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
 		{
 			long? oldLimit = QuerySelect.Limit;
 			long? oldOffset = QuerySelect.Offset;
 
 			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
 			QuerySelect.Where.Add(where);
-
-			if (limit > 0) QuerySelect.Limit = limit;
-			if (offset > 0) QuerySelect.Offset = offset;
 
 			bool result = await BaseSelect();
 
@@ -121,5 +118,23 @@ namespace AccountingSoftware
 			return result;
 		}
 
+		protected async Task<bool> BaseSelectByField(string[] selectFields, string fieldName, object fieldValue, string funcToField = "", string funcToField_Param1 = "")
+		{
+			Where where = new(ExistField(fieldName), Comparison.EQ, fieldValue) { FuncToField = funcToField, FuncToField_Param1 = funcToField_Param1 };
+			QuerySelect.Where.Add(where);
+
+			List<string> existFields = new(selectFields.Length);
+			foreach (var selectField in selectFields)
+				existFields.Add(ExistField(selectField));
+
+			QuerySelect.Field.AddRange(existFields);
+
+			bool result = await BaseSelectSingle();
+
+			QuerySelect.Where.Remove(where);
+			QuerySelect.Field.RemoveAll(existFields.Contains);
+
+			return result;
+		}
 	}
 }

@@ -105,12 +105,9 @@ namespace AccountingSoftware
             List<string> newFields = new(QuerySelect.Field.Count);
             bool changed = false;
 
-            //HashSet<string> set = [.. ConfigurationDocuments.GetPredefinedFields().Select(x => x.NameInTable)];
-            //set.Add([.. ConfigurationDirectories.GetPredefinedFields().Select(x => x.NameInTable)]);
-
             foreach (var field in QuerySelect.Field)
             {
-                string nameInTable = field switch { "deletion_label" or "spend" => field, _ => ExistField(field) };
+                string nameInTable = ExistField(field);
                 newFields.Add(nameInTable);
                 if (nameInTable != field && !changed) changed = true;
             }
@@ -130,7 +127,12 @@ namespace AccountingSoftware
         /// <param name="name">Назва поля</param>
         /// <returns>Назва поля як у базі даних</returns>
         /// <exception cref="KeyNotFoundException">Вибиває помилку якщо поле не знайдено</exception>
-        protected string ExistField(string name) => ConfFields?.FirstOrDefault(x => x.NameInTable == name || x.Name == name)?.NameInTable ?? throw new KeyNotFoundException($"Не знайдено поле '{name}' в колекції полів!");
+        protected string ExistField(string name) => name switch
+        {
+            "uid" or "deletion_label" or "spend" or "spend_date" => name,
+            _ => ConfFields?.FirstOrDefault(x => x.NameInTable == name || x.Name == name)?.NameInTable ??
+                throw new KeyNotFoundException($"Не знайдено поле '{name}' в колекції полів!")
+        };
 
         /// <summary>
         /// Обчислення розміру вибірки і обчислення кількості сторінок
