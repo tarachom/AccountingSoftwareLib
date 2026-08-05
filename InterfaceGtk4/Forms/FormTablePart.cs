@@ -85,7 +85,6 @@ public abstract partial class FormTablePart : Form
     void CreateToolbar()
     {
         HBoxToolbarTop.MarginTop = HBoxToolbarTop.MarginBottom = 6;
-        Append(HBoxToolbarTop);
 
         {
             Button button = Button.NewFromIconName("new");
