@@ -479,12 +479,17 @@ public abstract partial class FormJournal : Form
     }
 
     /// <summary>
-    /// 
+    /// Скидає розрахунки сторінок
     /// </summary>
     protected void PagesClear() => PagesSettings.Clear();
 
     /// <summary>
-    /// 
+    /// Показувати нумерацію, якщо сторінка єдина
+    /// </summary>
+    public bool ShowOnSinglePage { get; set; } = false;
+
+    /// <summary>
+    /// Задає параметри сторінок
     /// </summary>
     /// <param name="size"></param>
     /// <param name="position"></param>
@@ -538,7 +543,7 @@ public abstract partial class FormJournal : Form
             child = next;
         }
 
-        if (PagesSettings.Record.Pages >= 1)
+        if ((ShowOnSinglePage && PagesSettings.Record.Pages == 1) || PagesSettings.Record.Pages > 1)
         {
             Label labelCaption = Label.New("<b>Сторінки:</b> ");
             labelCaption.UseMarkup = true;

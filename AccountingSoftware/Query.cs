@@ -255,7 +255,7 @@ namespace AccountingSoftware
 
                     if (count > 1)
                     {
-                        //За замовчуванням відбори об'єднуються AND
+                        //Стандартно відбори об'єднуються AND
                         query += " " + (field.ComparisonPreceding != Comparison.Empty ? field.ComparisonPreceding : Comparison.AND);
                     }
 
