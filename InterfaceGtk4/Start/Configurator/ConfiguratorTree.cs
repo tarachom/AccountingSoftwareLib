@@ -43,18 +43,22 @@ public abstract class ConfiguratorTree
     /// <summary>
     /// Вибраний елемент дерева
     /// </summary>
-    ConfiguratorItemRow? SelectionRow { get; set; } = null;
+    protected ConfiguratorItemRow? SelectionRow { get; set; } = null;
 
     /// <summary>
     /// Сховище
     /// </summary>
     protected Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
 
+    TreeListModel? TreeList { get; set; } = null;
+
+    protected ColumnView Grid { get; } = ColumnView.NewWithProperties([]);
+
     /// <summary>
     /// Функція побудови дерева для TreeListModel
     /// </summary>
     protected abstract Gio.ListModel? CreateFunc(GObject.Object item);
-
+    
     /// <summary>
     /// Заповнення дерева
     /// </summary>
@@ -95,23 +99,31 @@ public abstract class ConfiguratorTree
         HBoxToolbar.MarginBottom = 5;
         VBox.Append(HBoxToolbar);
 
-        TreeListModel list = TreeListModel.New(Store, false, false, CreateFunc);
-        SingleSelection model = SingleSelection.New(list);
-        ColumnView columnView = ColumnView.New(model);
-        columnView.Reorderable = false;
+        TreeList = TreeListModel.New(Store, false, false, CreateFunc);
 
+        MultiSelection model = MultiSelection.New(TreeList);
         model.OnSelectionChanged += (_, _) =>
         {
-            TreeListRow? row = (TreeListRow?)model.GetSelectedItem();
-            SelectionRow = (ConfiguratorItemRow?)row?.Item;
+            Bitset selection = model.GetSelection();
+
+            //Коли виділений один рядок
+            if (selection.GetMinimum() == selection.GetMaximum())
+            {
+                TreeListRow? row = TreeList?.GetRow(selection.GetMaximum());
+                SelectionRow = (ConfiguratorItemRow?)row?.GetItem();
+            }
         };
 
-        AddColumn(columnView);
+        Grid = ColumnView.New(model);
+        Grid.Reorderable = false;
+
+        AddColumn();
 
         ScrolledWindow scroll = ScrolledWindow.New();
         scroll.Vexpand = scroll.Hexpand = true;
+        scroll.PropagateNaturalWidth = true;
         scroll.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
-        scroll.Child = columnView;
+        scroll.Child = Grid;
 
         HBoxGrid.Append(scroll);
         VBox.Append(HBoxGrid);
@@ -204,10 +216,85 @@ public abstract class ConfiguratorTree
         }
     }
 
-    protected void AddColumn(ColumnView columnView)
+    protected void AddColumn()
     {
-        //Дерево
+        //TreeExpander and Image
         {
+            SignalListItemFactory factory = SignalListItemFactory.New();
+            factory.OnSetup += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                TreeExpander expander = TreeExpander.New();
+                expander.SetChild(ImageLabelTablePartCell.New());
+                listItem.SetChild(expander);
+            };
+            factory.OnBind += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                TreeExpander? expander = (TreeExpander?)listItem.GetChild();
+                TreeListRow? treeRow = (TreeListRow?)listItem.GetItem();
+                if (expander != null && treeRow != null)
+                {
+                    expander.SetListRow(treeRow);
+                    ImageLabelTablePartCell? cell = (ImageLabelTablePartCell?)expander.GetChild();
+                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)treeRow.Item;
+                    if (cell != null && itemRow != null)
+                        cell.SetImageAndText(itemRow.Group switch
+                        {
+                            "Directories" => Icon.ForConfigurator.Table,
+                            "Documents" => Icon.ForConfigurator.Document,
+                            "RegistersInformation" or "RegistersAccumulation" => Icon.ForConfigurator.Register,
+                            "Enums" => Icon.ForConfigurator.List,
+                            "Block" => Icon.ForTree.Normal,
+                            "Const" => Icon.ForConfigurator.Const,
+                            "Journals" => Icon.ForConfigurator.Journal,
+
+                            "DimensionFields" => Icon.ForConfigurator.RegFields,
+                            "ResourcesFields" => Icon.ForConfigurator.Calculator,
+                            "PropertyFields" => Icon.ForConfigurator.Fields,
+
+                            "TablePartGroup" => Icon.ForConfigurator.Sheets,
+                            "TablePart" => Icon.ForInformation.Grid,
+
+                            "Field" or "TablePartField" or "DimensionField" or "ResourcesField" or "PropertyField" => Icon.ForConfigurator.Field,
+                            _ => null
+                        }, itemRow.Name);
+                }
+            };
+            ColumnViewColumn column = ColumnViewColumn.New("Назва", factory);
+            column.Resizable = true;
+            Grid.AppendColumn(column);
+        }
+
+        //Назва таблиці чи поля
+        /*{
+            SignalListItemFactory factory = SignalListItemFactory.New();
+            factory.OnSetup += (_, args) =>
+            {
+                var listItem = (ListItem)args.Object;
+                var cell = LabelTablePartCell.NewWithString(null);
+                listItem.SetChild(cell);
+
+            };
+            factory.OnBind += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                TreeListRow? row = (TreeListRow?)listItem.GetItem();
+                if (row != null)
+                {
+                    var cell = (LabelTablePartCell?)listItem.Child;
+                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.GetItem();
+                    if (cell != null && itemRow != null)
+                        cell.SetText(itemRow.Name);
+                }
+            };
+            var column = ColumnViewColumn.New("Назва", factory);
+            column.Resizable = true;
+            columnView.AppendColumn(column);
+        }*/
+
+        //Дерево
+        /*{
             SignalListItemFactory factory = SignalListItemFactory.New();
             factory.OnSetup += (_, args) =>
             {
@@ -236,10 +323,10 @@ public abstract class ConfiguratorTree
                     }
                 }
             };
-            var column = ColumnViewColumn.New("Константи", factory);
+            var column = ColumnViewColumn.New("Назва", factory);
             column.Resizable = true;
             columnView.AppendColumn(column);
-        }
+        }*/
 
         //Назва таблиці чи поля
         {
@@ -265,7 +352,7 @@ public abstract class ConfiguratorTree
             };
             var column = ColumnViewColumn.New("Таблиця / поле", factory);
             column.Resizable = true;
-            columnView.AppendColumn(column);
+            Grid.AppendColumn(column);
         }
 
         //Тип даних
@@ -292,7 +379,7 @@ public abstract class ConfiguratorTree
             };
             var column = ColumnViewColumn.New("Тип даних", factory);
             column.Resizable = true;
-            columnView.AppendColumn(column);
+            Grid.AppendColumn(column);
         }
 
         //Деталізація
@@ -317,9 +404,9 @@ public abstract class ConfiguratorTree
                         cell.SetText(itemRow.Desc);
                 }
             };
-            var column = ColumnViewColumn.New("Деталізація", factory);
+            var column = ColumnViewColumn.New("Детально", factory);
             column.Resizable = true;
-            columnView.AppendColumn(column);
+            Grid.AppendColumn(column);
         }
 
         //Пуста колонка для заповнення вільного простору
@@ -327,19 +414,15 @@ public abstract class ConfiguratorTree
             ColumnViewColumn column = ColumnViewColumn.New(null, null);
             column.Resizable = true;
             column.Expand = true;
-            columnView.AppendColumn(column);
+            Grid.AppendColumn(column);
         }
 
-        columnView.OnActivate += (_, _) =>
+        Grid.OnActivate += (_, args) =>
         {
-            SingleSelection model = (SingleSelection)columnView.Model;
-            TreeListRow? row = (TreeListRow?)model.GetSelectedItem();
-            if (row != null)
-            {
-                ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.Item;
-                if (itemRow != null)
-                    Activate?.Invoke(itemRow.Group, itemRow.Name);
-            }
+            TreeListRow? row = TreeList?.GetRow(args.Position);
+            ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row?.GetItem();
+            if (itemRow != null)
+                Activate?.Invoke(itemRow.Group, itemRow.Name);
         };
     }
 

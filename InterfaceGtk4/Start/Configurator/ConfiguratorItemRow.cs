@@ -7,7 +7,7 @@ namespace InterfaceGtk4;
 /// Клас для даних моделі яка викоритовується для виведення дерева конфігурації
 /// </summary>
 [Subclass<GObject.Object>]
-partial class ConfiguratorItemRow
+public partial class ConfiguratorItemRow
 {
     public static ConfiguratorItemRow New() => NewWithProperties([]);
 

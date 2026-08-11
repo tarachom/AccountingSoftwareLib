@@ -83,6 +83,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "Const";
                         row.Name = constant.Name;
                         row.Obj = constant;
+                        row.TableOrField = constant.NameInTable;
                         row.Type = constant.Type;
                         row.Desc = constant.Pointer;
 
@@ -95,8 +96,9 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                 {
                     var row = ConfiguratorItemRow.New();
                     row.Group = "TablePartGroup";
-                    row.Name = "[ Табличні частини ]";
+                    row.Name = "Табличні частини";
                     row.Obj = constant;
+                    row.TableOrField = constant.NameInTable;
 
                     //Для константи Група Табличні частини
                     store.Append(row);
@@ -112,6 +114,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.TableOrField = tablePart.Table;
 
                         store.Append(row);
                     }
@@ -127,6 +130,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 

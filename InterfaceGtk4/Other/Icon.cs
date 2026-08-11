@@ -87,3 +87,19 @@ public static class ForTree
     public static Pixbuf? Normal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder.png");
     public static Pixbuf? Delete { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/folder_delete.png");
 }
+
+public static class ForConfigurator
+{
+    public static Pixbuf? Table { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/table.png");
+    public static Pixbuf? Document { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/document.png");
+    public static Pixbuf? Register { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/register.png");
+    public static Pixbuf? Fields { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/fields.png");
+    public static Pixbuf? RegFields { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/reg_fields.png");
+    public static Pixbuf? Calculator { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/calculator.png");
+    public static Pixbuf? Field { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/field.png");
+    public static Pixbuf? List { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/list.png");
+    public static Pixbuf? Const { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/const.png");
+    public static Pixbuf? Func { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/func.png");
+     public static Pixbuf? Journal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/journal.png");
+     public static Pixbuf? Sheets { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/sheets.png");
+}

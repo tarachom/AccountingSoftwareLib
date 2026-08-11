@@ -57,6 +57,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
             row.Group = "Documents";
             row.Name = document.Name;
             row.Obj = document;
+            row.TableOrField = document.Table;
 
             Store.Append(row);
         }
@@ -83,6 +84,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 
@@ -93,7 +95,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartGroup";
-                        row.Name = "[ Табличні частини ]";
+                        row.Name = "Табличні частини";
                         row.Obj = document;
 
                         store.Append(row);
@@ -110,6 +112,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.TableOrField = tablePart.Table;
 
                         store.Append(row);
                     }
@@ -125,6 +128,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 

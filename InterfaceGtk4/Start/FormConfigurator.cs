@@ -266,34 +266,38 @@ public abstract partial class FormConfigurator : Window
                 case "Block":
                     {
                         await PageConstantBlock(name);
-                        return;
+                        break;
                     }
                 case "Const":
                     {
                         await PageConstant(name);
-                        return;
+                        break;
                     }
                 case "TablePart":
                     {
 
-                        return;
+                        break;
                     }
                 case "TablePartField":
                     {
 
-                        return;
+                        break;
                     }
                 default:
-                    return;
+                    break;
             }
+            popover.Hide();
+        }
+
+        async void Add()
+        {
+            //await PageDocument("", true);
+            popover.Hide();
         }
 
         Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate, new()
         {
-            Add = async () =>
-            {
-                await PageDirectory("", true);
-            },
+            Add = () => Add(),
             Edit = (group, name) => Activate(group, name),
             Copy = (group, name) =>
             {
@@ -320,36 +324,46 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(string group, string name)
         {
+            popover.Hide();
+
+            Console.WriteLine("group = " + group);
+
             switch (group)
             {
                 case "Directories":
                     {
                         await PageDirectory(name);
-                        return;
+                        break;
                     }
                 case "Field":
                     {
 
-                        return;
+                        break;
                     }
                 case "TablePart":
                     {
 
-                        return;
+                        break;
                     }
                 case "TablePartField":
                     {
 
-                        return;
+                        break;
                     }
                 default:
-                    return;
+                    break;
             }
+        }
+        async void Add()
+        {
+            popover.Hide();
+
+            await PageDirectory("", true);
         }
 
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
         {
-            Add = async () => await PageDirectory("", true),
+            Add = () => Add(),
             Edit = (group, name) => Activate(group, name),
             Copy = (group, name) =>
             {
@@ -361,9 +375,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Довідники", getbox());
-                popover.Hide();
             }
         }).Fill();
     }
@@ -376,36 +391,45 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(string group, string name)
         {
+            popover.Hide();
+
             switch (group)
             {
                 case "Documents":
                     {
                         await PageDocument(name);
-                        return;
+                        break;
                     }
                 case "Field":
                     {
 
-                        return;
+                        break;
                     }
                 case "TablePart":
                     {
 
-                        return;
+                        break;
                     }
                 case "TablePartField":
                     {
 
-                        return;
+                        break;
                     }
                 default:
-                    return;
+                    break;
             }
+        }
+
+        async void Add()
+        {
+            popover.Hide();
+
+            await PageDocument("", true);
         }
 
         Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
         {
-            Add = async () => await PageDocument("", true),
+            Add = async () => Add(),
             Edit = (group, name) => Activate(group, name),
             Copy = (group, name) =>
             {
@@ -417,9 +441,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Документи", getbox());
-                popover.Hide();
             }
         }).Fill();
     }
@@ -466,9 +491,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Журнали", getbox());
-                popover.Hide();
             }
         }).Fill();
     }
@@ -512,9 +538,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Перелічення", getbox());
-                popover.Hide();
             }
         }).Fill();
     }
@@ -568,9 +595,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити в новій вкладці
                 NotebookFunc.CreatePage("Регістри інформації", getbox());
-                popover.Hide();
             }
         }).Fill();
     }
@@ -634,9 +662,10 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = () =>
             {
+                popover.Hide();
+
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Регістри накопичення", getbox());
-                popover.Hide();
             }
         }).Fill();
     }

@@ -45,7 +45,7 @@ public abstract class CompositePointerControl : PointerControl
 
         pointer = new UuidAndText();
         WidthPresentation = 300;
-        Caption = "Основа:";
+        Caption = "Підстава:";
 
         Button bTypeInfo = new Button(new Image(Stock.GoDown, IconSize.Menu));
         PackStart(bTypeInfo, false, false, 1);

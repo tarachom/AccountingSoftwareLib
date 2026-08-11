@@ -21,6 +21,7 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
+using AccountingSoftware;
 using Gtk;
 
 namespace InterfaceGtk4;
@@ -30,8 +31,10 @@ namespace InterfaceGtk4;
 ///     
 /// </summary>
 [GObject.Subclass<Form>]
-public partial class FormPageConfigurator : Form
+public abstract partial  class FormPageConfigurator : Form
 {
+    public abstract Configuration Conf { get; }
+
     /// <summary>
     /// 
     /// </summary>
@@ -40,7 +43,7 @@ public partial class FormPageConfigurator : Form
     /// <summary>
     /// 
     /// </summary>
-    public string ConfName { get; set; } = "";
+    //public string? ConfName { get; set; } = null;
 
     /// <summary>
     /// 
@@ -70,8 +73,6 @@ public partial class FormPageConfigurator : Form
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         bSaveAndClose.MarginEnd = 10;
         bSaveAndClose.OnClicked += (_, _) => BeforeAndAfterSave(true);
         HBoxTop.Append(bSaveAndClose);
@@ -102,8 +103,6 @@ public partial class FormPageConfigurator : Form
 
     async void BeforeAndAfterSave(bool closePage = false)
     {
-        await GetValue();
-
         NotebookFunc?.SensitivePage(GetName(), false);
         NotebookFunc?.SpinnerOn(GetName());
 
@@ -126,6 +125,37 @@ public partial class FormPageConfigurator : Form
         NotebookFunc?.SpinnerOn(GetName());
         await AssignValue();
         NotebookFunc?.SpinnerOff(GetName());
+    }
+
+    protected (bool result, string name) IsValid(string name, string oldname, List<string> Keys)
+    {
+        bool IsUniqueName()
+        {
+            if (Keys.Contains(name))
+            {
+                Message.Error(NotebookFunc?.BasicForm, $"Назва не унікальна");
+                return false;
+            }
+            else
+                return true;
+        }
+
+        string errorList = Configuration.ValidateConfigurationObjectName(ref name);
+        if (errorList.Length > 0)
+        {
+            Message.Error(NotebookFunc?.BasicForm, $"{errorList}");
+            return (false, name);
+        }
+
+        if (IsNew)
+        {
+            if (!IsUniqueName())
+                return (false, name);
+        }
+        else if (oldname != name && !IsUniqueName())
+            return (false, name);
+
+        return (true, name);
     }
 
     #region Abstract and Virtual Function

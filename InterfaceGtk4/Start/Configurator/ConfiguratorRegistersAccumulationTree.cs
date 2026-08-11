@@ -57,6 +57,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
             row.Group = "RegistersAccumulation";
             row.Name = registers.Name;
             row.Obj = registers;
+            row.TableOrField = registers.Table;
 
             Store.Append(row);
         }
@@ -107,7 +108,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartGroup";
-                        row.Name = "[ Табличні частини ]";
+                        row.Name = "Табличні частини";
                         row.Obj = registers;
 
                         store.Append(row);
@@ -124,6 +125,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "DimensionField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 
@@ -141,6 +143,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "ResourcesField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 
@@ -158,6 +161,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "PropertyField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 
@@ -175,6 +179,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.TableOrField = tablePart.Table;
 
                         store.Append(row);
                     }
@@ -190,6 +195,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
 

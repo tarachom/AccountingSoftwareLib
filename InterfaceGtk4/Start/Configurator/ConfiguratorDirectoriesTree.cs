@@ -61,6 +61,13 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
 
             Store.Append(row);
         }
+
+        //Grid.Model.SelectItem(0, false);
+
+        if (SelectionRow != null)
+        {
+            //Console.WriteLine(SelectionRow.Name);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -95,7 +102,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartGroup";
-                        row.Name = "[ Табличні частини ]";
+                        row.Name = "Табличні частини";
                         row.Obj = directory;
 
                         store.Append(row);

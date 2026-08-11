@@ -47,7 +47,7 @@ public abstract partial class CompositePointerControl : PointerControl
         PointerChanged += OnPointerChanged;
 
         WidthPresentation = 300;
-        Caption = "Основа:";
+        Caption = "Підстава:";
 
         Button bTypeInfo = Button.NewFromIconName("go-down");
         bTypeInfo.MarginStart = 2;
@@ -384,6 +384,7 @@ public abstract partial class CompositePointerControl : PointerControl
         }
 
         //Довідники
+        if (!NotUseDirectories)
         {
             string pinterName = "Довідники";
 
@@ -430,6 +431,7 @@ public abstract partial class CompositePointerControl : PointerControl
         }
 
         //Документи
+        if (!NotUseDocuments)
         {
             string pinterName = "Документи";
 
