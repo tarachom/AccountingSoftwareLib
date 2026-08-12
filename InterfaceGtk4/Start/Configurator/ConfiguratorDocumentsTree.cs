@@ -75,7 +75,30 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
 
         switch (group)
         {
-            case "Documents" when obj is ConfigurationDocuments document && document.Fields.Count > 0:
+            case "Documents" when obj is ConfigurationDocuments document:
+                {
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "FieldGroup";
+                        row.Name = "Поля";
+                        row.Obj = document;
+
+                        store.Append(row);
+                    }
+
+                    if (document.TabularParts.Count > 0)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TablePartGroup";
+                        row.Name = "Табличні частини";
+                        row.Obj = document;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "FieldGroup" when obj is ConfigurationDocuments document:
                 {
                     //Для документу заповнюю поля
                     foreach (ConfigurationField field in document.Fields.Values)
@@ -87,16 +110,6 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<string, string
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
-
-                        store.Append(row);
-                    }
-
-                    if (document.TabularParts.Count > 0)
-                    {
-                        var row = ConfiguratorItemRow.New();
-                        row.Group = "TablePartGroup";
-                        row.Name = "Табличні частини";
-                        row.Obj = document;
 
                         store.Append(row);
                     }
