@@ -87,11 +87,13 @@ public abstract partial  class FormPageConfigurator : Form
 
         //StarBloc
         Box vBoxStart = New(Orientation.Vertical, 0);
+        vBoxStart.MarginEnd = 5;
         HPanedTop.SetStartChild(vBoxStart);
         CreateStart(vBoxStart);
 
         //EndBloc
         Box vBoxEnd = New(Orientation.Vertical, 0);
+        vBoxEnd.MarginStart = 5;
         HPanedTop.SetEndChild(vBoxEnd);
         CreateEnd(vBoxEnd);
 

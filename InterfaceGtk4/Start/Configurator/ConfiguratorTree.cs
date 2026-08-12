@@ -50,7 +50,7 @@ public abstract class ConfiguratorTree
     /// </summary>
     protected Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
 
-    TreeListModel? TreeList { get; set; } = null;
+    protected TreeListModel? TreeList { get; set; } = null;
 
     protected ColumnView Grid { get; } = ColumnView.NewWithProperties([]);
 
@@ -58,7 +58,7 @@ public abstract class ConfiguratorTree
     /// Функція побудови дерева для TreeListModel
     /// </summary>
     protected abstract Gio.ListModel? CreateFunc(GObject.Object item);
-    
+
     /// <summary>
     /// Заповнення дерева
     /// </summary>
@@ -253,8 +253,11 @@ public abstract class ConfiguratorTree
                             "ResourcesFields" => Icon.ForConfigurator.Calculator,
                             "PropertyFields" => Icon.ForConfigurator.Fields,
 
-                            "TablePartGroup" => Icon.ForConfigurator.Sheets,
+                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "FormsGroup" => Icon.ForConfigurator.Sheets,
+
+                            "TabularList" => Icon.ForInformation.Grid,
                             "TablePart" => Icon.ForInformation.Grid,
+                            "Form" => Icon.ForConfigurator.Form,
 
                             "Field" or "TablePartField" or "DimensionField" or "ResourcesField" or "PropertyField" => Icon.ForConfigurator.Field,
                             _ => null
@@ -265,68 +268,6 @@ public abstract class ConfiguratorTree
             column.Resizable = true;
             Grid.AppendColumn(column);
         }
-
-        //Назва таблиці чи поля
-        /*{
-            SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += (_, args) =>
-            {
-                var listItem = (ListItem)args.Object;
-                var cell = LabelTablePartCell.NewWithString(null);
-                listItem.SetChild(cell);
-
-            };
-            factory.OnBind += (_, args) =>
-            {
-                ListItem listItem = (ListItem)args.Object;
-                TreeListRow? row = (TreeListRow?)listItem.GetItem();
-                if (row != null)
-                {
-                    var cell = (LabelTablePartCell?)listItem.Child;
-                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.GetItem();
-                    if (cell != null && itemRow != null)
-                        cell.SetText(itemRow.Name);
-                }
-            };
-            var column = ColumnViewColumn.New("Назва", factory);
-            column.Resizable = true;
-            columnView.AppendColumn(column);
-        }*/
-
-        //Дерево
-        /*{
-            SignalListItemFactory factory = SignalListItemFactory.New();
-            factory.OnSetup += (_, args) =>
-            {
-                ListItem listItem = (ListItem)args.Object;
-                var cell = LabelTablePartCell.NewWithString(null);
-
-                TreeExpander expander = TreeExpander.New();
-                expander.SetChild(cell);
-
-                listItem.SetChild(expander);
-            };
-
-            factory.OnBind += (_, args) =>
-            {
-                ListItem listItem = (ListItem)args.Object;
-                TreeListRow? row = (TreeListRow?)listItem.GetItem();
-                if (row != null)
-                {
-                    TreeExpander? expander = (TreeExpander?)listItem.GetChild();
-                    var cell = (LabelTablePartCell?)expander?.GetChild();
-                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.GetItem();
-                    if (expander != null && cell != null && itemRow != null)
-                    {
-                        expander.SetListRow(row);
-                        cell.SetText(itemRow.Name);
-                    }
-                }
-            };
-            var column = ColumnViewColumn.New("Назва", factory);
-            column.Resizable = true;
-            columnView.AppendColumn(column);
-        }*/
 
         //Назва таблиці чи поля
         {

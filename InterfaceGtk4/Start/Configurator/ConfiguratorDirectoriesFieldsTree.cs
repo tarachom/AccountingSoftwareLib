@@ -32,9 +32,9 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories directory, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
-    Configuration Conf { get; set; } = conf;
+    ConfigurationDirectories Directory { get; set; } = directory;
 
     /// <summary>
     /// Заповнення
@@ -46,21 +46,70 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
         return VBox;
     }
 
+    /// <summary>
+    /// Відкриття верхніх віток
+    /// </summary>
+    void Open()
+    {
+        if (TreeList != null)
+        {
+            List<TreeListRow> rows = [];
+            for (uint i = 0; i < TreeList.GetNItems(); i++)
+            {
+                TreeListRow? row = TreeList.GetRow(i);
+                if (row != null) rows.Add(row);
+            }
+
+            foreach (var row in rows)
+                row.Expanded = true;
+        }
+    }
+
     protected override void FillGrid()
     {
         Store.RemoveAll();
 
         //Заповнення сховища
-        foreach (ConfigurationDirectories directory in Conf.Directories.Values)
         {
             var row = ConfiguratorItemRow.New();
-            row.Group = "Directories";
-            row.Name = directory.Name;
-            row.Obj = directory;
-            row.TableOrField = directory.Table;
+            row.Group = "FieldGroup";
+            row.Name = "Поля";
+            row.Obj = Directory;
 
             Store.Append(row);
         }
+
+        //if (Directory.TabularParts.Count > 0)
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TablePartGroup";
+            row.Name = "Табличні частини";
+            row.Obj = Directory;
+
+            Store.Append(row);
+        }
+
+        //if (Directory.TabularList.Count > 0)
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListGroup";
+            row.Name = "Табличні списки";
+            row.Obj = Directory;
+
+            Store.Append(row);
+        }
+
+        //if (Directory.Forms.Count > 0)
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "FormsGroup";
+            row.Name = "Форми";
+            row.Obj = Directory;
+
+            Store.Append(row);
+        }
+
+        //Open();
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -75,29 +124,6 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
 
         switch (group)
         {
-            case "Directories" when obj is ConfigurationDirectories directory:
-                {
-                    {
-                        var row = ConfiguratorItemRow.New();
-                        row.Group = "FieldGroup";
-                        row.Name = "Поля";
-                        row.Obj = directory;
-
-                        store.Append(row);
-                    }
-
-                    if (directory.TabularParts.Count > 0)
-                    {
-                        var row = ConfiguratorItemRow.New();
-                        row.Group = "TablePartGroup";
-                        row.Name = "Табличні частини";
-                        row.Obj = directory;
-
-                        store.Append(row);
-                    }
-
-                    return store;
-                }
             case "FieldGroup" when obj is ConfigurationDirectories directory:
                 {
                     //Для довідника заповнюю поля
@@ -126,6 +152,36 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<string, stri
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
                         row.TableOrField = tablePart.Table;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "TabularListGroup" when obj is ConfigurationDirectories directory:
+                {
+                    //Для групи Табличні списки заповнюю саме табличні списки
+                    foreach (ConfigurationTabularList tabularList in directory.TabularList.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TabularList";
+                        row.Name = tabularList.Name;
+                        row.Obj = tabularList;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "FormsGroup" when obj is ConfigurationDirectories directory:
+                {
+                    //Для групи Форми заповнюю саме форми
+                    foreach (ConfigurationForms form in directory.Forms.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Form";
+                        row.Name = form.Name;
+                        row.Obj = form;
 
                         store.Append(row);
                     }

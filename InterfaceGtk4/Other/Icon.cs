@@ -100,6 +100,8 @@ public static class ForConfigurator
     public static Pixbuf? List { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/list.png");
     public static Pixbuf? Const { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/const.png");
     public static Pixbuf? Func { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/func.png");
-     public static Pixbuf? Journal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/journal.png");
-     public static Pixbuf? Sheets { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/sheets.png");
+    public static Pixbuf? Form { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/form.png");
+    public static Pixbuf? Journal { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/journal.png");
+    public static Pixbuf? Sheets { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/sheets.png");
+    public static Pixbuf? CSharp { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/conf/csharp.png");
 }

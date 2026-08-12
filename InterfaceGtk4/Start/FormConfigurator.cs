@@ -381,6 +381,8 @@ public abstract partial class FormConfigurator : Window
                 NotebookFunc.CreatePage("Довідники", getbox());
             }
         }).Fill();
+
+        
     }
 
     void Documents(LinkButton linkButton)
