@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorJournalsTree(Configuration conf, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -74,7 +74,7 @@ public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>
 
         switch (group)
         {
-            case "Journals" when obj is ConfigurationJournals journal && journal.Fields.Count > 0:
+            case "Journals" when obj is ConfigurationJournals journal:
                 {
                     //Для журналу заповнюю поля
                     foreach (ConfigurationJournalField field in journal.Fields.Values)
@@ -83,6 +83,7 @@ public class ConfiguratorJournalsTree(Configuration conf, Action<string, string>
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = journal;
                         row.Type = field.Type;
                         row.Desc = (field.WherePeriod ? "Відбір по періоду, " : "") + (field.SortField ? "Сортування" : "");
 

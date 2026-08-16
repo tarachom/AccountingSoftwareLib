@@ -32,9 +32,9 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments doc, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
-    ConfigurationDocuments Documents { get; set; } = documents;
+    ConfigurationDocuments Documents { get; set; } = doc;
 
     /// <summary>
     /// Заповнення
@@ -49,6 +49,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
     /// <summary>
     /// Відкриття верхніх віток
     /// </summary>
+    /*
     void Open()
     {
         if (TreeList != null)
@@ -64,6 +65,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
                 row.Expanded = true;
         }
     }
+    */
 
     protected override void FillGrid()
     {
@@ -119,15 +121,16 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
 
         switch (group)
         {
-            case "FieldGroup" when obj is ConfigurationDocuments Documents:
+            case "FieldGroup" when obj is ConfigurationDocuments documents:
                 {
                     //Для документу заповнюю поля
-                    foreach (ConfigurationField field in Documents.Fields.Values)
+                    foreach (ConfigurationField field in documents.Fields.Values)
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = documents;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
@@ -137,15 +140,16 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
 
                     return store;
                 }
-            case "TablePartGroup" when obj is ConfigurationDocuments Documents:
+            case "TablePartGroup" when obj is ConfigurationDocuments documents:
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
-                    foreach (ConfigurationTablePart tablePart in Documents.TabularParts.Values)
+                    foreach (ConfigurationTablePart tablePart in documents.TabularParts.Values)
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.ParentObj = documents;
                         row.TableOrField = tablePart.Table;
 
                         store.Append(row);
@@ -153,30 +157,32 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
 
                     return store;
                 }
-            case "TabularListGroup" when obj is ConfigurationDocuments Documents:
+            case "TabularListGroup" when obj is ConfigurationDocuments documents:
                 {
                     //Для групи Табличні списки заповнюю саме табличні списки
-                    foreach (ConfigurationTabularList tabularList in Documents.TabularList.Values)
+                    foreach (ConfigurationTabularList tabularList in documents.TabularList.Values)
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TabularList";
                         row.Name = tabularList.Name;
                         row.Obj = tabularList;
+                        row.ParentObj = documents;
 
                         store.Append(row);
                     }
 
                     return store;
                 }
-            case "FormsGroup" when obj is ConfigurationDocuments Documents:
+            case "FormsGroup" when obj is ConfigurationDocuments documents:
                 {
                     //Для групи Форми заповнюю саме форми
-                    foreach (ConfigurationForms form in Documents.Forms.Values)
+                    foreach (ConfigurationForms form in documents.Forms.Values)
                     {
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Form";
                         row.Name = form.Name;
                         row.Obj = form;
+                        row.ParentObj = documents;
 
                         store.Append(row);
                     }
@@ -192,6 +198,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments documents, A
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;

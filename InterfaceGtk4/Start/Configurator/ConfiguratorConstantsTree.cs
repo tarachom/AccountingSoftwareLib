@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorConstantsTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -83,6 +83,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "Const";
                         row.Name = constant.Name;
                         row.Obj = constant;
+                        row.ParentObj = block;
                         row.TableOrField = constant.NameInTable;
                         row.Type = constant.Type;
                         row.Desc = constant.Pointer;
@@ -92,7 +93,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
 
                     return store;
                 }
-            case "Const" when obj is ConfigurationConstants constant && constant.TabularParts.Count > 0:
+            case "Const" when obj is ConfigurationConstants constant:
                 {
                     var row = ConfiguratorItemRow.New();
                     row.Group = "TablePartGroup";
@@ -114,6 +115,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.ParentObj = constant;
                         row.TableOrField = tablePart.Table;
 
                         store.Append(row);
@@ -130,6 +132,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<string, string
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;

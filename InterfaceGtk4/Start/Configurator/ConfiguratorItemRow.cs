@@ -27,6 +27,11 @@ public partial class ConfiguratorItemRow
     public object? Obj { get; set; } = null;
 
     /// <summary>
+    /// Власник об'єкту
+    /// </summary>
+    public object? ParentObj { get; set; } = null;
+
+    /// <summary>
     /// Назва таблиці чи поля
     /// </summary>
     public string TableOrField { get; set; } = "";

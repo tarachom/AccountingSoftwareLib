@@ -67,7 +67,7 @@ public abstract class ConfiguratorTree
     /// <summary>
     /// Функція активації елементу дерева
     /// </summary>
-    public Action<string, string>? Activate { get; set; } = null;
+    public Action<ConfiguratorItemRow>? Activate { get; set; } = null;
 
     /// <summary>
     /// Функції для меню
@@ -89,7 +89,7 @@ public abstract class ConfiguratorTree
     /// </summary>
     Box HBoxGrid { get; set; } = Box.New(Orientation.Horizontal, 0);
 
-    public ConfiguratorTree(Action<string, string>? activate, ToolbarAction? toolbar)
+    public ConfiguratorTree(Action<ConfiguratorItemRow>? activate, ToolbarAction? toolbar)
     {
         Activate = activate;
         Toolbar = toolbar;
@@ -154,7 +154,7 @@ public abstract class ConfiguratorTree
             button.OnClicked += (_, _) =>
             {
                 if (SelectionRow != null)
-                    Toolbar.Edit(SelectionRow.Group, SelectionRow.Name);
+                    Toolbar.Edit(SelectionRow);
             };
             HBoxToolbar.Append(button);
         }
@@ -179,7 +179,7 @@ public abstract class ConfiguratorTree
             button.OnClicked += (_, _) =>
             {
                 if (SelectionRow != null)
-                    Toolbar.Copy(SelectionRow.Group, SelectionRow.Name);
+                    Toolbar.Copy(SelectionRow);
             };
             HBoxToolbar.Append(button);
         }
@@ -194,7 +194,7 @@ public abstract class ConfiguratorTree
             button.OnClicked += (_, _) =>
             {
                 if (SelectionRow != null)
-                    Toolbar.Delete(SelectionRow.Group, SelectionRow.Name);
+                    Toolbar.Delete(SelectionRow);
             };
             HBoxToolbar.Append(button);
         }
@@ -363,7 +363,7 @@ public abstract class ConfiguratorTree
             TreeListRow? row = TreeList?.GetRow(args.Position);
             ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row?.GetItem();
             if (itemRow != null)
-                Activate?.Invoke(itemRow.Group, itemRow.Name);
+                Activate?.Invoke(itemRow);
         };
     }
 
@@ -381,9 +381,9 @@ public abstract class ConfiguratorTree
     public record ToolbarAction
     {
         public Action? Add { get; set; } = null;
-        public Action<string, string>? Edit { get; set; } = null;
-        public Action<string, string>? Copy { get; set; } = null;
-        public Action<string, string>? Delete { get; set; } = null;
+        public Action<ConfiguratorItemRow>? Edit { get; set; } = null;
+        public Action<ConfiguratorItemRow>? Copy { get; set; } = null;
+        public Action<ConfiguratorItemRow>? Delete { get; set; } = null;
         public Action? OpenNewTab { get; set; } = null;
     }
 }

@@ -249,6 +249,13 @@ namespace AccountingSoftware
             HierarchyInAnotherDirectory = 3
         }
 
+        public static Dictionary<string, string> TypeDirectories_Dict() => new()
+        {
+            { "Normal", "Звичайний" },
+            { "Hierarchical", "Ієрархічний" },
+            { "HierarchyInAnotherDirectory", "Ієрархія в окремому довіднику" }
+        };
+
         /// <summary>
         /// Тип вмісту ієрархічного довідника
         /// </summary>
@@ -269,5 +276,12 @@ namespace AccountingSoftware
             /// </summary>
             FoldersAndElements
         }
+
+        public static Dictionary<string, string> HierarchicalContentType_Dict() => new()
+        {
+            { "Folders", "Папки" },
+            { "Elements", "Елементи" },
+            { "FoldersAndElements", "Папки та елементи" }
+        };
     }
 }

@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorEnumsTree(Configuration conf, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -74,7 +74,7 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
 
         switch (group)
         {
-            case "Enums" when obj is ConfigurationEnums enums && enums.Fields.Count > 0:
+            case "Enums" when obj is ConfigurationEnums enums:
                 {
                     //Для перелічення заповнюю поля
                     foreach (ConfigurationEnumField field in enums.Fields.Values)
@@ -83,6 +83,7 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<string, string>? a
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = enums;
                         row.Desc = field.Value.ToString();
 
                         store.Append(row);

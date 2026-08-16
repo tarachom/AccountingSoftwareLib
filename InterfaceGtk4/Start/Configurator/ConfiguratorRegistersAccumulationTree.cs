@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
     Configuration Conf { get; set; } = conf;
 
@@ -125,6 +125,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "DimensionField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
@@ -143,6 +144,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "ResourcesField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
@@ -161,6 +163,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "PropertyField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
@@ -179,6 +182,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.ParentObj = registers;
                         row.TableOrField = tablePart.Table;
 
                         store.Append(row);
@@ -195,6 +199,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<st
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;

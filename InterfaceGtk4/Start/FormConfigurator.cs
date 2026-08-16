@@ -259,18 +259,18 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
-            switch (group)
+            switch (row.Group)
             {
                 case "Block":
                     {
-                        await PageConstantBlock(name);
+                        await PageConstantBlock(row.Name);
                         break;
                     }
                 case "Const":
                     {
-                        await PageConstant(name);
+                        await PageConstant(row.Name);
                         break;
                     }
                 case "TablePart":
@@ -298,12 +298,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate, new()
         {
             Add = () => Add(),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -322,17 +322,15 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
             popover.Hide();
 
-            Console.WriteLine("group = " + group);
-
-            switch (group)
+            switch (row.Group)
             {
                 case "Directories":
                     {
-                        await PageDirectory(name);
+                        await PageDirectory(row.Name);
                         break;
                     }
                 case "Field":
@@ -364,12 +362,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
         {
             Add = () => Add(),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -391,15 +389,15 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
             popover.Hide();
 
-            switch (group)
+            switch (row.Group)
             {
                 case "Documents":
                     {
-                        await PageDocument(name);
+                        await PageDocument(row.Name);
                         break;
                     }
                 case "Field":
@@ -432,12 +430,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
         {
             Add = async () => Add(),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -457,13 +455,13 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
-            switch (group)
+            switch (row.Group)
             {
                 case "Journals":
                     {
-                        await PageJournal(name);
+                        await PageJournal(row.Name);
                         return;
                     }
                 case "Field":
@@ -482,12 +480,12 @@ public abstract partial class FormConfigurator : Window
             {
                 await PageJournal("", true);
             },
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -507,13 +505,13 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
-            switch (group)
+            switch (row.Group)
             {
                 case "Enums":
                     {
-                        await PageEnum(name);
+                        await PageEnum(row.Name);
                         return;
                     }
                 case "Field":
@@ -529,12 +527,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
             Add = async () => await PageEnum("", true),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -554,13 +552,13 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
-            switch (group)
+            switch (row.Group)
             {
                 case "RegistersInformation":
                     {
-                        await PageRegisterInformation(name);
+                        await PageRegisterInformation(row.Name);
                         return;
                     }
                 case "DimensionField":
@@ -586,12 +584,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
             Add = async () => await PageRegisterInformation("", true),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },
@@ -611,13 +609,13 @@ public abstract partial class FormConfigurator : Window
         popover.Child = getbox();
         popover.Show();
 
-        async void Activate(string group, string name)
+        async void Activate(ConfiguratorItemRow row)
         {
-            switch (group)
+            switch (row.Group)
             {
                 case "RegistersAccumulation":
                     {
-                        await PageRegisterAccumulation(name);
+                        await PageRegisterAccumulation(row.Name);
                         return;
                     }
                 case "DimensionField":
@@ -653,12 +651,12 @@ public abstract partial class FormConfigurator : Window
         Box getbox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate, new()
         {
             Add = async () => await PageRegisterAccumulation("", true),
-            Edit = (group, name) => Activate(group, name),
-            Copy = (group, name) =>
+            Edit = (row) => Activate(row),
+            Copy = (row) =>
             {
 
             },
-            Delete = (group, name) =>
+            Delete = (row) =>
             {
 
             },

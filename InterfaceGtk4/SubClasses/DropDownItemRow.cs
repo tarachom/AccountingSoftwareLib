@@ -10,11 +10,22 @@ namespace InterfaceGtk4;
 public partial class DropDownItemRow
 {
     public static DropDownItemRow New() => NewWithProperties([]);
+
     public static DropDownItemRow NewWithValue(string name, string desc)
     {
         DropDownItemRow row = NewWithProperties([]);
         row.Name = name;
         row.Desc = desc;
+        
+        return row;
+    }
+
+    public static DropDownItemRow NewWithPair(KeyValuePair<string, string> value)
+    {
+        DropDownItemRow row = NewWithProperties([]);
+        row.Name = value.Key;
+        row.Desc = value.Value;
+        
         return row;
     }
 

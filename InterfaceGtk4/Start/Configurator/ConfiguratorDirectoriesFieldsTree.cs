@@ -32,9 +32,9 @@ namespace InterfaceGtk4;
 /// </summary>
 /// <param name="conf">Конфігурація</param>
 /// <param name="activate">Процедура активації вітки в дереві</param>
-public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories directory, Action<string, string>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
+public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Action<ConfiguratorItemRow>? activate, ConfiguratorTree.ToolbarAction toolbar) : ConfiguratorTree(activate, toolbar)
 {
-    ConfigurationDirectories Directory { get; set; } = directory;
+    ConfigurationDirectories Directory { get; set; } = dir;
 
     /// <summary>
     /// Заповнення
@@ -49,6 +49,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
     /// <summary>
     /// Відкриття верхніх віток
     /// </summary>
+    /*
     void Open()
     {
         if (TreeList != null)
@@ -64,6 +65,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                 row.Expanded = true;
         }
     }
+    */
 
     protected override void FillGrid()
     {
@@ -79,7 +81,6 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
             Store.Append(row);
         }
 
-        //if (Directory.TabularParts.Count > 0)
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "TablePartGroup";
@@ -89,7 +90,6 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
             Store.Append(row);
         }
 
-        //if (Directory.TabularList.Count > 0)
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "TabularListGroup";
@@ -99,7 +99,6 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
             Store.Append(row);
         }
 
-        //if (Directory.Forms.Count > 0)
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "FormsGroup";
@@ -108,8 +107,6 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
 
             Store.Append(row);
         }
-
-        //Open();
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -133,6 +130,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                         row.Group = "Field";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = directory;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
@@ -151,6 +149,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.ParentObj = directory;
                         row.TableOrField = tablePart.Table;
 
                         store.Append(row);
@@ -167,6 +166,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                         row.Group = "TabularList";
                         row.Name = tabularList.Name;
                         row.Obj = tabularList;
+                        row.ParentObj = directory;
 
                         store.Append(row);
                     }
@@ -182,6 +182,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                         row.Group = "Form";
                         row.Name = form.Name;
                         row.Obj = form;
+                        row.ParentObj = directory;
 
                         store.Append(row);
                     }
@@ -197,6 +198,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories director
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;

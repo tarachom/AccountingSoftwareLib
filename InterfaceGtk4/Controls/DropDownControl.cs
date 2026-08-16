@@ -26,10 +26,10 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Клітинка табличної частини - Випадаючий список
+/// Випадаючий список
 /// </summary>
-[GObject.Subclass<Box>]
-public partial class DropDownTablePartCell : Box
+[GObject.Subclass<Box>("DropDownControl")]
+public partial class DropDownControl : Box
 {
     Box hBox = New(Orientation.Horizontal, 0);
     public Gio.ListStore Store { get; } = Gio.ListStore.New(DropDownItemRow.GetGType());
@@ -40,7 +40,6 @@ public partial class DropDownTablePartCell : Box
         SetOrientation(Orientation.Vertical);
 
         DropDown = DropDown.New(Store, null);
-        DropDown.Vexpand = DropDown.Hexpand = true;
         DropDown.OnNotify += (_, e) =>
         {
             if (e.Pspec.GetName() == "selected" && DropDown.SelectedItem != null)
@@ -77,14 +76,13 @@ public partial class DropDownTablePartCell : Box
         hBox.Append(DropDown);
 
         Append(hBox);
-        AddCssClass("dropdown");
     }
 
-    public static DropDownTablePartCell New() => NewWithProperties([]);
+    public static DropDownControl New() => NewWithProperties([]);
 
-    public static DropDownTablePartCell NewWithValues(Dictionary<string, string> values)
+    public static DropDownControl NewWithValues(Dictionary<string, string> values)
     {
-        DropDownTablePartCell dropDown = NewWithProperties([]);
+        DropDownControl dropDown = NewWithProperties([]);
         dropDown.Fill(values);
 
         return dropDown;
@@ -108,7 +106,7 @@ public partial class DropDownTablePartCell : Box
     /// <summary>
     /// Додає пусте значення
     /// </summary>
-    void AppendEmpty() => Store.Append(DropDownItemRow.NewWithValue("", ""));
+    public void AppendEmpty() => Store.Append(DropDownItemRow.NewWithValue("", "(Немає)"));
 
     /// <summary>
     /// Додає значення
@@ -126,7 +124,7 @@ public partial class DropDownTablePartCell : Box
 
     public uint Count() => Store.GetNItems();
 
-    // <summary>
+    /// <summary>
     /// Список може містити значення 0, Незаповнено
     /// </summary>
     public bool AllowEmpty { get; set; } = true;
