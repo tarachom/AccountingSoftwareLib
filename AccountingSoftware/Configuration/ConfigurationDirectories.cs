@@ -114,7 +114,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Тип вмісту ієрархічного довідника
         /// </summary>
-        public HierarchicalContentType AllowedContent_Hierarchical { get; set; } = HierarchicalContentType.Folders;
+        public HierarchicalContentType AllowedContent_Hierarchical { get; set; } = 0;
 
         /// <summary>
         /// Поле ЦеПапка для ієрархічного довідника (для AllowedContent_Hierarchical = HierarchicalContentType.FoldersAndElements)
@@ -264,17 +264,17 @@ namespace AccountingSoftware
             /// <summary>
             /// Папки
             /// </summary>
-            Folders,
+            Folders = 1,
 
             /// <summary>
             /// Елементи
             /// </summary>
-            Elements,
+            Elements = 2,
 
             /// <summary>
             /// І папки і елементи
             /// </summary>
-            FoldersAndElements
+            FoldersAndElements = 3
         }
 
         public static Dictionary<string, string> HierarchicalContentType_Dict() => new()

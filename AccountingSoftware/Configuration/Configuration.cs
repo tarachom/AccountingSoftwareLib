@@ -1196,7 +1196,7 @@ namespace AccountingSoftware
                 "Folders" => ConfigurationDirectories.HierarchicalContentType.Folders,
                 "Elements" => ConfigurationDirectories.HierarchicalContentType.Elements,
                 "FoldersAndElements" => ConfigurationDirectories.HierarchicalContentType.FoldersAndElements,
-                _ => ConfigurationDirectories.HierarchicalContentType.Folders
+                _ => 0
             };
         }
 
@@ -1338,13 +1338,13 @@ namespace AccountingSoftware
                 string iconTree_Hierarchical = "";
                 string isFolderField_Hierarchical = "";
                 string pointerFolders_HierarchyInAnotherDirectory = "";
-                ConfigurationDirectories.HierarchicalContentType allowedContent_Hierarchical = ConfigurationDirectories.HierarchicalContentType.Folders;
+                ConfigurationDirectories.HierarchicalContentType allowedContent_Hierarchical = 0; //ConfigurationDirectories.HierarchicalContentType.Folders;
 
                 //Поля для ієрархічного довідника
                 if (typeDirectory == ConfigurationDirectories.TypeDirectories.Hierarchical)
                 {
                     parentField_Hierarchical = directoryNodes.Current?.SelectSingleNode("ParentField")?.Value ?? ""; //Поле родич. Тобто поле яке буде містити вказівник на родича чи папку
-                    iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? ""; //Тип іконки в дереві
+                    //iconTree_Hierarchical = directoryNodes.Current?.SelectSingleNode("IconTree")?.Value ?? ""; //Тип іконки в дереві
 
                     //Тип вмісту ієрархічного довідника
                     string allowedContent = directoryNodes.Current?.SelectSingleNode("AllowedContent")?.Value ?? "";
@@ -2275,12 +2275,14 @@ namespace AccountingSoftware
                     nodeDirectoryParentField.InnerText = ConfDirectory.Value.ParentField_Hierarchical;
                     nodeDirectory.AppendChild(nodeDirectoryParentField);
 
-                    XmlElement nodeDirectoryIconTree = xmlConfDocument.CreateElement("IconTree");
-                    nodeDirectoryIconTree.InnerText = ConfDirectory.Value.IconTree_Hierarchical;
-                    nodeDirectory.AppendChild(nodeDirectoryIconTree);
+                    //XmlElement nodeDirectoryIconTree = xmlConfDocument.CreateElement("IconTree");
+                    //nodeDirectoryIconTree.InnerText = ConfDirectory.Value.IconTree_Hierarchical;
+                    //nodeDirectory.AppendChild(nodeDirectoryIconTree);
 
                     XmlElement nodeDirectoryAllowedContent = xmlConfDocument.CreateElement("AllowedContent");
-                    nodeDirectoryAllowedContent.InnerText = ConfDirectory.Value.AllowedContent_Hierarchical.ToString();
+                    nodeDirectoryAllowedContent.InnerText = ConfDirectory.Value.AllowedContent_Hierarchical == 0 ?
+                        ConfigurationDirectories.HierarchicalContentType.Folders.ToString() :
+                        ConfDirectory.Value.AllowedContent_Hierarchical.ToString();
                     nodeDirectory.AppendChild(nodeDirectoryAllowedContent);
 
                     //Для типу вмісту Папки та елементи потрібне поле ЦеПапка

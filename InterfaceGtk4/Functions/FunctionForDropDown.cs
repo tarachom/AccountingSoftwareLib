@@ -38,7 +38,7 @@ public static class FunctionForDropDown
 {
     public static bool SelectByValue(DropDown dropDown, string value)
     {
-        if (string.IsNullOrEmpty(value) || value.Trim() == "0") return true;
+        //if (string.IsNullOrEmpty(value) || value.Trim() == "0") return true;
 
         if (dropDown.Model is Gio.ListStore model)
             for (uint i = 0; i < model.GetNItems(); i++)
