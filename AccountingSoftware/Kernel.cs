@@ -358,6 +358,22 @@ namespace AccountingSoftware
             await ClearOutdatedMessages();
         }
 
+        public async Task MessageFileAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
+        {
+            await DataBase.SpetialTableMessageErrorAdd
+            (
+                User,
+                nameProcess,
+                objectUid != null ? (Guid)objectUid : Guid.Empty,
+                typeObject ?? "",
+                nameObject,
+                message,
+                'F' //File
+            );
+
+            await ClearOutdatedMessages();
+        }
+
         public async Task ClearAllMessages() => await DataBase.SpetialTableMessageErrorClear(User);
 
         public async Task ClearOutdatedMessages() => await DataBase.SpetialTableMessageErrorClearOld(User);

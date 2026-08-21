@@ -309,9 +309,15 @@ public abstract class СпільніФорми_ІсторіяЗміниДани�
                                         }
                                     case "enum":
                                         {
-                                            string[] searchNameSplit = field.Pointer.Split(["."], StringSplitOptions.None);
-                                            var enumItem = Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values.Single(x => x.Value == int.Parse(value));
-                                            if (enumItem != null) value = enumItem.Desc;
+                                            if (int.TryParse(value, out int valueParse) && valueParse > 0)
+                                            {
+                                                string[] searchNameSplit = field.Pointer.Split(["."], StringSplitOptions.None);
+                                                var enumItem = Kernel.Conf.Enums[searchNameSplit[1]].Fields.Values.FirstOrDefault(x => x.Value == valueParse);
+                                                if (enumItem != null) value = enumItem.Desc;
+                                            }
+                                            else
+                                                value = "";
+
                                             break;
                                         }
                                     case "pointer":

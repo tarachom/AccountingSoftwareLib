@@ -53,6 +53,7 @@ public static class ДляІнформуванняВеликі
 {
     public static Pixbuf Error = new Pixbuf($"{AppContext.BaseDirectory}images/error.png");
     public static Pixbuf Ok = new Pixbuf($"{AppContext.BaseDirectory}images/ok.png");
+    public static Pixbuf File = new Pixbuf($"{AppContext.BaseDirectory}images/report.png");
 }
 
 public static class ДляТабличногоСписку

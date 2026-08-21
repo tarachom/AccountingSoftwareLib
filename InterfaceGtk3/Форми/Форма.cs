@@ -73,6 +73,19 @@ public abstract class Форма : Box
     }
 
     /// <summary>
+    /// Лінк з переносом тексту без картинки
+    /// </summary>
+    public static void CreateWrapLink(Box parentBox, string uri, System.Action? click = null)
+    {
+        LinkButton link = new LinkButton("", uri) { Halign = Align.Start };
+        parentBox.PackStart(link, false, false, 0);
+        link.Clicked += (sender, args) => click?.Invoke();
+
+        if (link.Child  is Label label)
+            label.Wrap = true;
+    }
+
+    /// <summary>
     /// Створює простий заголовок або лінк
     /// </summary>
     /// <param name="parentBox">Бокс куди буде доданий лінк</param>

@@ -81,12 +81,15 @@ public abstract class СпільніФорми_ВивідПовідомленн�
 
         vBoxMessage.PackStart(new Separator(Orientation.Horizontal), false, false, 5);
 
+        char messageType = (char)row["message_type"];
+
         //Image
         {
-            var Іконка = row["message_type"] switch
+            var Іконка = messageType switch
             {
                 'E' => Іконки.ДляІнформуванняВеликі.Error,
-                'I' => Іконки.ДляІнформуванняВеликі.Ok,
+                'I'  => Іконки.ДляІнформуванняВеликі.Ok,
+                'F' => Іконки.ДляІнформуванняВеликі.File,
                 _ => Іконки.ДляІнформуванняВеликі.Error
             };
 
@@ -115,6 +118,16 @@ public abstract class СпільніФорми_ВивідПовідомленн�
         }
 
         //Повідомлення
+        if (messageType == 'F')
+        {
+            Box hBox = new Box(Orientation.Horizontal, 0);
+            vBoxInfo.PackStart(hBox, false, false, 5);
+
+            string message = row["message"].ToString() ?? "";
+            if (!string.IsNullOrEmpty(message))
+                CreateWrapLink(hBox, message, () => ФункціїДляФайлів.ВідкритиФайл(message));
+        }
+        else
         {
             Box hBox = new Box(Orientation.Horizontal, 0);
             hBox.PackStart(new Label(row["message"].ToString()) { Wrap = true, UseMarkup = true, UseUnderline = false, Selectable = true }, false, false, 5);
