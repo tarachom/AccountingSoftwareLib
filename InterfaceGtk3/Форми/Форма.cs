@@ -82,7 +82,10 @@ public abstract class Форма : Box
         link.Clicked += (sender, args) => click?.Invoke();
 
         if (link.Child is Label label)
+        {
             label.Wrap = true;
+            label.Selectable = true;
+        }
     }
 
     /// <summary>
