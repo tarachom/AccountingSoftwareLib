@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 ///     
 /// </summary>
 [GObject.Subclass<Form>]
-public abstract partial  class FormPageConfigurator : Form
+public abstract partial class FormPageConfigurator : Form
 {
     public abstract Configuration Conf { get; }
 
@@ -135,7 +135,7 @@ public abstract partial  class FormPageConfigurator : Form
         {
             if (Keys.Contains(name))
             {
-                Message.Error(NotebookFunc?.BasicForm, $"Назва не унікальна");
+                Message.Error(NotebookFunc?.BasicForm, "Помилка", "Назва не унікальна");
                 return false;
             }
             else
@@ -145,7 +145,7 @@ public abstract partial  class FormPageConfigurator : Form
         string errorList = Configuration.ValidateConfigurationObjectName(ref name);
         if (errorList.Length > 0)
         {
-            Message.Error(NotebookFunc?.BasicForm, $"{errorList}");
+            Message.Error(NotebookFunc?.BasicForm, "Помилка", $"{errorList}");
             return (false, name);
         }
 

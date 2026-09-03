@@ -68,6 +68,17 @@ namespace AccountingSoftware
         /// <summary>
         /// Новий композитний тип
         /// </summary>
+        /// <param name="uuid">Унікальний ідентифікатор</param>
+        /// <param name="text">Текст</param>
+        public UuidAndText(Guid? uuid, string? text)
+        {
+            Uuid = uuid ?? Guid.Empty;
+            Text = text ?? "";
+        }
+
+        /// <summary>
+        /// Новий композитний тип
+        /// </summary>
         /// <param name="uniqueID">Унікальний ідентифікатор</param>
         /// <param name="text">Текст</param>
         public UuidAndText(UniqueID uniqueID, string text)

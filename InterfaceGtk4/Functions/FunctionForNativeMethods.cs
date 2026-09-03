@@ -59,7 +59,7 @@ public static class FunctionForNativeMethods
                 //Пошук шляху в конфігурації
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(AppContext.BaseDirectory)
-                    .AddJsonFile("appsettings.json", false, true)
+                    .AddJsonFile("MsysSettings.json", false, true)
                     .Build();
 
                 // Стандартний шлях до папки MSYS

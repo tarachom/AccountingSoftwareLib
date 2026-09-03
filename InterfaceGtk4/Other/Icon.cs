@@ -68,6 +68,7 @@ public static class ForInformationBig
 {
     public static Pixbuf? Error { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/error.png");
     public static Pixbuf? Ok { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/ok.png");
+    public static Pixbuf? File { get; } = Pixbuf.NewFromFile($"{AppContext.BaseDirectory}images/report.png");
 }
 
 /// <summary>

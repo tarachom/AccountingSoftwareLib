@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="CommonForms_ErrorOrInfoMessageOutputRow" parent="GtkListBoxRow">
+        <property name="selectable">false</property>
+        <property name="activatable">false</property>
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">vertical</property>
+
+                <!-- Горизонтальна лінія-розділювач -->
+                <child>
+                    <object class="GtkSeparator">
+                        <property name="orientation">horizontal</property>
+                    </object>
+                </child>
+
+                <!-- Основний вміст рядка -->
+                <child>
+                    <object class="GtkBox">
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">12</property>
+                        <property name="margin-start">8</property>
+                        <property name="margin-end">8</property>
+                        <property name="margin-top">10</property>
+                        <property name="margin-bottom">10</property>
+
+                        <!-- Іконка -->
+                        <child>
+                            <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <child>
+                                    <object class="GtkImage" id="image">
+                                        <property name="pixel-size">48</property>
+                                        <property name="valign">center</property>
+                                        <property name="halign">center</property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <!-- Блок тексту -->
+                        <child>
+                            <object class="GtkBox" id="box_text">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">4</property>
+                                <property name="hexpand">true</property>
+
+                                <child>
+                                    <object class="GtkBox">
+                                        <property name="orientation">horizontal</property>
+                                        <property name="spacing">10</property>
+
+                                        <!-- Дата та час -->
+                                        <child>
+                                            <object class="GtkLabel" id="label_datetime">
+                                                <property name="use-markup">true</property>
+                                                <property name="selectable">true</property>
+                                                <property name="halign">start</property>
+                                                <style>
+                                                    <class name="dim-label"/>
+                                                </style>
+                                            </object>
+                                        </child>
+
+                                        <!-- Назва процесу -->
+                                        <child>
+                                            <object class="GtkLabel" id="label_process">
+                                                <property name="use-markup">true</property>
+                                                <property name="selectable">true</property>
+                                                <property name="halign">start</property>
+                                                <style>
+                                                    <class name="dim-label"/>
+                                                </style>
+                                            </object>
+                                        </child>
+
+                                    </object>
+                                </child>
+
+                                <!-- Заголовок -->
+                                <child>
+                                    <object class="GtkLabel" id="label_caption">
+                                        <property name="use-markup">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="halign">start</property>
+                                        <property name="wrap">true</property>
+                                    </object>
+                                </child>
+
+                                <!-- Повідомлення -->
+                                <child>
+                                    <object class="GtkLabel" id="label_message">
+                                        <property name="use-markup">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="halign">start</property>
+                                        <property name="wrap">true</property>
+                                    </object>
+                                </child>
+
+                            </object>
+                        </child>
+
+                        <!-- Кнопка видалення -->
+                        <child>
+                            <object class="GtkButton" id="button_delete">
+                                <property name="icon-name">window-close-symbolic</property>
+                                <property name="valign">start</property>
+                                <property name="halign">end</property>
+                                <property name="tooltip-text">Видалити повідомлення</property>
+                                <style>
+                                    <class name="flat"/>
+                                </style>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+
+            </object>
+        </child>
+    </template>
+</interface>

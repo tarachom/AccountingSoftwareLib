@@ -46,10 +46,11 @@ namespace AccountingSoftware
 
         #region SpetialTable MessageError
 
-        Task SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0);
-        Task<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null);
-        Task SpetialTableMessageErrorClear(Guid user_uid);
-        Task SpetialTableMessageErrorClearOld(Guid user_uid);
+        Task SpetialTableMessageErrorOrInfoAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0);
+        Task<SelectRequest_Record> SpetialTableMessageErrorOrInfoSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null);
+        Task SpetialTableMessageErrorOrInfoClear(Guid user_uid);
+        Task SpetialTableMessageErrorOrInfoRemove(Guid user_uid, int pkey);
+        Task SpetialTableMessageErrorOrInfoClearOld(Guid user_uid);
 
         #endregion
 

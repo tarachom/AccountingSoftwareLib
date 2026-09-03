@@ -72,7 +72,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Помилки та інформація
         /// </summary>
-        public static readonly string MessageError = "tab_special_message_error_or_info";
+        public static readonly string MessageErrorOrInfo = "tab_special_message_error_or_info";
 
         /// <summary>
         /// Тригери оновлення об’єктів (Довідники, Документи)
@@ -105,7 +105,7 @@ namespace AccountingSoftware
             Users,
             ActiveUsers,
             FullTextSearch,
-            MessageError,
+            MessageErrorOrInfo,
             ObjectUpdateTriger,
             ObjectVersionsHistory,
             TablePartVersionsHistory,

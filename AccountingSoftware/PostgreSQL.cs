@@ -443,11 +443,11 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_vector_idx ON {Special
 CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {SpecialTables.FullTextSearch}(groupname)");
             }
 
-            if (!specialTable.Contains(SpecialTables.MessageError))
+            if (!specialTable.Contains(SpecialTables.MessageErrorOrInfo))
             {
                 /*
 
-                Таблиця для запису інформації про помилки
+                Таблиця для запису інформації про помилки та додаткова інформація
 
                 @users - Користувач
                 @datewrite - Дата запису
@@ -461,7 +461,7 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.FullTextSearch}_groupname_idx ON {Spec
                 */
 
                 await ExecuteSQL($@"
-CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError} 
+CREATE TABLE IF NOT EXISTS {SpecialTables.MessageErrorOrInfo} 
 (
     uid serial NOT NULL,
     users uuid NOT NULL,
@@ -475,10 +475,10 @@ CREATE TABLE IF NOT EXISTS {SpecialTables.MessageError}
     PRIMARY KEY(uid)
 )");
                 await ExecuteSQL($@"
-CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_users_idx ON {SpecialTables.MessageError}(users)");
+CREATE INDEX IF NOT EXISTS {SpecialTables.MessageErrorOrInfo}_users_idx ON {SpecialTables.MessageErrorOrInfo}(users)");
 
                 await ExecuteSQL($@"
-CREATE INDEX IF NOT EXISTS {SpecialTables.MessageError}_objectuid_idx ON {SpecialTables.MessageError}(objectuid)");
+CREATE INDEX IF NOT EXISTS {SpecialTables.MessageErrorOrInfo}_objectuid_idx ON {SpecialTables.MessageErrorOrInfo}(objectuid)");
             }
 
             if (!specialTable.Contains(SpecialTables.ObjectUpdateTriger))
@@ -663,10 +663,10 @@ CREATE INDEX IF NOT EXISTS {SpecialTables.TablePartVersionsHashData}_tablepart_i
 
         #region SpetialTable MessageError
 
-        public async Task SpetialTableMessageErrorAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0)
+        public async Task SpetialTableMessageErrorOrInfoAdd(Guid user_uid, string nameProcess, Guid uidObject, string typeObject, string nameObject, string message, char message_type, byte transactionID = 0)
         {
             await ExecuteSQL($@"
-INSERT INTO {SpecialTables.MessageError} 
+INSERT INTO {SpecialTables.MessageErrorOrInfo} 
 (
     users,
     datewrite,
@@ -701,12 +701,13 @@ new Dictionary<string, object>
 transactionID);
         }
 
-        public async Task<SelectRequest_Record> SpetialTableMessageErrorSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null)
+        public async Task<SelectRequest_Record> SpetialTableMessageErrorOrInfoSelect(Guid user_uid, UniqueID? unigueIDObjectWhere = null, int? limit = null)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
             string query = $@"
 SELECT
+    uid AS pkey,
     datewrite AS date,
     to_char(datewrite, 'HH24:MI:SS') AS time,
     processname AS process,
@@ -715,7 +716,7 @@ SELECT
     objectname AS name,
     message,
     message_type
-FROM {SpecialTables.MessageError}
+FROM {SpecialTables.MessageErrorOrInfo}
 WHERE users = @users
 ";
             if (unigueIDObjectWhere != null && !unigueIDObjectWhere.IsEmpty())
@@ -728,19 +729,26 @@ LIMIT {limit ?? 100}
             return await SelectRequest(query, queryParam);
         }
 
-        public async Task SpetialTableMessageErrorClear(Guid user_uid)
+        public async Task SpetialTableMessageErrorOrInfoClear(Guid user_uid)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
-            await ExecuteSQL($@"DELETE FROM {SpecialTables.MessageError} WHERE users = @users", queryParam);
+            await ExecuteSQL($@"DELETE FROM {SpecialTables.MessageErrorOrInfo} WHERE users = @users", queryParam);
         }
 
-        public async Task SpetialTableMessageErrorClearOld(Guid user_uid)
+        public async Task SpetialTableMessageErrorOrInfoRemove(Guid user_uid, int pkey)
+        {
+            Dictionary<string, object> queryParam = new() { { "users", user_uid }, { "uid", pkey } };
+
+            await ExecuteSQL($@"DELETE FROM {SpecialTables.MessageErrorOrInfo} WHERE users = @users AND uid = @uid", queryParam);
+        }
+
+        public async Task SpetialTableMessageErrorOrInfoClearOld(Guid user_uid)
         {
             Dictionary<string, object> queryParam = new() { { "users", user_uid } };
 
             await ExecuteSQL($@"
-DELETE FROM {SpecialTables.MessageError}
+DELETE FROM {SpecialTables.MessageErrorOrInfo}
 WHERE users = @users AND datewrite < (CURRENT_TIMESTAMP::timestamp - INTERVAL '7 day')", queryParam);
         }
 

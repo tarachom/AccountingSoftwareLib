@@ -326,60 +326,46 @@ namespace AccountingSoftware
 
         /* Запис і зчитування повідомлень про помилки та інформаційних повідомлень */
 
-        public async Task MessageInfoAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
+        async Task MessageAdd(string processName, UuidAndText? obj, string objectName, string message, TypeMessageErrorOrInfo messageType)
         {
-            await DataBase.SpetialTableMessageErrorAdd
+            await DataBase.SpetialTableMessageErrorOrInfoAdd
             (
                 User,
-                nameProcess,
-                objectUid != null ? (Guid)objectUid : Guid.Empty,
-                typeObject ?? "",
-                nameObject,
+                processName,
+                obj?.Uuid ?? Guid.Empty,
+                obj?.Text ?? "",
+                objectName,
                 message,
-                'I' //Info
+                messageType switch
+                {
+                    TypeMessageErrorOrInfo.Error => 'E',
+                    TypeMessageErrorOrInfo.Info => 'I',
+                    TypeMessageErrorOrInfo.File => 'F',
+                    _ => 'E'
+                }
             );
 
             await ClearOutdatedMessages();
         }
 
-        public async Task MessageErrorAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
-        {
-            await DataBase.SpetialTableMessageErrorAdd
-            (
-                User,
-                nameProcess,
-                objectUid != null ? (Guid)objectUid : Guid.Empty,
-                typeObject ?? "",
-                nameObject,
-                message,
-                'E' //Error
-            );
+        async Task MessageAdd(string processName, Guid? objectUid, string? objectType, string objectName, string message, TypeMessageErrorOrInfo messageType) =>
+            await MessageAdd(processName, new(objectUid, objectType), objectName, message, messageType);
 
-            await ClearOutdatedMessages();
-        }
+        public async Task MessageErrorAdd(string processName, Guid? objectUid, string? objectType, string objectName, string message) => await MessageAdd(processName, objectUid, objectType, objectName, message, TypeMessageErrorOrInfo.Error);
+        public async Task MessageErrorAdd(string processName, UuidAndText? obj, string objectName, string message) => await MessageAdd(processName, obj, objectName, message, TypeMessageErrorOrInfo.Error);
 
-        public async Task MessageFileAdd(string nameProcess, Guid? objectUid, string? typeObject, string nameObject, string message)
-        {
-            await DataBase.SpetialTableMessageErrorAdd
-            (
-                User,
-                nameProcess,
-                objectUid != null ? (Guid)objectUid : Guid.Empty,
-                typeObject ?? "",
-                nameObject,
-                message,
-                'F' //File
-            );
+        public async Task MessageInfoAdd(string processName, Guid? objectUid, string? objectType, string objectName, string message) => await MessageAdd(processName, objectUid, objectType, objectName, message, TypeMessageErrorOrInfo.Info);
+        public async Task MessageInfoAdd(string processName, UuidAndText? obj, string objectName, string message) => await MessageAdd(processName, obj, objectName, message, TypeMessageErrorOrInfo.Info);
 
-            await ClearOutdatedMessages();
-        }
+        public async Task MessageFileAdd(string processName, Guid? objectUid, string? objectType, string objectName, string message) => await MessageAdd(processName, objectUid, objectType, objectName, message, TypeMessageErrorOrInfo.File);
+        public async Task MessageFileAdd(string processName, UuidAndText? obj, string objectName, string message) => await MessageAdd(processName, obj, objectName, message, TypeMessageErrorOrInfo.File);
 
-        public async Task ClearAllMessages() => await DataBase.SpetialTableMessageErrorClear(User);
+        public async Task RemoveMessage(int pkey) => await DataBase.SpetialTableMessageErrorOrInfoRemove(User, pkey);
+        public async Task ClearAllMessages() => await DataBase.SpetialTableMessageErrorOrInfoClear(User);
 
-        public async Task ClearOutdatedMessages() => await DataBase.SpetialTableMessageErrorClearOld(User);
+        public async Task ClearOutdatedMessages() => await DataBase.SpetialTableMessageErrorOrInfoClearOld(User);
 
-        public async Task<SelectRequest_Record> SelectMessages(UniqueID? objectUnigueID = null, int? limit = null) =>
-            await DataBase.SpetialTableMessageErrorSelect(User, objectUnigueID, limit);
+        public async Task<SelectRequest_Record> SelectMessages(UniqueID? objectUid = null, int? limit = null) => await DataBase.SpetialTableMessageErrorOrInfoSelect(User, objectUid, limit);
 
         #endregion
 
@@ -434,9 +420,41 @@ namespace AccountingSoftware
     /// </summary>
     public enum TypeObjectChanged
     {
+        /// <summary>
+        /// Додано
+        /// </summary>
         Add,
+
+        /// <summary>
+        /// Оновлено
+        /// </summary>
         Update,
+
+        /// <summary>
+        /// Видалено
+        /// </summary>
         Delete
+    }
+
+    /// <summary>
+    /// Тип інформаційних повідомлень
+    /// </summary>
+    public enum TypeMessageErrorOrInfo
+    {
+        /// <summary>
+        /// Помилка
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Інфо
+        /// </summary>
+        Info,
+
+        /// <summary>
+        /// Файл
+        /// </summary>
+        File
     }
 
     public record ObjectChanged(Guid Uid, TypeObjectChanged Type);

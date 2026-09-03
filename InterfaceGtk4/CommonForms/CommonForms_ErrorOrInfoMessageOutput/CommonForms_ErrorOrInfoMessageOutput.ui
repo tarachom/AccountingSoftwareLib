@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="CommonForms_ErrorOrInfoMessageOutput" parent="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <property name="margin-start">8</property>
+        <property name="margin-end">8</property>
+        <property name="margin-top">8</property>
+        <property name="margin-bottom">8</property>
+
+        <!-- Верхня панель дій -->
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">8</property>
+
+                <child>
+                    <object class="GtkButton" id="button_clear">
+                        <property name="label">Очистити</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="GtkButton" id="button_refresh">
+                        <property name="label">Перечитати</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <!-- Прокручувальний список повідомлень -->
+        <child>
+            <object class="GtkScrolledWindow">
+                <property name="vexpand">true</property>
+                <property name="hexpand">true</property>
+                
+                <child>
+                    <object class="GtkListBox" id="listbox_log">
+                        <property name="selection-mode">none</property>
+                    </object>
+                </child>
+                
+            </object>
+        </child>
+
+    </template>
+</interface>

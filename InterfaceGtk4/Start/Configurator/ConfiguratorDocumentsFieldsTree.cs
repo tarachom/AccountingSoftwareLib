@@ -101,7 +101,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments doc, Action<
 
         {
             var row = ConfiguratorItemRow.New();
-            row.Group = "FormsGroup";
+            row.Group = "FormGroup";
             row.Name = "Форми";
             row.Obj = Documents;
 
@@ -173,7 +173,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments doc, Action<
 
                     return store;
                 }
-            case "FormsGroup" when obj is ConfigurationDocuments documents:
+            case "FormGroup" when obj is ConfigurationDocuments documents:
                 {
                     //Для групи Форми заповнюю саме форми
                     foreach (ConfigurationForms form in documents.Forms.Values)

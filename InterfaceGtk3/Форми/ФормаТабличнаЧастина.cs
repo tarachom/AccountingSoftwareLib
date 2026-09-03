@@ -298,6 +298,12 @@ public abstract class ФормаТабличнаЧастина : Форма
     #region TreeView
 
     /// <summary>
+    /// Функція повертає масив індексів виділених рядків
+    /// </summary>
+    /// <returns>Масив int[]</returns>
+    protected int[] GetSelectedRow() => [.. TreeViewGrid.Selection.GetSelectedRows().Select(path => path.Indices[0])];
+
+    /// <summary>
     /// Функція позиціонує список на рядок який раніше був активований OnRowActivated
     /// </summary>
     protected void SelectRowActivated()

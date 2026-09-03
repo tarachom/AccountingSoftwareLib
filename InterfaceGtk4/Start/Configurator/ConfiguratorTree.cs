@@ -140,7 +140,7 @@ public abstract class ConfiguratorTree
             button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
-            button.OnClicked += (_, _) => Toolbar.Add();
+            button.OnClicked += (_, _) => Toolbar.Add(button, SelectionRow);
             HBoxToolbar.Append(button);
         }
 
@@ -151,11 +151,7 @@ public abstract class ConfiguratorTree
             button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
-            button.OnClicked += (_, _) =>
-            {
-                if (SelectionRow != null)
-                    Toolbar.Edit(SelectionRow);
-            };
+            button.OnClicked += (_, _) => Toolbar.Edit(button, GetSelection());
             HBoxToolbar.Append(button);
         }
 
@@ -176,11 +172,7 @@ public abstract class ConfiguratorTree
             button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
-            button.OnClicked += (_, _) =>
-            {
-                if (SelectionRow != null)
-                    Toolbar.Copy(SelectionRow);
-            };
+            button.OnClicked += (_, _) => Toolbar.Copy(button, GetSelection());
             HBoxToolbar.Append(button);
         }
 
@@ -191,11 +183,7 @@ public abstract class ConfiguratorTree
             button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
-            button.OnClicked += (_, _) =>
-            {
-                if (SelectionRow != null)
-                    Toolbar.Delete(SelectionRow);
-            };
+            button.OnClicked += (_, _) => Toolbar.Delete(button, GetSelection());
             HBoxToolbar.Append(button);
         }
 
@@ -211,7 +199,7 @@ public abstract class ConfiguratorTree
             button.AddCssClass("toolbar");
             button.MarginEnd = 5;
             button.TooltipText = "Відкрити окремо";
-            button.OnClicked += (_, _) => Toolbar.OpenNewTab();
+            button.OnClicked += (_, _) => Toolbar.OpenNewTab(button);
             HBoxToolbar.Append(button);
         }
     }
@@ -253,7 +241,7 @@ public abstract class ConfiguratorTree
                             "ResourcesFields" => Icon.ForConfigurator.Calculator,
                             "PropertyFields" => Icon.ForConfigurator.Fields,
 
-                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "FormsGroup" => Icon.ForConfigurator.Sheets,
+                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "FormGroup" => Icon.ForConfigurator.Sheets,
 
                             "TabularList" => Icon.ForInformation.Grid,
                             "TablePart" => Icon.ForInformation.Grid,
@@ -376,14 +364,36 @@ public abstract class ConfiguratorTree
     }
 
     /// <summary>
+    /// Функція повертає список вибраних елементів
+    /// </summary>
+    /// <returns>Список вибраних елементів якщо є вибрані, або пустий список</returns>
+    public ConfiguratorItemRow[] GetSelection()
+    {
+        List<ConfiguratorItemRow> rows = [];
+
+        MultiSelection model = (MultiSelection)Grid.Model;
+        Bitset selection = model.GetSelection();
+
+        for (uint i = selection.GetMinimum(); i <= selection.GetMaximum(); i++)
+            if (model.IsSelected(i))
+            {
+                TreeListRow? row = TreeList?.GetRow(i);
+                ConfiguratorItemRow? rowItem = (ConfiguratorItemRow?)row?.GetItem();
+                if (rowItem != null) rows.Add(rowItem);
+            }
+
+        return [.. rows];
+    }
+
+    /// <summary>
     /// Функції для меню
     /// </summary>
     public record ToolbarAction
     {
-        public Action? Add { get; set; } = null;
-        public Action<ConfiguratorItemRow>? Edit { get; set; } = null;
-        public Action<ConfiguratorItemRow>? Copy { get; set; } = null;
-        public Action<ConfiguratorItemRow>? Delete { get; set; } = null;
-        public Action? OpenNewTab { get; set; } = null;
+        public Action<Button, ConfiguratorItemRow?>? Add { get; set; } = null;
+        public Action<Button, ConfiguratorItemRow[]>? Edit { get; set; } = null;
+        public Action<Button, ConfiguratorItemRow[]>? Copy { get; set; } = null;
+        public Action<Button, ConfiguratorItemRow[]>? Delete { get; set; } = null;
+        public Action<Button>? OpenNewTab { get; set; } = null;
     }
 }

@@ -101,7 +101,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
 
         {
             var row = ConfiguratorItemRow.New();
-            row.Group = "FormsGroup";
+            row.Group = "FormGroup";
             row.Name = "Форми";
             row.Obj = Directory;
 
@@ -173,7 +173,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
 
                     return store;
                 }
-            case "FormsGroup" when obj is ConfigurationDirectories directory:
+            case "FormGroup" when obj is ConfigurationDirectories directory:
                 {
                     //Для групи Форми заповнюю саме форми
                     foreach (ConfigurationForms form in directory.Forms.Values)

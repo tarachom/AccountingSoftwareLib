@@ -297,17 +297,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate, new()
         {
-            Add = () => Add(),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = (_, _) => Add(),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Константи", getbox());
@@ -361,17 +365,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
         {
-            Add = () => Add(),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = (_, _) => Add(),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 popover.Hide();
 
@@ -380,7 +388,7 @@ public abstract partial class FormConfigurator : Window
             }
         }).Fill();
 
-        
+
     }
 
     void Documents(LinkButton linkButton)
@@ -429,17 +437,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
         {
-            Add = async () => Add(),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = async (_, _) => Add(),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 popover.Hide();
 
@@ -476,20 +488,24 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorJournalsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async () =>
+            Add = async (_, _) =>
             {
                 await PageJournal("", true);
             },
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 popover.Hide();
 
@@ -526,17 +542,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async () => await PageEnum("", true),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = async (_, _) => await PageEnum("", true),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 popover.Hide();
 
@@ -583,17 +603,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async () => await PageRegisterInformation("", true),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = async (_, _) => await PageRegisterInformation("", true),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = (_) =>
             {
                 popover.Hide();
 
@@ -650,17 +674,21 @@ public abstract partial class FormConfigurator : Window
 
         Box getbox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate, new()
         {
-            Add = async () => await PageRegisterAccumulation("", true),
-            Edit = (row) => Activate(row),
-            Copy = (row) =>
+            Add = async (_, _) => await PageRegisterAccumulation("", true),
+            Edit = (_, rows) =>
+            {
+                foreach (var row in rows)
+                    Activate(row);
+            },
+            Copy = (_, rows) =>
             {
 
             },
-            Delete = (row) =>
+            Delete = (_, rows) =>
             {
 
             },
-            OpenNewTab = () =>
+            OpenNewTab = _ =>
             {
                 popover.Hide();
 
