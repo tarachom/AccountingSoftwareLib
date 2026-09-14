@@ -21,6 +21,8 @@ mono_crash.*
 
 old
 
+AISettings.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
