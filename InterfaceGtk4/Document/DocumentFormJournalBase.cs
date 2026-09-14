@@ -159,13 +159,13 @@ public abstract partial class DocumentFormJournalBase : FormJournal
             switch (args.Keyval)
             {
                 //Помітка на видалення
-                case (uint)Key.Delete:
+                case Gdk.Constants.KEY_Delete:
                     {
                         await Delete();
                         break;
                     }
                 //Новий
-                case (uint)Key.Insert:
+                case Gdk.Constants.KEY_Insert:
                     {
                         await OpenPageElement(true);
                         break;

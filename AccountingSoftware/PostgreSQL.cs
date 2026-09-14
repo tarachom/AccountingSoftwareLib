@@ -1976,7 +1976,7 @@ WHERE
         }
 
         /// <summary>
-        /// Видалення запису з істрії змін
+        /// Видалення запису з історії змін
         /// </summary>
         /// <param name="version_id">Версія</param>
         /// <param name="obj">Обєкт</param>
@@ -2036,6 +2036,27 @@ WHERE
         {
             #region Local Func
 
+            // Очистка попередніх записів
+            async Task Clean()
+            {
+                Dictionary<string, object> paramQuery = new()
+                {
+                    { "version_id", version_id },
+                    { "uuid", objowner.Uuid },
+                    { "text", objowner.Text },
+                    { "tablepart", tablepart }
+                };
+
+                //Очистка записів
+                await ExecuteSQL($@"
+DELETE FROM {SpecialTables.TablePartVersionsHistory} 
+WHERE 
+    objversionid = @version_id AND
+    (objowner).uuid = @uuid AND
+    (objowner).text = @text AND
+    tablepart = @tablepart", paramQuery, transactionID);
+            }
+
             // Перевірка запису в основній таблиці і добавлення якщо немає
             async Task AddGeneralRecord()
             {
@@ -2051,26 +2072,6 @@ WHERE
                 object? count = await ExecuteSQLScalar(query, paramQuery);
                 if (count != null && (long)count == 0)
                     await SpetialTableObjectVersionsHistoryAdd(version_id, user_uid, objowner, null, 'E', "", transactionID);
-            }
-
-            // Очистка попередніх записів
-            async Task Clean()
-            {
-                Dictionary<string, object> paramQuery = new()
-                {
-                    { "version_id", version_id },
-                    { "uuid", objowner.Uuid },
-                    { "text", objowner.Text },
-                    { "tablepart", tablepart }
-                };
-
-                await ExecuteSQL($@"
-DELETE FROM {SpecialTables.TablePartVersionsHistory} 
-WHERE 
-    objversionid = @version_id AND
-    (objowner).uuid = @uuid AND
-    (objowner).text = @text AND
-    tablepart = @tablepart", paramQuery, transactionID);
             }
 
             // Отримати попередній хеш для таб частини

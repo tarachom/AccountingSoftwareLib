@@ -89,7 +89,7 @@ public class NotebookFunction
         {
             if (Notebook.IsFocus())
                 //Закриття сторінки після натиснення Escape
-                if (args.Keyval == (uint)Key.Escape)
+                if (args.Keyval == Gdk.Constants.KEY_Escape)
                 {
                     Widget? wg = Notebook.GetNthPage(Notebook.GetCurrentPage());
                     if (wg != null)

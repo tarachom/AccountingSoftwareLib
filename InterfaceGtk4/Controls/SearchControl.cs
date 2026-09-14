@@ -48,7 +48,7 @@ public partial class SearchControl : Box
         entrySearch.AddController(controller);
         controller.OnKeyReleased += (sender, args) =>
         {
-            if (args.Keyval == (uint)Key.Return || args.Keyval == (uint)Key.KP_Enter)
+            if (args.Keyval == Gdk.Constants.KEY_Return || args.Keyval == Gdk.Constants.KEY_KP_Enter)
                 Search();
         };
 
@@ -81,8 +81,8 @@ public partial class SearchControl : Box
             Select?.Invoke("%" + txt.Replace(" ", "%") + "%");
     }
 
-    public Action<string>? Select { get; set; }= null;
-    public Action? Clear { get; set; }= null;
+    public Action<string>? Select { get; set; } = null;
+    public Action? Clear { get; set; } = null;
 
     public int MinLength { get; set; } = 1;
     public bool ToLower { get; set; } = true;

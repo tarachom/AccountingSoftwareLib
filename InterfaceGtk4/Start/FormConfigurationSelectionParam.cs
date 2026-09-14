@@ -53,7 +53,7 @@ partial class FormConfigurationSelectionParam : Window
         EventControllerKey eventContrKey = EventControllerKey.New();
         eventContrKey.OnKeyReleased += (_, args) =>
         {
-            if (args.Keyval == (uint)Key.Escape)
+            if (args.Keyval == Gdk.Constants.KEY_Escape)
                 OnCancel(null, new());
         };
         AddController(eventContrKey);

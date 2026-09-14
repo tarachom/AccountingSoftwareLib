@@ -45,7 +45,7 @@ partial class FormLogIn : Window
         EventControllerKey eventContrKey = EventControllerKey.New();
         eventContrKey.OnKeyReleased += (_, args) =>
         {
-            if (args.Keyval == (uint)Key.Escape)
+            if (args.Keyval ==  Gdk.Constants.KEY_Escape)
                 OnCancel(null, new());
         };
         AddController(eventContrKey);
@@ -91,7 +91,7 @@ partial class FormLogIn : Window
             passwordUser.AddController(contr);
             contr.OnKeyReleased += (_, args) =>
             {
-                if (args.Keyval == (uint)Key.KP_Enter || args.Keyval == (uint)Key.Return)
+                if (args.Keyval == Gdk.Constants.KEY_KP_Enter || args.Keyval == Gdk.Constants.KEY_Return)
                     OnLogIn(buttonAuth, new());
             };
 

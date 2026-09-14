@@ -126,7 +126,7 @@ public abstract partial class FormGeneral : Window
         entry.AddController(contrKey);
         contrKey.OnKeyReleased += (sender, args) =>
         {
-            if (args.Keyval == (uint)Gdk.Key.Return || args.Keyval == (uint)Gdk.Key.KP_Enter)
+            if (args.Keyval == Gdk.Constants.KEY_KP_Enter || args.Keyval == Gdk.Constants.KEY_Return)
                 ButtonFindClicked(entry.GetText());
         };
 

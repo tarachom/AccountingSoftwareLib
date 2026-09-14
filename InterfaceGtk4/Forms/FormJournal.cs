@@ -108,7 +108,7 @@ public abstract partial class FormJournal : Form
         contrKey.OnKeyReleased += async (sender, args) =>
         {
             //Оновлення сторінки
-            if (args.Keyval == (uint)Key.F5)
+            if (args.Keyval == Gdk.Constants.KEY_F5)
                 await Refresh();
         };
 

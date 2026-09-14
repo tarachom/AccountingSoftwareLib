@@ -65,7 +65,7 @@ public abstract partial class FormConfigurationSelection : Window
             EventControllerKey contr = EventControllerKey.New();
             contr.OnKeyReleased += (_, args) =>
             {
-                if (args.Keyval == (uint)Key.KP_Enter || args.Keyval == (uint)Key.Return)
+                if (args.Keyval == Gdk.Constants.KEY_KP_Enter || args.Keyval == Gdk.Constants.KEY_Return)
                     OnOpen(null, new());
             };
 

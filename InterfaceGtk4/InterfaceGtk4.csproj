@@ -11,9 +11,12 @@
 
   <ItemGroup>
     <PackageReference Include="GirCore.Gtk-4.0" Version="0.8.1" />
+    <!-- AI -->
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
+    <PackageReference Include="Google.GenAI" Version="1.21.0" />
     <!-- Читання конфігурації -->
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
