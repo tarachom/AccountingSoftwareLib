@@ -90,8 +90,7 @@ public abstract partial class FormConfigurator : Window
 
     protected abstract Kernel Kernel { get; set; }
 
-    protected virtual void Service(LinkButton link) { }
-    protected virtual void Settings(LinkButton link) { }
+    //protected virtual void Service(LinkButton link) { }
 
     protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
     protected virtual async Task PageConstant(string name, bool isNew = false) { }
@@ -101,7 +100,7 @@ public abstract partial class FormConfigurator : Window
     protected virtual async Task PageEnum(string name, bool isNew = false) { }
     protected virtual async Task PageRegisterInformation(string name, bool isNew = false) { }
     protected virtual async Task PageRegisterAccumulation(string name, bool isNew = false) { }
-
+    protected virtual async Task PageSettings() { }
     protected virtual async Task PageSaveConfiguration() { }
 
     #endregion
@@ -198,7 +197,7 @@ public abstract partial class FormConfigurator : Window
         scroll.SetPolicy(PolicyType.Never, PolicyType.Never);
         scroll.Child = vBox;
 
-        void Add(string name, Action<LinkButton> action, string image)
+        void Add(string name, string? fullname, Action<LinkButton> action, string image)
         {
             string path = Path.Combine(AppContext.BaseDirectory, $"images/{image}");
 
@@ -214,6 +213,8 @@ public abstract partial class FormConfigurator : Window
             vBoxItem.Append(hBoxPic);
 
             Label label = Label.New(name);
+            label.Halign = Align.Center;
+            label.Justify = Justification.Center;
             label.Wrap = true;
             label.WrapMode = Pango.WrapMode.Word;
             vBoxItem.Append(label);
@@ -222,7 +223,7 @@ public abstract partial class FormConfigurator : Window
             link.Child = vBoxItem;
             link.MarginStart = link.MarginEnd = link.MarginTop = link.MarginBottom = 5;
             link.AddCssClass("left-menu");
-            link.TooltipText = name;
+            link.TooltipText = fullname ?? name;
             link.OnActivateLink += (_, _) =>
             {
                 action.Invoke(link);
@@ -232,13 +233,14 @@ public abstract partial class FormConfigurator : Window
             vBox.Append(link);
         }
 
-        Add("Константи", Constants, "directory.png");
-        Add("Довідники", Directory, "directory.png");
-        Add("Документи", Documents, "documents.png");
-        Add("Перелічення", Enums, "directory.png");
-        Add("Журнали", Journals, "journal.png");
-        Add("Регістри інформації", RegistersInformation, "register.png");
-        Add("Регістри накопичення", RegistersAccumulation, "register.png");
+        Add("Константи", "Контанти", Constants, "directory.png");
+        Add("Довідники", "Довідники", Directory, "directory.png");
+        Add("Документи", "Документи", Documents, "documents.png");
+        Add("Перелічення", "Перелічення", Enums, "directory.png");
+        Add("Журнали", "Журнали", Journals, "journal.png");
+        Add("Регістри інформації", "Регістри інформації", RegistersInformation, "register.png");
+        Add("Регістри накопичення", "Регістри накопичення", RegistersAccumulation, "register.png");
+        Add("Налаштування", "Налаштування", async (_) => await PageSettings(), "preferences.png");
 
         hbox.Append(scroll);
     }
@@ -697,6 +699,7 @@ public abstract partial class FormConfigurator : Window
             }
         }).Fill();
     }
+
 
     #endregion
 

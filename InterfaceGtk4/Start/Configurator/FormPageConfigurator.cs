@@ -33,7 +33,7 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Form>]
 public abstract partial class FormPageConfigurator : Form
 {
-    public abstract Configuration Conf { get; }
+    //public abstract Configuration Conf { get; }
 
     /// <summary>
     /// 

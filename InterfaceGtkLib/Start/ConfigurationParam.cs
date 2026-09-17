@@ -129,7 +129,7 @@ public class ConfigurationParamCollection
             {
                 XmlElement nodeItemParam = xmlConfParamDocument.CreateElement("Param");
                 nodeItemParam.SetAttribute("name", itemParam.Key);
-                nodeItemParam.InnerText = itemParam.Value;
+                nodeItemParam.InnerText = itemParam.Value.Trim();
                 nodeOtherParam.AppendChild(nodeItemParam);
             }
         }
@@ -137,10 +137,8 @@ public class ConfigurationParamCollection
         xmlConfParamDocument.Save(pathToXML);
     }
 
-    public static ConfigurationParam? GetConfigurationParam(string key)
-    {
-        return ListConfigurationParam.Find(x => x.ConfigurationKey == key);
-    }
+    public static ConfigurationParam? GetConfigurationParam(string key) =>
+        ListConfigurationParam.Find(x => x.ConfigurationKey == key);
 
     public static bool RemoveConfigurationParam(string key)
     {
@@ -179,32 +177,31 @@ public class ConfigurationParam
     public string DataBasePassword { get; set; } = "";
     public string DataBaseBaseName { get; set; } = "";
     public bool Select { get; set; } = false;
-    public Dictionary<string, string> OtherParam { get; set; } = [];
+    public Dictionary<string, string> OtherParam { get; init; } = [];
 
-    public override string ToString()
+    public override string ToString() =>
+        string.IsNullOrEmpty(ConfigurationName) ? "[]" : ConfigurationName;
+
+    public static ConfigurationParam New() =>
+        new() { ConfigurationKey = Guid.CreateVersion7().ToString(), ConfigurationName = "* Новий" };
+
+    public ConfigurationParam Clone() => new()
     {
-        return string.IsNullOrWhiteSpace(ConfigurationName) ? "[]" : ConfigurationName;
-    }
+        ConfigurationKey = Guid.NewGuid().ToString(),
+        ConfigurationName = ConfigurationName + " - Копія",
+        DataBaseServer = DataBaseServer,
+        DataBaseLogin = DataBaseLogin,
+        DataBasePassword = DataBasePassword,
+        DataBaseBaseName = DataBaseBaseName,
+        DataBasePort = DataBasePort,
+        OtherParam = OtherParam
+    };
 
-    public static ConfigurationParam New()
-    {
-        return new ConfigurationParam() { ConfigurationKey = Guid.NewGuid().ToString(), ConfigurationName = "* Новий" };
-    }
+    #region OtherParamConst
 
-    public ConfigurationParam Clone()
-    {
-        ConfigurationParam configurationParam = new()
-        {
-            ConfigurationKey = Guid.NewGuid().ToString(),
-            ConfigurationName = ConfigurationName + " - Копія",
-            DataBaseServer = DataBaseServer,
-            DataBaseLogin = DataBaseLogin,
-            DataBasePassword = DataBasePassword,
-            DataBaseBaseName = DataBaseBaseName,
-            DataBasePort = DataBasePort,
-            OtherParam = OtherParam
-        };
+    public const string IsGenerateCode = "IsGenerateCode";
+    public const string GenerateCodePath = "GenerateCodePath";
+    public const string CompileProgramPath = "CompileProgramPath";
 
-        return configurationParam;
-    }
+    #endregion
 }
