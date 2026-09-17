@@ -62,6 +62,7 @@ public static class FunctionForFileDialog
     /// </summary>
     /// <param name="filters">Фільтри</param>
     /// <param name="callBackSelect">Функція обробки вибору</param>
+    /// <param name="parent">Батьківське вікно</param>
     public static async Task SelectFile(List<FileFilter> filters, Func<string?, Task> callBackSelect, Window? parent)
     {
         if (Functions.CheckVersion(4, 10, 0) != null)
@@ -123,6 +124,7 @@ public static class FunctionForFileDialog
     /// </summary>
     /// <param name="filters">Фільтри</param>
     /// <param name="callBackSelect">Функція обробки вибору</param>
+    /// <param name="parent">Батьківське вікно</param>
     public static async Task SelectFiles(List<FileFilter> filters, Func<string[]?, Task> callBackSelect, Window? parent)
     {
         if (Functions.CheckVersion(4, 10, 0) != null)
@@ -193,6 +195,69 @@ public static class FunctionForFileDialog
             }
             else
                 await callBackSelect.Invoke(null);
+        }
+    }
+
+    /// <summary>
+    /// Вибрати каталог
+    /// </summary>
+    /// <param name="callBackSelect">Функція обробки вибору</param>
+    /// <param name="parent">Батьківське вікно</param>
+    /// <param name="path">Початковий каталог (опціонально)</param>
+    public static async Task SelectFolder(Func<string?, Task> callBackSelect, Window? parent, string? path = null)
+    {
+        // Створюємо Gio.File для початкового шляху, якщо він заданий та існує
+        Gio.File? initialFolder = null;
+        if (!string.IsNullOrEmpty(path?.Trim()) && Directory.Exists(path))
+            initialFolder = Gio.FileHelper.NewForPath(path);
+
+        if (Functions.CheckVersion(4, 10, 0) != null)
+        {
+            //
+            // Версії нижче 4.10
+            //
+
+            FileChooserNative fileChooser = FileChooserNative.New("Виберіть каталог", parent, FileChooserAction.SelectFolder, "Вибрати", "Скасувати");
+
+            if (initialFolder != null)
+                fileChooser.SetCurrentFolder(initialFolder);
+
+            fileChooser.OnResponse += async (_, e) =>
+            {
+                string? selectedPath = null;
+                if (e.ResponseId == (int)ResponseType.Accept)
+                {
+                    Gio.File? file = fileChooser.GetFile();
+                    selectedPath = file?.GetPath();
+                }
+                await callBackSelect.Invoke(selectedPath);
+
+                fileChooser.Dispose();
+            };
+
+            fileChooser.Show();
+        }
+        else
+        {
+            //
+            // Версії 4.10 або більше
+            //
+
+            FileDialog dialog = FileDialog.New();
+            dialog.Title = "Виберіть каталог";
+
+            if (initialFolder != null)
+                dialog.InitialFolder = initialFolder;
+
+            try
+            {
+                Gio.File? file = await dialog.SelectFolderAsync(parent);
+                await callBackSelect.Invoke(file?.GetPath());
+            }
+            catch
+            {
+                await callBackSelect.Invoke(null);
+            }
         }
     }
 }
