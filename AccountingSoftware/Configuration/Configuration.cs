@@ -1516,9 +1516,10 @@ namespace AccountingSoftware
                 while (tabularListsNodes!.MoveNext())
                 {
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличного списку");
+                    string fullName = tabularListsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationTabularList ConfTabularList = new(name, desc);
+                    ConfigurationTabularList ConfTabularList = new(name, fullName, desc);
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     //Поля
@@ -1569,9 +1570,10 @@ namespace AccountingSoftware
                 while (tabularListsNodes!.MoveNext())
                 {
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличного списку");
+                    string fullName = tabularListsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationTabularList ConfTabularList = new(name, desc);
+                    ConfigurationTabularList ConfTabularList = new(name, fullName, desc);
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     XPathNodeIterator? tabularListFieldNodes = tabularListsNodes?.Current?.Select("Fields/Field");
@@ -2568,6 +2570,13 @@ namespace AccountingSoftware
                 nodeTabularListName.InnerText = tabularList.Key;
                 nodeTabularList.AppendChild(nodeTabularListName);
 
+                if (!string.IsNullOrEmpty(tabularList.Value.FullName))
+                {
+                    XmlElement nodeTabularListFullName = xmlConfDocument.CreateElement("FullName");
+                    nodeTabularListFullName.InnerText = tabularList.Value.FullName;
+                    nodeTabularList.AppendChild(nodeTabularListFullName);
+                }
+
                 if (!string.IsNullOrEmpty(tabularList.Value.Desc))
                 {
                     XmlElement nodeTabularListDesc = xmlConfDocument.CreateElement("Desc");
@@ -2694,6 +2703,13 @@ namespace AccountingSoftware
                     XmlElement nodeTabularListName = xmlConfDocument.CreateElement("Name");
                     nodeTabularListName.InnerText = tabularList.Key;
                     nodeTabularList.AppendChild(nodeTabularListName);
+
+                    if (!string.IsNullOrEmpty(tabularList.Value.FullName))
+                    {
+                        XmlElement nodeTabularListFullName = xmlConfDocument.CreateElement("FullName");
+                        nodeTabularListFullName.InnerText = tabularList.Value.FullName;
+                        nodeTabularList.AppendChild(nodeTabularListFullName);
+                    }
 
                     if (!string.IsNullOrEmpty(tabularList.Value.Desc))
                     {

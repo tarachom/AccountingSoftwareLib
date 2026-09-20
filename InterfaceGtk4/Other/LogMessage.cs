@@ -27,7 +27,6 @@ limitations under the License.
 
 */
 
-using System.Text;
 using Gtk;
 
 namespace InterfaceGtk4;
@@ -181,7 +180,7 @@ public partial class LogMessage : Box
             textTerminal.Buffer.PlaceCursor(iterEndText);
 
             string text = message + "\n";
-            textTerminal.Buffer.InsertAtCursor(text, Encoding.UTF8.GetBytes(text).Length);
+            textTerminal.Buffer.InsertAtCursor(text, -1);
 
             scrollTextTerminal.Vadjustment?.Value = scrollTextTerminal.Vadjustment.Upper;
         }

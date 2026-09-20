@@ -74,6 +74,7 @@ public abstract partial class FormConfigurator : Window
         SetChild(vBox);
     }
 
+    public GlobalConfigurationParam? GlobalConfigurationParam { get; set; }
     public ConfigurationParam? OpenConfigurationParam { get; set; }
     public NotebookFunction NotebookFunc { get; } = new();
 
@@ -89,9 +90,6 @@ public abstract partial class FormConfigurator : Window
     #region Virtual & Abstract Function
 
     protected abstract Kernel Kernel { get; set; }
-
-    //protected virtual void Service(LinkButton link) { }
-
     protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
     protected virtual async Task PageConstant(string name, bool isNew = false) { }
     protected virtual async Task PageDirectory(string name, bool isNew = false) { }
@@ -102,6 +100,7 @@ public abstract partial class FormConfigurator : Window
     protected virtual async Task PageRegisterAccumulation(string name, bool isNew = false) { }
     protected virtual async Task PageSettings() { }
     protected virtual async Task PageSaveConfiguration() { }
+    protected virtual async Task PageConfigurationInfo() { }
 
     #endregion
 
@@ -116,14 +115,14 @@ public abstract partial class FormConfigurator : Window
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
             Application.AddAction(action);
         }
-
-        /*
+        
         {
-            SimpleAction action = SimpleAction.New("settings_configuration", null);
-            action.OnActivate += async (_, _) => await PageSaveConfiguration();
+            Gio.SimpleAction action = Gio.SimpleAction.New("configuration_info", null);
+            action.OnActivate += async (_, _) => await PageConfigurationInfo();
             Application.AddAction(action);
         }
 
+        /*
         {
             SimpleAction action = SimpleAction.New("fulltext_search_configuration", null);
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
@@ -143,6 +142,7 @@ public abstract partial class FormConfigurator : Window
         {
             Gio.Menu sub = Gio.Menu.New();
             sub.Append("Зберегти конфігурацію", "app.save_configuration");
+            sub.Append("Параметри конфігураціЇ", "app.configuration_info");
 
             /*
             Menu section = Menu.New();

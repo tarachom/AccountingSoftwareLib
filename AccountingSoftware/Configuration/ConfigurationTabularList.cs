@@ -37,11 +37,13 @@ namespace AccountingSoftware
         /// Табличний список
         /// </summary>
         /// <param name="name">Назва</param>
+        /// <param name="fullname">Повна назва</param>
         /// <param name="desc">Опис</param>
         /// <param name="isTree">Це для дерева</param>
-        public ConfigurationTabularList(string name, string desc = "")
+        public ConfigurationTabularList(string name, string fullname = "", string desc = "")
         {
             Name = name;
+            FullName = fullname;
             Desc = desc;
         }
 
@@ -49,6 +51,11 @@ namespace AccountingSoftware
         /// Назва
         /// </summary>
         public string Name { get; set; } = "";
+
+        /// <summary>
+        /// Повна назва
+        /// </summary>
+        public string FullName { get; set; } = "";
 
         /// <summary>
         /// Опис
@@ -89,7 +96,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationTabularList Copy()
         {
-            ConfigurationTabularList newTabularList = new(Name, Desc);
+            ConfigurationTabularList newTabularList = new(Name, FullName, Desc);
 
             //Поля
             foreach (ConfigurationTabularListField item in Fields.Values)

@@ -82,9 +82,10 @@ public partial class DropDownTablePartCell : Box
 
     public static DropDownTablePartCell New() => NewWithProperties([]);
 
-    public static DropDownTablePartCell NewWithValues(Dictionary<string, string> values)
+    public static DropDownTablePartCell NewWithValues(Dictionary<string, string> values, bool allowEmpty = true)
     {
         DropDownTablePartCell dropDown = NewWithProperties([]);
+        dropDown.AllowEmpty = allowEmpty;
         dropDown.Fill(values);
 
         return dropDown;

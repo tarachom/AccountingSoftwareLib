@@ -28,7 +28,8 @@ namespace InterfaceGtkLib;
 
 public class ConfigurationParamCollection
 {
-    public static List<ConfigurationParam> ListConfigurationParam { get; set; } = [];
+    public static GlobalConfigurationParam GlobalParam { get; } = new();
+    public static List<ConfigurationParam> ListConfigurationParam { get; } = [];
     public static string PathToXML { get; set; } = "";
 
     public static void LoadConfigurationParamFromXML(string pathToXML)
@@ -40,6 +41,18 @@ public class ConfigurationParamCollection
             XPathDocument xPathDoc = new(pathToXML);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();
 
+            //Global
+            {
+                XPathNavigator? globalNode = xPathDocNavigator.SelectSingleNode("/root/Global");
+                if (globalNode != null)
+                {
+                    GlobalParam.AIModel = globalNode?.SelectSingleNode("AIModel")?.Value ?? "";
+                    GlobalParam.AIKey = globalNode?.SelectSingleNode("AIKey")?.Value ?? "";
+                    GlobalParam.AIStartOnRun = globalNode?.SelectSingleNode("AIStartOnRun")?.Value == "1";
+                }
+            }
+
+            //Configuration
             XPathNodeIterator? ConfigurationParamNodes = xPathDocNavigator.Select("/root/Configuration");
             while (ConfigurationParamNodes!.MoveNext())
             {
@@ -85,6 +98,31 @@ public class ConfigurationParamCollection
         XmlElement rootNode = xmlConfParamDocument.CreateElement("root");
         xmlConfParamDocument.AppendChild(rootNode);
 
+        //Global
+        {
+            XmlElement globalNode = xmlConfParamDocument.CreateElement("Global");
+            rootNode.AppendChild(globalNode);
+
+            {
+                XmlElement node = xmlConfParamDocument.CreateElement("AIModel");
+                node.InnerText = GlobalParam.AIModel;
+                globalNode.AppendChild(node);
+            }
+
+            {
+                XmlElement node = xmlConfParamDocument.CreateElement("AIKey");
+                node.InnerText = GlobalParam.AIKey;
+                globalNode.AppendChild(node);
+            }
+
+            {
+                XmlElement node = xmlConfParamDocument.CreateElement("AIStartOnRun");
+                node.InnerText = GlobalParam.AIStartOnRun ? "1" : "";
+                globalNode.AppendChild(node);
+            }
+        }
+
+        //Configuration
         foreach (ConfigurationParam ItemConfigurationParam in ListConfigurationParam)
         {
             XmlElement configurationNode = xmlConfParamDocument.CreateElement("Configuration");
@@ -167,6 +205,13 @@ public class ConfigurationParamCollection
     }
 }
 
+public class GlobalConfigurationParam
+{
+    public string AIModel { get; set; } = "";
+    public string AIKey { get; set; } = "";
+    public bool AIStartOnRun { get; set; }
+}
+
 public class ConfigurationParam
 {
     public string ConfigurationKey { get; set; } = "";
@@ -183,7 +228,11 @@ public class ConfigurationParam
         string.IsNullOrEmpty(ConfigurationName) ? "[]" : ConfigurationName;
 
     public static ConfigurationParam New() =>
-        new() { ConfigurationKey = Guid.CreateVersion7().ToString(), ConfigurationName = "* Новий" };
+        new()
+        {
+            ConfigurationKey = Guid.CreateVersion7().ToString(),
+            ConfigurationName = "* Новий"
+        };
 
     public ConfigurationParam Clone() => new()
     {

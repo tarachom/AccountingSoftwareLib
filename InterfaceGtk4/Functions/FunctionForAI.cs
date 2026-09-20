@@ -29,7 +29,6 @@ limitations under the License.
 
 using Google.GenAI;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Configuration;
 
 namespace InterfaceGtk4;
 
@@ -38,26 +37,16 @@ namespace InterfaceGtk4;
 /// </summary>
 public static class FunctionForAI
 {
-    public static IChatClient? ChatClient { get; private set; } = null;
+    public static IChatClient? Client { get; private set; } = null;
 
-    public static void CreateClient()
+    public static void CreateClient(string apiKey, string modelId)
     {
-        //Пошук шляху в конфігурації
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("AISettings.json", false, true)
+        Client?.Dispose();
+
+        Client = new Client(apiKey: apiKey)
+            .AsIChatClient(modelId)
+            .AsBuilder()
+            .UseFunctionInvocation()
             .Build();
-
-        string? ApiKey = configuration["ApiKey"];
-        string? ModelId = configuration["ModelId"];
-
-        if (!(string.IsNullOrEmpty(ApiKey) && string.IsNullOrEmpty(ModelId)))
-            ChatClient = new Client(apiKey: ApiKey)
-                .AsIChatClient(ModelId)
-                .AsBuilder()
-                .UseFunctionInvocation()
-                .Build();
-        else
-            throw new Exception("В файлі налаштувань AISettings.json не заповнені ключі [ApiKey або ModelId]. ChatClient не створено!");
     }
 }

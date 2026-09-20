@@ -99,6 +99,7 @@ public abstract partial class FormGeneral : Window
         SetChild(vBox);
     }
 
+    public GlobalConfigurationParam? GlobalConfigurationParam { get; set; }
     public ConfigurationParam? OpenConfigurationParam { get; set; } = null;
     public NotebookFunction NotebookFunc { get; } = new();
 

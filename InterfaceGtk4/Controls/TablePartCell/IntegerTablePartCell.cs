@@ -71,6 +71,11 @@ public partial class IntegerTablePartCell : Box
     /// </summary>
     public Action? OnСhanged { get; set; } = null;
 
+    /// <summary>
+    /// Додаткова валідація числа
+    /// </summary>
+    public Predicate<int>? Validate { get; set; } = null;
+
     void IsValid()
     {
         foreach (var cssclass in entry.CssClasses)
@@ -83,7 +88,9 @@ public partial class IntegerTablePartCell : Box
             return;
         }
 
-        if (int.TryParse(entry.Text_, out int value))
+        if (int.TryParse(entry.Text_, out int value) && 
+           //Або валідація не задана, або якщо задана тоді має виконуватися
+           (Validate == null || Validate != null && Validate.Invoke(value)))
         {
             value_ = value;
             OnСhanged?.Invoke();

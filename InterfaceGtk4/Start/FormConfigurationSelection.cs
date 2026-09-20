@@ -131,8 +131,8 @@ public abstract partial class FormConfigurationSelection : Window
     #region Virtual Functions
 
     public abstract TypeForm TypeOpenForm { get; set; }
-    public virtual Task<bool> OpenProgram(ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
-    public virtual Task<bool> OpenConfigurator(ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
+    public virtual Task<bool> OpenProgram(GlobalConfigurationParam globalConfigurationParam, ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
+    public virtual Task<bool> OpenConfigurator(GlobalConfigurationParam globalConfigurationParam, ConfigurationParam? openConfigurationParam) => Task.FromResult(true);
 
     #endregion
 
@@ -269,7 +269,7 @@ public abstract partial class FormConfigurationSelection : Window
                         window.TransientFor = this;
                         window.CallBack_ResponseOk = async () =>
                         {
-                            if (await OpenProgram(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
+                            if (await OpenProgram(ConfigurationParamCollection.GlobalParam, ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
                                 Close();
                         };
                         window.CallBack_ResponseCancel = ProgramKernel.Close;
@@ -324,7 +324,7 @@ public abstract partial class FormConfigurationSelection : Window
                     window.TransientFor = this;
                     window.CallBack_ResponseOk = async () =>
                     {
-                        if (await OpenConfigurator(ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
+                        if (await OpenConfigurator(ConfigurationParamCollection.GlobalParam, ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
                             Close();
                     };
                     window.CallBack_ResponseCancel = ConfiguratorKernel.Close;
