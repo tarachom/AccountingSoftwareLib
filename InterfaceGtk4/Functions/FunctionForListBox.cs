@@ -30,19 +30,34 @@ using Gtk;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// Функції для випадаючого списку
+/// Функції для списку
 /// </summary>
-public static class FunctionForComboBox
+public static class FunctionForListBox
 {
     /// <summary>
-    /// Заборона прокрутки списку
+    /// Повна очистка списку
     /// </summary>
-    /// <returns>EventControllerScroll</returns>
-    public static EventControllerScroll DisableScrolling()
+    /// <param name="listBox"></param>
+    public static void RemoveAll(ListBox listBox)
     {
-        EventControllerScroll controller = EventControllerScroll.New(EventControllerScrollFlags.BothAxes);
-        controller.OnScroll += (_, _) => true;
+        if (Functions.CheckVersion(4, 12, 0) != null)
+        {
+            //
+            //Версія нижче 4.12
+            //
 
-        return controller;
+            Widget? child = listBox.GetFirstChild();
+            while (child != null)
+            {
+                Widget? next = child.GetNextSibling();
+                listBox.Remove(child);
+                child = next;
+            }
+        }
+        else
+        {
+            //Метод для 4.12+
+            listBox.RemoveAll();
+        }
     }
 }

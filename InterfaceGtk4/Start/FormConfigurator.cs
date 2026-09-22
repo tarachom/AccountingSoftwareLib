@@ -92,7 +92,7 @@ public abstract partial class FormConfigurator : Window
     protected abstract Kernel Kernel { get; set; }
     protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
     protected virtual async Task PageConstant(string name, bool isNew = false) { }
-    protected virtual async Task PageDirectory(string name, bool isNew = false) { }
+    protected virtual async Task PageDirectory(ConfiguratorItemRow? item) { }
     protected virtual async Task PageDocument(string name, bool isNew = false) { }
     protected virtual async Task PageJournal(string name, bool isNew = false) { }
     protected virtual async Task PageEnum(string name, bool isNew = false) { }
@@ -336,7 +336,7 @@ public abstract partial class FormConfigurator : Window
             {
                 case "Directories":
                     {
-                        await PageDirectory(row.Name);
+                        await PageDirectory(row);
                         break;
                     }
                 case "Field":
@@ -362,7 +362,7 @@ public abstract partial class FormConfigurator : Window
         {
             popover.Hide();
 
-            await PageDirectory("", true);
+            await PageDirectory(null);
         }
 
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()

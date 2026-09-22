@@ -183,18 +183,8 @@ public abstract partial class FormConfigurationSelection : Window
 
     void FillListBoxDataBase(string? selectConfKey = null)
     {
-        //Очистка списку
-        listBox.RemoveAll();
-
-        /* old variant
-        Widget? child = listBox.GetFirstChild();
-        while (child != null)
-        {
-            Widget? next = child.GetNextSibling();
-            listBox.Remove(child);
-            child = next;
-        }
-        */
+        //Очистка
+        FunctionForListBox.RemoveAll(listBox);
 
         //Заповнення списку
         foreach (ConfigurationParam itemConfigurationParam in ConfigurationParamCollection.ListConfigurationParam!)
