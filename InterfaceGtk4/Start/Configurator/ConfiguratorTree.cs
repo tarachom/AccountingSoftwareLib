@@ -50,8 +50,14 @@ public abstract class ConfiguratorTree
     /// </summary>
     protected Gio.ListStore Store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
 
+    /// <summary>
+    /// Модель дерева
+    /// </summary>
     protected TreeListModel? TreeList { get; set; } = null;
 
+    /// <summary>
+    /// Таблиця
+    /// </summary>
     protected ColumnView Grid { get; } = ColumnView.NewWithProperties([]);
 
     /// <summary>

@@ -92,8 +92,10 @@ public abstract partial class FormConfigurator : Window
     protected abstract Kernel Kernel { get; set; }
     protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
     protected virtual async Task PageConstant(string name, bool isNew = false) { }
-    protected virtual async Task PageDirectory(ConfiguratorItemRow? item) { }
-    protected virtual async Task PageDocument(string name, bool isNew = false) { }
+    public virtual async Task PageDirectory(bool isNew, ConfigurationDirectories? directory = null) { }
+    public virtual async Task PageDocument(bool isNew, ConfigurationDocuments? document = null) { }
+    public virtual async Task PageField(bool isNew, Dictionary<string, ConfigurationField> fields, ConfigurationField? field = null, ConfiguratorItemOwner? owner = null) { }
+    public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
     protected virtual async Task PageJournal(string name, bool isNew = false) { }
     protected virtual async Task PageEnum(string name, bool isNew = false) { }
     protected virtual async Task PageRegisterInformation(string name, bool isNew = false) { }
@@ -115,7 +117,7 @@ public abstract partial class FormConfigurator : Window
             action.OnActivate += async (_, _) => await PageSaveConfiguration();
             Application.AddAction(action);
         }
-        
+
         {
             Gio.SimpleAction action = Gio.SimpleAction.New("configuration_info", null);
             action.OnActivate += async (_, _) => await PageConfigurationInfo();
@@ -280,9 +282,9 @@ public abstract partial class FormConfigurator : Window
 
                         break;
                     }
-                case "TablePartField":
+                case "TablePartField" when row.ParentObj is ConfigurationTablePart tablePart && row.Obj is ConfigurationField field:
                     {
-
+                        await PageField(false, tablePart.Fields, field, new(ConfiguratorItemOwnerType.TablePart, tablePart));
                         break;
                     }
                 default:
@@ -330,39 +332,43 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
-            popover.Hide();
-
+            bool hide = false;
             switch (row.Group)
             {
-                case "Directories":
+                case "Directories" when row.Obj is ConfigurationDirectories directory:
                     {
-                        await PageDirectory(row);
+                        await PageDirectory(false, directory);
+                        hide = true;
                         break;
                     }
-                case "Field":
+                case "Field" when row.ParentObj is ConfigurationDirectories directory && row.Obj is ConfigurationField field:
                     {
-
+                        await PageField(false, directory.Fields, field, new(ConfiguratorItemOwnerType.Directory, directory));
+                        hide = true;
                         break;
                     }
-                case "TablePart":
+                case "TablePart" when row.ParentObj is ConfigurationDirectories directory && row.Obj is ConfigurationTablePart tablePart:
                     {
-
+                        await PageTablePart(false, directory.TabularParts, tablePart, new(ConfiguratorItemOwnerType.Directory, directory));
+                        hide = true;
                         break;
                     }
-                case "TablePartField":
+                case "TablePartField" when row.ParentObj is ConfigurationTablePart tablePart && row.Obj is ConfigurationField field:
                     {
-
+                        await PageField(false, tablePart.Fields, field, new(ConfiguratorItemOwnerType.TablePart, tablePart));
+                        hide = true;
                         break;
                     }
                 default:
                     break;
             }
+
+            if (hide) popover.Hide();
         }
         async void Add()
         {
+            await PageDirectory(true);
             popover.Hide();
-
-            await PageDirectory(null);
         }
 
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
@@ -383,14 +389,11 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = (_) =>
             {
-                popover.Hide();
-
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Довідники", getbox());
+                popover.Hide();
             }
         }).Fill();
-
-
     }
 
     void Documents(LinkButton linkButton)
@@ -401,40 +404,44 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
-            popover.Hide();
-
+            bool hide = false;
             switch (row.Group)
             {
-                case "Documents":
+                case "Documents" when row.Obj is ConfigurationDocuments document:
                     {
-                        await PageDocument(row.Name);
+                        await PageDocument(false, document);
+                        hide = true;
                         break;
                     }
-                case "Field":
+                case "Field" when row.ParentObj is ConfigurationDocuments document && row.Obj is ConfigurationField field:
                     {
-
+                        await PageField(false, document.Fields, field, new(ConfiguratorItemOwnerType.Document, document));
+                        hide = true;
                         break;
                     }
-                case "TablePart":
+                case "TablePart" when row.ParentObj is ConfigurationDocuments document && row.Obj is ConfigurationTablePart tablePart:
                     {
-
+                        await PageTablePart(false, document.TabularParts, tablePart, new(ConfiguratorItemOwnerType.Document, document));
+                        hide = true;
                         break;
                     }
-                case "TablePartField":
+                case "TablePartField" when row.ParentObj is ConfigurationTablePart tablePart && row.Obj is ConfigurationField field:
                     {
-
+                        await PageField(false, tablePart.Fields, field, new(ConfiguratorItemOwnerType.TablePart, tablePart));
+                        hide = true;
                         break;
                     }
                 default:
                     break;
             }
+
+            if (hide) popover.Hide();
         }
 
         async void Add()
         {
+            await PageDocument(true);
             popover.Hide();
-
-            await PageDocument("", true);
         }
 
         Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
@@ -455,10 +462,9 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = (_) =>
             {
-                popover.Hide();
-
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Документи", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
@@ -509,10 +515,9 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = (_) =>
             {
-                popover.Hide();
-
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Журнали", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
@@ -560,10 +565,9 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = (_) =>
             {
-                popover.Hide();
-
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Перелічення", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
@@ -621,10 +625,9 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = (_) =>
             {
-                popover.Hide();
-
                 //Відкрити в новій вкладці
                 NotebookFunc.CreatePage("Регістри інформації", getbox());
+                popover.Hide();
             }
         }).Fill();
     }
@@ -692,10 +695,9 @@ public abstract partial class FormConfigurator : Window
             },
             OpenNewTab = _ =>
             {
-                popover.Hide();
-
                 //Відкрити окремо
                 NotebookFunc.CreatePage("Регістри накопичення", getbox());
+                popover.Hide();
             }
         }).Fill();
     }

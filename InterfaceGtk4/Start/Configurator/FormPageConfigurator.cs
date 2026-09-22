@@ -33,32 +33,35 @@ namespace InterfaceGtk4;
 [GObject.Subclass<Form>]
 public abstract partial class FormPageConfigurator : Form
 {
-    //public abstract Configuration Conf { get; }
-
     /// <summary>
-    /// 
+    /// Чи це новий?
     /// </summary>
     public bool IsNew { get; set; }
 
     /// <summary>
-    /// 
+    /// Назва сторінки
     /// </summary>
-    //public string? ConfName { get; set; } = null;
+    protected string PageName { get; set; } = "";
 
     /// <summary>
-    /// 
+    /// Заголовок сторінки
     /// </summary>
-    public string Caption { get; set; } = "";
+    public string Caption
+    {
+        get => PageName + " " + Caption_;
+        set => Caption_ = value;
+    }
+    string Caption_ = "";
+
+    /// <summary>
+    /// Власник
+    /// </summary>
+    public ConfiguratorItemOwner? Owner { get; set; } = null;
 
     /// <summary>
     /// Верхній блок для кнопок
     /// </summary>
     protected Box HBoxTop = New(Orientation.Horizontal, 0);
-
-    /// <summary>
-    /// Середній блок
-    /// </summary>
-    //protected Box HBoxBody = New(Orientation.Horizontal, 0);
 
     /// <summary>
     /// Панель з двох колонок для полів
