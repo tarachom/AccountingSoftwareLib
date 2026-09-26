@@ -13,7 +13,7 @@
     <PackageReference Include="GirCore.Gtk-4.0" Version="0.9.0-preview.1" />
     <!-- AI -->
     <PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
-    <PackageReference Include="Google.GenAI" Version="1.21.1" />
+    <PackageReference Include="Google.GenAI" Version="1.22.0" />
     <!-- Читання конфігурації -->
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />

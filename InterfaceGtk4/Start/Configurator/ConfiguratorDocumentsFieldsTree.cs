@@ -133,7 +133,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments doc, Action<
                         row.ParentObj = documents;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
-                        row.Desc = field.Pointer;
+                        row.Desc = field.Pointer + (field.ForeignKey ? "; fk" : "");
 
                         store.Append(row);
                     }
@@ -201,7 +201,7 @@ public class ConfiguratorDocumentsFieldsTree(ConfigurationDocuments doc, Action<
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
-                        row.Desc = field.Pointer;
+                        row.Desc = field.Pointer + (field.ForeignKey ? "; fk" : "");
 
                         store.Append(row);
                     }

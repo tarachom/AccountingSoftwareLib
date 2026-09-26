@@ -132,6 +132,15 @@ namespace AccountingSoftware
 
         #endregion
 
+        #region Додаткові поля які залежать від типу (pointer)
+
+        /// <summary>
+        /// Зовнішній ключ
+        /// </summary>
+        public bool ForeignKey { get; set; }
+
+        #endregion
+
         #region Додаткові поля які залежать від типу (composite_pointer)
 
         /// <summary>
@@ -165,6 +174,7 @@ namespace AccountingSoftware
             {
                 Multiline = Multiline,
                 AutomaticNumbering = AutomaticNumbering,
+                ForeignKey = ForeignKey,
                 CompositePointerNotUseDirectories = CompositePointerNotUseDirectories,
                 CompositePointerNotUseDocuments = CompositePointerNotUseDocuments,
                 CompositePointerAllowDirectories = [.. CompositePointerAllowDirectories],

@@ -371,6 +371,32 @@ public abstract partial class FormConfigurator : Window
             popover.Hide();
         }
 
+        async void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "Directories" when row.Obj is ConfigurationDirectories directory:
+                    {
+                        Kernel.Conf.Directories.Remove(directory.Name);
+                        break;
+                    }
+                /*
+                case "Field" when row.Obj is ConfigurationField field && row.ParentObj is ConfigurationDirectories directory:
+                    {
+                        directory.Fields.Remove(field.Name);
+                        break;
+                    }
+                case "TablePart" when row.Obj is ConfigurationTablePart tablePart && row.ParentObj is ConfigurationDirectories directory:
+                    {
+                        directory.TabularParts.Remove(tablePart.Name);
+                        break;
+                    }
+                */
+                default:
+                    break;
+            }
+        }
+
         Box getbox() => new ConfiguratorDirectoriesTree(Kernel.Conf, Activate, new()
         {
             Add = (_, _) => Add(),
@@ -385,7 +411,12 @@ public abstract partial class FormConfigurator : Window
             },
             Delete = (_, rows) =>
             {
-
+                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                {
+                    if (x == Message.YesNo.Yes)
+                        foreach (var row in rows)
+                            Delete(row);
+                });
             },
             OpenNewTab = (_) =>
             {

@@ -55,6 +55,11 @@ namespace AccountingSoftware
         public bool IsIndex { get; set; } = isIndex;
 
         /// <summary>
+        /// Потрібний зовнішній ключ
+        /// </summary>
+        public bool ForeignKey { get; set; }
+
+        /// <summary>
         /// Не нульове значення поля
         /// </summary>
         public bool IsNotNull { get; set; } = isNotNull;

@@ -25,39 +25,19 @@ limitations under the License.
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Для інформації про власника (для сторінок в конфігураторі)
 /// </summary>
-public class ConfiguratorItemOwner
+public class ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj = null)
 {
-    public ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj = null)
-    {
-        Group = group;
-        Obj = obj;
-    }
-
-    /*
-    public ConfiguratorItemOwner(ConfiguratorItemOwnerType group, string name, object? obj = null)
-    {
-        Group = group;
-        Name = name;
-        Obj = obj;
-    }
-    */
-
     /// <summary>
     /// Група до якої належить власник
     /// </summary>
-    public ConfiguratorItemOwnerType Group { get; set; }
-
-    /// <summary>
-    /// Назва власника
-    /// </summary>
-    //public string Name { get; set; } = "";
+    public ConfiguratorItemOwnerType Group { get; set; } = group;
 
     /// <summary>
     /// Об'єкт власник
     /// </summary>
-    public object? Obj { get; set; }
+    public object? Obj { get; set; } = obj;
 }
 
 public enum ConfiguratorItemOwnerType

@@ -21,102 +21,133 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-namespace AccountingSoftware
+namespace AccountingSoftware;
+
+/// <summary>
+/// Структура таблиць і стовбців бази даних
+/// </summary>
+public class ConfigurationInformationSchema
 {
-	/// <summary>
-	/// Структура таблиць і стовбців бази даних
-	/// </summary>
-	public class ConfigurationInformationSchema
-	{
-		/// <summary>
-		/// Таблиці
-		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = [];
-
-		/// <summary>
-		/// Дабавлення інформації в структуру
-		/// </summary>
-		/// <param name="table">Таблиця</param>
-		/// <param name="column">Стовпець</param>
-		/// <param name="dataType">Тип даних</param>
-		/// <param name="udtName">Тип даних</param>
-		public void Append(string table, string column, string dataType, string udtName)
-		{
-			if (!Tables.ContainsKey(table))
-				Tables.Add(table, new ConfigurationInformationSchema_Table(table));
-
-			Tables[table].Columns.Add(column, new ConfigurationInformationSchema_Column(column, dataType, udtName));
-		}
-
-		/// <summary>
-		/// Добавлення інформації про індекси
-		/// </summary>
-		/// <param name="table">Таблиця</param>
-		/// <param name="index">Індекс</param>
-		public void AppendIndex(string table, string index)
-		{
-			if (!Tables.ContainsKey(table))
-				Tables.Add(table, new ConfigurationInformationSchema_Table(table));
-
-			Tables[table].Indexes.Add(index, new ConfigurationInformationSchema_Index(index));
-		}
-	}
+    /// <summary>
+    /// Таблиці
+    /// </summary>
+    public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = [];
 
     /// <summary>
-    /// Таблиця
+    /// Дабавлення інформації в структуру
     /// </summary>
-    /// <param name="tableName">Назва таблиці</param>
-    public class ConfigurationInformationSchema_Table(string tableName)
-    {
-        /// <summary>
-        /// Назва таблиці
-        /// </summary>
-        public string TableName { get; set; } = tableName;
-
-        /// <summary>
-        /// Стовпці
-        /// </summary>
-        public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = [];
-
-		/// <summary>
-		/// Індекси
-		/// </summary>
-		public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = [];
-	}
-
-    /// <summary>
-    /// Стовпчик
-    /// </summary>
-    /// <param name="columnName">Назва стовпця</param>
+    /// <param name="table">Таблиця</param>
+    /// <param name="column">Стовпець</param>
     /// <param name="dataType">Тип даних</param>
     /// <param name="udtName">Тип даних</param>
-    public class ConfigurationInformationSchema_Column(string columnName, string dataType, string udtName)
+    public void Append(string table, string column, string dataType, string udtName)
     {
-        /// <summary>
-        /// Назва стовпця
-        /// </summary>
-        public string ColumnName { get; set; } = columnName;
+        if (!Tables.ContainsKey(table))
+            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
 
-        /// <summary>
-        /// Тип даних
-        /// </summary>
-        public string DataType { get; set; } = dataType;
-
-        /// <summary>
-        /// Тип даних
-        /// </summary>
-        public string UdtName { get; set; } = udtName;
+        Tables[table].Columns.Add(column, new(column, dataType, udtName));
     }
 
     /// <summary>
-    /// Індекс
+    /// Добавлення інформації про індекси
     /// </summary>
-    /// <param name="indexName"></param>
-    public class ConfigurationInformationSchema_Index(string indexName)
+    /// <param name="table">Таблиця</param>
+    /// <param name="index">Індекс</param>
+    public void AppendIndex(string table, string index)
     {
-        /// <summary>
-        /// Назва індексу
-        /// </summary>
-        public string IndexName { get; set; } = indexName;
+        if (!Tables.ContainsKey(table))
+            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
+
+        Tables[table].Indexes.Add(index, new(index));
     }
+
+    public void AppendConstraints(string table, string column, string constraint, string toTable)
+    {
+        if (!Tables.ContainsKey(table))
+            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
+
+        Tables[table].Constraints.Add(constraint, new(column, constraint, toTable));
+    }
+}
+
+/// <summary>
+/// Таблиця
+/// </summary>
+/// <param name="tableName">Назва таблиці</param>
+public class ConfigurationInformationSchema_Table(string tableName)
+{
+    /// <summary>
+    /// Назва таблиці
+    /// </summary>
+    public string TableName { get; set; } = tableName;
+
+    /// <summary>
+    /// Стовпці
+    /// </summary>
+    public Dictionary<string, ConfigurationInformationSchema_Column> Columns { get; } = [];
+
+    /// <summary>
+    /// Індекси
+    /// </summary>
+    public Dictionary<string, ConfigurationInformationSchema_Index> Indexes { get; } = [];
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Dictionary<string, ConfigurationInformationSchema_Constraints> Constraints { get; } = [];
+}
+
+/// <summary>
+/// Стовпчик
+/// </summary>
+/// <param name="columnName">Назва стовпця</param>
+/// <param name="dataType">Тип даних</param>
+/// <param name="udtName">Тип даних</param>
+public class ConfigurationInformationSchema_Column(string columnName, string dataType, string udtName)
+{
+    /// <summary>
+    /// Назва стовпця
+    /// </summary>
+    public string ColumnName { get; set; } = columnName;
+
+    /// <summary>
+    /// Тип даних
+    /// </summary>
+    public string DataType { get; set; } = dataType;
+
+    /// <summary>
+    /// Тип даних
+    /// </summary>
+    public string UdtName { get; set; } = udtName;
+}
+
+/// <summary>
+/// Індекс
+/// </summary>
+/// <param name="indexName"></param>
+public class ConfigurationInformationSchema_Index(string indexName)
+{
+    /// <summary>
+    /// Назва індексу
+    /// </summary>
+    public string IndexName { get; set; } = indexName;
+}
+
+
+public class ConfigurationInformationSchema_Constraints(string column, string constraint, string toTable)
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Column { get; set; } = column;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ConstraintName { get; set; } = constraint;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ToTable { get; set; } = toTable;
 }

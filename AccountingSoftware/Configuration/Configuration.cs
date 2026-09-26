@@ -1433,6 +1433,10 @@ namespace AccountingSoftware
                     {
                         ConfObjectField.AutomaticNumbering = (fieldNodes.Current?.SelectSingleNode("AutomaticNumbering")?.Value ?? "") == "1";
                     }
+                    else if (type == "pointer")
+                    {
+                        ConfObjectField.ForeignKey = (fieldNodes.Current?.SelectSingleNode("ForeignKey")?.Value ?? "") == "1";
+                    }
                     else if (type == "composite_pointer")
                     {
                         //Не використовувати довідники
@@ -2277,10 +2281,6 @@ namespace AccountingSoftware
                     nodeDirectoryParentField.InnerText = ConfDirectory.Value.ParentField_Hierarchical;
                     nodeDirectory.AppendChild(nodeDirectoryParentField);
 
-                    //XmlElement nodeDirectoryIconTree = xmlConfDocument.CreateElement("IconTree");
-                    //nodeDirectoryIconTree.InnerText = ConfDirectory.Value.IconTree_Hierarchical;
-                    //nodeDirectory.AppendChild(nodeDirectoryIconTree);
-
                     XmlElement nodeDirectoryAllowedContent = xmlConfDocument.CreateElement("AllowedContent");
                     nodeDirectoryAllowedContent.InnerText = ConfDirectory.Value.AllowedContent_Hierarchical == 0 ?
                         ConfigurationDirectories.HierarchicalContentType.Folders.ToString() :
@@ -2309,9 +2309,9 @@ namespace AccountingSoftware
 
                 SavePredefinedFields(ConfigurationDirectories.GetPredefinedFields(), xmlConfDocument, nodeDirectory);
 
-                SaveFields(ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
+                SaveFields(Conf, ConfDirectory.Value.Fields, xmlConfDocument, nodeDirectory, "Directory");
 
-                SaveTabularParts(Conf, ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory);
+                SaveTabularParts(Conf, ConfDirectory.Value.TabularParts, xmlConfDocument, nodeDirectory, ConfDirectory.Value.Table);
 
                 SaveTabularList(ConfDirectory.Value.Fields, ConfDirectory.Value.TabularList, xmlConfDocument, nodeDirectory);
 
@@ -2327,7 +2327,8 @@ namespace AccountingSoftware
         /// <param name="predefinedFields">Масив полів</param>
         /// <param name="xmlConfDocument">документ</param>
         /// <param name="rootNode">Корінна вітка</param>
-        private static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode)
+        /// <param name="parentTable">Таблиця власника</param>
+        private static void SavePredefinedFields(ConfigurationPredefinedField[] predefinedFields, XmlDocument xmlConfDocument, XmlElement rootNode, string? parentTable = null)
         {
             /*
             Попередньо визначені поля
@@ -2361,6 +2362,17 @@ namespace AccountingSoftware
                 nodePredefinedFieldIsIndex.InnerText = predefinedField.IsIndex ? "1" : "0";
                 nodePredefinedField.AppendChild(nodePredefinedFieldIsIndex);
 
+                if (predefinedField.ForeignKey && parentTable != null)
+                {
+                    XmlElement nodeFieldForeignKey = xmlConfDocument.CreateElement("ForeignKey");
+                    nodeFieldForeignKey.InnerText = predefinedField.ForeignKey ? "1" : "0";
+                    nodePredefinedField.AppendChild(nodeFieldForeignKey);
+
+                    XmlElement nodeFieldReferences = xmlConfDocument.CreateElement("References");
+                    nodeFieldReferences.InnerText = parentTable;
+                    nodePredefinedField.AppendChild(nodeFieldReferences);
+                }
+
                 XmlElement nodePredefinedFieldIsNotNull = xmlConfDocument.CreateElement("IsNotNull");
                 nodePredefinedFieldIsNotNull.InnerText = predefinedField.IsNotNull ? "1" : "0";
                 nodePredefinedField.AppendChild(nodePredefinedFieldIsNotNull);
@@ -2374,7 +2386,7 @@ namespace AccountingSoftware
         /// <param name="xmlConfDocument">Документ</param>
         /// <param name="rootNode">Корінна вітка</param>
         /// <param name="parentName">Власник полів</param>
-        public static void SaveFields(Dictionary<string, ConfigurationField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
+        public static void SaveFields(Configuration Conf, Dictionary<string, ConfigurationField> fields, XmlDocument xmlConfDocument, XmlElement rootNode, string parentName = "")
         {
             XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
             rootNode.AppendChild(nodeFields);
@@ -2453,6 +2465,28 @@ namespace AccountingSoftware
                     nodeFieldAutomaticNumbering.InnerText = field.Value.AutomaticNumbering ? "1" : "0";
                     nodeField.AppendChild(nodeFieldAutomaticNumbering);
                 }
+                else if (field.Value.Type == "pointer" && field.Value.ForeignKey)
+                {
+                    XmlElement nodeFieldForeignKey = xmlConfDocument.CreateElement("ForeignKey");
+                    nodeFieldForeignKey.InnerText = field.Value.ForeignKey ? "1" : "0";
+                    nodeField.AppendChild(nodeFieldForeignKey);
+
+                    //Для зовнішнього ключа шукаю таблицю посилання
+                    var (Result, PointerGroup, PointerType) = PointerParse(field.Value.Pointer, out _);
+                    if (Result)
+                    {
+                        string tableRef = PointerGroup switch
+                        {
+                            "Довідники" => Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? x) ? x.Table : "",
+                            "Документи" => Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? x) ? x.Table : "",
+                            _ => ""
+                        };
+
+                        XmlElement nodeFieldReferences = xmlConfDocument.CreateElement("References");
+                        nodeFieldReferences.InnerText = tableRef;
+                        nodeField.AppendChild(nodeFieldReferences);
+                    }
+                }
                 else if (field.Value.Type == "composite_pointer")
                 {
                     //Не використовувати довідники
@@ -2499,7 +2533,7 @@ namespace AccountingSoftware
         /// <param name="tabularParts">Колекція табличних частин</param>
         /// <param name="xmlConfDocument">Документ</param>
         /// <param name="rootNode">Корінна вітка</param>
-        public static void SaveTabularParts(Configuration Conf, Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode)
+        public static void SaveTabularParts(Configuration Conf, Dictionary<string, ConfigurationTablePart> tabularParts, XmlDocument xmlConfDocument, XmlElement rootNode, string? parentTable = null)
         {
             XmlElement nodeTabularParts = xmlConfDocument.CreateElement("TabularParts");
             rootNode.AppendChild(nodeTabularParts);
@@ -2532,9 +2566,9 @@ namespace AccountingSoftware
                 nodeVersionsHistory.InnerText = tablePart.Value.VersionsHistory ? "1" : "0";
                 nodeTablePart.AppendChild(nodeVersionsHistory);
 
-                SavePredefinedFields(ConfigurationTablePart.GetPredefinedFields(), xmlConfDocument, nodeTablePart);
+                SavePredefinedFields(ConfigurationTablePart.GetPredefinedFields(), xmlConfDocument, nodeTablePart, parentTable);
 
-                SaveFields(tablePart.Value.Fields, xmlConfDocument, nodeTablePart, "TablePart");
+                SaveFields(Conf, tablePart.Value.Fields, xmlConfDocument, nodeTablePart, "TablePart");
 
                 SaveTabularList(tablePart.Value.Fields, tablePart.Value.TabularList, xmlConfDocument, nodeTablePart);
 
@@ -3324,9 +3358,9 @@ namespace AccountingSoftware
 
                 SavePredefinedFields(ConfigurationDocuments.GetPredefinedFields(), xmlConfDocument, nodeDocument);
 
-                SaveFields(ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
+                SaveFields(Conf, ConfDocument.Value.Fields, xmlConfDocument, nodeDocument, "Document");
 
-                SaveTabularParts(Conf, ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument);
+                SaveTabularParts(Conf, ConfDocument.Value.TabularParts, xmlConfDocument, nodeDocument, ConfDocument.Value.Table);
 
                 SaveTabularList(ConfDocument.Value.Fields, ConfDocument.Value.TabularList, xmlConfDocument, nodeDocument);
 
@@ -3381,17 +3415,17 @@ namespace AccountingSoftware
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);
 
-                SaveFields(ConfRegisterInfo.Value.DimensionFields, xmlConfDocument, nodeDimensionFields, "RegisterInformation");
+                SaveFields(Conf, ConfRegisterInfo.Value.DimensionFields, xmlConfDocument, nodeDimensionFields, "RegisterInformation");
 
                 XmlElement nodeResourcesFields = xmlConfDocument.CreateElement("ResourcesFields");
                 nodeRegister.AppendChild(nodeResourcesFields);
 
-                SaveFields(ConfRegisterInfo.Value.ResourcesFields, xmlConfDocument, nodeResourcesFields, "RegisterInformation");
+                SaveFields(Conf, ConfRegisterInfo.Value.ResourcesFields, xmlConfDocument, nodeResourcesFields, "RegisterInformation");
 
                 XmlElement nodePropertyFields = xmlConfDocument.CreateElement("PropertyFields");
                 nodeRegister.AppendChild(nodePropertyFields);
 
-                SaveFields(ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
+                SaveFields(Conf, ConfRegisterInfo.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterInformation");
 
                 Dictionary<string, ConfigurationField> AllFields = CombineAllFieldForRegister(
                     ConfRegisterInfo.Value.DimensionFields.Values,
@@ -3467,22 +3501,22 @@ namespace AccountingSoftware
                 nodeRegisterNoSummary.InnerText = ConfRegisterAccml.Value.NoSummary ? "1" : "0";
                 nodeRegister.AppendChild(nodeRegisterNoSummary);
 
-                SavePredefinedFields(ConfigurationRegistersAccumulation.GetPredefinedFields(), xmlConfDocument, nodeRegister);
+                SavePredefinedFields(ConfigurationRegistersAccumulation.GetPredefinedFields(), xmlConfDocument, nodeRegister, ConfRegisterAccml.Value.Table);
 
                 XmlElement nodeDimensionFields = xmlConfDocument.CreateElement("DimensionFields");
                 nodeRegister.AppendChild(nodeDimensionFields);
 
-                SaveFields(ConfRegisterAccml.Value.DimensionFields, xmlConfDocument, nodeDimensionFields, "RegisterAccumulation");
+                SaveFields(Conf, ConfRegisterAccml.Value.DimensionFields, xmlConfDocument, nodeDimensionFields, "RegisterAccumulation");
 
                 XmlElement nodeResourcesFields = xmlConfDocument.CreateElement("ResourcesFields");
                 nodeRegister.AppendChild(nodeResourcesFields);
 
-                SaveFields(ConfRegisterAccml.Value.ResourcesFields, xmlConfDocument, nodeResourcesFields, "RegisterAccumulation");
+                SaveFields(Conf, ConfRegisterAccml.Value.ResourcesFields, xmlConfDocument, nodeResourcesFields, "RegisterAccumulation");
 
                 XmlElement nodePropertyFields = xmlConfDocument.CreateElement("PropertyFields");
                 nodeRegister.AppendChild(nodePropertyFields);
 
-                SaveFields(ConfRegisterAccml.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterAccumulation");
+                SaveFields(Conf, ConfRegisterAccml.Value.PropertyFields, xmlConfDocument, nodePropertyFields, "RegisterAccumulation");
 
                 SaveAllowDocumentSpendRegisterAccumulation(ConfRegisterAccml.Value.AllowDocumentSpend, xmlConfDocument, nodeRegister);
 
@@ -3595,6 +3629,25 @@ namespace AccountingSoftware
                     XmlElement nodeInformationSchemaIndexName = xmlComparisonDocument.CreateElement("Name");
                     nodeInformationSchemaIndexName.InnerText = informationSchemaIndex.Value.IndexName;
                     nodeInformationSchemaIndex.AppendChild(nodeInformationSchemaIndexName);
+                }
+
+                //Зовнішні ключі
+                foreach (KeyValuePair<string, ConfigurationInformationSchema_Constraints> informationSchemaConstraints in informationSchemaTable.Value.Constraints)
+                {
+                    XmlElement nodeInformationSchemaConstraint = xmlComparisonDocument.CreateElement("Constraint");
+                    nodeInformationSchemaTable.AppendChild(nodeInformationSchemaConstraint);
+
+                    XmlElement nodeInformationSchemaColumn = xmlComparisonDocument.CreateElement("Column");
+                    nodeInformationSchemaColumn.InnerText = informationSchemaConstraints.Value.Column;
+                    nodeInformationSchemaConstraint.AppendChild(nodeInformationSchemaColumn);
+
+                    XmlElement nodeInformationSchemaName = xmlComparisonDocument.CreateElement("Name");
+                    nodeInformationSchemaName.InnerText = informationSchemaConstraints.Value.ConstraintName;
+                    nodeInformationSchemaConstraint.AppendChild(nodeInformationSchemaName);
+
+                    XmlElement nodeInformationSchemaToTable = xmlComparisonDocument.CreateElement("ToTable");
+                    nodeInformationSchemaToTable.InnerText = informationSchemaConstraints.Value.ToTable;
+                    nodeInformationSchemaConstraint.AppendChild(nodeInformationSchemaToTable);
                 }
             }
 
@@ -3868,24 +3921,40 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="pathToXML">Шлях до файлу який згенерувала функція ComparisonAnalizeGeneration</param>
         /// <returns>Список SQL запитів</returns>
-        public static List<string> ListComparisonSql(string pathToXML)
+        public static (List<string> Info, List<string> Sql) ListComparisonSql(string pathToXML)
         {
+            List<string> infoList = [];
             List<string> slqList = [];
 
             XPathDocument xPathDoc = new(pathToXML);
             XPathNavigator xPathDocNavigator = xPathDoc.CreateNavigator();
 
-            XPathNodeIterator? sqlNodes = xPathDocNavigator.Select("/root/sql");
-            if (sqlNodes != null)
-                while (sqlNodes.MoveNext())
+            //Інформація
+            XPathNodeIterator? infoNodes = xPathDocNavigator.Select("/root/info");
+            if (infoNodes != null)
+                while (infoNodes.MoveNext())
                 {
-                    string sqlText = sqlNodes.Current?.Value ?? "";
-
-                    if (!string.IsNullOrEmpty(sqlText))
-                        slqList.Add(sqlText);
+                    string infoText = infoNodes.Current?.Value ?? "";
+                    if (!string.IsNullOrEmpty(infoText))
+                        infoList.Add(infoText);
                 }
 
-            return slqList;
+            //Запити
+            string[] keys = ["sql", "sql_end"];
+            foreach (var key in keys)
+            {
+                XPathNodeIterator? nodes = xPathDocNavigator.Select($"/root/{key}");
+                if (nodes != null)
+                    while (nodes.MoveNext())
+                    {
+                        string sqlText = nodes.Current?.Value ?? "";
+
+                        if (!string.IsNullOrEmpty(sqlText))
+                            slqList.Add(sqlText);
+                    }
+            }
+
+            return (infoList, slqList);
         }
 
         #endregion

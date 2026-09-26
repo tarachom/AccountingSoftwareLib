@@ -246,6 +246,7 @@ namespace AccountingSoftware
             if (Where.Count > 0)
             {
                 int count = 0;
+                string? group = null;
 
                 query += "\nWHERE";
 
@@ -253,10 +254,24 @@ namespace AccountingSoftware
                 {
                     count++;
 
+                    //Якщо група була відкрита і змінилася тоді закриваємо
+                    if (group != null && group != field.Group)
+                    {
+                        group = null;
+                        query += " )";
+                    }
+
                     if (count > 1)
                     {
                         //Стандартно відбори об'єднуються AND
                         query += " " + (field.ComparisonPreceding != Comparison.Empty ? field.ComparisonPreceding : Comparison.AND);
+                    }
+
+                    //Якщо група задана та Раніше група не була відкрита, тоді відкриваємо
+                    if (!string.IsNullOrEmpty(field.Group) && group == null)
+                    {
+                        group = field.Group;
+                        query += " (";
                     }
 
                     //FuncToField && FuncToField_Param1
@@ -295,12 +310,19 @@ namespace AccountingSoftware
                             }
 
                         case Comparison.ISNULL:
+                            {
+                                if (field.UsingSQLToValue)
+                                    query += " IS NULL";
+                                else
+                                    query += " /* For ISNULL set UsingSQLToValue = true */ ";
+                                break;
+                            }
                         case Comparison.NOTNULL:
                             {
                                 if (field.UsingSQLToValue)
-                                    query += " " + field.Comparison;
+                                    query += " IS NOT NULL";
                                 else
-                                    query += " /* For ISNULL and NOTNULL set UsingSQLToValue = true */ ";
+                                    query += " /* For NOTNULL set UsingSQLToValue = true */ ";
                                 break;
                             }
                         case Comparison.BETWEEN:
@@ -328,13 +350,13 @@ namespace AccountingSoftware
                                 break;
                             }
                         //case Comparison.QT_EQ:
-                        case Comparison.GT_EQ:
+                        //case Comparison.GT_EQ:
                         case Comparison.GE:
                             {
                                 query += " >= " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
                                 break;
                             }
-                        case Comparison.LT_EQ:
+                        //case Comparison.LT_EQ:
                         case Comparison.LE:
                             {
                                 query += " <= " + (field.UsingSQLToValue ? field.Value : "@" + field.Alias);
@@ -347,6 +369,12 @@ namespace AccountingSoftware
                                 break;
                             }
                     }
+                }
+
+                if (group != null)
+                {
+                    group = null;
+                    query += " )";
                 }
             }
 
@@ -501,12 +529,12 @@ UNION ALL
         /// <param name="value">Значення поля</param>
         /// <param name="usingSQLToValue">Використання запиту SQL в якості значення поля</param>
         /// <param name="comparisonNext">Звязок між блоками відборів</param>
-        public Where(string name, Comparison comparison, object value, bool usingSQLToValue = false)
+        public Where(string name, Comparison comparison, object? value, bool usingSQLToValue = false)
         {
             ComparisonPreceding = Comparison.Empty;
             Name = name;
             Comparison = comparison;
-            Value = value;
+            Value = value ?? new();
             UsingSQLToValue = usingSQLToValue;
 
             Init();
@@ -520,12 +548,12 @@ UNION ALL
         /// <param name="comparison">Тип порівняння</param>
         /// <param name="value">Значення поля</param>
         /// <param name="usingSQLToValue">Використання запиту SQL в якості значення поля</param>
-        public Where(Comparison comparisonPreceding, string name, Comparison comparison, object value, bool usingSQLToValue = false)
+        public Where(Comparison comparisonPreceding, string name, Comparison comparison, object? value, bool usingSQLToValue = false)
         {
             ComparisonPreceding = comparisonPreceding;
             Name = name;
             Comparison = comparison;
-            Value = value;
+            Value = value ?? new();
             UsingSQLToValue = usingSQLToValue;
 
             Init();
@@ -549,7 +577,7 @@ UNION ALL
         /// <summary>
         /// Значення поля
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get; set; } = new();
 
         /// <summary>
         /// Тип порівняння
@@ -575,6 +603,9 @@ UNION ALL
         /// Перший параметр для функції
         /// </summary>
         public string FuncToField_Param1 { get; set; } = "";
+
+
+        public string? Group { get; set; } = null;
     }
 
     /// <summary>
@@ -733,7 +764,7 @@ UNION ALL
         /// Більше або рівне. 
         /// Не бажано використовувати, правильно буде GE
         /// </summary>
-        GT_EQ,
+        //GT_EQ,
 
         /// <summary>
         /// Більше або рівне (Greater Than or Equal to) 
@@ -744,7 +775,7 @@ UNION ALL
         /// Менше або рівне.
         /// Не бажано використовувати, правильно буде LE
         /// </summary>
-        LT_EQ,
+        //LT_EQ,
 
         /// <summary>
         /// Менше або рівне (Less Than or Equal to)

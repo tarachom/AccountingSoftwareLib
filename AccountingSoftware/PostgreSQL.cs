@@ -2726,7 +2726,8 @@ FROM
                 command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
-                    command.Parameters.AddWithValue(field.Alias, field.Value);
+                    if (!field.UsingSQLToValue)
+                        command.Parameters.AddWithValue(field.Alias, field.Value);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 record.Result = reader.HasRows;
@@ -2774,7 +2775,7 @@ FROM
         /// <returns></returns>
         public async Task<SplitSelectToPages_Record> SplitSelectToPagesForJournal(string query, Dictionary<string, object> paramQuery, int pageSize = 1000)
         {
-            SplitSelectToPages_Record record = new SplitSelectToPages_Record() { PageSize = pageSize };
+            SplitSelectToPages_Record record = new() { PageSize = pageSize };
 
             if (DataSource != null)
             {
@@ -2922,7 +2923,8 @@ FROM
                 command.CommandTimeout = DefaultCommandTimeout;
 
                 foreach (Where field in QuerySelect.Where)
-                    command.Parameters.AddWithValue(field.Alias, field.Value);
+                    if (!field.UsingSQLToValue)
+                        command.Parameters.AddWithValue(field.Alias, field.Value);
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -3952,39 +3954,98 @@ FROM
                 // Таблиці та стовпчики
                 //
 
-                string query = "SELECT table_name, column_name, data_type, udt_name " +
-                               "FROM information_schema.columns " +
-                               "WHERE table_schema = 'public' " +
-                               "ORDER BY table_name, column_name";
+                string query = @"
+SELECT 
+    table_name, 
+    column_name, 
+    data_type, 
+    udt_name 
+FROM 
+    information_schema.columns 
+WHERE 
+    table_schema = 'public' 
+ORDER BY 
+    table_name, 
+    column_name
+";
 
                 NpgsqlCommand command = DataSource.CreateCommand(query);
                 command.CommandTimeout = DefaultCommandTimeout;
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
-                {
-                    informationSchema.Append(
+                    informationSchema.Append
+                    (
                         reader["table_name"].ToString()?.ToLower() ?? "",
                         reader["column_name"].ToString()?.ToLower() ?? "",
                         reader["data_type"].ToString() ?? "",
-                        reader["udt_name"].ToString() ?? "");
-                }
+                        reader["udt_name"].ToString() ?? ""
+                    );
                 await reader.CloseAsync();
 
                 //
                 // Індекси
                 //
 
-                query = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public' ORDER BY indexname";
+                query = @"
+SELECT 
+    tablename, 
+    indexname 
+FROM 
+    pg_indexes 
+WHERE 
+    schemaname = 'public' 
+ORDER BY 
+    indexname
+";
 
                 command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
                 reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
-                {
-                    informationSchema.AppendIndex(
+                    informationSchema.AppendIndex
+                    (
                         reader["tablename"].ToString()?.ToLower() ?? "",
-                        reader["indexname"].ToString()?.ToLower() ?? "");
-                }
+                        reader["indexname"].ToString()?.ToLower() ?? ""
+                    );
+                await reader.CloseAsync();
+
+                //
+                // Зовнішні зв'язки
+                //
+
+                query = @"
+SELECT
+    tc.table_name AS table_name,
+    kcu.column_name AS column_name,
+    tc.constraint_name AS constraint_name,
+    ccu.table_name AS to_table
+FROM 
+    information_schema.table_constraints AS tc 
+
+    JOIN information_schema.key_column_usage AS kcu ON 
+        tc.constraint_name = kcu.constraint_name AND tc.table_schema = kcu.table_schema 
+
+    JOIN information_schema.constraint_column_usage AS ccu ON 
+        ccu.constraint_name = tc.constraint_name AND ccu.table_schema = tc.table_schema 
+WHERE 
+    tc.constraint_type = 'FOREIGN KEY' 
+    AND tc.table_schema = 'public' 
+ORDER BY 
+    tc.table_name
+";
+
+                command = DataSource.CreateCommand(query);
+                command.CommandTimeout = DefaultCommandTimeout;
+                reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    informationSchema.AppendConstraints
+                    (
+                        reader["table_name"].ToString()?.ToLower() ?? "",
+                        reader["column_name"].ToString()?.ToLower() ?? "",
+                        reader["constraint_name"].ToString()?.ToLower() ?? "",
+                        reader["to_table"].ToString()?.ToLower() ?? ""
+                    );
                 await reader.CloseAsync();
             }
 
