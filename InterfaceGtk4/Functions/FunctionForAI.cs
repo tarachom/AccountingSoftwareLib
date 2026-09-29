@@ -29,6 +29,7 @@ limitations under the License.
 
 using Google.GenAI;
 using Microsoft.Extensions.AI;
+using OllamaSharp;
 
 namespace InterfaceGtk4;
 
@@ -45,6 +46,16 @@ public static class FunctionForAI
 
         Client = new Client(apiKey: apiKey)
             .AsIChatClient(modelId)
+            .AsBuilder()
+            .UseFunctionInvocation()
+            .Build();
+    }
+
+    public static void CreateOlama(string uri, string modelId)
+    {
+        var ollamaApiClient = new OllamaApiClient(new Uri(uri), modelId);
+
+        Client = ((IChatClient)ollamaApiClient)
             .AsBuilder()
             .UseFunctionInvocation()
             .Build();

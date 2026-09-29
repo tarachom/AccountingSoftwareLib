@@ -94,7 +94,7 @@ public static class FunctionForFileDialog
         else
         {
             //
-            //Версії 4.10 або більше
+            //Версії 4.10+
             //
 
             FileDialog dialog = FileDialog.New();
@@ -166,7 +166,7 @@ public static class FunctionForFileDialog
         else
         {
             //
-            //Версії 4.10 або більше
+            //Версії 4.10+
             //
 
             FileDialog dialog = FileDialog.New();
@@ -240,7 +240,7 @@ public static class FunctionForFileDialog
         else
         {
             //
-            // Версії 4.10 або більше
+            // Версії 4.10+
             //
 
             FileDialog dialog = FileDialog.New();

@@ -475,6 +475,20 @@ public abstract partial class FormConfigurator : Window
             popover.Hide();
         }
 
+        async void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "Documents" when row.Obj is ConfigurationDocuments document:
+                    {
+                        Kernel.Conf.Documents.Remove(document.Name);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
         Box getbox() => new ConfiguratorDocumentsTree(Kernel.Conf, Activate, new()
         {
             Add = async (_, _) => Add(),
@@ -489,7 +503,12 @@ public abstract partial class FormConfigurator : Window
             },
             Delete = (_, rows) =>
             {
-
+                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                {
+                    if (x == Message.YesNo.Yes)
+                        foreach (var row in rows)
+                            Delete(row);
+                });
             },
             OpenNewTab = (_) =>
             {

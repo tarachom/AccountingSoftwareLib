@@ -37,7 +37,7 @@ namespace InterfaceGtk4;
 public class Message
 {
     /// <summary>
-    /// Внітрішня функція - створює базове діалогове вікно
+    /// Внутрішня функція - створює базове діалогове вікно
     /// </summary>
     /// <param name="win"></param>
     /// <param name="text"></param>
@@ -88,9 +88,10 @@ public class Message
     /// <summary>
     /// Повідомлення запит Так/Ні
     /// </summary>
-    /// <param name="pwin">Вікно власник</param>
-    /// <param name="message">Текст</param>
-    /// <returns>Так або Ні</returns>
+    /// <param name="win">Вікно власник</param>
+    /// <param name="text">Текст</param>
+    /// <param name="secondaryText">Текст</param>
+    /// <param name="callBackResponse">Функція зворотнього виклику</param>
     public static void Request(Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
     {
         MessageDialog message = Create(win, text, secondaryText);
