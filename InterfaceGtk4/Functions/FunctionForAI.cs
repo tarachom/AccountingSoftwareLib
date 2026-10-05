@@ -52,7 +52,8 @@ public static class FunctionForAI
         return Client != null;
     }
 
-    /*public static void CreateOlama(string uri, string modelId)
+    /*
+    public static void CreateOlama(string uri, string modelId)
     {
         var ollamaApiClient = new OllamaApiClient(new Uri(uri), modelId);
 
@@ -60,5 +61,6 @@ public static class FunctionForAI
             .AsBuilder()
             .UseFunctionInvocation()
             .Build();
-    }*/
+    }
+    */
 }

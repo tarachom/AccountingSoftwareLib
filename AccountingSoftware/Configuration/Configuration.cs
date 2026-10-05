@@ -3585,7 +3585,7 @@ namespace AccountingSoftware
         /// <param name="pathToSave">Шлях до файлу</param>
         public static void SaveInformationSchema(ConfigurationInformationSchema InformationSchema, string pathToSave)
         {
-            XmlDocument xmlComparisonDocument = new XmlDocument();
+            XmlDocument xmlComparisonDocument = new();
             xmlComparisonDocument.AppendChild(xmlComparisonDocument.CreateXmlDeclaration("1.0", "utf-8", ""));
 
             XmlElement nodeInformationSchema = xmlComparisonDocument.CreateElement("InformationSchema");

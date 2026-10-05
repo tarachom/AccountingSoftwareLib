@@ -34,40 +34,48 @@ public class ConfigurationInformationSchema
     public Dictionary<string, ConfigurationInformationSchema_Table> Tables { get; } = [];
 
     /// <summary>
+    /// Отримати або додати таблицю
+    /// </summary>
+    /// <param name="table">Назва таблиці</param>
+    /// <returns></returns>
+    ConfigurationInformationSchema_Table GetOrAddTable(string table)
+    {
+        if (!Tables.TryGetValue(table, out ConfigurationInformationSchema_Table? tableInfo))
+        {
+            tableInfo = new(table);
+            Tables.Add(table, tableInfo);
+        }
+
+        return tableInfo;
+    }
+
+    /// <summary>
     /// Дабавлення інформації в структуру
     /// </summary>
     /// <param name="table">Таблиця</param>
     /// <param name="column">Стовпець</param>
     /// <param name="dataType">Тип даних</param>
     /// <param name="udtName">Тип даних</param>
-    public void Append(string table, string column, string dataType, string udtName)
-    {
-        if (!Tables.ContainsKey(table))
-            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
-
-        Tables[table].Columns.Add(column, new(column, dataType, udtName));
-    }
+    public void Append(string table, string column, string dataType, string udtName) =>
+        GetOrAddTable(table).Columns.Add(column, new(column, dataType, udtName));
 
     /// <summary>
     /// Добавлення інформації про індекси
     /// </summary>
     /// <param name="table">Таблиця</param>
     /// <param name="index">Індекс</param>
-    public void AppendIndex(string table, string index)
-    {
-        if (!Tables.ContainsKey(table))
-            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
+    public void AppendIndex(string table, string index) =>
+        GetOrAddTable(table).Indexes.Add(index, new(index));
 
-        Tables[table].Indexes.Add(index, new(index));
-    }
-
-    public void AppendConstraints(string table, string column, string constraint, string toTable)
-    {
-        if (!Tables.ContainsKey(table))
-            Tables.Add(table, new ConfigurationInformationSchema_Table(table));
-
-        Tables[table].Constraints.Add(constraint, new(column, constraint, toTable));
-    }
+    /// <summary>
+    /// Добавлення інформації про зовнішні зв'язки
+    /// </summary>
+    /// <param name="table">Таблиця</param>
+    /// <param name="column">Стовпчик</param>
+    /// <param name="constraint">Зв'язок</param>
+    /// <param name="toTable">До таблиці</param>
+    public void AppendConstraints(string table, string column, string constraint, string toTable) =>
+        GetOrAddTable(table).Constraints.Add(constraint, new(column, constraint, toTable));
 }
 
 /// <summary>
@@ -133,21 +141,26 @@ public class ConfigurationInformationSchema_Index(string indexName)
     public string IndexName { get; set; } = indexName;
 }
 
-
+/// <summary>
+/// Зовнішній ключ
+/// </summary>
+/// <param name="column">Стовпчик</param>
+/// <param name="constraint">Зв'язок</param>
+/// <param name="toTable">До якої таблиці</param>
 public class ConfigurationInformationSchema_Constraints(string column, string constraint, string toTable)
 {
     /// <summary>
-    /// 
+    /// Стовпчик
     /// </summary>
     public string Column { get; set; } = column;
 
     /// <summary>
-    /// 
+    /// Зв'язок
     /// </summary>
     public string ConstraintName { get; set; } = constraint;
 
     /// <summary>
-    /// 
+    /// До якої таблиці
     /// </summary>
     public string ToTable { get; set; } = toTable;
 }

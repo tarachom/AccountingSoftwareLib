@@ -3946,7 +3946,7 @@ FROM
 
         public async Task<ConfigurationInformationSchema> SelectInformationSchema()
         {
-            ConfigurationInformationSchema informationSchema = new ConfigurationInformationSchema();
+            ConfigurationInformationSchema informationSchema = new();
 
             if (DataSource != null)
             {
