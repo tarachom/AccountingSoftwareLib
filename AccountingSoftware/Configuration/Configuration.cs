@@ -1605,6 +1605,7 @@ namespace AccountingSoftware
                 while (tableForm.MoveNext())
                 {
                     string? name = tableForm.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва форми");
+                    string fullName = tableForm.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string genCode = GetUnZipAndBase64TextFromNode(tableForm.Current?.SelectSingleNode("GeneratedCode"));
@@ -1614,7 +1615,7 @@ namespace AccountingSoftware
                     if (!Enum.TryParse(type, out ConfigurationForms.TypeForms typeForms))
                         typeForms = ConfigurationForms.TypeForms.None;
 
-                    ConfigurationForms form = new(name, desc, typeForms)
+                    ConfigurationForms form = new(name, fullName, desc, typeForms)
                     {
                         NotSaveToFile = notSaveToFile == "1",
                         GeneratedCode = genCode
@@ -2832,6 +2833,13 @@ namespace AccountingSoftware
                 XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                 nodeName.InnerText = form.Key;
                 nodeForm.AppendChild(nodeName);
+
+                if (!string.IsNullOrEmpty(form.Value.FullName))
+                {
+                    XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                    nodeFullName.InnerText = form.Value.FullName;
+                    nodeForm.AppendChild(nodeFullName);
+                }
 
                 if (!string.IsNullOrEmpty(form.Value.Desc))
                 {

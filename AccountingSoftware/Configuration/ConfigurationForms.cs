@@ -39,9 +39,10 @@ namespace AccountingSoftware
         /// <param name="name">Назва</param>
         /// <param name="desc">Опис</param>
         /// <param name="type">Тип</param>
-        public ConfigurationForms(string name, string desc = "", TypeForms type = TypeForms.None)
+        public ConfigurationForms(string name, string fullname = "", string desc = "", TypeForms type = TypeForms.None)
         {
             Name = name;
+            FullName = fullname;
             Desc = desc;
             Type = type;
         }
@@ -50,6 +51,11 @@ namespace AccountingSoftware
         /// Назва
         /// </summary>
         public string Name { get; set; } = "";
+
+        /// <summary>
+        /// Повна назва
+        /// </summary>
+        public string FullName { get; set; } = "";
 
         /// <summary>
         /// Опис
@@ -124,7 +130,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationForms Copy()
         {
-            ConfigurationForms newForms = new(Name, Desc, Type);
+            ConfigurationForms newForms = new(Name, FullName, Desc, Type);
 
             //Поля для форми елементу
             foreach (KeyValuePair<string, ConfigurationFormsElementField> item in ElementFields)
