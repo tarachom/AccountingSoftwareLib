@@ -22,7 +22,6 @@ limitations under the License.
 */
 
 using Gtk;
-using Gdk;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -302,13 +301,14 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
 
     void CreateToolbar(Box vBox)
     {
-        HBoxToolbarTop.MarginBottom = 6;
+        HBoxToolbarTop.AddCssClass("toolbar-container");
         vBox.Append(HBoxToolbarTop);
 
         //Новий
         {
             Button button = Button.NewFromIconName("new");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -319,6 +319,7 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("edit");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
@@ -328,6 +329,7 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("refresh");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
@@ -337,6 +339,7 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("copy");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -346,6 +349,7 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("delete");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
@@ -353,8 +357,9 @@ public abstract partial class DirectoryFormJournalBase : FormJournal
         }
 
         {
-            Button button = Button.NewFromIconName("view-sort-descending");
+            Button button = Button.NewFromIconName("find");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;

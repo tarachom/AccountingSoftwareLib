@@ -43,6 +43,7 @@ public partial class SearchControl : Box
     partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
+        AddCssClass("linked");
 
         EventControllerKey controller = EventControllerKey.New();
         entrySearch.AddController(controller);
@@ -53,12 +54,12 @@ public partial class SearchControl : Box
         };
 
         entrySearch.WidthRequest = 200;
-        entrySearch.MarginEnd = 2;
+        //entrySearch.MarginEnd = 2;
         Append(entrySearch);
 
         Button bSearch = Button.New();
         bSearch.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
-        bSearch.MarginEnd = 2;
+        //bSearch.MarginEnd = 2;
         bSearch.OnClicked += (_, _) => Search();
         Append(bSearch);
 

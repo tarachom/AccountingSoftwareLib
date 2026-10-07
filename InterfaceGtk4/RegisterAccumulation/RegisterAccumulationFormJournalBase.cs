@@ -58,8 +58,6 @@ public abstract partial class RegisterAccumulationFormJournalBase : FormJournal
 
     partial void Initialize()
     {
-        if (GetType().Namespace == "InterfaceGtk4") return;
-
         //Кнопки
         HBoxTop.MarginBottom = 6;
         Append(HBoxTop);
@@ -146,11 +144,13 @@ public abstract partial class RegisterAccumulationFormJournalBase : FormJournal
 
     void CreateToolbar()
     {
-        HBoxToolbarTop.MarginBottom = 6;
+        HBoxToolbarTop.AddCssClass("toolbar-container");
         Append(HBoxToolbarTop);
 
         {
             Button button = Button.NewFromIconName("refresh");
+            button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
@@ -159,6 +159,8 @@ public abstract partial class RegisterAccumulationFormJournalBase : FormJournal
 
         {
             Button button = Button.NewFromIconName("view-sort-descending");
+            button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;

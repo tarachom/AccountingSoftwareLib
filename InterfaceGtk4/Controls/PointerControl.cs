@@ -33,6 +33,7 @@ namespace InterfaceGtk4;
 public abstract partial class PointerControl : Box
 {
     Label labelCaption = Label.New(null);
+    protected Box HBox { get; init; } = New(Orientation.Horizontal, 0);
     Entry entryText = Entry.New();
     Button bClear = Button.New();
 
@@ -43,19 +44,33 @@ public abstract partial class PointerControl : Box
         labelCaption.MarginEnd = 5;
         Append(labelCaption);
 
+        HBox.AddCssClass("linked");
+        Append(HBox);
+
         entryText.Editable = false;
-        Append(entryText);
-        entryText.MarginEnd = 2;
+        HBox.Append(entryText);
+
+        /*
+        entryText.SetIconFromIconName(EntryIconPosition.Secondary, "window-close-symbolic");
+        entryText.SetIconActivatable(EntryIconPosition.Secondary, true);
+        entryText.OnIconPress += (sender, args) =>
+        {
+            if (args.IconPos == EntryIconPosition.Secondary)
+                OnClear(bClear, new());
+        };
+        */
+
+        //entryText.MarginEnd = 2;
 
         Button bOpen = Button.New();
         bOpen.Child = Image.NewFromPixbuf(Icon.ForButton.Find);
-        bOpen.MarginEnd = 2;
+        //bOpen.MarginEnd = 2;
         bOpen.OnClicked += OpenSelect;
-        Append(bOpen);
+        HBox.Append(bOpen);
 
         bClear.Child = Image.NewFromPixbuf(Icon.ForButton.Clean);
         bClear.OnClicked += OnClear;
-        Append(bClear);
+        HBox.Append(bClear);
     }
 
     /// <summary>

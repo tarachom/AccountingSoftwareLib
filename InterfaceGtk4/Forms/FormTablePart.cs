@@ -84,11 +84,12 @@ public abstract partial class FormTablePart : Form
 
     void CreateToolbar()
     {
-        HBoxToolbarTop.MarginTop = HBoxToolbarTop.MarginBottom = 6;
+        HBoxToolbarTop.AddCssClass("toolbar-container");
 
         {
             Button button = Button.NewFromIconName("new");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -98,6 +99,7 @@ public abstract partial class FormTablePart : Form
         {
             Button button = Button.NewFromIconName("copy");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -107,6 +109,7 @@ public abstract partial class FormTablePart : Form
         {
             Button button = Button.NewFromIconName("delete");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;

@@ -55,7 +55,7 @@ public partial class PeriodControl : Box
             return label;
         }
 
-        Append(AddLabel("Період з "));
+        Append(AddLabel("Період з"));
 
         dateStart.OnlyDate = true;
         dateStart.MarginEnd = 5;
@@ -68,7 +68,7 @@ public partial class PeriodControl : Box
         dateStop.MarginEnd = 5;
         Append(dateStop);
 
-        bSelect.MarginEnd = 2;
+        bSelect.MarginEnd = 5;
         bSelect.OnClicked += (_, _) =>
         {
             if (Period == PeriodForJournal.TypePeriod.Special)
@@ -78,7 +78,7 @@ public partial class PeriodControl : Box
         };
         Append(bSelect);
 
-        comboBoxPeriod.MarginEnd = 2;
+        comboBoxPeriod.MarginEnd = 5;
         comboBoxPeriod.OnChanged += (_, _) =>
         {
             if (Period == PeriodForJournal.TypePeriod.AllPeriod)

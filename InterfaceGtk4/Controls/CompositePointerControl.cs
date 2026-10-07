@@ -50,9 +50,9 @@ public abstract partial class CompositePointerControl : PointerControl
         Caption = "Підстава:";
 
         Button bTypeInfo = Button.NewFromIconName("go-down");
-        bTypeInfo.MarginStart = 2;
+        //bTypeInfo.MarginStart = 2;
         bTypeInfo.OnClicked += OnTypeInfo;
-        Append(bTypeInfo);
+        HBox.Append(bTypeInfo);
     }
 
     #region Virtual & Abstract Function

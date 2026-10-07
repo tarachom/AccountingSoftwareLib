@@ -65,6 +65,7 @@ public abstract partial class DirectoryFormJournalSmall : DirectoryFormJournalBa
         {
             Button button = Button.NewFromIconName("go-up");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Відкрити";
             button.OnClicked += OnOpenPageList;

@@ -37,11 +37,12 @@ public partial class TimeControl : Box
     partial void Initialize()
     {
         SetOrientation(Orientation.Horizontal);
+        AddCssClass("linked");
 
         //Entry
         entry.OnChanged += (_, _) => IsValidValue();
         entry.MarginStart = 5;
-        entry.MarginEnd = 2;
+        //entry.MarginEnd = 2;
         entry.SetMaxWidthChars(10);
         Append(entry);
 

@@ -292,12 +292,13 @@ public abstract partial class DocumentFormJournalBase : FormJournal
 
     void CreateToolbar()
     {
-        HBoxToolbarTop.MarginBottom = 6;
+        HBoxToolbarTop.AddCssClass("toolbar-container");
         Append(HBoxToolbarTop);
 
         {
             Button button = Button.NewFromIconName("new");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Додати";
             button.OnClicked += OnAdd;
@@ -307,6 +308,7 @@ public abstract partial class DocumentFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("edit");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Редагувати";
             button.OnClicked += OnEdit;
@@ -316,6 +318,7 @@ public abstract partial class DocumentFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("refresh");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Оновити";
             button.OnClicked += OnRefresh;
@@ -325,6 +328,7 @@ public abstract partial class DocumentFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("copy");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Копіювати";
             button.OnClicked += OnCopy;
@@ -334,6 +338,7 @@ public abstract partial class DocumentFormJournalBase : FormJournal
         {
             Button button = Button.NewFromIconName("delete");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Видалити";
             button.OnClicked += OnDelete;
@@ -341,8 +346,9 @@ public abstract partial class DocumentFormJournalBase : FormJournal
         }
 
         {
-            Button button = Button.NewFromIconName("view-sort-descending");
+            Button button = Button.NewFromIconName("find");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Фільтр";
             button.OnClicked += OnFilter;
@@ -360,8 +366,9 @@ public abstract partial class DocumentFormJournalBase : FormJournal
                 ];
             }
 
-            Button button = Button.NewFromIconName("edit-find");
+            Button button = Button.NewFromIconName("x-office-spreadsheet");
             button.AddCssClass("toolbar");
+            button.AddCssClass("flat");
             button.MarginEnd = 5;
             button.TooltipText = "Проводки";
             button.OnClicked += (_, _) => CreatePopoverMenu(button, SubMenu());

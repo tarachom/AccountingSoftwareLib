@@ -34,6 +34,7 @@ public abstract partial class PointerTablePartCell : Box
     protected Box hBox = New(Orientation.Horizontal, 0);
     Label label = Label.New(null);
     Button buttonSelect = Button.New();
+    Button buttonClear = Button.New();
 
     partial void Initialize()
     {
@@ -166,6 +167,50 @@ public abstract partial class PointerTablePartCell : Box
 
         Append(hBox);
         AddCssClass("pointer");
+
+        //Контекстне меню
+        {
+            Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
+
+            {
+                var action = Gio.SimpleAction.New("select", null);
+                action.OnActivate += (_, _) => Select(buttonSelect, new());
+                actionGroup.AddAction(action);
+            }
+
+            {
+                var action = Gio.SimpleAction.New("clear", null);
+                action.OnActivate += (_, _) => Clear();
+                actionGroup.AddAction(action);
+            }
+
+            InsertActionGroup("control", actionGroup); // Реєструємо групу дій
+
+            Gio.Menu menuModel = Gio.Menu.New();
+            menuModel.Append("Вибрати", "control.select");
+            menuModel.Append("Очистити", "control.clear");
+
+            PopoverMenu popover = PopoverMenu.NewFromModel(menuModel);
+            popover.SetParent(this);
+
+            GestureClick gesture = GestureClick.New();
+            gesture.SetButton(Gdk.Constants.BUTTON_SECONDARY); // Права кнопка миші
+            gesture.OnPressed += (g, args) =>
+            {
+                var rect = new Gdk.Rectangle
+                {
+                    X = (int)args.X,
+                    Y = (int)args.Y,
+                    Width = 1,
+                    Height = 1
+                };
+
+                popover.SetPointingTo(rect);
+                popover.Popup();
+            };
+
+            AddController(gesture);
+        }
     }
 
     #region Virtual Function
