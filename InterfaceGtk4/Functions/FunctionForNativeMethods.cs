@@ -23,12 +23,10 @@ limitations under the License.
 
 /*
 
-
-
 */
 
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace InterfaceGtk4;
 
@@ -56,17 +54,11 @@ public static class FunctionForNativeMethods
             string msysPath;
             if (string.IsNullOrEmpty(path))
             {
-                //Пошук шляху в конфігурації
-                var configuration = new ConfigurationBuilder()
-                    .SetBasePath(AppContext.BaseDirectory)
-                    .AddJsonFile("MsysSettings.json", false, true)
-                    .Build();
-
                 // Стандартний шлях до папки MSYS
                 const string defMsysPath = "C:\\msys64\\ucrt64\\bin";
 
                 // Шлях до папки MSYS з конфігураційного файлу
-                msysPath = configuration["MsysDirectory"] ?? defMsysPath;
+                msysPath = GetMsysDirectory() ?? defMsysPath;
             }
             else
                 msysPath = path;
@@ -79,5 +71,28 @@ public static class FunctionForNativeMethods
             else
                 Console.WriteLine($"Warning: MSYS2 path not found at {msysPath}");
         }
+    }
+
+    /// <summary>
+    /// Функція читає конфігураційний файл
+    /// </summary>
+    /// <returns>Повертає шлях із конфігураційного файлу або null</returns>
+    static string? GetMsysDirectory()
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, "MsysSettings.json");
+        if (File.Exists(path))
+        {
+            string content = File.ReadAllText(path);
+            JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
+            MsysConfig? config = JsonSerializer.Deserialize<MsysConfig>(content, options);
+            return (config != null && !string.IsNullOrEmpty(config.MsysDirectory)) ? config.MsysDirectory : null;
+        }
+
+        return null;
+    }
+
+    record MsysConfig
+    {
+        public string? MsysDirectory { get; set; } = null;
     }
 }
