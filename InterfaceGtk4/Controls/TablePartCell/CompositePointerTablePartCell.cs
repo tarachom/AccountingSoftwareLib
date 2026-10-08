@@ -198,6 +198,8 @@ public abstract partial class CompositePointerControlTablePartCell : PointerTabl
             SelectType(button);
     }
 
+    protected override void Clear() => Pointer = new(Pointer.Text);
+
     protected virtual void OnTypeInfo(Button button, EventArgs args)
     {
         Box vBox = New(Orientation.Vertical, 0);
