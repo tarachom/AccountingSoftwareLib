@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Поле
     /// </summary>
-    public class ConfigurationField
+    public class ConfigurationField : ConfigurationObject
     {
         /// <summary>
         /// Поле
@@ -60,16 +60,6 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Назва поля в конфігурації
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-		/// Повна назва
-		/// </summary>
-		public string FullName { get; set; } = "";
-
-        /// <summary>
         /// Назва поля в базі даних
         /// </summary>
         public string NameInTable { get; set; } = "";
@@ -83,11 +73,6 @@ namespace AccountingSoftware
         /// Вказівник на об'єкт конфігурації
         /// </summary>
         public string Pointer { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Використовувати поле для презентації в списках і формах

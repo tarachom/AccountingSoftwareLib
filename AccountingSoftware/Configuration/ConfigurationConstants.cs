@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Константи
     /// </summary>
-    public class ConfigurationConstants
+    public class ConfigurationConstants : ConfigurationObject
     {
         /// <summary>
         /// Константа
@@ -58,19 +58,9 @@ namespace AccountingSoftware
         public ConfigurationConstantsBlock Block { get; set; } = new();
 
         /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
         /// Назва поля в базі даних
         /// </summary>
         public string NameInTable { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Тип даних
@@ -102,7 +92,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationConstants Copy()
         {
-            ConfigurationConstants newConst = new(Name, NameInTable, Type, Block, Pointer, Desc);
+            ConfigurationConstants newConst = new(Name, NameInTable, Type, Block, Pointer, Desc) { FullName = this.FullName };
 
             foreach (ConfigurationTablePart tablePart in TabularParts.Values)
                 newConst.TabularParts.Add(tablePart.Name, tablePart.Copy());

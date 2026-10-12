@@ -179,7 +179,7 @@ namespace AccountingSoftware
         /// Додати блок констант
         /// </summary>
         /// <param name="constantsBlock"></param>
-        public void AppendConstantsBlock(ConfigurationConstantsBlock constantsBlock) => ConstantsBlock.Add(constantsBlock.BlockName, constantsBlock);
+        public void AppendConstantsBlock(ConfigurationConstantsBlock constantsBlock) => ConstantsBlock.Add(constantsBlock.Name, constantsBlock);
 
         /// <summary>
         /// Додати довідник в список довідників
@@ -225,34 +225,28 @@ namespace AccountingSoftware
         /// Масив з бук анг. алфавіту. Використовується для задання назви таблиці або стовпчика в базі даних
         /// </summary>
         /// <returns></returns>
-        public static string[] GetEnglishAlphabet()
-        {
-            return
-            [
-                "a", "b", "c", "d", "e", "f",
-                "g", "h", "i", "j", "k", "l",
-                "n", "m", "o", "p", "q", "r",
-                "s", "t", "u", "v", "w", "x",
-                "y", "z"
-            ];
-        }
+        public static string[] GetEnglishAlphabet() =>
+        [
+            "a", "b", "c", "d", "e", "f",
+            "g", "h", "i", "j", "k", "l",
+            "n", "m", "o", "p", "q", "r",
+            "s", "t", "u", "v", "w", "x",
+            "y", "z"
+        ];
 
         /// <summary>
         /// Український алфавіт
         /// </summary>
         /// <returns></returns>
-        public static string[] GetUkrainianAlphabet()
-        {
-            return
-            [
-                "а", "б", "в", "г", "ґ", "д",
-                "е", "є", "ж", "з", "и", "і",
-                "ї", "й", "к", "л", "м", "н",
-                "о", "п", "р", "с", "т", "у",
-                "ф", "х", "ц", "ч", "ш", "щ",
-                "ь", "ю", "я"
-            ];
-        }
+        public static string[] GetUkrainianAlphabet() =>
+        [
+            "а", "б", "в", "г", "ґ", "д",
+            "е", "є", "ж", "з", "и", "і",
+            "ї", "й", "к", "л", "м", "н",
+            "о", "п", "р", "с", "т", "у",
+            "ф", "х", "ц", "ч", "ш", "щ",
+            "ь", "ю", "я"
+        ];
 
         /// <summary>
         /// Пошук ссилок довідників і документів
@@ -264,18 +258,6 @@ namespace AccountingSoftware
         {
             PointerParse(searchName, out Exception? exception);
             if (exception != null) throw exception;
-
-            /*
-                if (searchName.IndexOf('.') > 0)
-                {
-                    string[] searchNameSplit = searchName.Split(".");
-
-                    if (!(searchNameSplit[0] == "Довідники" || searchNameSplit[0] == "Документи"))
-                        throw new Exception("Перша частина назви має бути 'Довідники' або 'Документи'");
-                }
-                else
-                    throw new Exception("Назва для пошуку має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
-            */
 
             List<string> ListPointer = [];
 
@@ -289,7 +271,7 @@ namespace AccountingSoftware
                         if (variantWork == VariantWorkSearchForPointers.Tables)
                             ListPointer.Add(SpecialTables.Constants + "." + constantsItem.NameInTable);
                         else
-                            ListPointer.Add("Константа (Блок " + constantsBlockItem.BlockName + "): " + constantsItem.Name + "." + constantsItem.Name + " [" + SpecialTables.Constants + "." + constantsItem.NameInTable + "]");
+                            ListPointer.Add("Константа (Блок " + constantsBlockItem.Name + "): " + constantsItem.Name + "." + constantsItem.Name + " [" + SpecialTables.Constants + "." + constantsItem.NameInTable + "]");
                     }
                 }
             }
@@ -457,18 +439,6 @@ namespace AccountingSoftware
         {
             PointerParse(searchName, out Exception? exception);
             if (exception != null) throw exception;
-
-            /*
-            if (searchName.IndexOf('.') > 0)
-            {
-                string[] searchNameSplit = searchName.Split(".");
-
-                if (!(searchNameSplit[0] == "Довідники" || searchNameSplit[0] == "Документи"))
-                    throw new Exception("Перша частина назви має бути 'Довідники' або 'Документи'");
-            }
-            else
-                throw new Exception("Назва для пошуку має бути 'Довідники.<Назва довідника>' або 'Документи.<Назва документу>'");
-            */
 
             List<ConfigurationDependencies> ListDependencies = [];
 
@@ -699,7 +669,7 @@ namespace AccountingSoftware
                 foreach (ConfigurationConstants constantsItem in constantsBlockItem.Constants.Values)
                 {
                     if (constantsItem.Type == "enum" && constantsItem.Pointer == searchName)
-                        ListPointer.Add("Константа (Блок " + constantsBlockItem.BlockName + "): " + constantsItem.Name + "." + constantsItem.Name);
+                        ListPointer.Add("Константа (Блок " + constantsBlockItem.Name + "): " + constantsItem.Name + "." + constantsItem.Name);
                 }
             }
 
@@ -1038,18 +1008,18 @@ namespace AccountingSoftware
             Dictionary<string, ConfigurationField>.ValueCollection PropertyFields
             )
         {
-            Dictionary<string, ConfigurationField> AllFields = [];
+            Dictionary<string, ConfigurationField> allFields = [];
 
             foreach (ConfigurationField item in DimensionFields)
-                AllFields.Add(item.Name, item);
+                allFields.Add(item.Name, item);
 
             foreach (ConfigurationField item in ResourcesFields)
-                AllFields.Add(item.Name, item);
+                allFields.Add(item.Name, item);
 
             foreach (ConfigurationField item in PropertyFields)
-                AllFields.Add(item.Name, item);
+                allFields.Add(item.Name, item);
 
-            return AllFields;
+            return allFields;
         }
 
         /// <summary>
@@ -1277,15 +1247,15 @@ namespace AccountingSoftware
             {
                 string? blockName = constantsBlockNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва блоку констант");
                 string blockDesc = constantsBlockNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-
                 ConfigurationConstantsBlock configurationConstantsBlock = new(blockName, blockDesc);
-                Conf.ConstantsBlock.Add(configurationConstantsBlock.BlockName, configurationConstantsBlock);
+                Conf.ConstantsBlock.Add(configurationConstantsBlock.Name, configurationConstantsBlock);
 
                 XPathNodeIterator? constantsNodes = constantsBlockNodes.Current?.Select("Constants/Constant");
                 if (constantsNodes != null)
                     while (constantsNodes.MoveNext())
                     {
                         string? constName = constantsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва константи");
+                        string uid = constantsNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                         string nameInTable = constantsNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
                         string constType = constantsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
                         string constDesc = constantsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1293,7 +1263,7 @@ namespace AccountingSoftware
                         string constPointer = (constType == "pointer" || constType == "enum") ?
                             (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                        ConfigurationConstants configurationConstants = new(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc);
+                        ConfigurationConstants configurationConstants = new(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc) { Uid = uid };
 
                         configurationConstantsBlock.Constants.Add(configurationConstants.Name, configurationConstants);
 
@@ -1314,6 +1284,7 @@ namespace AccountingSoftware
             while (directoryNodes.MoveNext())
             {
                 string? name = directoryNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва довідника");
+                string uid = directoryNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                 string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? ""; //Повна назва
                 string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? ""; //Таблиця
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? ""; //Опис
@@ -1335,7 +1306,6 @@ namespace AccountingSoftware
                 };
 
                 string parentField_Hierarchical = "";
-                string iconTree_Hierarchical = "";
                 string isFolderField_Hierarchical = "";
                 string pointerFolders_HierarchyInAnotherDirectory = "";
                 ConfigurationDirectories.HierarchicalContentType allowedContent_Hierarchical = 0; //ConfigurationDirectories.HierarchicalContentType.Folders;
@@ -1359,12 +1329,13 @@ namespace AccountingSoftware
 
                 ConfigurationDirectories ConfObjectDirectories = new(name, fullName, table, desc, autoNum, typeDirectory)
                 {
+                    Uid = uid,
+
                     //Записувати історію версій
                     VersionsHistory = versionsHistory,
 
                     //Для типу Hierarchical
                     ParentField_Hierarchical = parentField_Hierarchical,
-                    IconTree_Hierarchical = iconTree_Hierarchical,
                     IsFolderField_Hierarchical = isFolderField_Hierarchical,
                     AllowedContent_Hierarchical = allowedContent_Hierarchical,
 
@@ -1406,6 +1377,7 @@ namespace AccountingSoftware
                 while (fieldNodes.MoveNext())
                 {
                     string? name = fieldNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва поля");
+                    string uid = fieldNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = fieldNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string nameInTable = fieldNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
                     string type = fieldNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
@@ -1419,7 +1391,8 @@ namespace AccountingSoftware
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
                     ConfigurationField ConfObjectField = new(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex,
-                        isFullTextSearch, isSearch, isExport);
+                        isFullTextSearch, isSearch, isExport)
+                    { Uid = uid };
 
                     //
                     // Додаткові поля які залежать від типу
@@ -1482,6 +1455,7 @@ namespace AccountingSoftware
                 while (tablePartNodes.MoveNext())
                 {
                     string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличної частини");
+                    string uid = tablePartNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = tablePartNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1489,6 +1463,8 @@ namespace AccountingSoftware
 
                     ConfigurationTablePart ConfObjectTablePart = new(name, fullName, table, desc)
                     {
+                        Uid = uid,
+
                         //Записувати історію версій
                         VersionsHistory = versionsHistory
                     };
@@ -1791,10 +1767,11 @@ namespace AccountingSoftware
                 while (enumsNodes!.MoveNext())
                 {
                     string? name = enumsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва перелічення");
+                    string uid = enumsNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
 
-                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc);
+                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc) { Uid = uid };
                     Conf.Enums.Add(configurationEnums.Name, configurationEnums);
 
                     XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
@@ -1879,6 +1856,7 @@ namespace AccountingSoftware
                 while (documentsNode!.MoveNext())
                 {
                     string? name = documentsNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва документу");
+                    string uid = documentsNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = documentsNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1886,7 +1864,11 @@ namespace AccountingSoftware
                     bool versionsHistory = (documentsNode.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
                     bool exportXml = (documentsNode.Current?.SelectSingleNode("ExportXml")?.Value ?? "") == "1";
 
-                    ConfigurationDocuments configurationDocuments = new(name, fullName, table, desc, autoNum, exportXml) { VersionsHistory = versionsHistory };
+                    ConfigurationDocuments configurationDocuments = new(name, fullName, table, desc, autoNum, exportXml)
+                    {
+                        Uid = uid,
+                        VersionsHistory = versionsHistory
+                    };
 
                     Conf.Documents.Add(configurationDocuments.Name, configurationDocuments);
 
@@ -1922,11 +1904,12 @@ namespace AccountingSoftware
                 while (registerInformationNode!.MoveNext())
                 {
                     string? name = registerInformationNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва регістру відомостей");
+                    string uid = registerInformationNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = registerInformationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = registerInformationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = registerInformationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationRegistersInformation configurationRegistersInformation = new(name, fullName, table, desc);
+                    ConfigurationRegistersInformation configurationRegistersInformation = new(name, fullName, table, desc) { Uid = uid };
                     Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
                     XPathNavigator? dimensionFieldsNode = registerInformationNode.Current?.SelectSingleNode("DimensionFields");
@@ -1979,6 +1962,7 @@ namespace AccountingSoftware
                 while (registerAccumulationNode!.MoveNext())
                 {
                     string? name = registerAccumulationNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва регістру накопичення");
+                    string uid = registerAccumulationNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = registerAccumulationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string table = registerAccumulationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string type = registerAccumulationNode.Current?.SelectSingleNode("Type")?.Value ?? "";
@@ -1990,11 +1974,14 @@ namespace AccountingSoftware
                     {
                         "Residues" => TypeRegistersAccumulation.Residues,
                         "Turnover" => TypeRegistersAccumulation.Turnover,
-                        _ => throw new Exception("Не оприділений тип регістру")
+                        _ => throw new Exception("Неоприділений тип регістру")
                     };
 
-                    ConfigurationRegistersAccumulation configurationRegistersAccumulation =
-                        new(name, fullName, table, typeRegistersAccumulation, desc) { NoSummary = noSummary == "1" };
+                    ConfigurationRegistersAccumulation configurationRegistersAccumulation = new(name, fullName, table, typeRegistersAccumulation, desc)
+                    {
+                        Uid = uid,
+                        NoSummary = noSummary == "1"
+                    };
 
                     Conf.RegistersAccumulation.Add(configurationRegistersAccumulation.Name, configurationRegistersAccumulation);
 
@@ -2192,6 +2179,11 @@ namespace AccountingSoftware
                 XmlElement rootConstant = xmlConfDocument.CreateElement("Constant");
                 rootConstants.AppendChild(rootConstant);
 
+                XmlElement nodeUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfConstant.Value.Uid)) ConfConstant.Value.Uid = GetShortGuid();
+                nodeUid.InnerText = ConfConstant.Value.Uid;
+                rootConstant.AppendChild(nodeUid);
+
                 XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                 nodeName.InnerText = ConfConstant.Key;
                 rootConstant.AppendChild(nodeName);
@@ -2238,6 +2230,11 @@ namespace AccountingSoftware
             {
                 XmlElement nodeDirectory = xmlConfDocument.CreateElement("Directory");
                 rootDirectories.AppendChild(nodeDirectory);
+
+                XmlElement nodeDirectoryUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfDirectory.Value.Uid)) ConfDirectory.Value.Uid = GetShortGuid();
+                nodeDirectoryUid.InnerText = ConfDirectory.Value.Uid;
+                nodeDirectory.AppendChild(nodeDirectoryUid);
 
                 XmlElement nodeDirectoryName = xmlConfDocument.CreateElement("Name");
                 nodeDirectoryName.InnerText = ConfDirectory.Key;
@@ -2397,6 +2394,11 @@ namespace AccountingSoftware
                 XmlElement nodeField = xmlConfDocument.CreateElement("Field");
                 nodeFields.AppendChild(nodeField);
 
+                XmlElement nodeFieldUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(field.Value.Uid)) field.Value.Uid = GetShortGuid();
+                nodeFieldUid.InnerText = field.Value.Uid;
+                nodeField.AppendChild(nodeFieldUid);
+
                 XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
                 nodeFieldName.InnerText = field.Key;
                 nodeField.AppendChild(nodeFieldName);
@@ -2543,6 +2545,11 @@ namespace AccountingSoftware
             {
                 XmlElement nodeTablePart = xmlConfDocument.CreateElement("TablePart");
                 nodeTabularParts.AppendChild(nodeTablePart);
+
+                XmlElement nodeTablePartUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(tablePart.Value.Uid)) tablePart.Value.Uid = GetShortGuid();
+                nodeTablePartUid.InnerText = tablePart.Value.Uid;
+                nodeTablePart.AppendChild(nodeTablePartUid);
 
                 XmlElement nodeTablePartName = xmlConfDocument.CreateElement("Name");
                 nodeTablePartName.InnerText = tablePart.Key;
@@ -3180,30 +3187,35 @@ namespace AccountingSoftware
             XmlElement nodeEnums = xmlConfDocument.CreateElement("Enums");
             rootNode.AppendChild(nodeEnums);
 
-            foreach (KeyValuePair<string, ConfigurationEnums> enum_item in enums)
+            foreach (KeyValuePair<string, ConfigurationEnums> enumItem in enums)
             {
                 XmlElement nodeEnum = xmlConfDocument.CreateElement("Enum");
                 nodeEnums.AppendChild(nodeEnum);
 
+                XmlElement nodeEnumUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(enumItem.Value.Uid)) enumItem.Value.Uid = GetShortGuid();
+                nodeEnumUid.InnerText = enumItem.Value.Uid;
+                nodeEnum.AppendChild(nodeEnumUid);
+
                 XmlElement nodeEnumName = xmlConfDocument.CreateElement("Name");
-                nodeEnumName.InnerText = enum_item.Key;
+                nodeEnumName.InnerText = enumItem.Key;
                 nodeEnum.AppendChild(nodeEnumName);
 
-                if (!string.IsNullOrEmpty(enum_item.Value.Desc))
+                if (!string.IsNullOrEmpty(enumItem.Value.Desc))
                 {
                     XmlElement nodeEnumDesc = xmlConfDocument.CreateElement("Desc");
-                    nodeEnumDesc.InnerText = enum_item.Value.Desc;
+                    nodeEnumDesc.InnerText = enumItem.Value.Desc;
                     nodeEnum.AppendChild(nodeEnumDesc);
                 }
 
                 XmlElement nodeEnumSerialNumber = xmlConfDocument.CreateElement("SerialNumber");
-                nodeEnumSerialNumber.InnerText = enum_item.Value.SerialNumber.ToString();
+                nodeEnumSerialNumber.InnerText = enumItem.Value.SerialNumber.ToString();
                 nodeEnum.AppendChild(nodeEnumSerialNumber);
 
                 XmlElement nodeFields = xmlConfDocument.CreateElement("Fields");
                 nodeEnum.AppendChild(nodeFields);
 
-                foreach (KeyValuePair<string, ConfigurationEnumField> field in enum_item.Value.Fields)
+                foreach (KeyValuePair<string, ConfigurationEnumField> field in enumItem.Value.Fields)
                 {
                     XmlElement nodeField = xmlConfDocument.CreateElement("Field");
                     nodeFields.AppendChild(nodeField);
@@ -3333,6 +3345,11 @@ namespace AccountingSoftware
                 XmlElement nodeDocument = xmlConfDocument.CreateElement("Document");
                 rootDocuments.AppendChild(nodeDocument);
 
+                XmlElement nodeDocumentUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfDocument.Value.Uid)) ConfDocument.Value.Uid = GetShortGuid();
+                nodeDocumentUid.InnerText = ConfDocument.Value.Uid;
+                nodeDocument.AppendChild(nodeDocumentUid);
+
                 XmlElement nodeDocumentName = xmlConfDocument.CreateElement("Name");
                 nodeDocumentName.InnerText = ConfDocument.Key;
                 nodeDocument.AppendChild(nodeDocumentName);
@@ -3398,6 +3415,11 @@ namespace AccountingSoftware
             {
                 XmlElement nodeRegister = xmlConfDocument.CreateElement("RegisterInformation");
                 rootRegistersInformation.AppendChild(nodeRegister);
+
+                XmlElement nodeRegisterUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfRegisterInfo.Value.Uid)) ConfRegisterInfo.Value.Uid = GetShortGuid();
+                nodeRegisterUid.InnerText = ConfRegisterInfo.Value.Uid;
+                nodeRegister.AppendChild(nodeRegisterUid);
 
                 XmlElement nodeRegisterName = xmlConfDocument.CreateElement("Name");
                 nodeRegisterName.InnerText = ConfRegisterInfo.Key;
@@ -3481,6 +3503,11 @@ namespace AccountingSoftware
             {
                 XmlElement nodeRegister = xmlConfDocument.CreateElement("RegisterAccumulation");
                 rootRegistersAccumulation.AppendChild(nodeRegister);
+
+                XmlElement nodeRegisterUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfRegisterAccml.Value.Uid)) ConfRegisterAccml.Value.Uid = GetShortGuid();
+                nodeRegisterUid.InnerText = ConfRegisterAccml.Value.Uid;
+                nodeRegister.AppendChild(nodeRegisterUid);
 
                 XmlElement nodeRegisterName = xmlConfDocument.CreateElement("Name");
                 nodeRegisterName.InnerText = ConfRegisterAccml.Key;

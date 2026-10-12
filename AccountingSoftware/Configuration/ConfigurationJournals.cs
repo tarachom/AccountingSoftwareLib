@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Журнали
     /// </summary>
-    public class ConfigurationJournals
+    public class ConfigurationJournals : ConfigurationObject
     {
         /// <summary>
         /// Журнали
@@ -43,16 +43,6 @@ namespace AccountingSoftware
             Name = name;
             Desc = desc;
         }
-
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Поля
@@ -75,7 +65,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationJournals Copy()
         {
-            ConfigurationJournals newJournal = new(this.Name, this.Desc);
+            ConfigurationJournals newJournal = new(this.Name, this.Desc) { FullName = this.FullName };
 
             foreach (ConfigurationJournalField field in Fields.Values)
                 newJournal.AppendField(field.Copy());

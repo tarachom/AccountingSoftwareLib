@@ -55,7 +55,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorIt
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "Block";
-            row.Name = block.BlockName;
+            row.Name = block.Name;
             row.Obj = block;
 
             Store.Append(row);

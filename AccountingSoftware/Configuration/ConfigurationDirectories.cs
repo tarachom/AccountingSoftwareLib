@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Довідник
     /// </summary>
-    public class ConfigurationDirectories : ConfigurationObject
+    public class ConfigurationDirectories : ConfigurationObjectTable
     {
         /// <summary>
         /// Довідник
@@ -107,11 +107,6 @@ namespace AccountingSoftware
         public string ParentField_Hierarchical { get; set; } = "";
 
         /// <summary>
-        /// Іконка для дерева (елемент чи папка)
-        /// </summary>
-        public string IconTree_Hierarchical { get; set; } = "";
-
-        /// <summary>
         /// Тип вмісту ієрархічного довідника
         /// </summary>
         public HierarchicalContentType AllowedContent_Hierarchical { get; set; } = 0;
@@ -183,14 +178,11 @@ namespace AccountingSoftware
         /// <summary>
         /// Функція повертає масив попередньо визначених полів
         /// </summary>
-        public static ConfigurationPredefinedField[] GetPredefinedFields()
-        {
-            return
-            [
-                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-                new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення")
-            ];
-        }
+        public static ConfigurationPredefinedField[] GetPredefinedFields() =>
+        [
+            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+            new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення")
+        ];
 
         /// <summary>
         /// Додати нове поле

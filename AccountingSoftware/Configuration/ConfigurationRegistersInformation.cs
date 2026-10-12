@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Регістри відомостей
     /// </summary>
-    public class ConfigurationRegistersInformation : ConfigurationObject
+    public class ConfigurationRegistersInformation : ConfigurationObjectTable
     {
         /// <summary>
         /// Регістри відомостей

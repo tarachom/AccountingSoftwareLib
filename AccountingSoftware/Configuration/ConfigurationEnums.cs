@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Перелічення
     /// </summary>
-    public class ConfigurationEnums
+    public class ConfigurationEnums : ConfigurationObject
     {
         /// <summary>
         /// Перелічення
@@ -47,16 +47,6 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Назва перелічення
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
-
-        /// <summary>
         /// Останній порядковий номер використаний для поля перелічення.
         /// Довідка: в базі даних перелічення зберігається як тип int4. Коли добавляється нове поле,
         /// йому задається зразу значення. SerialNumber зберігає останнє значення.
@@ -74,7 +64,7 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationEnums Copy()
         {
-            ConfigurationEnums newEnum = new(this.Name, this.SerialNumber, this.Desc);
+            ConfigurationEnums newEnum = new(this.Name, this.SerialNumber, this.Desc) { FullName = this.FullName };
 
             foreach (ConfigurationEnumField field in Fields.Values)
                 newEnum.AppendField(field.Copy(field.Value));

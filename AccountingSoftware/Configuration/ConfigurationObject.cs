@@ -24,10 +24,15 @@ limitations under the License.
 namespace AccountingSoftware
 {
 	/// <summary>
-	/// Об'єкт конфігурації (Довідники, Документи, Табличні частини, Регістри і т.д)
+	/// Об'єкт конфігурації
 	/// </summary>
 	public abstract class ConfigurationObject
 	{
+		/// <summary>
+		/// Унікальний ідентифікатор скорочений функцією Configuration.GetShortGuid()
+		/// </summary>
+		public string? Uid { get; set; } = null;
+
 		/// <summary>
 		/// Назва
 		/// </summary>
@@ -42,10 +47,5 @@ namespace AccountingSoftware
 		/// Опис
 		/// </summary>
 		public string Desc { get; set; } = "";
-
-		/// <summary>
-		/// Таблиця в базі даних
-		/// </summary>
-		public string Table { get; set; } = "";
 	}
 }

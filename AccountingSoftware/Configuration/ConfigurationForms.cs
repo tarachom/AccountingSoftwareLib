@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Форма
     /// </summary>
-    public class ConfigurationForms
+    public class ConfigurationForms : ConfigurationObject
     {
         /// <summary>
         /// Форма
@@ -46,21 +46,6 @@ namespace AccountingSoftware
             Desc = desc;
             Type = type;
         }
-
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Повна назва
-        /// </summary>
-        public string FullName { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Тип форми

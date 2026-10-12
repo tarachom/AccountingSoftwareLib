@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Поле перелічення
     /// </summary>
-    public class ConfigurationEnumField
+    public class ConfigurationEnumField : ConfigurationObject
     {
         /// <summary>
         /// Поле перелічення
@@ -47,28 +47,15 @@ namespace AccountingSoftware
         }
 
         /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
         /// Значення
         /// </summary>
         public int Value { get; set; }
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Створення копії
         /// </summary>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public ConfigurationEnumField Copy(int newValue)
-        {
-            return new ConfigurationEnumField(this.Name, newValue, this.Desc);
-        }
+        public ConfigurationEnumField Copy(int newValue) => new(this.Name, newValue, this.Desc) { FullName = this.FullName };
     }
 }

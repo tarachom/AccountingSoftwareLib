@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Поле журналу
     /// </summary>
-    public class ConfigurationJournalField
+    public class ConfigurationJournalField : ConfigurationObject
     {
         /// <summary>
         /// Поле журналу 
@@ -40,25 +40,15 @@ namespace AccountingSoftware
         /// <param name="desc">Опис</param>
         /// <param name="type">Тип</param>
         /// <param name="sort">Сортувати</param>
-        /// <param name="where_period">Відбір по періоду</param>
-        public ConfigurationJournalField(string name, string desc = "", string type = "", bool sort = false, bool where_period = false)
+        /// <param name="wherePeriod">Відбір по періоду</param>
+        public ConfigurationJournalField(string name, string desc = "", string type = "", bool sort = false, bool wherePeriod = false)
         {
             Name = name;
             Desc = desc;
             Type = type;
             SortField = sort;
-            WherePeriod = where_period;
+            WherePeriod = wherePeriod;
         }
-
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// SQL тип поля
@@ -79,9 +69,6 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationJournalField Copy()
-        {
-            return new ConfigurationJournalField(this.Name, this.Desc);
-        }
+        public ConfigurationJournalField Copy() => new(this.Name, this.Desc) { FullName = this.FullName };
     }
 }

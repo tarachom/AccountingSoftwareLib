@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Документ
     /// </summary>
-    public class ConfigurationDocuments : ConfigurationObject
+    public class ConfigurationDocuments : ConfigurationObjectTable
     {
         /// <summary>
         /// Документ

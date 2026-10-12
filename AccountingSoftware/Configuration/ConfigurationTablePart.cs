@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Таблична частина
     /// </summary>
-    public class ConfigurationTablePart : ConfigurationObject
+    public class ConfigurationTablePart : ConfigurationObjectTable
     {
         /// <summary>
         /// Таблична частина
@@ -109,7 +109,10 @@ namespace AccountingSoftware
                 Наприклад в Табличних частинах для Констант немає поля Власник,
                 немає поля Власник і у Регістрів Накопичення
                 */
-                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") { ForeignKey = true }
+                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") 
+                { 
+                    ForeignKey = true 
+                }
             ];
         }
 

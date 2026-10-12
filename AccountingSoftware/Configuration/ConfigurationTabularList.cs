@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Табличний список (вивід таблиці на формі)
     /// </summary>
-    public class ConfigurationTabularList
+    public class ConfigurationTabularList: ConfigurationObject
     {
         /// <summary>
         /// Табличний список
@@ -46,21 +46,6 @@ namespace AccountingSoftware
             FullName = fullname;
             Desc = desc;
         }
-
-        /// <summary>
-        /// Назва
-        /// </summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>
-        /// Повна назва
-        /// </summary>
-        public string FullName { get; set; } = "";
-
-        /// <summary>
-        /// Опис
-        /// </summary>
-        public string Desc { get; set; } = "";
 
         /// <summary>
         /// Поля

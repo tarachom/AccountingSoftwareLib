@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Регістер накопичення
     /// </summary>
-    public class ConfigurationRegistersAccumulation : ConfigurationObject
+    public class ConfigurationRegistersAccumulation : ConfigurationObjectTable
     {
         /// <summary>
         /// Регістри накопичення
