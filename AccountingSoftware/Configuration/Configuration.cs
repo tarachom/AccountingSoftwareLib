@@ -829,6 +829,7 @@ namespace AccountingSoftware
         {
             string[] englishAlphabet = GetEnglishAlphabet();
             List<string> tableList = await Kernel.DataBase.GetTableList();
+            List<string> reservedTables = Kernel.Conf.ReservedUnigueTableName;
 
             bool noExistInReserved = false;
             bool noExistInBase = false;
@@ -841,7 +842,7 @@ namespace AccountingSoftware
                 {
                     tabNewName = "tab_" + englishAlphabet[j] + i.ToString("D2");
 
-                    if (!Kernel.Conf.ReservedUnigueTableName.Contains(tabNewName))
+                    if (!reservedTables.Contains(tabNewName))
                         noExistInReserved = true;
                     else
                         continue;
@@ -936,9 +937,39 @@ namespace AccountingSoftware
                     break;
             }
 
-            Kernel.Conf.ReservedUnigueTableName.Add(tabNewName);
+            reservedTables.Add(tabNewName);
 
             return tabNewName;
+        }
+
+        /// <summary>
+        /// Додає назву таблиці в список зареервованих назв
+        /// </summary>
+        /// <param name="Kernel">Ядро</param>
+        /// <param name="tableName">Назва таблиці</param>
+        public static void AddToReservedTables(Kernel Kernel, string tableName)
+        {
+            var reservedTables = Kernel.Conf.ReservedUnigueTableName;
+
+            if (!reservedTables.Contains(tableName))
+                reservedTables.Add(tableName);
+        }
+
+        /// <summary>
+        /// Додає назву поля до списку зарезервованих для таблиці
+        /// </summary>
+        /// <param name="Kernel">Ядро</param>
+        /// <param name="tableName">Назва таблиці</param>
+        /// <param name="columnName">Назва поля</param>
+        public static void AddToReservedColumn(Kernel Kernel, string tableName, string columnName)
+        {
+            if (Kernel.Conf.ReservedUnigueColumnName.TryGetValue(tableName, out var table))
+            {
+                if (!table.Contains(columnName))
+                    table.Add(columnName);
+            }
+            else
+                Kernel.Conf.ReservedUnigueColumnName.Add(tableName, [columnName]);
         }
 
         /// <summary>
