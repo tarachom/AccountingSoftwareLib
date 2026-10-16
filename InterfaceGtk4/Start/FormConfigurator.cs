@@ -98,8 +98,8 @@ public abstract partial class FormConfigurator : Window
     public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
     protected virtual async Task PageJournal(string name, bool isNew = false) { }
     protected virtual async Task PageEnum(string name, bool isNew = false) { }
-    protected virtual async Task PageRegisterInformation(string name, bool isNew = false) { }
-    protected virtual async Task PageRegisterAccumulation(string name, bool isNew = false) { }
+    public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
+    public virtual async Task PageRegisterAccumulation(bool isNew, ConfigurationRegistersAccumulation? register = null) { }
     protected virtual async Task PageSettings() { }
     protected virtual async Task PageSaveConfiguration() { }
     protected virtual async Task PageConfigurationInfo() { }
@@ -365,13 +365,39 @@ public abstract partial class FormConfigurator : Window
 
             if (hide) popover.Hide();
         }
+
         async void Add()
         {
             await PageDirectory(true);
             popover.Hide();
         }
 
-        async void Delete(ConfiguratorItemRow row)
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "Directories" when row.Obj is ConfigurationDirectories directory:
+                    {
+                        ConfigurationDirectories newDirectory = directory.Copy();
+                        newDirectory.Name += Configuration.GetNewRandomName();
+
+                        //Нові назви таблиць для таб частин
+                        foreach (var tablePart in newDirectory.TabularParts.Values)
+                            tablePart.Table = await Configuration.GetNewUnigueTableName(Kernel);
+
+                        await PageDirectory(true, newDirectory);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
         {
             switch (row?.Group)
             {
@@ -405,9 +431,10 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
             Delete = (_, rows) =>
             {
@@ -475,7 +502,32 @@ public abstract partial class FormConfigurator : Window
             popover.Hide();
         }
 
-        async void Delete(ConfiguratorItemRow row)
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "Documents" when row.Obj is ConfigurationDocuments document:
+                    {
+                        ConfigurationDocuments newDocument = document.Copy();
+                        newDocument.Name += Configuration.GetNewRandomName();
+
+                        //Нові назви таблиць для таб частин
+                        foreach (var tablePart in newDocument.TabularParts.Values)
+                            tablePart.Table = await Configuration.GetNewUnigueTableName(Kernel);
+
+                        await PageDocument(true, newDocument);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
         {
             switch (row?.Group)
             {
@@ -497,9 +549,10 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
             Delete = (_, rows) =>
             {
@@ -630,48 +683,102 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
+            bool hide = false;
             switch (row.Group)
             {
-                case "RegistersInformation":
+                case "RegistersInformation" when row.Obj is ConfigurationRegistersInformation register:
                     {
-                        await PageRegisterInformation(row.Name);
-                        return;
+                        await PageRegisterInformation(false, register);
+                        hide = true;
+                        break;
                     }
-                case "DimensionField":
+                case "DimensionField" when row.ParentObj is ConfigurationRegistersInformation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterInformation, register));
+                        hide = true;
+                        break;
                     }
-                case "ResourcesField":
+                case "ResourcesField" when row.ParentObj is ConfigurationRegistersInformation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterInformation, register));
+                        hide = true;
+                        break;
                     }
-                case "PropertyField":
+                case "PropertyField" when row.ParentObj is ConfigurationRegistersInformation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterInformation, register));
+                        hide = true;
+                        break;
                     }
                 default:
                     return;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        async void Add()
+        {
+            await PageRegisterInformation(true);
+            popover.Hide();
+        }
+
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "RegistersInformation" when row.Obj is ConfigurationRegistersInformation register:
+                    {
+                        ConfigurationRegistersInformation newRegister = register.Copy();
+                        newRegister.Name += Configuration.GetNewRandomName();
+
+                        await PageRegisterInformation(true, newRegister);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "RegistersInformation" when row.Obj is ConfigurationRegistersInformation register:
+                    {
+                        Kernel.Conf.RegistersInformation.Remove(register.Name);
+                        break;
+                    }
+                default:
+                    break;
             }
         }
 
         Box getbox() => new ConfiguratorRegistersInformationTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async (_, _) => await PageRegisterInformation("", true),
+            Add = (_, _) => Add(),
             Edit = (_, rows) =>
             {
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
             Delete = (_, rows) =>
             {
-
+                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                {
+                    if (x == Message.YesNo.Yes)
+                        foreach (var row in rows)
+                            Delete(row);
+                });
             },
             OpenNewTab = (_) =>
             {
@@ -690,58 +797,118 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
+            bool hide = false;
             switch (row.Group)
             {
-                case "RegistersAccumulation":
+                case "RegistersAccumulation" when row.Obj is ConfigurationRegistersAccumulation register:
                     {
-                        await PageRegisterAccumulation(row.Name);
-                        return;
+                        await PageRegisterAccumulation(false, register);
+                        hide = true;
+                        break;
                     }
-                case "DimensionField":
+                case "DimensionField" when row.ParentObj is ConfigurationRegistersAccumulation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterAccumulation, register));
+                        hide = true;
+                        break;
                     }
-                case "ResourcesField":
+                case "ResourcesField" when row.ParentObj is ConfigurationRegistersAccumulation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterAccumulation, register));
+                        hide = true;
+                        break;
                     }
-                case "PropertyField":
+                case "PropertyField" when row.ParentObj is ConfigurationRegistersAccumulation register && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, register.DimensionFields, field, new(ConfiguratorItemOwnerType.RegisterAccumulation, register));
+                        hide = true;
+                        break;
                     }
-                case "TablePart":
+                case "TablePart" when row.ParentObj is ConfigurationRegistersAccumulation register && row.Obj is ConfigurationTablePart tablePart:
                     {
-
-                        return;
+                        await PageTablePart(false, register.TabularParts, tablePart, new(ConfiguratorItemOwnerType.RegisterAccumulation, register));
+                        hide = true;
+                        break;
                     }
-                case "TablePartField":
+                case "TablePartField" when row.ParentObj is ConfigurationTablePart tablePart && row.Obj is ConfigurationField field:
                     {
-
-                        return;
+                        await PageField(false, tablePart.Fields, field, new(ConfiguratorItemOwnerType.TablePart, tablePart));
+                        hide = true;
+                        break;
                     }
                 default:
                     return;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        async void Add()
+        {
+            await PageRegisterAccumulation(true);
+            popover.Hide();
+        }
+
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "RegistersAccumulation" when row.Obj is ConfigurationRegistersAccumulation register:
+                    {
+                        ConfigurationRegistersAccumulation newRegister = register.Copy();
+                        newRegister.Name += Configuration.GetNewRandomName();
+
+                        //Нові назви таблиць для таб частин
+                        foreach (var tablePart in newRegister.TabularParts.Values)
+                            tablePart.Table = await Configuration.GetNewUnigueTableName(Kernel);
+
+                        await PageRegisterAccumulation(true, newRegister);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "RegistersAccumulation" when row.Obj is ConfigurationRegistersAccumulation register:
+                    {
+                        Kernel.Conf.RegistersAccumulation.Remove(register.Name);
+                        break;
+                    }
+                default:
+                    break;
             }
         }
 
         Box getbox() => new ConfiguratorRegistersAccumulationTree(Kernel.Conf, Activate, new()
         {
-            Add = async (_, _) => await PageRegisterAccumulation("", true),
+            Add = (_, _) => Add(),
             Edit = (_, rows) =>
             {
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
             Delete = (_, rows) =>
             {
-
+                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                {
+                    if (x == Message.YesNo.Yes)
+                        foreach (var row in rows)
+                            Delete(row);
+                });
             },
             OpenNewTab = _ =>
             {
@@ -751,7 +918,6 @@ public abstract partial class FormConfigurator : Window
             }
         }).Fill();
     }
-
 
     #endregion
 

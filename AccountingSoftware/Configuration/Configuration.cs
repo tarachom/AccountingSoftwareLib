@@ -1034,24 +1034,30 @@ namespace AccountingSoftware
         /// Функція об'єднує в один масив всі поля регістру
         /// </summary>
         public static Dictionary<string, ConfigurationField> CombineAllFieldForRegister(
-            Dictionary<string, ConfigurationField>.ValueCollection DimensionFields,
-            Dictionary<string, ConfigurationField>.ValueCollection ResourcesFields,
-            Dictionary<string, ConfigurationField>.ValueCollection PropertyFields
-            )
+            Dictionary<string, ConfigurationField>.ValueCollection dimensionFields,
+            Dictionary<string, ConfigurationField>.ValueCollection resourcesFields,
+            Dictionary<string, ConfigurationField>.ValueCollection propertyFields)
         {
-            Dictionary<string, ConfigurationField> allFields = [];
+            int сount = dimensionFields.Count + resourcesFields.Count + propertyFields.Count;
+            Dictionary<string, ConfigurationField> allFields = new(сount);
 
-            foreach (ConfigurationField item in DimensionFields)
+            foreach (ConfigurationField item in dimensionFields)
                 allFields.Add(item.Name, item);
 
-            foreach (ConfigurationField item in ResourcesFields)
+            foreach (ConfigurationField item in resourcesFields)
                 allFields.Add(item.Name, item);
 
-            foreach (ConfigurationField item in PropertyFields)
+            foreach (ConfigurationField item in propertyFields)
                 allFields.Add(item.Name, item);
 
             return allFields;
         }
+
+        /// <summary>
+        /// Функція об'єднує в один масив всі поля регістру
+        /// </summary>
+        public static Dictionary<string, ConfigurationField> CombineAllFieldForRegister(IConfigurationRegisters reg) =>
+            CombineAllFieldForRegister(reg.DimensionFields.Values, reg.ResourcesFields.Values, reg.PropertyFields.Values);
 
         /// <summary>
         /// Функція парсить вказівник
@@ -1199,6 +1205,22 @@ namespace AccountingSoftware
                 "FoldersAndElements" => ConfigurationDirectories.HierarchicalContentType.FoldersAndElements,
                 _ => 0
             };
+        }
+
+        /// <summary>
+        /// Функція повертає згенеровану випадкову назву довжиною 6 символів
+        /// </summary>
+        /// <returns>Випадкова стрічка довжиною 6 символів</returns>
+        public static string GetNewRandomName()
+        {
+            string[] Alphabet = GetUkrainianAlphabet();
+
+            string random = "";
+
+            for (int i = 0; i < 6; i++)
+                random += Alphabet[new Random().Next(Alphabet.Length)];
+
+            return $"_{random}";
         }
 
         #endregion

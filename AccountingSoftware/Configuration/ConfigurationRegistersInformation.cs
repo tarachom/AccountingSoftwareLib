@@ -21,133 +21,132 @@ limitations under the License.
 Сайт:     accounting.org.ua
 */
 
-namespace AccountingSoftware
+namespace AccountingSoftware;
+
+/// <summary>
+/// Регістри відомостей
+/// </summary>
+public class ConfigurationRegistersInformation : ConfigurationObjectTable, IConfigurationRegisters
 {
     /// <summary>
     /// Регістри відомостей
     /// </summary>
-    public class ConfigurationRegistersInformation : ConfigurationObjectTable
+    public ConfigurationRegistersInformation() { }
+
+    /// <summary>
+    /// Регістри відомостей
+    /// </summary>
+    /// <param name="name">Назва</param>
+    /// <param name="fullname">Повна назва</param>
+    /// <param name="table">Таблиця в базі даних</param>
+    /// <param name="desc">Опис</param>
+    public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "")
     {
-        /// <summary>
-        /// Регістри відомостей
-        /// </summary>
-        public ConfigurationRegistersInformation() { }
+        Name = name;
+        FullName = fullname;
+        Table = table;
+        Desc = desc;
+    }
 
-        /// <summary>
-        /// Регістри відомостей
-        /// </summary>
-        /// <param name="name">Назва</param>
-        /// <param name="fullname">Повна назва</param>
-        /// <param name="table">Таблиця в базі даних</param>
-        /// <param name="desc">Опис</param>
-        public ConfigurationRegistersInformation(string name, string fullname, string table, string desc = "")
-        {
-            Name = name;
-            FullName = fullname;
-            Table = table;
-            Desc = desc;
-        }
+    /// <summary>
+    /// Виміри
+    /// </summary>
+    public Dictionary<string, ConfigurationField> DimensionFields { get; } = [];
 
-        /// <summary>
-        /// Виміри
-        /// </summary>
-        public Dictionary<string, ConfigurationField> DimensionFields { get; } = [];
+    /// <summary>
+    /// Русурси
+    /// </summary>
+    public Dictionary<string, ConfigurationField> ResourcesFields { get; } = [];
 
-        /// <summary>
-        /// Русурси
-        /// </summary>
-        public Dictionary<string, ConfigurationField> ResourcesFields { get; } = [];
+    /// <summary>
+    /// Реквізити
+    /// </summary>
+    public Dictionary<string, ConfigurationField> PropertyFields { get; } = [];
 
-        /// <summary>
-        /// Реквізити
-        /// </summary>
-        public Dictionary<string, ConfigurationField> PropertyFields { get; } = [];
+    /// <summary>
+    /// Табличні списки
+    /// </summary>
+    public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
 
-        /// <summary>
-        /// Табличні списки
-        /// </summary>
-        public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
+    /// <summary>
+    /// Форми
+    /// </summary>
+    public Dictionary<string, ConfigurationForms> Forms { get; } = [];
 
-        /// <summary>
-        /// Форми
-        /// </summary>
-        public Dictionary<string, ConfigurationForms> Forms { get; } = [];
+    /// <summary>
+    /// Створення копії
+    /// </summary>
+    /// <returns></returns>
+    public ConfigurationRegistersInformation Copy()
+    {
+        ConfigurationRegistersInformation confRegCopy = new(this.Name, this.FullName, this.Table, this.Desc);
 
-        /// <summary>
-        /// Створення копії
-        /// </summary>
-        /// <returns></returns>
-        public ConfigurationRegistersInformation Copy()
-        {
-            ConfigurationRegistersInformation confRegCopy = new(this.Name, this.FullName, this.Table, this.Desc);
+        foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
+            confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
-                confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
+        foreach (KeyValuePair<string, ConfigurationField> fields in this.ResourcesFields)
+            confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationField> fields in this.ResourcesFields)
-                confRegCopy.ResourcesFields.Add(fields.Key, fields.Value.Copy());
+        foreach (KeyValuePair<string, ConfigurationField> fields in this.PropertyFields)
+            confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationField> fields in this.PropertyFields)
-                confRegCopy.PropertyFields.Add(fields.Key, fields.Value.Copy());
+        foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in this.TabularList)
+            confRegCopy.TabularList.Add(tabularList.Key, tabularList.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationTabularList> tabularList in this.TabularList)
-                confRegCopy.TabularList.Add(tabularList.Key, tabularList.Value.Copy());
+        foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
+            confRegCopy.Forms.Add(forms.Key, forms.Value.Copy());
 
-            foreach (KeyValuePair<string, ConfigurationForms> forms in this.Forms)
-                confRegCopy.Forms.Add(forms.Key, forms.Value.Copy());
+        return confRegCopy;
+    }
 
-            return confRegCopy;
-        }
-
-        /// <summary>
-        /// Функція повертає масив попередньо визначених полів
-        /// </summary>
-        public static ConfigurationPredefinedField[] GetPredefinedFields()
-        {
-            return
-            [
-                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+    /// <summary>
+    /// Функція повертає масив попередньо визначених полів
+    /// </summary>
+    public static ConfigurationPredefinedField[] GetPredefinedFields()
+    {
+        return
+        [
+            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
                 new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
                 new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
                 new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника")
-            ];
-        }
-
-        #region Append
-
-        public void AppendDimensionField(ConfigurationField field)
-        {
-            DimensionFields.Add(field.Name, field);
-        }
-
-        public void AppendResourcesField(ConfigurationField field)
-        {
-            ResourcesFields.Add(field.Name, field);
-        }
-
-        public void AppendPropertyField(ConfigurationField field)
-        {
-            PropertyFields.Add(field.Name, field);
-        }
-
-        /// <summary>
-        /// Додати новий табличний список
-        /// </summary>
-        /// <param name="tablePart">Новий табличний список</param>
-        public void AppendTableList(ConfigurationTabularList tabularList)
-        {
-            TabularList.Add(tabularList.Name, tabularList);
-        }
-
-        /// <summary>
-        /// Додати нову форму
-        /// </summary>
-        /// <param name="forms">Нова форма</param>
-        public void AppendForms(ConfigurationForms forms)
-        {
-            Forms.Add(forms.Name, forms);
-        }
-
-        #endregion
+        ];
     }
+
+    #region Append
+
+    public void AppendDimensionField(ConfigurationField field)
+    {
+        DimensionFields.Add(field.Name, field);
+    }
+
+    public void AppendResourcesField(ConfigurationField field)
+    {
+        ResourcesFields.Add(field.Name, field);
+    }
+
+    public void AppendPropertyField(ConfigurationField field)
+    {
+        PropertyFields.Add(field.Name, field);
+    }
+
+    /// <summary>
+    /// Додати новий табличний список
+    /// </summary>
+    /// <param name="tablePart">Новий табличний список</param>
+    public void AppendTableList(ConfigurationTabularList tabularList)
+    {
+        TabularList.Add(tabularList.Name, tabularList);
+    }
+
+    /// <summary>
+    /// Додати нову форму
+    /// </summary>
+    /// <param name="forms">Нова форма</param>
+    public void AppendForms(ConfigurationForms forms)
+    {
+        Forms.Add(forms.Name, forms);
+    }
+
+    #endregion
 }
