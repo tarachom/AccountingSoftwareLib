@@ -80,8 +80,44 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
 
         {
             var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListGroup";
+            row.Name = "Табличні списки";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListPrintBalancesGroup";
+            row.Name = "Друк проводок";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
             row.Group = "TablePartGroup";
             row.Name = "Табличні частини";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "QueryGroup";
+            row.Name = "Тригери";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "FormGroup";
+            row.Name = "Форми";
             row.Obj = Register;
 
             Store.Append(row);
@@ -157,6 +193,38 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
 
                     return store;
                 }
+            case "TabularListGroup" when obj is ConfigurationRegistersAccumulation registers:
+                {
+                    //Для групи Табличні списки заповнюю саме табличні списки
+                    foreach (ConfigurationTabularList tabularList in registers.TabularList.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TabularList";
+                        row.Name = tabularList.Name;
+                        row.Obj = tabularList;
+                        row.ParentObj = registers;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "TabularListPrintBalancesGroup" when obj is ConfigurationRegistersAccumulation registers:
+                {
+                    //Для групи Друк проводок заповнюю саме табличні списки для друку проводок
+                    foreach (ConfigurationTabularList tabularList in registers.TabularListPrintBalances.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TabularListPrintBalances";
+                        row.Name = tabularList.Name;
+                        row.Obj = tabularList;
+                        row.ParentObj = registers;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
             case "TablePartGroup" when obj is ConfigurationRegistersAccumulation registers:
                 {
                     //Для групи Табличні частини заповнюю саме табличні частини
@@ -174,6 +242,38 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
 
                     return store;
                 }
+            case "FormGroup" when obj is ConfigurationRegistersAccumulation registers:
+                {
+                    //Для групи Форми заповнюю саме форми
+                    foreach (ConfigurationForms form in registers.Forms.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Form";
+                        row.Name = form.Name;
+                        row.Obj = form;
+                        row.ParentObj = registers;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "QueryGroup" when obj is ConfigurationRegistersAccumulation registers:
+                {
+                    //Для групи Запити заповнюю блоки запитів
+                    foreach (ConfigurationQueryBlock block in registers.QueryBlockList.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "QueryBlock";
+                        row.Name = block.Name;
+                        row.Obj = block;
+                        row.ParentObj = registers;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }    
             case "TablePart" when obj is ConfigurationTablePart tablePart:
                 {
                     //Для табличної частини заповнюю поля

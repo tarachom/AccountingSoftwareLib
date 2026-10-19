@@ -254,11 +254,13 @@ public abstract class ConfiguratorTree
                             "ResourcesFields" => Icon.ForConfigurator.Calculator,
                             "PropertyFields" => Icon.ForConfigurator.Fields,
 
-                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "FormGroup" => Icon.ForConfigurator.Sheets,
+                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "TabularListPrintBalancesGroup" or
+                                "FormGroup" or "QueryGroup" => Icon.ForConfigurator.Sheets,
 
-                            "TabularList" => Icon.ForInformation.Grid,
+                            "TabularList" or "TabularListPrintBalances" => Icon.ForInformation.Grid,
                             "TablePart" => Icon.ForInformation.Grid,
                             "Form" => Icon.ForConfigurator.Form,
+                            "QueryBlock" => Icon.ForConfigurator.Func,
 
                             "Field" or "TablePartField" or "DimensionField" or "ResourcesField" or "PropertyField" => Icon.ForConfigurator.Field,
                             _ => null

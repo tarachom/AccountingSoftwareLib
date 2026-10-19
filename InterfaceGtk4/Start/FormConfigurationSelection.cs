@@ -72,7 +72,7 @@ public abstract partial class FormConfigurationSelection : Window
             listBox.SelectionMode = SelectionMode.Single;
             listBox.AddController(gesture);
             listBox.AddController(contr);
-            listBox.OnRowActivated += (_, args) => { };
+            //listBox.OnRowActivated += (_, args) => { };
             scroll.Child = listBox;
 
             hBox.Append(scroll);

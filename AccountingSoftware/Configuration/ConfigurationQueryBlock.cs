@@ -47,7 +47,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Запити
         /// </summary>
-        public Dictionary<string, string> Query { get; } = [];
+        public OrderedDictionary<string, string> Query { get; } = [];
 
         /// <summary>
         /// Признак того що блок запитів призначений для фінального розрахунку
