@@ -132,7 +132,15 @@ public abstract partial class FormPageConfigurator : Form
         NotebookFunc?.SpinnerOff(GetName());
     }
 
-    protected (bool result, string name) IsValid(string name, string oldname, List<string> Keys)
+/// <summary>
+/// Первірка назви обєкту конфігурації (довідники, документи, поля) на заповненість та валідність
+/// </summary>
+/// <param name="name">Назва</param>
+/// <param name="oldname">Стара назва</param>
+/// <param name="Keys">Масив вже існуючих імен в межах перевірки</param>
+/// <param name="ignoreNameValidation">Ігнорувати перевірку імені на валідність</param>
+/// <returns></returns>
+    protected (bool result, string name) IsValid(string name, string oldname, List<string> Keys, bool ignoreNameValidation = false)
     {
         bool IsUniqueName()
         {
@@ -145,11 +153,14 @@ public abstract partial class FormPageConfigurator : Form
                 return true;
         }
 
-        string errorList = Configuration.ValidateConfigurationObjectName(ref name);
-        if (errorList.Length > 0)
+        if (!ignoreNameValidation)
         {
-            Message.Error(NotebookFunc?.BasicForm, "Помилка", $"{errorList}");
-            return (false, name);
+            string errorList = Configuration.ValidateConfigurationObjectName(ref name);
+            if (errorList.Length > 0)
+            {
+                Message.Error(NotebookFunc?.BasicForm, "Помилка", $"{errorList}");
+                return (false, name);
+            }
         }
 
         if (IsNew)

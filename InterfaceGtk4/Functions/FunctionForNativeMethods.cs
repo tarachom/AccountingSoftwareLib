@@ -51,6 +51,9 @@ public static class FunctionForNativeMethods
         //Для Windows реєструється шлях до бібліотек Gtk
         if (OperatingSystem.IsWindows())
         {
+            //Примусово вимикаємо модуль IME для Windows
+            Environment.SetEnvironmentVariable("GTK_IM_MODULE", "simple");
+
             string msysPath;
             if (string.IsNullOrEmpty(path))
             {

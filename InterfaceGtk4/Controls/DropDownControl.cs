@@ -135,7 +135,10 @@ public partial class DropDownControl : Box
         set
         {
             if (value_ != value)
-                value_ = FunctionForDropDown.SelectByValue(DropDown, value) ? value : "";
+            {
+                value_ = FunctionForDropDown.SelectByValue(DropDown, value) ? value : AllowEmpty ? "" : value_;
+                OnСhanged?.Invoke();
+            }
         }
     }
     string value_ = "";

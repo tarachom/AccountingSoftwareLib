@@ -3387,7 +3387,6 @@ FROM
             {
                 string query = "";
                 int counter = 0;
-
                 /*
                    масив typeDocSelect має складатися із елементів ВидДокументу:Таблиця
                 */
@@ -3407,8 +3406,11 @@ FROM
 
                 if (tables.Length > 0)
                 {
+                    int position = 0;
                     foreach (string table in tables)
                     {
+                        position++;
+
                         //Фільтрування у випадку якщо є задані фільтри
                         if (typeAllowDoc.Count > 0 && !typeAllowDoc.Contains(table))
                             continue;
@@ -3426,7 +3428,7 @@ FROM
                         }
 
                         query += (counter > 0 ? "\nUNION " : "") +
-                            $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[counter]}' AS type_doc FROM {table} \n" +
+                            $"(SELECT uid, docname, docdate, docnomer, deletion_label, spend, spend_date, '{typeDocument[position - 1]}' AS type_doc FROM {table} \n" +
                             $"WHERE docdate >= @periodstart AND docdate <= @periodend {whereSpendDoc})";
 
                         counter++;
