@@ -4,7 +4,7 @@ using GObject;
 namespace InterfaceGtk4;
 
 /// <summary>
-/// 
+/// Для випадаючого списку
 /// </summary>
 [Subclass<GObject.Object>]
 public partial class DropDownItemRow

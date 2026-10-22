@@ -80,24 +80,6 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
 
         {
             var row = ConfiguratorItemRow.New();
-            row.Group = "TabularListGroup";
-            row.Name = "Табличні списки";
-            row.Obj = Register;
-
-            Store.Append(row);
-        }
-
-        {
-            var row = ConfiguratorItemRow.New();
-            row.Group = "TabularListPrintBalancesGroup";
-            row.Name = "Друк проводок";
-            row.Obj = Register;
-
-            Store.Append(row);
-        }
-
-        {
-            var row = ConfiguratorItemRow.New();
             row.Group = "TablePartGroup";
             row.Name = "Табличні частини";
             row.Obj = Register;
@@ -109,6 +91,24 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
             var row = ConfiguratorItemRow.New();
             row.Group = "QueryGroup";
             row.Name = "Тригери";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListGroup";
+            row.Name = "Табличні списки";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListPrintBalancesGroup";
+            row.Name = "Друк проводок";
             row.Obj = Register;
 
             Store.Append(row);
@@ -273,7 +273,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                     }
 
                     return store;
-                }    
+                }
             case "TablePart" when obj is ConfigurationTablePart tablePart:
                 {
                     //Для табличної частини заповнюю поля

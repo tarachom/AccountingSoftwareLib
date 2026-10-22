@@ -27,7 +27,7 @@ namespace InterfaceGtk4;
 /// Обробка
 /// </summary>
 [GObject.Subclass<FormProcessing>]
-public abstract  partial class Processing : FormProcessing
+public abstract partial class Processing : FormProcessing
 {
-    partial void Initialize(){}
+    partial void Initialize() { }
 }

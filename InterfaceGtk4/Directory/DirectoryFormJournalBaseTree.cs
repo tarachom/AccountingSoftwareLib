@@ -111,7 +111,6 @@ public abstract partial class DirectoryFormJournalBaseTree : DirectoryFormJourna
         if (itemRow.IsLoading)
         {
             if (itemRow.Store != null)
-            {
                 GLib.Functions.IdleAdd(0, () =>
                 {
                     async void f()
@@ -150,7 +149,6 @@ public abstract partial class DirectoryFormJournalBaseTree : DirectoryFormJourna
 
                     return false;
                 });
-            }
         }
         else
         {
