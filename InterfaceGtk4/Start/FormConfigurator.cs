@@ -97,7 +97,7 @@ public abstract partial class FormConfigurator : Window
     public virtual async Task PageField(bool isNew, Dictionary<string, ConfigurationField> fields, ConfigurationField? field = null, ConfiguratorItemOwner? owner = null) { }
     public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
     protected virtual async Task PageJournal(string name, bool isNew = false) { }
-    protected virtual async Task PageEnum(string name, bool isNew = false) { }
+    public virtual async Task PageEnum(bool isNew, ConfigurationEnums? enums = null) { }
     public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
     public virtual async Task PageRegisterAccumulation(bool isNew, ConfigurationRegistersAccumulation? register = null) { }
     protected virtual async Task PageSettings() { }
@@ -631,39 +631,88 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
+            bool hide = false;
             switch (row.Group)
             {
-                case "Enums":
+                case "Enums" when row.Obj is ConfigurationEnums enums:
                     {
-                        await PageEnum(row.Name);
-                        return;
+                        await PageEnum(false, enums);
+                        hide = true;
+                        break;
                     }
                 case "Field":
                     {
-
-                        return;
+                        break;
                     }
                 default:
-                    return;
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        async void Add()
+        {
+            await PageEnum(true);
+            popover.Hide();
+        }
+
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "Enums" when row.Obj is ConfigurationEnums enums:
+                    {
+                        ConfigurationEnums newEnums = enums.Copy();
+                        newEnums.Name += Configuration.GetNewRandomName();
+
+                        await PageEnum(true, newEnums);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "Enums" when row.Obj is ConfigurationEnums enums:
+                    {
+                        Kernel.Conf.Enums.Remove(enums.Name);
+                        break;
+                    }
+                default:
+                    break;
             }
         }
 
         Box getbox() => new ConfiguratorEnumsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async (_, _) => await PageEnum("", true),
+            Add = async (_, _) => Add(),
             Edit = (_, rows) =>
             {
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
-            Delete = (_, rows) =>
-            {
-
-            },
+            Delete = async (_, rows) =>
+           {
+               if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
+               {
+                   foreach (var row in rows)
+                       Delete(row);
+               }
+           },
             OpenNewTab = (_) =>
             {
                 //Відкрити окремо
