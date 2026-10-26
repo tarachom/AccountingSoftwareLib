@@ -146,11 +146,11 @@ public abstract partial class FormGeneral : Window
 
     protected virtual void ButtonMessageClicked() { }
     protected virtual void ButtonFindClicked(string text) { }
-    protected virtual bool OpenDocumentByType(string name) => false;
-    protected virtual bool OpenDirectoryByType(string name) => false;
-    protected virtual bool OpenJournalByType(string name) => false;
-    protected virtual bool OpenRegisterInformationByType(string name) => false;
-    protected virtual bool OpenRegisterAccumulationByType(string name) => false;
+    protected virtual async Task<bool> OpenDocumentByType(string name) => false;
+    protected virtual async Task<bool> OpenDirectoryByType(string name) => false;
+    protected virtual async Task<bool> OpenJournalByType(string name) => false;
+    protected virtual async Task<bool> OpenRegisterInformationByType(string name) => false;
+    protected virtual async Task<bool> OpenRegisterAccumulationByType(string name) => false;
     protected virtual void Settings(LinkButton link) { }
     protected virtual void Service(LinkButton link) { }
     protected virtual void Processing(LinkButton link) { }
@@ -271,12 +271,12 @@ public abstract partial class FormGeneral : Window
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
+            gesture.OnPressed += async (_, args) =>
             {
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenDocumentByType(selectedRow.GetName()))
+                    if (selectedRow != null && await OpenDocumentByType(selectedRow.GetName()))
                         popover.Hide();
                 }
             };
@@ -338,12 +338,12 @@ public abstract partial class FormGeneral : Window
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
+            gesture.OnPressed += async (_, args) =>
             {
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenDirectoryByType(selectedRow.GetName()))
+                    if (selectedRow != null && await OpenDirectoryByType(selectedRow.GetName()))
                         popover.Hide();
                 }
             };
@@ -405,12 +405,12 @@ public abstract partial class FormGeneral : Window
 
             GestureClick gesture = GestureClick.New();
             listBox.AddController(gesture);
-            gesture.OnPressed += (_, args) =>
+            gesture.OnPressed += async (_, args) =>
             {
                 if (args.NPress >= 2)
                 {
                     ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                    if (selectedRow != null && OpenJournalByType(selectedRow.GetName()))
+                    if (selectedRow != null && await OpenJournalByType(selectedRow.GetName()))
                         popover.Hide();
                 }
             };
@@ -492,12 +492,12 @@ public abstract partial class FormGeneral : Window
 
                 GestureClick gesture = GestureClick.New();
                 listBox.AddController(gesture);
-                gesture.OnPressed += (_, args) =>
+                gesture.OnPressed += async (_, args) =>
                 {
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && OpenRegisterInformationByType(selectedRow.GetName()))
+                        if (selectedRow != null && await OpenRegisterInformationByType(selectedRow.GetName()))
                             popover.Hide();
                     }
                 };
@@ -539,12 +539,12 @@ public abstract partial class FormGeneral : Window
 
                 GestureClick gesture = GestureClick.New();
                 listBox.AddController(gesture);
-                gesture.OnPressed += (_, args) =>
+                gesture.OnPressed += async (_, args) =>
                 {
                     if (args.NPress >= 2)
                     {
                         ListBoxRow? selectedRow = listBox.GetSelectedRow();
-                        if (selectedRow != null && OpenRegisterAccumulationByType(selectedRow.GetName()))
+                        if (selectedRow != null && await OpenRegisterAccumulationByType(selectedRow.GetName()))
                             popover.Hide();
                     }
                 };

@@ -22,7 +22,6 @@ limitations under the License.
 */
 
 using Gtk;
-using Gdk;
 using AccountingSoftware;
 
 namespace InterfaceGtk4;
@@ -45,10 +44,23 @@ partial class FormLogIn : Window
         EventControllerKey eventContrKey = EventControllerKey.New();
         eventContrKey.OnKeyReleased += (_, args) =>
         {
-            if (args.Keyval ==  Gdk.Constants.KEY_Escape)
+            if (args.Keyval == Gdk.Constants.KEY_Escape)
                 OnCancel(null, new());
         };
         AddController(eventContrKey);
+
+        //При закритті вікна
+        OnCloseRequest += (_, _) =>
+        {
+            if (TransientFor != null)
+                GLib.Functions.IdleAdd(0, () =>
+                {
+                    if (TransientFor.IsVisible()) TransientFor.Present();
+                    return false;
+                });
+
+            return false;
+        };
 
         Box vBox = Box.New(Orientation.Vertical, 0);
         vBox.MarginStart = vBox.MarginEnd = vBox.MarginTop = vBox.MarginBottom = 10;
@@ -169,7 +181,7 @@ partial class FormLogIn : Window
             else
             {
                 passwordUser.SelectRegion(0, passwordUser.GetText().Length);
-                Message.Error(this, "Невірний пароль", "Помилка");
+                await Message.Info(this, "Невірний пароль", "Помилка");
             }
 
             button?.Sensitive = true;

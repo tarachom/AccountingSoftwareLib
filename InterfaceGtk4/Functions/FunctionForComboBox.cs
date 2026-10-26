@@ -32,6 +32,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Функції для випадаючого списку
 /// </summary>
+[Obsolete("Не використовувати FunctionForComboBox. Потрібно використовувати FunctionForDropDown")]
 public static class FunctionForComboBox
 {
     /// <summary>

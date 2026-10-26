@@ -132,21 +132,21 @@ public abstract partial class FormPageConfigurator : Form
         NotebookFunc?.SpinnerOff(GetName());
     }
 
-/// <summary>
-/// Первірка назви обєкту конфігурації (довідники, документи, поля) на заповненість та валідність
-/// </summary>
-/// <param name="name">Назва</param>
-/// <param name="oldname">Стара назва</param>
-/// <param name="Keys">Масив вже існуючих імен в межах перевірки</param>
-/// <param name="ignoreNameValidation">Ігнорувати перевірку імені на валідність</param>
-/// <returns></returns>
-    protected (bool result, string name) IsValid(string name, string oldname, List<string> Keys, bool ignoreNameValidation = false)
+    /// <summary>
+    /// Первірка назви обєкту конфігурації (довідники, документи, поля) на заповненість та валідність
+    /// </summary>
+    /// <param name="name">Назва</param>
+    /// <param name="oldname">Стара назва</param>
+    /// <param name="Keys">Масив вже існуючих імен в межах перевірки</param>
+    /// <param name="ignoreNameValidation">Ігнорувати перевірку імені на валідність</param>
+    /// <returns></returns>
+    protected async Task<(bool result, string name)> IsValid(string name, string oldname, List<string> Keys, bool ignoreNameValidation = false)
     {
-        bool IsUniqueName()
+        async Task<bool> IsUniqueName()
         {
             if (Keys.Contains(name))
             {
-                Message.Error(NotebookFunc?.BasicForm, "Помилка", "Назва не унікальна");
+                await Message.Info(NotebookFunc?.BasicForm, "Помилка", "Назва не унікальна");
                 return false;
             }
             else
@@ -158,17 +158,17 @@ public abstract partial class FormPageConfigurator : Form
             string errorList = Configuration.ValidateConfigurationObjectName(ref name);
             if (errorList.Length > 0)
             {
-                Message.Error(NotebookFunc?.BasicForm, "Помилка", $"{errorList}");
+                await Message.Info(NotebookFunc?.BasicForm, "Помилка", $"{errorList}");
                 return (false, name);
             }
         }
 
         if (IsNew)
         {
-            if (!IsUniqueName())
+            if (!await IsUniqueName())
                 return (false, name);
         }
-        else if (oldname != name && !IsUniqueName())
+        else if (oldname != name && !await IsUniqueName())
             return (false, name);
 
         return (true, name);

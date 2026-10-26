@@ -111,7 +111,7 @@ public abstract partial class CompositePointerControl : PointerControl
     /// </summary>
     public string BoundConfType { get; set; } = "";
 
-    protected override void OpenSelect(Button button, EventArgs args)
+    protected override async void OpenSelect(Button button, EventArgs args)
     {
         //Якщо вибраний тип тоді відкриваю журнал
         if (PointerName == "Документи" || PointerName == "Довідники")
@@ -131,7 +131,7 @@ public abstract partial class CompositePointerControl : PointerControl
             }
             catch (Exception ex)
             {
-                Message.Error(NotebookFunc?.BasicForm, ex.Message);
+                await Message.Info(NotebookFunc?.BasicForm, ex.Message);
                 return;
             }
 

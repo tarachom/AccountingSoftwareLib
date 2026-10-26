@@ -436,14 +436,13 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
                 {
-                    if (x == Message.YesNo.Yes)
-                        foreach (var row in rows)
-                            Delete(row);
-                });
+                    foreach (var row in rows)
+                        Delete(row);
+                }
             },
             OpenNewTab = (_) =>
             {
@@ -554,14 +553,13 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
                 {
-                    if (x == Message.YesNo.Yes)
-                        foreach (var row in rows)
-                            Delete(row);
-                });
+                    foreach (var row in rows)
+                        Delete(row);
+                }
             },
             OpenNewTab = (_) =>
             {
@@ -771,14 +769,13 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
                 {
-                    if (x == Message.YesNo.Yes)
-                        foreach (var row in rows)
-                            Delete(row);
-                });
+                    foreach (var row in rows)
+                        Delete(row);
+                }
             },
             OpenNewTab = (_) =>
             {
@@ -901,14 +898,13 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-                Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?", x =>
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
                 {
-                    if (x == Message.YesNo.Yes)
-                        foreach (var row in rows)
-                            Delete(row);
-                });
+                    foreach (var row in rows)
+                        Delete(row);
+                }
             },
             OpenNewTab = _ =>
             {

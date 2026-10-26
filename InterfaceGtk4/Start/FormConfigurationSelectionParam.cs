@@ -58,6 +58,19 @@ partial class FormConfigurationSelectionParam : Window
         };
         AddController(eventContrKey);
 
+        //При закритті вікна
+        OnCloseRequest += (_, _) =>
+        {
+            if (TransientFor != null)
+                GLib.Functions.IdleAdd(0, () =>
+                {
+                    if (TransientFor.IsVisible()) TransientFor.Present();
+                    return false;
+                });
+
+            return false;
+        };
+
         Box vBox = Box.New(Orientation.Vertical, 0);
         vBox.MarginStart = vBox.MarginEnd = vBox.MarginTop = vBox.MarginBottom = 10;
 
@@ -198,11 +211,11 @@ partial class FormConfigurationSelectionParam : Window
         }
     }
 
-    bool SaveConfParam()
+    async Task<bool> SaveConfParam()
     {
         if (!int.TryParse(Port.Text_, out int portInteger))
         {
-            Message.Error(this, "Помилка", "Порт має бути цілим числом!");
+            await Message.Info(this, "Помилка", "Порт має бути цілим числом!");
             return false;
         }
 
@@ -223,9 +236,9 @@ partial class FormConfigurationSelectionParam : Window
             return false;
     }
 
-    void OnButtonSaveClicked(Button button, EventArgs args)
+    async void OnButtonSaveClicked(Button button, EventArgs args)
     {
-        if (SaveConfParam())
+        if (await SaveConfParam())
             ThisClose();
     }
 
@@ -233,7 +246,7 @@ partial class FormConfigurationSelectionParam : Window
     {
         if (OpenConfigurationParam == null) return;
 
-        if (SaveConfParam())
+        if (await SaveConfParam())
         {
             button.Sensitive = false;
 
@@ -248,7 +261,7 @@ partial class FormConfigurationSelectionParam : Window
             );
 
             if (ifExistsDatabase)
-                Message.Info(this, "Повідомлення", "База даних вже існує");
+                await Message.Info(this, "Повідомлення", "База даних вже існує");
             else
             {
                 bool result = await kernel.CreateDatabaseIfNotExist(
@@ -260,9 +273,9 @@ partial class FormConfigurationSelectionParam : Window
                 );
 
                 if (result)
-                    Message.Info(this, "Повідомлення", "OK.\n\nБаза даних створена");
+                    await Message.Info(this, "Повідомлення", "OK.\n\nБаза даних створена");
                 else
-                    Message.Error(this, "Помилка", kernel.Exception?.Message);
+                    await Message.Info(this, "Помилка", kernel.Exception?.Message);
             }
 
             button.Sensitive = true;

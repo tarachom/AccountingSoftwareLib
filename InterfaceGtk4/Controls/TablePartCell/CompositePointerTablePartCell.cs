@@ -128,7 +128,7 @@ public abstract partial class CompositePointerControlTablePartCell : PointerTabl
     /// </summary>
     public string BoundConfType { get; set; } = "";
 
-    protected override void Select(Button button, EventArgs args)
+    protected override async void Select(Button button, EventArgs args)
     {
         //Якщо вибраний тип тоді відкриваю журнал
         if (PointerName == "Документи" || PointerName == "Довідники")
@@ -148,7 +148,7 @@ public abstract partial class CompositePointerControlTablePartCell : PointerTabl
             }
             catch (Exception ex)
             {
-                Message.Error(NotebookFunc?.BasicForm, ex.Message);
+                await Message.Info(NotebookFunc?.BasicForm, ex.Message);
                 return;
             }
 

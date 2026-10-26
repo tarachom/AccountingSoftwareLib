@@ -31,19 +31,41 @@ using Gtk;
 
 namespace InterfaceGtk4;
 
-/// <summary>
-/// Повідомлення
-/// </summary>
 public class Message
 {
     /// <summary>
-    /// Внутрішня функція - створює базове діалогове вікно
+    /// Ознака того, що поточна версія GTK є старішою за 4.10.0
     /// </summary>
-    /// <param name="win"></param>
-    /// <param name="text"></param>
-    /// <param name="secondaryText"></param>
-    /// <returns>MessageDialog</returns>
-    static MessageDialog Create(Window? win, string text, string? secondaryText = null)
+    private static readonly bool IsLegacyGtk = Functions.CheckVersion(4, 10, 0) != null;
+
+    #region Info
+
+    /// <summary>
+    /// Інформаційне повідомлення
+    /// </summary>
+    public static async Task Info(Window? win, string text, string? secondaryText = null)
+    {
+        if (IsLegacyGtk)
+            await ShowLegacyDialog(win, text, secondaryText);
+        else
+            await ShowModernDialog(win, text, secondaryText);
+    }
+
+    #endregion
+
+    #region Request (Так / Ні)
+
+    /// <summary>
+    /// Повідомлення запит Так/Ні
+    /// </summary>
+    public static async Task<YesNo> Request(Window? win, string text, string? secondaryText = null) =>
+        IsLegacyGtk ? await RequestLegacy(win, text, secondaryText) : await RequestModern(win, text, secondaryText);
+
+    #endregion
+
+    #region Реалізація для версій нижче 4.10 (MessageDialog)
+
+    static MessageDialog CreateLegacy(Window? win, string text, string? secondaryText = null)
     {
         MessageDialog md = MessageDialog.NewWithProperties([]);
         md.Application = win?.Application;
@@ -57,58 +79,93 @@ public class Message
         return md;
     }
 
-    public static void Info(Window? win, string text, string? secondaryText = null)
+    private static Task<bool> ShowLegacyDialog(Window? win, string text, string? secondaryText)
     {
-        MessageDialog message = Create(win, text, secondaryText);
+        var tcs = new TaskCompletionSource<bool>();
+        MessageDialog message = CreateLegacy(win, text, secondaryText);
         message.AddButton("Закрити", 1);
 
         message.OnResponse += (_, _) =>
         {
             message.Hide();
             message.Destroy();
+            tcs.TrySetResult(true);
         };
 
         message.Show();
+        return tcs.Task;
     }
 
-    public static void Error(Window? win, string text, string? secondaryText = null)
+    static Task<YesNo> RequestLegacy(Window? win, string text, string? secondaryText)
     {
-        MessageDialog message = Create(win, text, secondaryText);
-        message.AddButton("Закрити", 1);
-
-        message.OnResponse += (_, _) =>
-        {
-            message.Hide();
-            message.Destroy();
-        };
-
-        message.Show();
-    }
-
-    /// <summary>
-    /// Повідомлення запит Так/Ні
-    /// </summary>
-    /// <param name="win">Вікно власник</param>
-    /// <param name="text">Текст</param>
-    /// <param name="secondaryText">Текст</param>
-    /// <param name="callBackResponse">Функція зворотнього виклику</param>
-    public static void Request(Window? win, string text, string? secondaryText = null, Action<YesNo>? callBackResponse = null)
-    {
-        MessageDialog message = Create(win, text, secondaryText);
+        var tcs = new TaskCompletionSource<YesNo>();
+        MessageDialog message = CreateLegacy(win, text, secondaryText);
         Button buttonYes = (Button)message.AddButton("Так", (int)YesNo.Yes);
         message.AddButton("Ні", (int)YesNo.No);
 
         message.OnResponse += (_, arrg) =>
         {
-            callBackResponse?.Invoke((YesNo)arrg.ResponseId);
-
+            var res = (YesNo)arrg.ResponseId;
             message.Hide();
             message.Destroy();
+            tcs.TrySetResult(res);
         };
 
         message.Show();
         buttonYes.GrabFocus();
+
+        return tcs.Task;
     }
+
+    #endregion
+
+    #region Реалізація для версій 4.10+ (AlertDialog)
+
+    static async Task<int> ShowModernDialog(Window? win, string text, string? secondaryText)
+    {
+        AlertDialog dialog = AlertDialog.NewWithProperties([]);
+        dialog.SetMessage(text);
+
+        if (!string.IsNullOrEmpty(secondaryText))
+            dialog.SetDetail(secondaryText);
+
+        dialog.SetButtons(["Закрити"]);
+        dialog.SetDefaultButton(0);
+        dialog.SetCancelButton(0);
+
+        try
+        {
+            return await dialog.ChooseAsync(win);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    static async Task<YesNo> RequestModern(Window? win, string text, string? secondaryText)
+    {
+        AlertDialog dialog = AlertDialog.NewWithProperties([]);
+        dialog.SetMessage(text);
+
+        if (!string.IsNullOrEmpty(secondaryText))
+            dialog.SetDetail(secondaryText);
+
+        dialog.SetButtons(["Так", "Ні"]);
+        dialog.SetDefaultButton(0);
+        dialog.SetCancelButton(1);
+
+        try
+        {
+            return await dialog.ChooseAsync(win) == 0 ? YesNo.Yes : YesNo.No;
+        }
+        catch
+        {
+            return YesNo.No;
+        }
+    }
+
+    #endregion
 
     public enum YesNo
     {

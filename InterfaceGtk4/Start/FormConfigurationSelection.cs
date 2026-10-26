@@ -260,7 +260,7 @@ public abstract partial class FormConfigurationSelection : Window
                         window.CallBack_ResponseOk = async () =>
                         {
                             if (await OpenProgram(ConfigurationParamCollection.GlobalParam, ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
-                                Close();
+                                this.Close();
                         };
                         window.CallBack_ResponseCancel = ProgramKernel.Close;
 
@@ -269,7 +269,7 @@ public abstract partial class FormConfigurationSelection : Window
                     }
                 }
                 else
-                    Message.Error(this, "Помилка", ProgramKernel.Exception?.Message);
+                    await Message.Info(this, "Помилка", ProgramKernel.Exception?.Message);
             }
         }
 
@@ -315,7 +315,7 @@ public abstract partial class FormConfigurationSelection : Window
                     window.CallBack_ResponseOk = async () =>
                     {
                         if (await OpenConfigurator(ConfigurationParamCollection.GlobalParam, ConfigurationParamCollection.GetConfigurationParam(selectedRow.GetName())))
-                            Close();
+                            this.Close();
                     };
                     window.CallBack_ResponseCancel = ConfiguratorKernel.Close;
 
@@ -323,7 +323,7 @@ public abstract partial class FormConfigurationSelection : Window
                     window.Show();
                 }
                 else
-                    Message.Error(this, "Помилка", ConfiguratorKernel.Exception?.Message);
+                    await Message.Info(this, "Помилка", ConfiguratorKernel.Exception?.Message);
             }
         }
 
@@ -342,7 +342,7 @@ public abstract partial class FormConfigurationSelection : Window
 
         if (!await kernel.DataBase.IfExistsTable(SpecialTables.Constants))
         {
-            Message.Error(this, "Помилка", $"Відсутня таблиця tab_constants.{help}");
+            await Message.Info(this, "Помилка", $"Відсутня таблиця tab_constants.{help}");
             return false;
         }
 
@@ -352,7 +352,7 @@ public abstract partial class FormConfigurationSelection : Window
         foreach (string table in SpecialTables.SpecialTablesList)
             if (!specialTable.Contains(SpecialTables.Users))
             {
-                Message.Error(this, "Помилка", $"Відсутня системна таблиця {table}.{help}");
+                await Message.Info(this, "Помилка", $"Відсутня системна таблиця {table}.{help}");
                 return false;
             }
 
@@ -394,19 +394,18 @@ public abstract partial class FormConfigurationSelection : Window
         }
     }
 
-    void OnDelete(Button button, EventArgs args)
+    async void OnDelete(Button button, EventArgs args)
     {
         ListBoxRow? selectedRow = listBox.GetSelectedRow();
         if (selectedRow != null && selectedRow.Name != null)
-            Message.Request(this, "Видалити?", "Видалити підключення до бази даних?", x =>
+            if (await Message.Request(this, "Видалити?", "Видалити підключення до бази даних?") == Message.YesNo.Yes)
             {
-                if (x == Message.YesNo.Yes)
-                    if (ConfigurationParamCollection.RemoveConfigurationParam(selectedRow.Name))
-                    {
-                        ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
-                        FillListBoxDataBase();
-                    }
-            });
+                if (ConfigurationParamCollection.RemoveConfigurationParam(selectedRow.Name))
+                {
+                    ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
+                    FillListBoxDataBase();
+                }
+            }
     }
 
     void OnEdit(Button? button, EventArgs args)

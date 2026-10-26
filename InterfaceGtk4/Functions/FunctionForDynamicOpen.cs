@@ -51,7 +51,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeJournal">Тип</param>
     /// <param name="uniqueID">Елемент для позиціювання</param>
-    public bool OpenJournalByType(string typeJournal, UniqueID? uniqueID = null)
+    public async Task<bool> OpenJournalByType(string typeJournal, UniqueID? uniqueID = null)
     {
         object? instance;
 
@@ -61,7 +61,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm, ex.Message);
+            await Message.Info(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 
@@ -86,7 +86,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="typeDir">Тип</param>
     /// <param name="uniqueID">Елемент для позиціонування</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDirectoryByType(string typeDir, UniqueID? uniqueID = null, TypeForm typeForm = TypeForm.Journal)
+    public async Task<bool> OpenDirectoryByType(string typeDir, UniqueID? uniqueID = null, TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
@@ -107,7 +107,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(NotebookFunc?.BasicForm, ex.Message);
+                        await Message.Info(NotebookFunc?.BasicForm, ex.Message);
                         return false;
                     }
 
@@ -152,7 +152,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// <param name="uniqueID">Елемент для позиціювання</param>
     /// <param name="keyForSetting">Додатковий ключ для налаштуваннь користувача</param>
     /// <param name="typeForm">Тип форми</param>
-    public bool OpenDocumentByType(string typeDoc, UniqueID? uniqueID = null, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
+    public async Task<bool> OpenDocumentByType(string typeDoc, UniqueID? uniqueID = null, string keyForSetting = "", TypeForm typeForm = TypeForm.Journal)
     {
         switch (typeForm)
         {
@@ -174,7 +174,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
                     }
                     catch (Exception ex)
                     {
-                        Message.Error(NotebookFunc?.BasicForm, ex.Message);
+                        await Message.Info(NotebookFunc?.BasicForm, ex.Message);
                         return false;
                     }
 
@@ -221,7 +221,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID = null)
+    public async Task<bool> OpenRegisterInformationByType(string typeReg, UniqueID? uniqueID = null)
     {
         object? instance = null;
 
@@ -238,7 +238,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm, ex.Message);
+            await Message.Info(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 
@@ -270,7 +270,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
     /// </summary>
     /// <param name="typeReg">Назва</param>
     /// <param name="uniqueID">Елемент який потрібно виділити в списку</param>
-    public bool OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID = null)
+    public async Task<bool> OpenRegisterAccumulationByType(string typeReg, UniqueID? uniqueID = null)
     {
         object? instance = null;
 
@@ -287,7 +287,7 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
         }
         catch (Exception ex)
         {
-            Message.Error(NotebookFunc?.BasicForm, ex.Message);
+            await Message.Info(NotebookFunc?.BasicForm, ex.Message);
             return false;
         }
 
@@ -329,7 +329,8 @@ public abstract class FunctionForDynamicOpen(string namespaceProgram, string nam
             lb.Halign = Align.Start;
             lb.OnActivateLink += (sender, args) =>
             {
-                OpenDocumentByType(typeDoc.Key, new UniqueID());
+                async void f() => await OpenDocumentByType(typeDoc.Key, new UniqueID());
+                f();
                 return true;
             };
 
