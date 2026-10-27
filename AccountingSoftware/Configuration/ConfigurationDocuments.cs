@@ -145,16 +145,13 @@ namespace AccountingSoftware
         /// <summary>
         /// Функція повертає масив попередньо визначених полів
         /// </summary>
-        public static ConfigurationPredefinedField[] GetPredefinedFields()
-        {
-            return
-            [
-                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-                new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення"),
-                new ConfigurationPredefinedField("spend", "boolean", false, true, true, "Документ проведений"),
-                new ConfigurationPredefinedField("spend_date", "timestamp without time zone", false, false, true, "Дата проведення")
-            ];
-        }
+        public static ConfigurationPredefinedField[] GetPredefinedFields() =>
+        [
+            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+            new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення"),
+            new ConfigurationPredefinedField("spend", "boolean", false, true, true, "Документ проведений"),
+            new ConfigurationPredefinedField("spend_date", "timestamp without time zone", false, false, true, "Дата проведення")
+        ];
 
         /// <summary>
         /// Додати нове поле в список полів

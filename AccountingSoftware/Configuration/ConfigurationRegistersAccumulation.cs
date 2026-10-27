@@ -46,14 +46,14 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
         Name = name;
         FullName = fullname;
         Table = table;
-        TypeRegistersAccumulation = type;
+        TypeRegisters = type;
         Desc = desc;
     }
 
     /// <summary>
     /// Тип регістру
     /// </summary>
-    public TypeRegistersAccumulation TypeRegistersAccumulation { get; set; } = TypeRegistersAccumulation.Residues;
+    public TypeRegistersAccumulation TypeRegisters { get; set; } = TypeRegistersAccumulation.Residues;
 
     /// <summary>
     /// Виміри
@@ -111,7 +111,7 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
     /// <returns></returns>
     public ConfigurationRegistersAccumulation Copy()
     {
-        ConfigurationRegistersAccumulation confRegCopy = new(this.Name, this.FullName, this.Table, this.TypeRegistersAccumulation, this.Desc);
+        ConfigurationRegistersAccumulation confRegCopy = new(this.Name, this.FullName, this.Table, this.TypeRegisters, this.Desc);
 
         foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
             confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
@@ -137,18 +137,15 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
     /// <summary>
     /// Функція повертає масив попередньо визначених полів
     /// </summary>
-    public static ConfigurationPredefinedField[] GetPredefinedFields()
-    {
-        return
-        [
-            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-                new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
-                new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
-                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
-                new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника"),
-                new ConfigurationPredefinedField("ownerlinenum", "integer", false, false, false, "Номер рядка документу"),
-            ];
-    }
+    public static ConfigurationPredefinedField[] GetPredefinedFields() =>
+    [
+        new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+        new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
+        new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
+        new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
+        new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника"),
+        new ConfigurationPredefinedField("ownerlinenum", "integer", false, false, false, "Номер рядка документу"),
+    ];
 
     #region Append
 
@@ -201,20 +198,26 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
     }
 
     #endregion
-}
-
-/// <summary>
-/// Тип регістру
-/// </summary>
-public enum TypeRegistersAccumulation
-{
-    /// <summary>
-    /// Залишки
-    /// </summary>
-    Residues = 1,
 
     /// <summary>
-    /// Обороти
+    /// Тип регістру
     /// </summary>
-    Turnover = 2
+    public enum TypeRegistersAccumulation
+    {
+        /// <summary>
+        /// Залишки
+        /// </summary>
+        Residues = 1,
+
+        /// <summary>
+        /// Обороти
+        /// </summary>
+        Turnover = 2
+    }
+
+    public static Dictionary<string, string> TypeRegistersAccumulation_Dict() => new()
+    {
+        { nameof(TypeRegistersAccumulation.Residues), "Залишки" },
+        { nameof(TypeRegistersAccumulation.Turnover), "Обороти" }
+    };
 }

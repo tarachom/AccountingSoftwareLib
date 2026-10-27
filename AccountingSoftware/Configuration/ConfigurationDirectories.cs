@@ -243,9 +243,9 @@ namespace AccountingSoftware
 
         public static Dictionary<string, string> TypeDirectories_Dict() => new()
         {
-            { "Normal", "Звичайний" },
-            { "Hierarchical", "Ієрархічний" },
-            { "HierarchyInAnotherDirectory", "Ієрархія в окремому довіднику" }
+            { nameof(TypeDirectories.Normal), "Звичайний" },
+            { nameof(TypeDirectories.Hierarchical), "Ієрархічний" },
+            { nameof(TypeDirectories.HierarchyInAnotherDirectory), "Ієрархія в окремому довіднику" }
         };
 
         /// <summary>
@@ -271,9 +271,9 @@ namespace AccountingSoftware
 
         public static Dictionary<string, string> HierarchicalContentType_Dict() => new()
         {
-            { "Folders", "Папки" },
-            { "Elements", "Елементи" },
-            { "FoldersAndElements", "Папки та елементи" }
+            { nameof(HierarchicalContentType.Folders), "Папки" },
+            { nameof(HierarchicalContentType.Elements), "Елементи" },
+            { nameof(HierarchicalContentType.FoldersAndElements), "Папки та елементи" }
         };
     }
 }

@@ -1821,10 +1821,11 @@ namespace AccountingSoftware
                 {
                     string? name = enumsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва перелічення");
                     string uid = enumsNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
+                    string fullName = enumsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                     string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
 
-                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc) { Uid = uid };
+                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc) { Uid = uid, FullName = fullName };
                     Conf.Enums.Add(configurationEnums.Name, configurationEnums);
 
                     XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
@@ -1833,9 +1834,10 @@ namespace AccountingSoftware
                         {
                             string? nameField = enumFieldsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва елементу перелічення");
                             int valueField = int.Parse(enumFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "0");
+                            string fullNameField = enumFieldsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
                             string descField = enumFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                            configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField));
+                            configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField) { FullName = fullNameField });
                         }
                 }
         }
@@ -2023,10 +2025,10 @@ namespace AccountingSoftware
                     string noSummary = registerAccumulationNode.Current?.SelectSingleNode("NoSummary")?.Value ?? "";
 
                     //Тип регістру
-                    TypeRegistersAccumulation typeRegistersAccumulation = type switch
+                    ConfigurationRegistersAccumulation.TypeRegistersAccumulation typeRegistersAccumulation = type switch
                     {
-                        "Residues" => TypeRegistersAccumulation.Residues,
-                        "Turnover" => TypeRegistersAccumulation.Turnover,
+                        "Residues" => ConfigurationRegistersAccumulation.TypeRegistersAccumulation.Residues,
+                        "Turnover" =>ConfigurationRegistersAccumulation. TypeRegistersAccumulation.Turnover,
                         _ => throw new Exception("Неоприділений тип регістру")
                     };
 
@@ -2079,9 +2081,11 @@ namespace AccountingSoftware
                 while (nodeQueryBlock!.MoveNext())
                 {
                     string? name = nodeQueryBlock.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва запиту");
+                    string fullName = nodeQueryBlock.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string desc = nodeQueryBlock.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     bool finalCalculation = (nodeQueryBlock.Current?.SelectSingleNode("FinalCalculation")?.Value ?? "") == "1";
 
-                    ConfigurationQueryBlock QueryBlock = new(name, finalCalculation);
+                    ConfigurationQueryBlock QueryBlock = new(name, finalCalculation) { FullName = fullName, Desc = desc };
                     queryBlockList.Add(QueryBlock.Name, QueryBlock);
 
                     XPathNodeIterator? nodeQuery = nodeQueryBlock?.Current?.Select("Query");
@@ -3254,6 +3258,13 @@ namespace AccountingSoftware
                 nodeEnumName.InnerText = enumItem.Key;
                 nodeEnum.AppendChild(nodeEnumName);
 
+                if (!string.IsNullOrEmpty(enumItem.Value.FullName))
+                {
+                    XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                    nodeFullName.InnerText = enumItem.Value.FullName;
+                    nodeEnum.AppendChild(nodeFullName);
+                }
+
                 if (!string.IsNullOrEmpty(enumItem.Value.Desc))
                 {
                     XmlElement nodeEnumDesc = xmlConfDocument.CreateElement("Desc");
@@ -3276,6 +3287,13 @@ namespace AccountingSoftware
                     XmlElement nodeFieldName = xmlConfDocument.CreateElement("Name");
                     nodeFieldName.InnerText = field.Value.Name;
                     nodeField.AppendChild(nodeFieldName);
+
+                    if (!string.IsNullOrEmpty(field.Value.FullName))
+                    {
+                        XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                        nodeFullName.InnerText = field.Value.FullName;
+                        nodeField.AppendChild(nodeFullName);
+                    }
 
                     XmlElement nodeFieldValue = xmlConfDocument.CreateElement("Value");
                     nodeFieldValue.InnerText = field.Value.Value.ToString();
@@ -3575,7 +3593,7 @@ namespace AccountingSoftware
                 nodeRegister.AppendChild(nodeRegisterTable);
 
                 XmlElement nodeRegisterType = xmlConfDocument.CreateElement("Type");
-                nodeRegisterType.InnerText = ConfRegisterAccml.Value.TypeRegistersAccumulation.ToString();
+                nodeRegisterType.InnerText = ConfRegisterAccml.Value.TypeRegisters.ToString();
                 nodeRegister.AppendChild(nodeRegisterType);
 
                 if (!string.IsNullOrEmpty(ConfRegisterAccml.Value.Desc))
@@ -3647,6 +3665,20 @@ namespace AccountingSoftware
                 XmlElement nodeQueryBlockName = xmlConfDocument.CreateElement("Name");
                 nodeQueryBlockName.InnerText = queryBlock.Name;
                 nodeQueryBlock.AppendChild(nodeQueryBlockName);
+
+                if (!string.IsNullOrEmpty(queryBlock.FullName))
+                {
+                    XmlElement nodeQueryBlockFullName = xmlConfDocument.CreateElement("FullName");
+                    nodeQueryBlockFullName.InnerText = queryBlock.FullName;
+                    nodeQueryBlock.AppendChild(nodeQueryBlockFullName);
+                }
+
+                if (!string.IsNullOrEmpty(queryBlock.Desc))
+                {
+                    XmlElement nodeQueryBlockDesc = xmlConfDocument.CreateElement("Desc");
+                    nodeQueryBlockDesc.InnerText = queryBlock.Desc;
+                    nodeQueryBlock.AppendChild(nodeQueryBlockDesc);
+                }
 
                 XmlElement nodeQueryBlockFinalCalculation = xmlConfDocument.CreateElement("FinalCalculation");
                 nodeQueryBlockFinalCalculation.InnerText = queryBlock.FinalCalculation ? "1" : "0";

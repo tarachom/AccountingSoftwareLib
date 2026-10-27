@@ -77,6 +77,24 @@ public class ConfiguratorRegistersInformationFieldsTree(ConfigurationRegistersIn
 
             Store.Append(row);
         }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "TabularListGroup";
+            row.Name = "Табличні списки";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
+
+        {
+            var row = ConfiguratorItemRow.New();
+            row.Group = "FormGroup";
+            row.Name = "Форми";
+            row.Obj = Register;
+
+            Store.Append(row);
+        }
     }
 
     protected override Gio.ListModel? CreateFunc(GObject.Object item)
@@ -142,6 +160,38 @@ public class ConfiguratorRegistersInformationFieldsTree(ConfigurationRegistersIn
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;
                         row.Desc = field.Pointer;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "TabularListGroup" when obj is ConfigurationRegistersInformation registers:
+                {
+                    //Для групи Табличні списки заповнюю саме табличні списки
+                    foreach (ConfigurationTabularList tabularList in registers.TabularList.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "TabularList";
+                        row.Name = tabularList.Name;
+                        row.Obj = tabularList;
+                        row.ParentObj = registers;
+
+                        store.Append(row);
+                    }
+
+                    return store;
+                }
+            case "FormGroup" when obj is ConfigurationRegistersInformation registers:
+                {
+                    //Для групи Форми заповнюю саме форми
+                    foreach (ConfigurationForms form in registers.Forms.Values)
+                    {
+                        var row = ConfiguratorItemRow.New();
+                        row.Group = "Form";
+                        row.Name = form.Name;
+                        row.Obj = form;
+                        row.ParentObj = registers;
 
                         store.Append(row);
                     }

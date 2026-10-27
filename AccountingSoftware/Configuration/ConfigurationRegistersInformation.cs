@@ -102,16 +102,13 @@ public class ConfigurationRegistersInformation : ConfigurationObjectTable, IConf
     /// <summary>
     /// Функція повертає масив попередньо визначених полів
     /// </summary>
-    public static ConfigurationPredefinedField[] GetPredefinedFields()
-    {
-        return
-        [
-            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-                new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
-                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
-                new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника")
-        ];
-    }
+    public static ConfigurationPredefinedField[] GetPredefinedFields() =>
+    [
+        new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+        new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
+        new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
+        new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника")
+    ];
 
     #region Append
 

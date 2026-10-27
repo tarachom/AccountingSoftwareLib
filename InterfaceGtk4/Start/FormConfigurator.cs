@@ -98,6 +98,7 @@ public abstract partial class FormConfigurator : Window
     public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
     protected virtual async Task PageJournal(string name, bool isNew = false) { }
     public virtual async Task PageEnum(bool isNew, ConfigurationEnums? enums = null) { }
+    public virtual async Task PageEnumField(bool isNew, Dictionary<string, ConfigurationEnumField> fields, ConfigurationEnumField? field = null) { }
     public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
     public virtual async Task PageRegisterAccumulation(bool isNew, ConfigurationRegistersAccumulation? register = null) { }
     protected virtual async Task PageSettings() { }
@@ -640,8 +641,10 @@ public abstract partial class FormConfigurator : Window
                         hide = true;
                         break;
                     }
-                case "Field":
+                case "Field" when row.ParentObj is ConfigurationEnums enums && row.Obj is ConfigurationEnumField field:
                     {
+                        await PageEnumField(false, enums.Fields, field);
+                        hide = true;
                         break;
                     }
                 default:
@@ -706,13 +709,13 @@ public abstract partial class FormConfigurator : Window
                     await Copy(row);
             },
             Delete = async (_, rows) =>
-           {
-               if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
-               {
-                   foreach (var row in rows)
-                       Delete(row);
-               }
-           },
+            {
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
+                {
+                    foreach (var row in rows)
+                        Delete(row);
+                }
+            },
             OpenNewTab = (_) =>
             {
                 //Відкрити окремо

@@ -214,5 +214,24 @@ namespace AccountingSoftware
             /// </summary>
             Report
         }
+
+        public static Dictionary<string, string> TypeForms_Dict() => new()
+        {
+            { nameof(TypeForms.None), "Неопреділено" },
+            { nameof(TypeForms.List), "Список" },
+            { nameof(TypeForms.ListSmall), "Список мінімальний" },
+            { nameof(TypeForms.Element), "Елемент" },
+            { nameof(TypeForms.ListSmallSelect), "Швидкий вибір" },
+            { nameof(TypeForms.PointerControl), "Контрол вибору" },
+            { nameof(TypeForms.PointerTablePartCell), "Контрол вибору для клітинки табличної частини" },
+            { nameof(TypeForms.MultiplePointerControl), "Контрол вибору масиву" },
+            { nameof(TypeForms.ListAndTree), "Список з Деревом" },
+            { nameof(TypeForms.TablePart), "Таблична частина" },
+            { nameof(TypeForms.Function), "Спільні функції" },
+            { nameof(TypeForms.Triggers), "Тригери" },
+            { nameof(TypeForms.TriggersTablePart), "Тригери для табличних частин" },
+            { nameof(TypeForms.SpendTheDocument), "Проведення документу" },
+            { nameof(TypeForms.Report), "Звіт" }
+        };
     }
 }

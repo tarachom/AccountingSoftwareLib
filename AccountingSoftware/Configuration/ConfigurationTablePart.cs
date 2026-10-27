@@ -97,24 +97,18 @@ namespace AccountingSoftware
         /// <summary>
         /// Функція повертає масив попередньо визначених полів
         /// </summary>
-        public static ConfigurationPredefinedField[] GetPredefinedFields()
-        {
-            return
-            [
-                new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+        public static ConfigurationPredefinedField[] GetPredefinedFields() =>
+        [
+            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
 
-                /*
-                Поле Власник є не у всіх табличних частинах
+            /*
+            Поле Власник є не у всіх табличних частинах
 
-                Наприклад в Табличних частинах для Констант немає поля Власник,
-                немає поля Власник і у Регістрів Накопичення
-                */
-                new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") 
-                { 
-                    ForeignKey = true 
-                }
-            ];
-        }
+            Наприклад в Табличних частинах для Констант немає поля Власник,
+            немає поля Власник і у Регістрів Накопичення
+            */
+            new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") { ForeignKey = true }
+        ];
 
         /// <summary>
         /// Додати нове поле в список полів

@@ -66,7 +66,13 @@ public abstract partial class FormConfigurationSelection : Window
             contr.OnKeyReleased += (_, args) =>
             {
                 if (args.Keyval == Gdk.Constants.KEY_KP_Enter || args.Keyval == Gdk.Constants.KEY_Return)
-                    OnOpen(null, new());
+                {
+                    if (TypeOpenForm == TypeForm.WorkingProgram)
+                        OnOpen(null, new());
+                    else if (TypeOpenForm == TypeForm.Configurator)
+                        OnOpenConfigurator(null, new());
+                }
+
             };
 
             listBox.SelectionMode = SelectionMode.Single;
@@ -237,9 +243,9 @@ public abstract partial class FormConfigurationSelection : Window
                 ConfigurationParamCollection.SelectConfigurationParam(selectedRow.GetName());
                 ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
 
-                string PathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
+                string pathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
 
-                bool result = await ProgramKernel.Open(PathToConfXML,
+                bool result = await ProgramKernel.Open(pathToConfXML,
                     OpenConfigurationParam.DataBaseServer,
                     OpenConfigurationParam.DataBaseLogin,
                     OpenConfigurationParam.DataBasePassword,
@@ -291,9 +297,9 @@ public abstract partial class FormConfigurationSelection : Window
                 ConfigurationParamCollection.SelectConfigurationParam(selectedRow.GetName());
                 ConfigurationParamCollection.SaveConfigurationParamFromXML(ConfigurationParamCollection.PathToXML);
 
-                string PathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
+                string pathToConfXML = Path.Combine(AppContext.BaseDirectory, "Confa.xml");
 
-                bool result = await ConfiguratorKernel.Open(PathToConfXML,
+                bool result = await ConfiguratorKernel.Open(pathToConfXML,
                     OpenConfigurationParam.DataBaseServer,
                     OpenConfigurationParam.DataBaseLogin,
                     OpenConfigurationParam.DataBasePassword,

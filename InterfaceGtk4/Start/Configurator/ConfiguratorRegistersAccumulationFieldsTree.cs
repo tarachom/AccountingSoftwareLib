@@ -81,7 +81,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "TablePartGroup";
-            row.Name = "Табличні частини";
+            row.Name = "Табличні частини агрегації";
             row.Obj = Register;
 
             Store.Append(row);
@@ -90,7 +90,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
         {
             var row = ConfiguratorItemRow.New();
             row.Group = "QueryGroup";
-            row.Name = "Тригери";
+            row.Name = "Тригери розрахунків";
             row.Obj = Register;
 
             Store.Append(row);
