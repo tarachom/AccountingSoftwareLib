@@ -162,6 +162,11 @@ public abstract partial class FormPageConfigurator : Form
                 return (false, name);
             }
         }
+        else if (string.IsNullOrEmpty(name))
+        {
+            await Message.Info(NotebookFunc?.BasicForm, "Помилка", "Назва не задана");
+            return (false, "");
+        }
 
         if (IsNew)
         {

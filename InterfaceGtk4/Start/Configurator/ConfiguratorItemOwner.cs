@@ -27,7 +27,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Для інформації про власника (для сторінок в конфігураторі)
 /// </summary>
-public class ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj = null)
+public class ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj = null, ConfiguratorItemOwner? parent = null)
 {
     /// <summary>
     /// Група до якої належить власник
@@ -38,6 +38,11 @@ public class ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj 
     /// Об'єкт власник
     /// </summary>
     public object? Obj { get; set; } = obj;
+
+    /// <summary>
+    /// Власник власника
+    /// </summary>
+    public ConfiguratorItemOwner? Parent { get; set; } = parent;
 }
 
 public enum ConfiguratorItemOwnerType
