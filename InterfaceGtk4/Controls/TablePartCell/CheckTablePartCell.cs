@@ -32,7 +32,7 @@ namespace InterfaceGtk4;
 public partial class CheckTablePartCell : Box
 {
     Box hBox = New(Orientation.Horizontal, 0);
-    public CheckButton Check { get; } = CheckButton.New();
+    CheckButton Check { get; } = CheckButton.New();
 
     partial void Initialize()
     {
@@ -40,7 +40,12 @@ public partial class CheckTablePartCell : Box
 
         hBox.Vexpand = true;
 
-        Check.OnToggled += (_, _) => OnСhanged?.Invoke();
+        Check.OnToggled += (_, _) =>
+        {
+            value_ = Check.Active;
+            OnСhanged?.Invoke();
+        };
+
         hBox.Append(Check);
 
         Append(hBox);

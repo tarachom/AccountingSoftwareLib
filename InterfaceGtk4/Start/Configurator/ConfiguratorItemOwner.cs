@@ -47,7 +47,7 @@ public class ConfiguratorItemOwner(ConfiguratorItemOwnerType group, object? obj 
 
 public enum ConfiguratorItemOwnerType
 {
-    Constant,
+    Constant = 1,
     Directory,
     Document,
     TablePart,

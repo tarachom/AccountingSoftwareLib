@@ -115,21 +115,21 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationForms Copy()
         {
-            ConfigurationForms newForms = new(Name, FullName, Desc, Type);
+            ConfigurationForms newForms = new(Name, FullName, Desc, Type)
+            {
+                GeneratedCode = GeneratedCode,
+                TabularList = TabularList,
+                NotSaveToFile = NotSaveToFile,
+                IncludeIconColumn = IncludeIconColumn
+            };
 
             //Поля для форми елементу
-            foreach (KeyValuePair<string, ConfigurationFormsElementField> item in ElementFields)
-            {
-                ConfigurationFormsElementField ElementFieldCopy = new(item.Value.Name, item.Value.Caption);
-                newForms.ElementFields.Add(item.Key, ElementFieldCopy);
-            }
+            foreach (ConfigurationFormsElementField item in ElementFields.Values)
+                newForms.AppendElementField(new(item.Name, item.Caption, item.Size, item.Height, item.SortNum, item.MultipleSelect, item.ReadOnly));
 
             //Табличні частини для форми елементу
-            foreach (KeyValuePair<string, ConfigurationFormsElementTablePart> item in ElementTableParts)
-            {
-                ConfigurationFormsElementTablePart ElementTablePartCopy = new(item.Value.Name, item.Value.Caption);
-                newForms.ElementTableParts.Add(item.Key, ElementTablePartCopy);
-            }
+            foreach (ConfigurationFormsElementTablePart item in ElementTableParts.Values)
+                newForms.AppendElementTablePart(new(item.Name, item.Caption, item.Size, item.Height, item.SortNum));
 
             return newForms;
         }
@@ -223,13 +223,13 @@ namespace AccountingSoftware
             { nameof(TypeForms.Element), "Елемент" },
             { nameof(TypeForms.ListSmallSelect), "Швидкий вибір" },
             { nameof(TypeForms.PointerControl), "Реквізит вибору" },
-            { nameof(TypeForms.PointerTablePartCell), "Реквізит вибору для клітинки табличної частини" },
+            { nameof(TypeForms.PointerTablePartCell), "Реквізит вибору таб. частини" },
             { nameof(TypeForms.MultiplePointerControl), "Реквізит вибору масиву" },
-            { nameof(TypeForms.ListAndTree), "Список з Деревом" },
+            { nameof(TypeForms.ListAndTree), "Список з деревом" },
             { nameof(TypeForms.TablePart), "Таблична частина" },
             { nameof(TypeForms.Function), "Спільні функції" },
             { nameof(TypeForms.Triggers), "Тригери" },
-            { nameof(TypeForms.TriggersTablePart), "Тригери для табличних частин" },
+            { nameof(TypeForms.TriggersTablePart), "Тригери для таб. частин" },
             { nameof(TypeForms.SpendTheDocument), "Проведення документу" },
             { nameof(TypeForms.Report), "Звіт" }
         };

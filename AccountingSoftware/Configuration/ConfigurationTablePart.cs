@@ -107,7 +107,9 @@ namespace AccountingSoftware
             Наприклад в Табличних частинах для Констант немає поля Власник,
             немає поля Власник і у Регістрів Накопичення
             */
-            new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") { ForeignKey = true }
+            new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник") { /*ForeignKey = true*/ } 
+            //Відключено використання зовнішніх ключів для поля owner табличної частини
+
         ];
 
         /// <summary>

@@ -136,8 +136,17 @@ public partial class DropDownControl : Box
         {
             if (value_ != value)
             {
-                value_ = FunctionForDropDown.SelectByValue(DropDown, value) ? value : AllowEmpty ? "" : value_;
-                OnСhanged?.Invoke();
+                if (FunctionForDropDown.SelectByValue(DropDown, value))
+                    value_ = value; //OnСhanged викликається з DropDown.OnNotify в FunctionForDropDown.SelectByValue
+                else if (AllowEmpty)
+                {
+                    //Якщо є пустий рядок і вже було задане значення - скидаю до пустого рядка і викликаю OnСhanged
+                    if (value_ != "")
+                    {
+                        value_ = "";
+                        OnСhanged?.Invoke();
+                    }
+                }
             }
         }
     }
