@@ -2101,9 +2101,14 @@ namespace AccountingSoftware
                             string? nameField = enumFieldsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва елементу перелічення");
                             int valueField = int.Parse(enumFieldsNodes.Current?.SelectSingleNode("Value")?.Value ?? "0");
                             string fullNameField = enumFieldsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                            string latinNameField = enumFieldsNodes.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                             string descField = enumFieldsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                            configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField) { FullName = fullNameField });
+                            configurationEnums.AppendField(new ConfigurationEnumField(nameField, valueField, descField)
+                            {
+                                FullName = fullNameField,
+                                LatinName = latinNameField
+                            });
                         }
                 }
         }
@@ -3594,6 +3599,10 @@ namespace AccountingSoftware
                         nodeFullName.InnerText = field.Value.FullName;
                         nodeField.AppendChild(nodeFullName);
                     }
+
+                    XmlElement nodeFieldLatinName = xmlConfDocument.CreateElement("LatinName");
+                    nodeFieldLatinName.InnerText = field.Value.LatinName;
+                    nodeField.AppendChild(nodeFieldLatinName);
 
                     XmlElement nodeFieldValue = xmlConfDocument.CreateElement("Value");
                     nodeFieldValue.InnerText = field.Value.Value.ToString();
