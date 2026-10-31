@@ -120,6 +120,7 @@ public class ConfiguratorTablePartsFieldsTree(ConfigurationTablePart tp, Action<
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
@@ -139,6 +140,7 @@ public class ConfiguratorTablePartsFieldsTree(ConfigurationTablePart tp, Action<
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TabularList";
                         row.Name = tabularList.Name;
+                        row.LatinName = tabularList.LatinName;
                         row.Obj = tabularList;
                         row.ParentObj = tablePart;
 

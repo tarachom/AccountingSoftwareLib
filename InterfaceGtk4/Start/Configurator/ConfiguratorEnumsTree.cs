@@ -56,6 +56,7 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<ConfiguratorItemRo
             var row = ConfiguratorItemRow.New();
             row.Group = "Enums";
             row.Name = enums.Name;
+            row.LatinName = enums.LatinName;
             row.Obj = enums;
 
             Store.Append(row);
@@ -82,6 +83,7 @@ public class ConfiguratorEnumsTree(Configuration conf, Action<ConfiguratorItemRo
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = enums;
                         row.Desc = field.Value.ToString();

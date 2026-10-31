@@ -101,6 +101,7 @@ public class ConfiguratorEnumsFieldsTree(ConfigurationEnums enm, Action<Configur
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = enums;
                         row.Desc = field.Value.ToString();

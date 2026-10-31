@@ -22,6 +22,11 @@ public partial class ConfiguratorItemRow
     public string Name { get; set; } = "";
 
     /// <summary>
+    /// Латиницею
+    /// </summary>
+    public string LatinName { get; set; } = "";
+
+    /// <summary>
     /// Об'єкт
     /// </summary>
     public object? Obj { get; set; } = null;

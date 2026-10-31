@@ -56,6 +56,7 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<Con
             var row = ConfiguratorItemRow.New();
             row.Group = "RegistersInformation";
             row.Name = registers.Name;
+            row.LatinName = registers.LatinName;
             row.Obj = registers;
             row.TableOrField = registers.Table;
 
@@ -114,6 +115,7 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<Con
                         var row = ConfiguratorItemRow.New();
                         row.Group = "DimensionField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -133,6 +135,7 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<Con
                         var row = ConfiguratorItemRow.New();
                         row.Group = "ResourcesField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -152,6 +155,7 @@ public class ConfiguratorRegistersInformationTree(Configuration conf, Action<Con
                         var row = ConfiguratorItemRow.New();
                         row.Group = "PropertyField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;

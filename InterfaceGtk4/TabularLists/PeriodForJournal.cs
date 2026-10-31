@@ -55,25 +55,41 @@ public static class PeriodForJournal
     /// </summary>
     /// <param name="value">Тип періоду</param>
     /// <returns>Назва</returns>
-    static string TypePeriod_Alias(TypePeriod value)
+    static string TypePeriod_Alias(TypePeriod value) => value switch
     {
-        return value switch
-        {
-            TypePeriod.AllPeriod => "Весь період",
-            TypePeriod.Special => "Особливий",
-            TypePeriod.LastYear => "Минулий рік",
-            TypePeriod.ThisYear => "Цей рік",
-            TypePeriod.LastQuarter => "Минулий квартал",
-            TypePeriod.ThisQuarter => "Цей квартал",
-            TypePeriod.LastMonth => "Минулий місяць",
-            TypePeriod.ThisMonth => "Цей місяць",
-            TypePeriod.LastWeek => "Минулий тиждень",
-            TypePeriod.ThisWeek => "Цей тиждень",
-            TypePeriod.Yesterday => "Вчора",
-            TypePeriod.Today => "Сьогодні",
-            _ => ""
-        };
-    }
+        TypePeriod.AllPeriod => "Весь період",
+        TypePeriod.Special => "Особливий",
+        TypePeriod.LastYear => "Минулий рік",
+        TypePeriod.ThisYear => "Цей рік",
+        TypePeriod.LastQuarter => "Минулий квартал",
+        TypePeriod.ThisQuarter => "Цей квартал",
+        TypePeriod.LastMonth => "Минулий місяць",
+        TypePeriod.ThisMonth => "Цей місяць",
+        TypePeriod.LastWeek => "Минулий тиждень",
+        TypePeriod.ThisWeek => "Цей тиждень",
+        TypePeriod.Yesterday => "Вчора",
+        TypePeriod.Today => "Сьогодні",
+        _ => ""
+    };
+
+    public static Dictionary<string, string> TypePeriod_Dict2() => new()
+    {
+        { nameof(TypePeriod.AllPeriod), "Весь період" },
+        { nameof(TypePeriod.Special), "Особливий" },
+        { nameof(TypePeriod.LastYear), "Минулий рік" },
+        { nameof(TypePeriod.ThisYear), "Цей рік" },
+        { nameof(TypePeriod.LastQuarter), "Минулий квартал" },
+        { nameof(TypePeriod.ThisQuarter), "Цей квартал" },
+        { nameof(TypePeriod.LastMonth), "Минулий місяць" },
+        { nameof(TypePeriod.ThisMonth), "Цей місяць" },
+        { nameof(TypePeriod.LastWeek), "Минулий тиждень" },
+        { nameof(TypePeriod.ThisWeek), "Цей тиждень" },
+        { nameof(TypePeriod.Yesterday), "Вчора" },
+        { nameof(TypePeriod.Today), "Сьогодні" }
+    };
+
+    public static Dictionary<string, string> TypePeriod_Dict() =>
+        Enum.GetValues<TypePeriod>().ToDictionary(x => x.ToString(), TypePeriod_Alias);
 
     /// <summary>
     /// Список доступних відборів.
@@ -95,7 +111,7 @@ public static class PeriodForJournal
     /// Використовується із PeriodControl. Заготовка на майбутнє
     /// </summary>
     /// <returns>Сховище Gio.ListStore</returns>
-    public static Gio.ListStore PeriodSelectionStore()
+    /*public static Gio.ListStore PeriodSelectionStore()
     {
         Gio.ListStore store = Gio.ListStore.New(PeriodItemRow.GetGType());
 
@@ -103,7 +119,7 @@ public static class PeriodForJournal
             store.Append(PeriodItemRow.NewWithPeriod(value, TypePeriod_Alias(value)));
 
         return store;
-    }
+    }*/
 
     #region Функції
 

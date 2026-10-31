@@ -248,6 +248,251 @@ namespace AccountingSoftware
             "ь", "ю", "я"
         ];
 
+        /*
+        П О С Т А Н О В А від 27 січня 2010 р. N 55
+        Про впорядкування транслітерації українського алфавіту латиницею
+          
+        https://zakon.rada.gov.ua/laws/show/55-2010-%D0%BF#Text
+    
+        ТАБЛИЦЯ транслітерації українського алфавіту латиницею 
+        ------------------------------------------------------------------
+        | Український | Латиниця |  Позиція у |    Приклади написання    |
+        |   алфавіт   |          |   слові    |--------------------------|
+        |             |          |            |українською |  латиницею  |
+        |             |          |            |    мовою   |             |
+        |-------------+----------+------------+------------+-------------|
+        |      Аа     |    Aa    |            |Алушта      |Alushta      |
+        |             |          |            |Андрій      |Andrii       |
+        |-------------+----------+------------+------------+-------------|
+        |      Бб     |    Bb    |            |Борщагівка  |Borshchahivka|
+        |             |          |            |Борисенко   |Borysenko    |
+        |-------------+----------+------------+------------+-------------|
+        |      Вв     |    Vv    |            |Вінниця     |Vinnytsia    |
+        |             |          |            |Володимир   |Volodymyr    |
+        |-------------+----------+------------+------------+-------------|
+        |      Гг     |    Hh    |            |Гадяч       |Hadiach      |
+        |             |          |            |Богдан      |Bohdan       |
+        |             |          |            |Згурський   |Zghurskyi    |
+        |-------------+----------+------------+------------+-------------|
+        |      Ґґ     |    Gg    |            |Ґалаґан     |Galagan      |
+        |             |          |            |Ґорґани     |Gorgany      |
+        |-------------+----------+------------+------------+-------------|
+        |      Дд     |    Dd    |            |Донецьк     |Donetsk      |
+        |             |          |            |Дмитро      |Dmytro       |
+        |-------------+----------+------------+------------+-------------|
+        |      Ее     |    Ee    |            |Рівне       |Rivne        |
+        |             |          |            |Олег        |Oleh         |
+        |             |          |            |Есмань      |Esman        |
+        |-------------+----------+------------+------------+-------------|
+        |      Єє     |    Ye    | на початку |Єнакієве    |Yenakiieve   |
+        |             |          |    слова   |Гаєвич      |Haievych     |
+        |             |    ie    |  в інших   |Короп'є     |Koropie      |
+        |             |          |  позиціях  |            |             |
+        |-------------+----------+------------+------------+-------------|
+        |      Жж     |  Zh zh   |            |Житомир     |Zhytomyr     |
+        |             |          |            |Жанна       |Zhanna       |
+        |             |          |            |Жежелів     |Zhezheliv    |
+        |-------------+----------+------------+------------+-------------|
+        |      Зз     |    Zz    |            |Закарпаття  |Zakarpattia  |
+        |             |          |            |Казимирчук  |Kazymyrchuk  |
+        |-------------+----------+------------+------------+-------------|
+        |      Ии     |    Yy    |            |Медвин      |Medvyn       |
+        |             |          |            |Михайленко  |Mykhailenko  |
+        |-------------+----------+------------+------------+-------------|
+        |      Іі     |    Ii    |            |Іванків     |Ivankiv      |
+        |             |          |            |Іващенко    |Ivashchenko  |
+        |-------------+----------+------------+------------+-------------|
+        |      Її     |    Yi    | на початку |Їжакевич    |Yizhakevych  |
+        |             |          |    слова   |Кадиївка    |Kadyivka     |
+        |             |     i    |  в інших   |Мар'їне     |Marine       |
+        |             |          |  позиціях  |            |             |
+        |-------------+----------+------------+------------+-------------|
+        |      Йй     |    Y     | на початку |Йосипівка   |Yosypivka    |
+        |             |          |    слова   |Стрий       |Stryi        |
+        |             |    i     |  в інших   |Олексій     |Oleksii      |
+        |             |          |  позиціях  |            |             |
+        |-------------+----------+------------+------------+-------------|
+        |      Кк     |    Kk    |            |Київ        |Kyiv         |
+        |             |          |            |Коваленко   |Kovalenko    |
+        |-------------+----------+------------+------------+-------------|
+        |      Лл     |    Ll    |            |Лебедин     |Lebedyn      |
+        |             |          |            |Леонід      |Leonid       |
+        |-------------+----------+------------+------------+-------------|
+        |      Мм     |    Mm    |            |Миколаїв    |Mykolaiv     |
+        |             |          |            |Маринич     |Marynych     |
+        |-------------+----------+------------+------------+-------------|
+        |      Нн     |    Nn    |            |Ніжин       |Nizhyn       |
+        |             |          |            |Наталія     |Nataliia     |
+        |-------------+----------+------------+------------+-------------|
+        |      Оо     |    Oo    |            |Одеса       |Odesa        |
+        |             |          |            |Онищенко    |Onyshchenko  |
+        |-------------+----------+------------+------------+-------------|
+        |      Пп     |    Pp    |            |Полтава     |Poltava      |
+        |             |          |            |Петро       |Petro        |
+        |-------------+----------+------------+------------+-------------|
+        |      Рр     |    Rr    |            |Решетилівка |Reshetylivka |
+        |             |          |            |Рибчинський |Rybchynskyi  |
+        |-------------+----------+------------+------------+-------------|
+        |      Сс     |    Ss    |            |Суми        |Sumy         |
+        |             |          |            |Соломія     |Solomiia     |
+        |-------------+----------+------------+------------+-------------|
+        |      Тт     |    Tt    |            |Тернопіль   |Ternopil     |
+        |             |          |            |Троць       |Trots        |
+        |-------------+----------+------------+------------+-------------|
+        |      Уу     |    Uu    |            |Ужгород     |Uzhhorod     |
+        |             |          |            |Уляна       |Uliana       |
+        |-------------+----------+------------+------------+-------------|
+        |      Фф     |    Ff    |            |Фастів      |Fastiv       |
+        |             |          |            |Філіпчук    |Filipchuk    |
+        |-------------+----------+------------+------------+-------------|
+        |      Хх     |  Kh kh   |            |Харків      |Kharkiv      |
+        |             |          |            |Христина    |Khrystyna    |
+        |-------------+----------+------------+------------+-------------|
+        |      Цц     |  Ts ts   |            |Біла Церква |Bila Tserkva |
+        |             |          |            |Стеценко    |Stetsenko    |
+        |-------------+----------+------------+------------+-------------|
+        |      Чч     |  Ch ch   |            |Чернівці    |Chernivtsi   |
+        |             |          |            |Шевченко    |Shevchenko   |
+        |-------------+----------+------------+------------+-------------|
+        |      Шш     |  Sh sh   |            |Шостка      |Shostka      |
+        |             |          |            |Кишеньки    |Kyshenky     |
+        |-------------+----------+------------+------------+-------------|
+        |      Щщ     |Shch shch |            |Щербухи     |Shcherbukhy  |
+        |             |          |            |Гоща        |Hoshcha      |
+        |             |          |            |Гаращенко   |Harashchenko |
+        |-------------+----------+------------+------------+-------------|
+        |      Юю     |    Yu    | на початку |Юрій        |Yurii        |
+        |             |          |    слова   |Корюківка   |Koriukivka   |
+        |             |    iu    |  в інших   |            |             |
+        |             |          |  позиціях  |            |             |
+        |-------------+----------+------------+------------+-------------|
+        |      Яя     |    Ya    | на початку |Яготин      |Yahotyn      |
+        |             |          |    слова   |Ярошенко    |Yaroshenko   |
+        |             |    ia    |  в інших   |Костянтин   |Kostiantyn   |
+        |             |          |  позиціях  |Знам'янка   |Znamianka    |
+        |             |          |            |Феодосія    |Feodosiia    |
+        ------------------------------------------------------------------ 
+
+        Примітка: 1. Буквосполучення "зг" відтворюється латиницею як "zgh" 
+                     (наприклад,  Згорани - Zghorany, Розгон - Rozghon) на 
+                     відміну від "zh" -  відповідника  української  літери 
+                     "ж". 
+
+                  2. М'який знак і апостроф латиницею не відтворюються. 
+
+                  3. Транслітерація  прізвищ  та  імен осіб і географічних 
+                     назв здійснюється шляхом  відтворення  кожної  літери 
+                     латиницею. 
+        */
+        /// <summary>
+        /// Транслітерація
+        /// </summary>
+        /// <param name="text">Текст</param>
+        /// <returns>Змінений текст</returns>
+        public static string ToLatin(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
+            var result = new StringBuilder(text.Length * 2);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char current = text[i];
+                bool isStartOfWord = (i == 0) || !char.IsLetter(text[i - 1]);
+
+                // Обробка буквосполучення "зг" -> "zgh"
+                if (current is 'З' or 'з' && i + 1 < text.Length && text[i + 1] is 'Г' or 'г')
+                {
+                    result.Append(current is 'З' ? "Zgh" : "zgh");
+                    i++; // Пропускаємо 'г'
+                    continue;
+                }
+
+                // Сучасний switch expression
+                result.Append(current switch
+                {
+                    // Літери, транслітерація яких залежить від позиції (початок слова чи ні)
+                    'Є' => isStartOfWord ? "Ye" : "Ie",
+                    'є' => isStartOfWord ? "ye" : "ie",
+                    'Ї' => isStartOfWord ? "Yi" : "I",
+                    'ї' => isStartOfWord ? "yi" : "i",
+                    'Й' => isStartOfWord ? "Y" : "I",
+                    'й' => isStartOfWord ? "y" : "i",
+                    'Ю' => isStartOfWord ? "Yu" : "Iu",
+                    'ю' => isStartOfWord ? "yu" : "iu",
+                    'Я' => isStartOfWord ? "Ya" : "Ia",
+                    'я' => isStartOfWord ? "ya" : "ia",
+
+                    // Букви з двох або більше символів
+                    'Ж' => "Zh",
+                    'ж' => "zh",
+                    'Х' => "Kh",
+                    'х' => "kh",
+                    'Ц' => "Ts",
+                    'ц' => "ts",
+                    'Ч' => "Ch",
+                    'ч' => "ch",
+                    'Ш' => "Sh",
+                    'ш' => "sh",
+                    'Щ' => "Shch",
+                    'щ' => "shch",
+
+                    // Одинарні літери
+                    'А' => "A",
+                    'а' => "a",
+                    'Б' => "B",
+                    'б' => "b",
+                    'В' => "V",
+                    'в' => "v",
+                    'Г' => "H",
+                    'г' => "h",
+                    'Ґ' => "G",
+                    'ґ' => "g",
+                    'Д' => "D",
+                    'д' => "d",
+                    'Е' => "E",
+                    'е' => "e",
+                    'З' => "Z",
+                    'з' => "z",
+                    'И' => "Y",
+                    'и' => "y",
+                    'І' => "I",
+                    'і' => "i",
+                    'К' => "K",
+                    'к' => "k",
+                    'Л' => "L",
+                    'л' => "l",
+                    'М' => "M",
+                    'м' => "m",
+                    'Н' => "N",
+                    'н' => "n",
+                    'О' => "O",
+                    'о' => "o",
+                    'П' => "P",
+                    'п' => "p",
+                    'Р' => "R",
+                    'р' => "r",
+                    'С' => "S",
+                    'с' => "s",
+                    'Т' => "T",
+                    'т' => "t",
+                    'У' => "U",
+                    'у' => "u",
+                    'Ф' => "F",
+                    'ф' => "f",
+
+                    // Символи, які опускаються
+                    'Ь' or 'ь' or '\'' or '’' or '`' => "",
+
+                    // Будь-які інші символи (цифри, латиниця, пробіли, пунктуація)
+                    _ => current.ToString()
+                });
+            }
+
+            return result.ToString();
+        }
+
         /// <summary>
         /// Пошук ссилок довідників і документів
         /// </summary>
@@ -1339,6 +1584,7 @@ namespace AccountingSoftware
                 string? name = directoryNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва довідника");
                 string uid = directoryNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                 string fullName = directoryNodes.Current?.SelectSingleNode("FullName")?.Value ?? ""; //Повна назва
+                string latinName = directoryNodes.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                 string table = directoryNodes.Current?.SelectSingleNode("Table")?.Value ?? ""; //Таблиця
                 string desc = directoryNodes.Current?.SelectSingleNode("Desc")?.Value ?? ""; //Опис
                 string dirType = directoryNodes.Current?.SelectSingleNode("Type")?.Value ?? ""; //Тип довідника
@@ -1383,6 +1629,7 @@ namespace AccountingSoftware
                 ConfigurationDirectories ConfObjectDirectories = new(name, fullName, table, desc, autoNum, typeDirectory)
                 {
                     Uid = uid,
+                    LatinName = latinName,
 
                     //Записувати історію версій
                     VersionsHistory = versionsHistory,
@@ -1432,6 +1679,7 @@ namespace AccountingSoftware
                     string? name = fieldNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва поля");
                     string uid = fieldNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = fieldNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = fieldNodes.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                     string nameInTable = fieldNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
                     string type = fieldNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string desc = fieldNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -1443,9 +1691,11 @@ namespace AccountingSoftware
                     bool isExport = (fieldNodes.Current?.SelectSingleNode("IsExport")?.Value ?? "") == "1";
                     string pointer = (type == "pointer" || type == "enum") ? (fieldNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                    ConfigurationField ConfObjectField = new(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex,
-                        isFullTextSearch, isSearch, isExport)
-                    { Uid = uid };
+                    ConfigurationField ConfObjectField = new(name, fullName, nameInTable, type, pointer, desc, isPresentation, isIndex, isFullTextSearch, isSearch, isExport)
+                    {
+                        Uid = uid,
+                        LatinName = latinName
+                    };
 
                     //
                     // Додаткові поля які залежать від типу
@@ -1510,6 +1760,7 @@ namespace AccountingSoftware
                     string? name = tablePartNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличної частини");
                     string uid = tablePartNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = tablePartNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = tablePartNodes.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                     string table = tablePartNodes.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = tablePartNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     bool versionsHistory = (tablePartNodes.Current?.SelectSingleNode("VersionsHistory")?.Value ?? "") == "1";
@@ -1517,6 +1768,7 @@ namespace AccountingSoftware
                     ConfigurationTablePart ConfObjectTablePart = new(name, fullName, table, desc)
                     {
                         Uid = uid,
+                        LatinName = latinName,
 
                         //Записувати історію версій
                         VersionsHistory = versionsHistory
@@ -1550,9 +1802,14 @@ namespace AccountingSoftware
                 {
                     string? name = tabularListsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва табличного списку");
                     string fullName = tabularListsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = tabularListsNodes.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                     string desc = tabularListsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationTabularList ConfTabularList = new(name, fullName, desc);
+                    ConfigurationTabularList ConfTabularList = new(name, fullName, desc)
+                    {
+                        LatinName = latinName
+                    };
+
                     tabularLists.Add(ConfTabularList.Name, ConfTabularList);
 
                     //Поля
@@ -1635,6 +1892,7 @@ namespace AccountingSoftware
                 {
                     string? name = tableForm.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва форми");
                     string fullName = tableForm.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = tableForm.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string genCode = GetUnZipAndBase64TextFromNode(tableForm.Current?.SelectSingleNode("GeneratedCode"));
@@ -1646,6 +1904,7 @@ namespace AccountingSoftware
 
                     ConfigurationForms form = new(name, fullName, desc, typeForms)
                     {
+                        LatinName = latinName,
                         NotSaveToFile = notSaveToFile == "1",
                         GeneratedCode = genCode
                     };
@@ -1822,10 +2081,17 @@ namespace AccountingSoftware
                     string? name = enumsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва перелічення");
                     string uid = enumsNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = enumsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = enumsNodes.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                     string desc = enumsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     int serialNumber = int.Parse(enumsNodes.Current?.SelectSingleNode("SerialNumber")?.Value ?? "0");
 
-                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc) { Uid = uid, FullName = fullName };
+                    ConfigurationEnums configurationEnums = new(name, serialNumber, desc)
+                    {
+                        Uid = uid,
+                        FullName = fullName,
+                        LatinName = latinName
+                    };
+
                     Conf.Enums.Add(configurationEnums.Name, configurationEnums);
 
                     XPathNodeIterator? enumFieldsNodes = enumsNodes?.Current?.Select("Fields/Field");
@@ -1913,6 +2179,7 @@ namespace AccountingSoftware
                     string? name = documentsNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва документу");
                     string uid = documentsNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = documentsNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = documentsNode.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                     string table = documentsNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = documentsNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     bool autoNum = (documentsNode.Current?.SelectSingleNode("AutoNum")?.Value ?? "") == "1";
@@ -1922,6 +2189,7 @@ namespace AccountingSoftware
                     ConfigurationDocuments configurationDocuments = new(name, fullName, table, desc, autoNum, exportXml)
                     {
                         Uid = uid,
+                        LatinName = latinName,
                         VersionsHistory = versionsHistory
                     };
 
@@ -1961,10 +2229,16 @@ namespace AccountingSoftware
                     string? name = registerInformationNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва регістру відомостей");
                     string uid = registerInformationNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = registerInformationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = registerInformationNode.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                     string table = registerInformationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string desc = registerInformationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                    ConfigurationRegistersInformation configurationRegistersInformation = new(name, fullName, table, desc) { Uid = uid };
+                    ConfigurationRegistersInformation configurationRegistersInformation = new(name, fullName, table, desc)
+                    {
+                        Uid = uid,
+                        LatinName = latinName
+                    };
+
                     Conf.RegistersInformation.Add(configurationRegistersInformation.Name, configurationRegistersInformation);
 
                     XPathNavigator? dimensionFieldsNode = registerInformationNode.Current?.SelectSingleNode("DimensionFields");
@@ -2019,6 +2293,7 @@ namespace AccountingSoftware
                     string? name = registerAccumulationNode.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва регістру накопичення");
                     string uid = registerAccumulationNode.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                     string fullName = registerAccumulationNode.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                    string latinName = registerAccumulationNode.Current?.SelectSingleNode("LatinName")?.Value ?? ""; //Латинська назва
                     string table = registerAccumulationNode.Current?.SelectSingleNode("Table")?.Value ?? "";
                     string type = registerAccumulationNode.Current?.SelectSingleNode("Type")?.Value ?? "";
                     string desc = registerAccumulationNode.Current?.SelectSingleNode("Desc")?.Value ?? "";
@@ -2028,13 +2303,14 @@ namespace AccountingSoftware
                     ConfigurationRegistersAccumulation.TypeRegistersAccumulation typeRegistersAccumulation = type switch
                     {
                         "Residues" => ConfigurationRegistersAccumulation.TypeRegistersAccumulation.Residues,
-                        "Turnover" =>ConfigurationRegistersAccumulation. TypeRegistersAccumulation.Turnover,
+                        "Turnover" => ConfigurationRegistersAccumulation.TypeRegistersAccumulation.Turnover,
                         _ => throw new Exception("Неоприділений тип регістру")
                     };
 
                     ConfigurationRegistersAccumulation configurationRegistersAccumulation = new(name, fullName, table, typeRegistersAccumulation, desc)
                     {
                         Uid = uid,
+                        LatinName = latinName,
                         NoSummary = noSummary == "1"
                     };
 
@@ -2301,6 +2577,10 @@ namespace AccountingSoftware
                 nodeDirectoryFullName.InnerText = ConfDirectory.Value.FullName;
                 nodeDirectory.AppendChild(nodeDirectoryFullName);
 
+                XmlElement nodeDirectoryLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeDirectoryLatinName.InnerText = ConfDirectory.Value.LatinName;
+                nodeDirectory.AppendChild(nodeDirectoryLatinName);
+
                 XmlElement nodeDirectoryTable = xmlConfDocument.CreateElement("Table");
                 nodeDirectoryTable.InnerText = ConfDirectory.Value.Table;
                 nodeDirectory.AppendChild(nodeDirectoryTable);
@@ -2464,9 +2744,13 @@ namespace AccountingSoftware
                 nodeFullName.InnerText = string.IsNullOrEmpty(field.Value.FullName) ? CreateFullName(field.Key) : field.Value.FullName;
                 nodeField.AppendChild(nodeFullName);
 
-                XmlElement nodeFieldNameInTable = xmlConfDocument.CreateElement("NameInTable");
-                nodeFieldNameInTable.InnerText = field.Value.NameInTable;
-                nodeField.AppendChild(nodeFieldNameInTable);
+                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeLatinName.InnerText = field.Value.LatinName;
+                nodeField.AppendChild(nodeLatinName);
+
+                XmlElement nodeNameInTable = xmlConfDocument.CreateElement("NameInTable");
+                nodeNameInTable.InnerText = field.Value.NameInTable;
+                nodeField.AppendChild(nodeNameInTable);
 
                 XmlElement nodeFieldType = xmlConfDocument.CreateElement("Type");
                 nodeFieldType.InnerText = field.Value.Type;
@@ -2616,6 +2900,10 @@ namespace AccountingSoftware
                 nodeTablePartFullName.InnerText = string.IsNullOrEmpty(tablePart.Value.FullName) ? CreateFullName(tablePart.Key) : tablePart.Value.FullName;
                 nodeTablePart.AppendChild(nodeTablePartFullName);
 
+                XmlElement nodeTablePartLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeTablePartLatinName.InnerText = tablePart.Value.LatinName;
+                nodeTablePart.AppendChild(nodeTablePartLatinName);
+
                 XmlElement nodeTablePartTable = xmlConfDocument.CreateElement("Table");
                 nodeTablePartTable.InnerText = tablePart.Value.Table;
                 nodeTablePart.AppendChild(nodeTablePartTable);
@@ -2675,6 +2963,10 @@ namespace AccountingSoftware
                     nodeTabularListFullName.InnerText = tabularList.Value.FullName;
                     nodeTabularList.AppendChild(nodeTabularListFullName);
                 }
+
+                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeLatinName.InnerText = tabularList.Value.LatinName;
+                nodeTabularList.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(tabularList.Value.Desc))
                 {
@@ -2904,6 +3196,10 @@ namespace AccountingSoftware
                     nodeFullName.InnerText = form.Value.FullName;
                     nodeForm.AppendChild(nodeFullName);
                 }
+
+                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeLatinName.InnerText = form.Value.LatinName;
+                nodeForm.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(form.Value.Desc))
                 {
@@ -3265,6 +3561,10 @@ namespace AccountingSoftware
                     nodeEnum.AppendChild(nodeFullName);
                 }
 
+                XmlElement nodeEnumLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeEnumLatinName.InnerText = enumItem.Value.LatinName;
+                nodeEnum.AppendChild(nodeEnumLatinName);
+
                 if (!string.IsNullOrEmpty(enumItem.Value.Desc))
                 {
                     XmlElement nodeEnumDesc = xmlConfDocument.CreateElement("Desc");
@@ -3429,6 +3729,10 @@ namespace AccountingSoftware
                 nodeDocumentFullName.InnerText = ConfDocument.Value.FullName;
                 nodeDocument.AppendChild(nodeDocumentFullName);
 
+                XmlElement nodeDocumentLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeDocumentLatinName.InnerText = ConfDocument.Value.LatinName;
+                nodeDocument.AppendChild(nodeDocumentLatinName);
+
                 XmlElement nodeDocumentTable = xmlConfDocument.CreateElement("Table");
                 nodeDocumentTable.InnerText = ConfDocument.Value.Table;
                 nodeDocument.AppendChild(nodeDocumentTable);
@@ -3499,6 +3803,10 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterFullName = xmlConfDocument.CreateElement("FullName");
                 nodeRegisterFullName.InnerText = ConfRegisterInfo.Value.FullName;
                 nodeRegister.AppendChild(nodeRegisterFullName);
+
+                XmlElement nodeRegisterLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeRegisterLatinName.InnerText = ConfRegisterInfo.Value.LatinName;
+                nodeRegister.AppendChild(nodeRegisterLatinName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
                 nodeRegisterTable.InnerText = ConfRegisterInfo.Value.Table;
@@ -3587,6 +3895,10 @@ namespace AccountingSoftware
                 XmlElement nodeRegisterFullName = xmlConfDocument.CreateElement("FullName");
                 nodeRegisterFullName.InnerText = ConfRegisterAccml.Value.FullName;
                 nodeRegister.AppendChild(nodeRegisterFullName);
+
+                XmlElement nodeRegisterLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeRegisterLatinName.InnerText = ConfRegisterAccml.Value.LatinName;
+                nodeRegister.AppendChild(nodeRegisterLatinName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
                 nodeRegisterTable.InnerText = ConfRegisterAccml.Value.Table;

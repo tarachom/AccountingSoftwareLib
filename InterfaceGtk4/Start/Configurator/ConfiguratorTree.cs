@@ -272,6 +272,33 @@ public abstract class ConfiguratorTree
             Grid.AppendColumn(column);
         }
 
+        //Латиницею
+        {
+            SignalListItemFactory factory = SignalListItemFactory.New();
+            factory.OnSetup += (_, args) =>
+            {
+                var listItem = (ListItem)args.Object;
+                var cell = LabelTablePartCell.NewWithString(null);
+                listItem.SetChild(cell);
+
+            };
+            factory.OnBind += (_, args) =>
+            {
+                ListItem listItem = (ListItem)args.Object;
+                TreeListRow? row = (TreeListRow?)listItem.GetItem();
+                if (row != null)
+                {
+                    var cell = (LabelTablePartCell?)listItem.Child;
+                    ConfiguratorItemRow? itemRow = (ConfiguratorItemRow?)row.GetItem();
+                    if (cell != null && itemRow != null)
+                        cell.SetText(itemRow.LatinName);
+                }
+            };
+            var column = ColumnViewColumn.New("Латиницею", factory);
+            column.Resizable = true;
+            Grid.AppendColumn(column);
+        }
+
         //Назва таблиці чи поля
         {
             SignalListItemFactory factory = SignalListItemFactory.New();

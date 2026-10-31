@@ -129,6 +129,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = directory;
                         row.TableOrField = field.NameInTable;
@@ -148,6 +149,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
+                        row.LatinName = tablePart.LatinName;
                         row.Obj = tablePart;
                         row.ParentObj = directory;
                         row.TableOrField = tablePart.Table;
@@ -165,6 +167,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TabularList";
                         row.Name = tabularList.Name;
+                        row.LatinName = tabularList.LatinName;
                         row.Obj = tabularList;
                         row.ParentObj = directory;
 
@@ -181,6 +184,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Form";
                         row.Name = form.Name;
+                        row.LatinName = form.LatinName;
                         row.Obj = form;
                         row.ParentObj = directory;
 
@@ -197,6 +201,7 @@ public class ConfiguratorDirectoriesFieldsTree(ConfigurationDirectories dir, Act
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;

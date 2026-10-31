@@ -144,6 +144,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "DimensionField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -163,6 +164,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "ResourcesField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -182,6 +184,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "PropertyField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -201,6 +204,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TabularList";
                         row.Name = tabularList.Name;
+                        row.LatinName = tabularList.LatinName;
                         row.Obj = tabularList;
                         row.ParentObj = registers;
 
@@ -217,6 +221,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TabularListPrintBalances";
                         row.Name = tabularList.Name;
+                        row.LatinName = tabularList.LatinName;
                         row.Obj = tabularList;
                         row.ParentObj = registers;
 
@@ -233,6 +238,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
+                        row.LatinName = tablePart.LatinName;
                         row.Obj = tablePart;
                         row.ParentObj = registers;
                         row.TableOrField = tablePart.Table;
@@ -282,6 +288,7 @@ public class ConfiguratorRegistersAccumulationFieldsTree(ConfigurationRegistersA
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;

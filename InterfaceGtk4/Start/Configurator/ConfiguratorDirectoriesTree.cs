@@ -56,6 +56,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<Configurator
             var row = ConfiguratorItemRow.New();
             row.Group = "Directories";
             row.Name = directory.Name;
+            row.LatinName = directory.LatinName;
             row.Obj = directory;
             row.TableOrField = directory.Table;
 
@@ -106,6 +107,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<Configurator
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = directory;
                         row.TableOrField = field.NameInTable;
@@ -125,6 +127,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<Configurator
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
+                        row.LatinName = tablePart.LatinName;
                         row.Obj = tablePart;
                         row.ParentObj = directory;
                         row.TableOrField = tablePart.Table;
@@ -142,6 +145,7 @@ public class ConfiguratorDirectoriesTree(Configuration conf, Action<Configurator
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;

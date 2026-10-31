@@ -56,6 +56,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<ConfiguratorIt
             var row = ConfiguratorItemRow.New();
             row.Group = "Documents";
             row.Name = document.Name;
+            row.LatinName = document.LatinName;
             row.Obj = document;
             row.TableOrField = document.Table;
 
@@ -106,6 +107,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<ConfiguratorIt
                         var row = ConfiguratorItemRow.New();
                         row.Group = "Field";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = document;
                         row.TableOrField = field.NameInTable;
@@ -125,6 +127,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<ConfiguratorIt
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
+                        row.LatinName = tablePart.LatinName;
                         row.Obj = tablePart;
                         row.ParentObj = document;
                         row.TableOrField = tablePart.Table;
@@ -142,6 +145,7 @@ public class ConfiguratorDocumentsTree(Configuration conf, Action<ConfiguratorIt
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;

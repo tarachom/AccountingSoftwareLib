@@ -44,6 +44,11 @@ namespace AccountingSoftware
 		public string FullName { get; set; } = "";
 
 		/// <summary>
+		/// Латинська назва
+		/// </summary>
+		public string LatinName { get; set; } = "";
+
+		/// <summary>
 		/// Опис
 		/// </summary>
 		public string Desc { get; set; } = "";

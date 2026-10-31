@@ -56,6 +56,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
             var row = ConfiguratorItemRow.New();
             row.Group = "RegistersAccumulation";
             row.Name = registers.Name;
+            row.LatinName = registers.LatinName;
             row.Obj = registers;
             row.TableOrField = registers.Table;
 
@@ -124,6 +125,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
                         var row = ConfiguratorItemRow.New();
                         row.Group = "DimensionField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -143,6 +145,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
                         var row = ConfiguratorItemRow.New();
                         row.Group = "ResourcesField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -162,6 +165,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
                         var row = ConfiguratorItemRow.New();
                         row.Group = "PropertyField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = registers;
                         row.TableOrField = field.NameInTable;
@@ -181,6 +185,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
+                        row.LatinName = tablePart.LatinName;
                         row.Obj = tablePart;
                         row.ParentObj = registers;
                         row.TableOrField = tablePart.Table;
@@ -198,6 +203,7 @@ public class ConfiguratorRegistersAccumulationTree(Configuration conf, Action<Co
                         var row = ConfiguratorItemRow.New();
                         row.Group = "TablePartField";
                         row.Name = field.Name;
+                        row.LatinName = field.LatinName;
                         row.Obj = field;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
