@@ -28,7 +28,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Випадаючий список
 /// </summary>
-[GObject.Subclass<Box>("DropDownControl")]
+[GObject.Subclass<Box>(nameof(DropDownControl))]
 public partial class DropDownControl : Box
 {
     Box hBox = New(Orientation.Horizontal, 0);

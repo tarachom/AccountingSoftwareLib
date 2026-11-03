@@ -28,7 +28,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для цілого числа
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(IntegerControl))]
 public partial class IntegerControl : Box
 {
     Entry entry = Entry.New();

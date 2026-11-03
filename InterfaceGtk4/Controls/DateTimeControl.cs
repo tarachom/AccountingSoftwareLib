@@ -28,7 +28,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для дати та часу
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(DateTimeControl))]
 public partial class DateTimeControl : Box
 {
     Entry entry = Entry.New();

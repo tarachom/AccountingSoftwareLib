@@ -31,7 +31,7 @@ namespace InterfaceGtk4;
 /// Контрол для вибору з типом який потрібно вибрати.
 /// В конфігураторі можна задати обмеження для вибору типу (всі довідники чи документи або певні довідники чи документи).
 /// </summary>
-[GObject.Subclass<PointerControl>]
+[GObject.Subclass<PointerControl>()]
 public abstract partial class CompositePointerControl : PointerControl
 {
     protected Kernel? Kernel { get; set; } = null;

@@ -29,7 +29,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для числа з комою
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(NumericControl))]
 public partial class NumericControl : Box
 {
     Entry entry = Entry.New();

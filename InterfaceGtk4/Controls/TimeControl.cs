@@ -28,7 +28,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для часу
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(TimeControl))]
 public partial class TimeControl : Box
 {
     Entry entry = Entry.New();

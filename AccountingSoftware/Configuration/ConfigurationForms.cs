@@ -67,6 +67,11 @@ namespace AccountingSoftware
         /// </summary>
         public bool NotSaveToFile { get; set; }
 
+        /// <summary>
+        /// Мова вихідного коду форми
+        /// </summary>
+        public TypeLang Lang { get; set; } = TypeLang.CSharp;
+
         #region Для форми елементу (Type == TypeForms.Element)
 
         /// <summary>
@@ -117,6 +122,7 @@ namespace AccountingSoftware
         {
             ConfigurationForms newForms = new(Name, FullName, Desc, Type)
             {
+                Lang = Lang,
                 GeneratedCode = GeneratedCode,
                 TabularList = TabularList,
                 NotSaveToFile = NotSaveToFile,
@@ -158,6 +164,16 @@ namespace AccountingSoftware
             /// Елемент
             /// </summary>
             Element,
+
+            /// <summary>
+            /// Поля елементу
+            /// </summary>
+            ElementFields,
+
+            /// <summary>
+            /// Шаблон для полів елементу
+            /// </summary>
+            TemplateForElementFields,
 
             /// <summary>
             /// Швидкий вибір
@@ -221,6 +237,8 @@ namespace AccountingSoftware
             { nameof(TypeForms.List), "Список" },
             { nameof(TypeForms.ListSmall), "Список мінімальний" },
             { nameof(TypeForms.Element), "Елемент" },
+            { nameof(TypeForms.ElementFields), "Поля елементу" },
+            { nameof(TypeForms.TemplateForElementFields), "Шаблон для полів елементу" },
             { nameof(TypeForms.ListSmallSelect), "Швидкий вибір" },
             { nameof(TypeForms.PointerControl), "Реквізит вибору" },
             { nameof(TypeForms.PointerTablePartCell), "Реквізит вибору таб. частини" },
@@ -232,6 +250,18 @@ namespace AccountingSoftware
             { nameof(TypeForms.TriggersTablePart), "Тригери для таб. частин" },
             { nameof(TypeForms.SpendTheDocument), "Проведення документу" },
             { nameof(TypeForms.Report), "Звіт" }
+        };
+
+        public enum TypeLang
+        {
+            CSharp,
+            Xml
+        }
+
+        public static Dictionary<string, string> TypeLang_Dict() => new()
+        {
+            { nameof(TypeLang.CSharp), "C#" },
+            { nameof(TypeLang.Xml), "Xml" },
         };
     }
 }

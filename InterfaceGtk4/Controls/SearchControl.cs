@@ -35,7 +35,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для пошуку
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(SearchControl))]
 public partial class SearchControl : Box
 {
     SearchEntry entrySearch = SearchEntry.New();

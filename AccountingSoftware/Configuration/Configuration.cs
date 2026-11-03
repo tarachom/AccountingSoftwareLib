@@ -1895,6 +1895,7 @@ namespace AccountingSoftware
                     string latinName = tableForm.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                     string desc = tableForm.Current?.SelectSingleNode("Desc")?.Value ?? "";
                     string type = tableForm.Current?.SelectSingleNode("Type")?.Value ?? "";
+                    string lang = tableForm.Current?.SelectSingleNode("Lang")?.Value ?? "";
                     string genCode = GetUnZipAndBase64TextFromNode(tableForm.Current?.SelectSingleNode("GeneratedCode"));
 
                     string notSaveToFile = tableForm.Current?.SelectSingleNode("NotSaveToFile")?.Value ?? "";
@@ -1902,8 +1903,16 @@ namespace AccountingSoftware
                     if (!Enum.TryParse(type, out ConfigurationForms.TypeForms typeForms))
                         typeForms = ConfigurationForms.TypeForms.None;
 
+                    //Тип мови вихідного коду форми
+                    ConfigurationForms.TypeLang typeLang = lang switch
+                    {
+                        "Xml" => ConfigurationForms.TypeLang.Xml,
+                        "CSharp" or _ => ConfigurationForms.TypeLang.CSharp
+                    };
+
                     ConfigurationForms form = new(name, fullName, desc, typeForms)
                     {
+                        Lang = typeLang,
                         LatinName = latinName,
                         NotSaveToFile = notSaveToFile == "1",
                         GeneratedCode = genCode
@@ -1916,7 +1925,8 @@ namespace AccountingSoftware
                     {
                         form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
                     }
-                    else if (typeForms == ConfigurationForms.TypeForms.Element || typeForms == ConfigurationForms.TypeForms.TablePart)
+                    else if (typeForms == ConfigurationForms.TypeForms.Element || typeForms == ConfigurationForms.TypeForms.TablePart ||
+                        typeForms == ConfigurationForms.TypeForms.ElementFields || typeForms == ConfigurationForms.TypeForms.TemplateForElementFields)
                     {
                         LoadFormElementField(form.ElementFields, tableForm.Current);
 
@@ -3217,6 +3227,11 @@ namespace AccountingSoftware
                 nodeType.InnerText = form.Value.Type.ToString();
                 nodeForm.AppendChild(nodeType);
 
+                //Тип мови вихідного коду форми
+                XmlElement nodeLang = xmlConfDocument.CreateElement("Lang");
+                nodeLang.InnerText = form.Value.Lang.ToString();
+                nodeForm.AppendChild(nodeLang);
+
                 XmlElement nodeGeneratedCode = SetZipAndBase64TextToNode(xmlConfDocument, "GeneratedCode", form.Value.GeneratedCode);
                 nodeForm.AppendChild(nodeGeneratedCode);
 
@@ -3232,7 +3247,8 @@ namespace AccountingSoftware
                     nodeTabularList.InnerText = form.Value.TabularList.ToString();
                     nodeForm.AppendChild(nodeTabularList);
                 }
-                else if (form.Value.Type == ConfigurationForms.TypeForms.Element || form.Value.Type == ConfigurationForms.TypeForms.TablePart)
+                else if (form.Value.Type == ConfigurationForms.TypeForms.Element || form.Value.Type == ConfigurationForms.TypeForms.TablePart ||
+                    form.Value.Type == ConfigurationForms.TypeForms.ElementFields || form.Value.Type == ConfigurationForms.TypeForms.TemplateForElementFields)
                 {
                     SaveFormElementField(Conf, fields, form.Value.ElementFields, xmlConfDocument, nodeForm);
 
@@ -3318,11 +3334,13 @@ namespace AccountingSoftware
                             if (Result)
                             {
                                 List<ConfigurationField> presetntationFields = [];
+                                string latinName = "";
 
                                 if (PointerGroup == "Довідники")
                                 {
                                     if (Conf.Directories.TryGetValue(PointerType, out ConfigurationDirectories? configurationDirectories))
                                     {
+                                        latinName = configurationDirectories.LatinName;
                                         presetntationFields = configurationDirectories.GetPresentationFields();
 
                                         //Інформація про власника
@@ -3336,7 +3354,14 @@ namespace AccountingSoftware
                                 }
                                 else if (PointerGroup == "Документи")
                                     if (Conf.Documents.TryGetValue(PointerType, out ConfigurationDocuments? configurationDocuments))
+                                    {
+                                        latinName = configurationDocuments.LatinName;
                                         presetntationFields = configurationDocuments.GetPresentationFields();
+                                    }
+
+                                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                                nodeLatinName.InnerText = latinName;
+                                nodeElementField.AppendChild(nodeLatinName);
 
                                 XmlElement nodePresetntationFields = xmlConfDocument.CreateElement("PresetntationFields");
                                 nodePresetntationFields.SetAttribute("Count", presetntationFields.Count.ToString());
@@ -4323,6 +4348,11 @@ namespace AccountingSoftware
             fileStream.Close();
         }
 
+        public sealed class Utf8StringWriter : StringWriter
+        {
+            public override Encoding Encoding => Encoding.UTF8;
+        }
+
         /// <summary>
         /// Трансформація ХМЛ документу
         /// </summary>
@@ -4349,7 +4379,7 @@ namespace AccountingSoftware
                         xsltArgumentList.AddParam(argument.Key, "", argument.Value);
                 }
 
-                using TextWriter writer = new StringWriter();
+                using TextWriter writer = new Utf8StringWriter();
                 xsltCodeGnerator.Transform(navigator, xsltArgumentList, writer);
                 result = writer.ToString() ?? "";
             }

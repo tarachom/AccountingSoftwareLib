@@ -34,7 +34,7 @@ namespace InterfaceGtk4;
 /// <summary>
 /// Контрол для встановлення періоду
 /// </summary>
-[GObject.Subclass<Box>]
+[GObject.Subclass<Box>(nameof(PeriodControl))]
 public partial class PeriodControl : Box
 {
     //DropDown dropDownPeriod; //Набір варіантів періодів
