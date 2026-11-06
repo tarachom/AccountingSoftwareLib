@@ -153,20 +153,16 @@ namespace AccountingSoftware
         /// <summary>
         /// Створення копії
         /// </summary>
-        public ConfigurationField Copy()
+        public ConfigurationField Copy() => new(Name, FullName, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch, IsSearch, IsExport)
         {
-            ConfigurationField copyField = new(Name, FullName, NameInTable, Type, Pointer, Desc, IsPresentation, IsIndex, IsFullTextSearch, IsSearch, IsExport)
-            {
-                Multiline = Multiline,
-                AutomaticNumbering = AutomaticNumbering,
-                ForeignKey = ForeignKey,
-                CompositePointerNotUseDirectories = CompositePointerNotUseDirectories,
-                CompositePointerNotUseDocuments = CompositePointerNotUseDocuments,
-                CompositePointerAllowDirectories = [.. CompositePointerAllowDirectories],
-                CompositePointerAllowDocuments = [.. CompositePointerAllowDocuments]
-            };
-
-            return copyField;
-        }
+            LatinName = this.LatinName,
+            Multiline = this.Multiline,
+            AutomaticNumbering = this.AutomaticNumbering,
+            ForeignKey = this.ForeignKey,
+            CompositePointerNotUseDirectories = this.CompositePointerNotUseDirectories,
+            CompositePointerNotUseDocuments = this.CompositePointerNotUseDocuments,
+            CompositePointerAllowDirectories = [.. this.CompositePointerAllowDirectories],
+            CompositePointerAllowDocuments = [.. this.CompositePointerAllowDocuments]
+        };
     }
 }

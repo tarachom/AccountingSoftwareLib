@@ -246,7 +246,7 @@ public abstract class ConfiguratorTree
                             "Documents" => Icon.ForConfigurator.Document,
                             "RegistersInformation" or "RegistersAccumulation" => Icon.ForConfigurator.Register,
                             "Enums" => Icon.ForConfigurator.List,
-                            "Block" => Icon.ForTree.Normal,
+                            "Block" or "ConstGroup" => Icon.ForTree.Normal,
                             "Const" => Icon.ForConfigurator.Const,
                             "Journals" => Icon.ForConfigurator.Journal,
 
@@ -254,7 +254,8 @@ public abstract class ConfiguratorTree
                             "ResourcesFields" => Icon.ForConfigurator.Calculator,
                             "PropertyFields" => Icon.ForConfigurator.Fields,
 
-                            "FieldGroup" or "TablePartGroup" or "TabularListGroup" or "TabularListPrintBalancesGroup" or
+                            "FieldGroup" or "TablePartGroup" or
+                                "TabularListGroup" or "TabularListPrintBalancesGroup" or
                                 "FormGroup" or "QueryGroup" => Icon.ForConfigurator.Sheets,
 
                             "TabularList" or "TabularListPrintBalances" => Icon.ForInformation.Grid,
@@ -395,6 +396,25 @@ public abstract class ConfiguratorTree
             if (itemRow != null)
                 Activate?.Invoke(itemRow);
         };
+    }
+
+    /// <summary>
+    /// Відкриття верхніх віток
+    /// </summary>
+    protected void Open()
+    {
+        if (TreeList != null)
+        {
+            List<TreeListRow> rows = [];
+            for (uint i = 0; i < TreeList.GetNItems(); i++)
+            {
+                TreeListRow? row = TreeList.GetRow(i);
+                if (row != null) rows.Add(row);
+            }
+
+            foreach (var row in rows)
+                row.Expanded = true;
+        }
     }
 
     protected static string SubstringDesc(string desc)

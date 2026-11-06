@@ -140,6 +140,7 @@ namespace AccountingSoftware
             ConfigurationDirectories confDirCopy = new(this.Name, this.FullName, this.Table, this.Desc,
                 false, /* Автоматична нумерація не копіюється */ this.TypeDirectory)
             {
+                LatinName = this.LatinName,
                 PointerFolders_HierarchyInAnotherDirectory = this.PointerFolders_HierarchyInAnotherDirectory,
                 ParentField_Hierarchical = this.ParentField_Hierarchical
             };
@@ -180,8 +181,8 @@ namespace AccountingSoftware
         /// </summary>
         public static ConfigurationPredefinedField[] GetPredefinedFields() =>
         [
-            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-            new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення")
+            new("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+            new("deletion_label", "boolean", false, true, true, "Помітка на видалення")
         ];
 
         /// <summary>

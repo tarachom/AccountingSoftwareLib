@@ -46,27 +46,6 @@ public class ConfiguratorTablePartsFieldsTree(ConfigurationTablePart tp, Action<
         return VBox;
     }
 
-    /// <summary>
-    /// Відкриття верхніх віток
-    /// </summary>
-    /*
-    void Open()
-    {
-        if (TreeList != null)
-        {
-            List<TreeListRow> rows = [];
-            for (uint i = 0; i < TreeList.GetNItems(); i++)
-            {
-                TreeListRow? row = TreeList.GetRow(i);
-                if (row != null) rows.Add(row);
-            }
-
-            foreach (var row in rows)
-                row.Expanded = true;
-        }
-    }
-    */
-
     protected override void FillGrid()
     {
         Store.RemoveAll();

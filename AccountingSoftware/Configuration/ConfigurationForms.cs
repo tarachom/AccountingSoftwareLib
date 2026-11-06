@@ -122,11 +122,12 @@ namespace AccountingSoftware
         {
             ConfigurationForms newForms = new(Name, FullName, Desc, Type)
             {
-                Lang = Lang,
-                GeneratedCode = GeneratedCode,
-                TabularList = TabularList,
-                NotSaveToFile = NotSaveToFile,
-                IncludeIconColumn = IncludeIconColumn
+                LatinName = this.LatinName,
+                Lang = this.Lang,
+                GeneratedCode = this.GeneratedCode,
+                TabularList = this.TabularList,
+                NotSaveToFile = this.NotSaveToFile,
+                IncludeIconColumn = this.IncludeIconColumn
             };
 
             //Поля для форми елементу

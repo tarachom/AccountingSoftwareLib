@@ -69,6 +69,10 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationJournalField Copy() => new(this.Name, this.Desc) { FullName = this.FullName };
+        public ConfigurationJournalField Copy() => new(this.Name, this.Desc)
+        {
+            FullName = this.FullName,
+            LatinName = this.LatinName
+        };
     }
 }

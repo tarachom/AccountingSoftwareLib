@@ -56,6 +56,10 @@ namespace AccountingSoftware
         /// </summary>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public ConfigurationEnumField Copy(int newValue) => new(this.Name, newValue, this.Desc) { FullName = this.FullName };
+        public ConfigurationEnumField Copy(int newValue) => new(this.Name, newValue, this.Desc)
+        {
+            FullName = this.FullName,
+            LatinName = this.LatinName
+        };
     }
 }

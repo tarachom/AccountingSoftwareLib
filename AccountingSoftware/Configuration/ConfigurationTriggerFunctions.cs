@@ -92,28 +92,25 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationTriggerFunctions Copy()
+        public ConfigurationTriggerFunctions Copy() => new()
         {
-            return new ConfigurationTriggerFunctions()
-            {
-                New = this.New,
-                NewAction = this.NewAction,
+            New = this.New,
+            NewAction = this.NewAction,
 
-                Copying = this.Copying,
-                CopyingAction = this.CopyingAction,
+            Copying = this.Copying,
+            CopyingAction = this.CopyingAction,
 
-                BeforeSave = this.BeforeSave,
-                BeforeSaveAction = this.BeforeSaveAction,
+            BeforeSave = this.BeforeSave,
+            BeforeSaveAction = this.BeforeSaveAction,
 
-                AfterSave = this.AfterSave,
-                AfterSaveAction = this.AfterSaveAction,
+            AfterSave = this.AfterSave,
+            AfterSaveAction = this.AfterSaveAction,
 
-                SetDeletionLabel = this.SetDeletionLabel,
-                SetDeletionLabelAction = this.SetDeletionLabelAction,
+            SetDeletionLabel = this.SetDeletionLabel,
+            SetDeletionLabelAction = this.SetDeletionLabelAction,
 
-                BeforeDelete = this.BeforeDelete,
-                BeforeDeleteAction = this.BeforeDeleteAction
-            };
-        }
+            BeforeDelete = this.BeforeDelete,
+            BeforeDeleteAction = this.BeforeDeleteAction
+        };
     }
 }

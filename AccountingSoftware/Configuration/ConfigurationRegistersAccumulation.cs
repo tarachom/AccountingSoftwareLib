@@ -111,7 +111,10 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
     /// <returns></returns>
     public ConfigurationRegistersAccumulation Copy()
     {
-        ConfigurationRegistersAccumulation confRegCopy = new(this.Name, this.FullName, this.Table, this.TypeRegisters, this.Desc);
+        ConfigurationRegistersAccumulation confRegCopy = new(this.Name, this.FullName, this.Table, this.TypeRegisters, this.Desc)
+        {
+            LatinName = this.LatinName
+        };
 
         foreach (KeyValuePair<string, ConfigurationField> fields in this.DimensionFields)
             confRegCopy.DimensionFields.Add(fields.Key, fields.Value.Copy());
@@ -139,12 +142,12 @@ public class ConfigurationRegistersAccumulation : ConfigurationObjectTable, ICon
     /// </summary>
     public static ConfigurationPredefinedField[] GetPredefinedFields() =>
     [
-        new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-        new ConfigurationPredefinedField("period", "timestamp without time zone", false, true, true, "Період"),
-        new ConfigurationPredefinedField("income", "boolean", false, true, true, "Рух"),
-        new ConfigurationPredefinedField("owner", "any_pointer", false, true, true, "Власник"),
-        new ConfigurationPredefinedField("ownertype", "composite_text", false, true, false, "Тип власника"),
-        new ConfigurationPredefinedField("ownerlinenum", "integer", false, false, false, "Номер рядка документу"),
+        new("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+        new("period", "timestamp without time zone", false, true, true, "Період"),
+        new("income", "boolean", false, true, true, "Рух"),
+        new("owner", "any_pointer", false, true, true, "Власник"),
+        new("ownertype", "composite_text", false, true, false, "Тип власника"),
+        new("ownerlinenum", "integer", false, false, false, "Номер рядка документу"),
     ];
 
     #region Append

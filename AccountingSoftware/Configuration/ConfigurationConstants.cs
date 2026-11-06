@@ -92,7 +92,11 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationConstants Copy()
         {
-            ConfigurationConstants newConst = new(Name, NameInTable, Type, Block, Pointer, Desc) { FullName = this.FullName };
+            ConfigurationConstants newConst = new(this.Name, this.NameInTable, this.Type, this.Block, this.Pointer, this.Desc)
+            {
+                FullName = this.FullName,
+                LatinName = this.LatinName
+            };
 
             foreach (ConfigurationTablePart tablePart in TabularParts.Values)
                 newConst.TabularParts.Add(tablePart.Name, tablePart.Copy());

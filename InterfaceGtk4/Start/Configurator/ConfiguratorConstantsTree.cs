@@ -56,6 +56,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorIt
             var row = ConfiguratorItemRow.New();
             row.Group = "Block";
             row.Name = block.Name;
+            row.LatinName = block.LatinName;
             row.Obj = block;
 
             Store.Append(row);
@@ -83,6 +84,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorIt
                         row.Group = "Const";
                         row.Name = constant.Name;
                         row.Obj = constant;
+                        row.LatinName = constant.LatinName;
                         row.ParentObj = block;
                         row.TableOrField = constant.NameInTable;
                         row.Type = constant.Type;
@@ -115,6 +117,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorIt
                         row.Group = "TablePart";
                         row.Name = tablePart.Name;
                         row.Obj = tablePart;
+                        row.LatinName = tablePart.LatinName;
                         row.ParentObj = constant;
                         row.TableOrField = tablePart.Table;
 
@@ -132,6 +135,7 @@ public class ConfiguratorConstantsTree(Configuration conf, Action<ConfiguratorIt
                         row.Group = "TablePartField";
                         row.Name = field.Name;
                         row.Obj = field;
+                        row.LatinName = field.LatinName;
                         row.ParentObj = tablePart;
                         row.TableOrField = field.NameInTable;
                         row.Type = field.Type;

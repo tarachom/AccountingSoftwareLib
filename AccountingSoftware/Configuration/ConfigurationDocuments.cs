@@ -107,7 +107,10 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationDocuments Copy()
         {
-            ConfigurationDocuments confDocCopy = new(this.Name, this.FullName, this.Table, this.Desc);
+            ConfigurationDocuments confDocCopy = new(this.Name, this.FullName, this.Table, this.Desc)
+            {
+                LatinName = this.LatinName
+            };
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confDocCopy.Fields.Add(fields.Key, fields.Value.Copy());
@@ -147,10 +150,10 @@ namespace AccountingSoftware
         /// </summary>
         public static ConfigurationPredefinedField[] GetPredefinedFields() =>
         [
-            new ConfigurationPredefinedField("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
-            new ConfigurationPredefinedField("deletion_label", "boolean", false, true, true, "Помітка на видалення"),
-            new ConfigurationPredefinedField("spend", "boolean", false, true, true, "Документ проведений"),
-            new ConfigurationPredefinedField("spend_date", "timestamp without time zone", false, false, true, "Дата проведення")
+            new("uid", "any_pointer", true, false, true, "Первинний ключ (Primary key)"),
+            new("deletion_label", "boolean", false, true, true, "Помітка на видалення"),
+            new("spend", "boolean", false, true, true, "Документ проведений"),
+            new("spend_date", "timestamp without time zone", false, false, true, "Дата проведення")
         ];
 
         /// <summary>

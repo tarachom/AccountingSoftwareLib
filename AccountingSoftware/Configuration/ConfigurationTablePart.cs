@@ -78,7 +78,10 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationTablePart Copy()
         {
-            ConfigurationTablePart confObjectTablePart = new(this.Name, this.FullName, this.Table, this.Desc);
+            ConfigurationTablePart confObjectTablePart = new(this.Name, this.FullName, this.Table, this.Desc)
+            {
+                LatinName = this.LatinName
+            };
 
             foreach (KeyValuePair<string, ConfigurationField> fields in this.Fields)
                 confObjectTablePart.Fields.Add(fields.Key, fields.Value.Copy());

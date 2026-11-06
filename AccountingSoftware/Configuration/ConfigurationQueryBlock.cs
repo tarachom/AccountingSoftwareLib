@@ -59,7 +59,12 @@ namespace AccountingSoftware
         /// </summary>
         public ConfigurationQueryBlock Copy()
         {
-            ConfigurationQueryBlock newQueryBlock = new(this.Name) { FullName = this.FullName, Desc = this.Desc };
+            ConfigurationQueryBlock newQueryBlock = new(this.Name)
+            {
+                FullName = this.FullName,
+                Desc = this.Desc,
+                LatinName = this.LatinName,
+            };
 
             foreach (KeyValuePair<string, string> item in Query)
                 newQueryBlock.Query.Add(item.Key, item.Value);

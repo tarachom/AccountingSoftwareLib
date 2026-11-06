@@ -604,7 +604,9 @@ UNION ALL
         /// </summary>
         public string FuncToField_Param1 { get; set; } = "";
 
-
+        /// <summary>
+        /// Група для об'єднання відборів
+        /// </summary>
         public string? Group { get; set; } = null;
     }
 

@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Блок констант
     /// </summary>
-    public class ConfigurationConstantsBlock : ConfigurationObjectTable
+    public class ConfigurationConstantsBlock : ConfigurationObject
     {
         /// <summary>
         /// Назва блоку констант
@@ -44,7 +44,6 @@ namespace AccountingSoftware
             Desc = desc;
         }
 
-        /// <summary>
         /// <summary>
         /// Константи
         /// </summary>
@@ -65,17 +64,21 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationConstantsBlock Copy()
         {
-            ConfigurationConstantsBlock newConstantsBlock = new(this.Name, this.Desc) { FullName = this.FullName };
+            ConfigurationConstantsBlock newBlock = new(this.Name, this.Desc)
+            {
+                FullName = this.FullName,
+                LatinName = this.LatinName
+            };
 
             foreach (ConfigurationConstants constant in Constants.Values)
             {
                 ConfigurationConstants newConst = constant.Copy();
-                newConst.Block = newConstantsBlock;
+                newConst.Block = newBlock;
 
-                newConstantsBlock.AppendConstant(newConst);
+                newBlock.AppendConstant(newConst);
             }
 
-            return newConstantsBlock;
+            return newBlock;
         }
     }
 }

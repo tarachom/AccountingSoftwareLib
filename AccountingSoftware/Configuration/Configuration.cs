@@ -26,6 +26,7 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 using System.IO.Compression;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace AccountingSoftware
 {
@@ -1544,8 +1545,18 @@ namespace AccountingSoftware
             while (constantsBlockNodes.MoveNext())
             {
                 string? blockName = constantsBlockNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва блоку констант");
+                string blockUid = constantsBlockNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
+                string blockFullName = constantsBlockNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                string blockLatinName = constantsBlockNodes.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                 string blockDesc = constantsBlockNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
-                ConfigurationConstantsBlock configurationConstantsBlock = new(blockName, blockDesc);
+
+                ConfigurationConstantsBlock configurationConstantsBlock = new(blockName, blockDesc)
+                {
+                    Uid = blockUid,
+                    FullName = blockFullName,
+                    LatinName = blockLatinName
+                };
+
                 Conf.ConstantsBlock.Add(configurationConstantsBlock.Name, configurationConstantsBlock);
 
                 XPathNodeIterator? constantsNodes = constantsBlockNodes.Current?.Select("Constants/Constant");
@@ -1555,13 +1566,19 @@ namespace AccountingSoftware
                         string? constName = constantsNodes.Current?.SelectSingleNode("Name")?.Value ?? throw new Exception("Не задана назва константи");
                         string uid = constantsNodes.Current?.SelectSingleNode("Uid")?.Value ?? ""; //Унікальний ідентифікатор
                         string nameInTable = constantsNodes.Current?.SelectSingleNode("NameInTable")?.Value ?? "";
+                        string nameFullName = constantsNodes.Current?.SelectSingleNode("FullName")?.Value ?? "";
+                        string nameLatinName = constantsNodes.Current?.SelectSingleNode("LatinName")?.Value ?? "";
                         string constType = constantsNodes.Current?.SelectSingleNode("Type")?.Value ?? "";
                         string constDesc = constantsNodes.Current?.SelectSingleNode("Desc")?.Value ?? "";
 
-                        string constPointer = (constType == "pointer" || constType == "enum") ?
-                            (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
+                        string constPointer = (constType == "pointer" || constType == "enum") ? (constantsNodes.Current?.SelectSingleNode("Pointer")?.Value ?? "") : "";
 
-                        ConfigurationConstants configurationConstants = new(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc) { Uid = uid };
+                        ConfigurationConstants configurationConstants = new(constName, nameInTable, constType, configurationConstantsBlock, constPointer, constDesc)
+                        {
+                            Uid = uid,
+                            FullName = nameFullName,
+                            LatinName = nameLatinName
+                        };
 
                         configurationConstantsBlock.Constants.Add(configurationConstants.Name, configurationConstants);
 
@@ -1598,10 +1615,9 @@ namespace AccountingSoftware
                 //Тип довідника (звичайний , ієрархічний чи ієрархія в окремому довіднику)
                 ConfigurationDirectories.TypeDirectories typeDirectory = dirType switch
                 {
-                    "Normal" => ConfigurationDirectories.TypeDirectories.Normal,
                     "Hierarchical" => ConfigurationDirectories.TypeDirectories.Hierarchical,
                     "HierarchyInAnotherDirectory" => ConfigurationDirectories.TypeDirectories.HierarchyInAnotherDirectory,
-                    _ => ConfigurationDirectories.TypeDirectories.Normal
+                    "Normal" or _ => ConfigurationDirectories.TypeDirectories.Normal
                 };
 
                 string parentField_Hierarchical = "";
@@ -1919,9 +1935,7 @@ namespace AccountingSoftware
                     };
 
                     //Поля які залежать від типу форми
-                    if (typeForms == ConfigurationForms.TypeForms.List ||
-                        typeForms == ConfigurationForms.TypeForms.ListSmallSelect ||
-                        typeForms == ConfigurationForms.TypeForms.ListAndTree)
+                    if (typeForms == ConfigurationForms.TypeForms.List || typeForms == ConfigurationForms.TypeForms.ListSmallSelect || typeForms == ConfigurationForms.TypeForms.ListAndTree)
                     {
                         form.TabularList = tableForm.Current?.SelectSingleNode("TabularList")?.Value ?? "";
                     }
@@ -2495,9 +2509,22 @@ namespace AccountingSoftware
                 XmlElement rootConstantsBlock = xmlConfDocument.CreateElement("ConstantsBlock");
                 rootConstantsBlocks.AppendChild(rootConstantsBlock);
 
+                XmlElement nodeUid = xmlConfDocument.CreateElement("Uid");
+                if (string.IsNullOrEmpty(ConfConstantsBlock.Value.Uid)) ConfConstantsBlock.Value.Uid = GetShortGuid();
+                nodeUid.InnerText = ConfConstantsBlock.Value.Uid;
+                rootConstantsBlock.AppendChild(nodeUid);
+
                 XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                 nodeName.InnerText = ConfConstantsBlock.Key;
                 rootConstantsBlock.AppendChild(nodeName);
+
+                XmlElement nodeFullName = xmlConfDocument.CreateElement("FullName");
+                nodeFullName.InnerText = ConfConstantsBlock.Value.FullName;
+                rootConstantsBlock.AppendChild(nodeFullName);
+
+                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeLatinName.InnerText = string.IsNullOrEmpty(ConfConstantsBlock.Value.LatinName) ? ToLatin(ConfConstantsBlock.Key) : ConfConstantsBlock.Value.LatinName;
+                rootConstantsBlock.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(ConfConstantsBlock.Value.Desc))
                 {
@@ -2539,6 +2566,10 @@ namespace AccountingSoftware
                 XmlElement nodeNameInTable = xmlConfDocument.CreateElement("NameInTable");
                 nodeNameInTable.InnerText = ConfConstant.Value.NameInTable;
                 rootConstant.AppendChild(nodeNameInTable);
+
+                XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
+                nodeLatinName.InnerText = string.IsNullOrEmpty(ConfConstant.Value.LatinName) ? ToLatin(ConfConstant.Key) : ConfConstant.Value.LatinName;
+                rootConstant.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(ConfConstant.Value.Desc))
                 {
@@ -2593,7 +2624,7 @@ namespace AccountingSoftware
                 nodeDirectory.AppendChild(nodeDirectoryFullName);
 
                 XmlElement nodeDirectoryLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeDirectoryLatinName.InnerText = ConfDirectory.Value.LatinName;
+                nodeDirectoryLatinName.InnerText = string.IsNullOrEmpty(ConfDirectory.Value.LatinName) ? ToLatin(ConfDirectory.Key) : ConfDirectory.Value.LatinName;
                 nodeDirectory.AppendChild(nodeDirectoryLatinName);
 
                 XmlElement nodeDirectoryTable = xmlConfDocument.CreateElement("Table");
@@ -2760,7 +2791,7 @@ namespace AccountingSoftware
                 nodeField.AppendChild(nodeFullName);
 
                 XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeLatinName.InnerText = field.Value.LatinName;
+                nodeLatinName.InnerText = string.IsNullOrEmpty(field.Value.LatinName) ? ToLatin(field.Key) : field.Value.LatinName;
                 nodeField.AppendChild(nodeLatinName);
 
                 XmlElement nodeNameInTable = xmlConfDocument.CreateElement("NameInTable");
@@ -2916,7 +2947,7 @@ namespace AccountingSoftware
                 nodeTablePart.AppendChild(nodeTablePartFullName);
 
                 XmlElement nodeTablePartLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeTablePartLatinName.InnerText = tablePart.Value.LatinName;
+                nodeTablePartLatinName.InnerText = string.IsNullOrEmpty(tablePart.Value.LatinName) ? ToLatin(tablePart.Key) : tablePart.Value.LatinName;
                 nodeTablePart.AppendChild(nodeTablePartLatinName);
 
                 XmlElement nodeTablePartTable = xmlConfDocument.CreateElement("Table");
@@ -2980,7 +3011,7 @@ namespace AccountingSoftware
                 }
 
                 XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeLatinName.InnerText = tabularList.Value.LatinName;
+                nodeLatinName.InnerText = string.IsNullOrEmpty(tabularList.Value.LatinName) ? ToLatin(tabularList.Key) : tabularList.Value.LatinName;
                 nodeTabularList.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(tabularList.Value.Desc))
@@ -3213,7 +3244,7 @@ namespace AccountingSoftware
                 }
 
                 XmlElement nodeLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeLatinName.InnerText = form.Value.LatinName;
+                nodeLatinName.InnerText = string.IsNullOrEmpty(form.Value.LatinName) ? ToLatin(form.Key) : form.Value.LatinName;
                 nodeForm.AppendChild(nodeLatinName);
 
                 if (!string.IsNullOrEmpty(form.Value.Desc))
@@ -3592,7 +3623,7 @@ namespace AccountingSoftware
                 }
 
                 XmlElement nodeEnumLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeEnumLatinName.InnerText = enumItem.Value.LatinName;
+                nodeEnumLatinName.InnerText = string.IsNullOrEmpty(enumItem.Value.LatinName) ? ToLatin(enumItem.Key) : enumItem.Value.LatinName;
                 nodeEnum.AppendChild(nodeEnumLatinName);
 
                 if (!string.IsNullOrEmpty(enumItem.Value.Desc))
@@ -3764,7 +3795,7 @@ namespace AccountingSoftware
                 nodeDocument.AppendChild(nodeDocumentFullName);
 
                 XmlElement nodeDocumentLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeDocumentLatinName.InnerText = ConfDocument.Value.LatinName;
+                nodeDocumentLatinName.InnerText = string.IsNullOrEmpty(ConfDocument.Value.LatinName) ? ToLatin(ConfDocument.Key) : ConfDocument.Value.LatinName;
                 nodeDocument.AppendChild(nodeDocumentLatinName);
 
                 XmlElement nodeDocumentTable = xmlConfDocument.CreateElement("Table");
@@ -3839,7 +3870,7 @@ namespace AccountingSoftware
                 nodeRegister.AppendChild(nodeRegisterFullName);
 
                 XmlElement nodeRegisterLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeRegisterLatinName.InnerText = ConfRegisterInfo.Value.LatinName;
+                nodeRegisterLatinName.InnerText = string.IsNullOrEmpty(ConfRegisterInfo.Value.LatinName) ? ToLatin(ConfRegisterInfo.Key) : ConfRegisterInfo.Value.LatinName;
                 nodeRegister.AppendChild(nodeRegisterLatinName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
@@ -3931,7 +3962,7 @@ namespace AccountingSoftware
                 nodeRegister.AppendChild(nodeRegisterFullName);
 
                 XmlElement nodeRegisterLatinName = xmlConfDocument.CreateElement("LatinName");
-                nodeRegisterLatinName.InnerText = ConfRegisterAccml.Value.LatinName;
+                nodeRegisterLatinName.InnerText = string.IsNullOrEmpty(ConfRegisterAccml.Value.LatinName) ? ToLatin(ConfRegisterAccml.Key) : ConfRegisterAccml.Value.LatinName;
                 nodeRegister.AppendChild(nodeRegisterLatinName);
 
                 XmlElement nodeRegisterTable = xmlConfDocument.CreateElement("Table");
@@ -4346,11 +4377,6 @@ namespace AccountingSoftware
             xsltCodeGnerator.Transform(pathToXML, null, fileStream);
 
             fileStream.Close();
-        }
-
-        public sealed class Utf8StringWriter : StringWriter
-        {
-            public override Encoding Encoding => Encoding.UTF8;
         }
 
         /// <summary>

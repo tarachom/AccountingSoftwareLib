@@ -52,15 +52,12 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationSpendFunctions Copy()
+        public ConfigurationSpendFunctions Copy() => new()
         {
-            return new ConfigurationSpendFunctions()
-            {
-                Spend = this.Spend,
-                SpendAction = this.SpendAction,
-                ClearSpend = this.ClearSpend,
-                ClearSpendAction = this.ClearSpendAction,
-            };
-        }
+            Spend = this.Spend,
+            SpendAction = this.SpendAction,
+            ClearSpend = this.ClearSpend,
+            ClearSpendAction = this.ClearSpendAction,
+        };
     }
 }

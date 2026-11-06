@@ -65,7 +65,11 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationJournals Copy()
         {
-            ConfigurationJournals newJournal = new(this.Name, this.Desc) { FullName = this.FullName };
+            ConfigurationJournals newJournal = new(this.Name, this.Desc)
+            {
+                FullName = this.FullName,
+                LatinName = this.LatinName,
+            };
 
             foreach (ConfigurationJournalField field in Fields.Values)
                 newJournal.AppendField(field.Copy());

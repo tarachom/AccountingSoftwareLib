@@ -90,13 +90,13 @@ public abstract partial class FormConfigurator : Window
     #region Virtual & Abstract Function
 
     protected abstract Kernel Kernel { get; set; }
-    protected virtual async Task PageConstantBlock(string name, bool isNew = false) { }
-    protected virtual async Task PageConstant(string name, bool isNew = false) { }
+    public virtual async Task PageConstantBlock(bool isNew, ConfigurationConstantsBlock? block = null) { }
+    public virtual async Task PageConstant(bool isNew, ConfigurationConstants? constant = null) { }
     public virtual async Task PageDirectory(bool isNew, ConfigurationDirectories? directory = null) { }
     public virtual async Task PageDocument(bool isNew, ConfigurationDocuments? document = null) { }
     public virtual async Task PageField(bool isNew, Dictionary<string, ConfigurationField> fields, ConfigurationField? field = null, ConfiguratorItemOwner? owner = null) { }
     public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
-    protected virtual async Task PageJournal(string name, bool isNew = false) { }
+    protected virtual async Task PageJournal(string name, bool isNew = false) { } //!
     public virtual async Task PageEnum(bool isNew, ConfigurationEnums? enums = null) { }
     public virtual async Task PageEnumField(bool isNew, Dictionary<string, ConfigurationEnumField> fields, ConfigurationEnumField? field = null) { }
     public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
@@ -266,38 +266,79 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
+            bool hide = false;
             switch (row.Group)
             {
-                case "Block":
+                case "Block" when row.Obj is ConfigurationConstantsBlock block:
                     {
-                        await PageConstantBlock(row.Name);
+                        await PageConstantBlock(false, block);
+                        hide = true;
                         break;
                     }
-                case "Const":
+                case "Const" when row.Obj is ConfigurationConstants constant:
                     {
-                        await PageConstant(row.Name);
+                        await PageConstant(false, constant);
+                        hide = true;
                         break;
                     }
-                case "TablePart":
+                case "TablePart" when row.ParentObj is ConfigurationConstants constant && row.Obj is ConfigurationTablePart tablePart:
                     {
-
+                        await PageTablePart(false, constant.TabularParts, tablePart, new(ConfiguratorItemOwnerType.Constant, constant));
+                        hide = true;
                         break;
                     }
                 case "TablePartField" when row.ParentObj is ConfigurationTablePart tablePart && row.Obj is ConfigurationField field:
                     {
                         await PageField(false, tablePart.Fields, field, new(ConfiguratorItemOwnerType.TablePart, tablePart));
+                        hide = true;
                         break;
                     }
                 default:
                     break;
             }
-            popover.Hide();
+
+            if (hide) popover.Hide();
         }
 
         async void Add()
         {
-            //await PageDocument("", true);
+            await PageConstantBlock(true);
             popover.Hide();
+        }
+
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "Block" when row.Obj is ConfigurationConstantsBlock block:
+                    {
+                        ConfigurationConstantsBlock neBlock = block.Copy();
+                        neBlock.Name += Configuration.GetNewRandomName();
+
+                        await PageConstantBlock(true, neBlock);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "Block" when row.Obj is ConfigurationConstantsBlock block:
+                    {
+                        Kernel.Conf.ConstantsBlock.Remove(block.Name);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
         Box getbox() => new ConfiguratorConstantsTree(Kernel.Conf, Activate, new()
@@ -308,13 +349,15 @@ public abstract partial class FormConfigurator : Window
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    Delete(row);
             },
             OpenNewTab = (_) =>
             {

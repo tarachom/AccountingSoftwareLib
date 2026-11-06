@@ -26,7 +26,7 @@ namespace AccountingSoftware
     /// <summary>
     /// Табличний список (вивід таблиці на формі)
     /// </summary>
-    public class ConfigurationTabularList: ConfigurationObject
+    public class ConfigurationTabularList : ConfigurationObject
     {
         /// <summary>
         /// Табличний список
@@ -81,7 +81,10 @@ namespace AccountingSoftware
         /// <returns></returns>
         public ConfigurationTabularList Copy()
         {
-            ConfigurationTabularList newTabularList = new(Name, FullName, Desc);
+            ConfigurationTabularList newTabularList = new(this.Name, this.FullName, this.Desc)
+            {
+                LatinName = this.LatinName
+            };
 
             //Поля
             foreach (ConfigurationTabularListField item in Fields.Values)

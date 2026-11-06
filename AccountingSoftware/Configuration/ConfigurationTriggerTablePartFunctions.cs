@@ -52,16 +52,13 @@ namespace AccountingSoftware
         /// Створення копії
         /// </summary>
         /// <returns></returns>
-        public ConfigurationTriggerTablePartFunctions Copy()
+        public ConfigurationTriggerTablePartFunctions Copy() => new()
         {
-            return new ConfigurationTriggerTablePartFunctions()
-            {
-                BeforeSave = this.BeforeSave,
-                BeforeSaveAction = this.BeforeSaveAction,
+            BeforeSave = this.BeforeSave,
+            BeforeSaveAction = this.BeforeSaveAction,
 
-                AfterSave = this.AfterSave,
-                AfterSaveAction = this.AfterSaveAction
-            };
-        }
+            AfterSave = this.AfterSave,
+            AfterSaveAction = this.AfterSaveAction
+        };
     }
 }
