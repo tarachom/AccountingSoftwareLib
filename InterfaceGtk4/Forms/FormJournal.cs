@@ -363,22 +363,47 @@ public abstract partial class FormJournal : Form
             }
 
             //Видалення записів із Store які були видалені в базі
-            if (deleted.Count > 0)
-                for (int i = (int)Store.GetNItems() - 1; i >= 0; i--)
-                    if (Store.GetObject((uint)i) is IRowSubclassJournal row && deleted.Contains(row.UniqueID.UGuid))
+            /*if (deleted.Count > 0)//!!! глюк в д
+            {
+                MultiSelection model = (MultiSelection)Grid.Model;
+                for (int i = (int)model.GetNItems() - 1; i >= 0; i--)
+                {
+                    var o = model.GetObject((uint)i);
+                    if (o switch { TreeListRow x => x.GetItem(), _ => o } is IRowSubclassJournal row && deleted.Contains(row.UniqueID.UGuid))
                     {
                         Store.Remove((uint)i);
                         deleted.Remove(row.UniqueID.UGuid);
                     }
+                }
+            }*/
+
+            if (deleted.Count > 0)
+            {
+                for (int i = (int)Store.GetNItems() - 1; i >= 0; i--)
+                {
+                    var o = Store.GetObject((uint)i);
+                    if (o is IRowSubclassJournal row && deleted.Contains(row.UniqueID.UGuid))
+                    {
+                        Store.Remove((uint)i);
+                        deleted.Remove(row.UniqueID.UGuid);
+                    }
+                }
+            }
 
             //Перевірка чи присутні в таблиці записи які були змінені
             if (updated.Count > 0)
-                for (uint i = 0; i < Store.GetNItems(); i++)
-                    if (Store.GetObject(i) is IRowSubclassJournal row && updated.TryGetValue(row.UniqueID.UGuid, out var obj))
+            {
+                MultiSelection model = (MultiSelection)Grid.Model;
+                for (uint i = 0; i < model.GetNItems(); i++)
+                {
+                    var o = model.GetObject(i);
+                    if (o switch { TreeListRow x => x.GetItem(), _ => o } is IRowSubclassJournal row && updated.TryGetValue(row.UniqueID.UGuid, out var obj))
                     {
                         filtered.Add(obj);
                         updated.Remove(row.UniqueID.UGuid);
                     }
+                }
+            }
 
             if (filtered.Count > 0)
             {

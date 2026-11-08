@@ -88,7 +88,9 @@ public abstract partial class DirectoryFormJournalBaseTree : DirectoryFormJourna
         await BeforeSetValue();
 
         await LoadRecords();
-        PopoverParent?.OnHide += (_, _) => GC.Collect();
+        //PopoverParent?.OnHide += (_, _) => GC.Collect(); //???
+
+        RunUpdateRecords();
 
         /*
         var gtype = Store.GetItemType();

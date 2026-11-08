@@ -92,4 +92,52 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// Колекція полів
     /// </summary>
     public Dictionary<string, string?> Fields { get; set; } = [];
+
+    #region Оновлення
+
+    /*
+    
+    Приклад
+
+    {
+        SignalListItemFactory factory = SignalListItemFactory.New();
+        factory.OnSetup += (_, args) =>
+        {
+            ListItem listItem = (ListItem)args.Object;
+            listItem.Child = LabelTablePartCell.NewFromType("string");
+        };
+        factory.OnBind += (_, args) =>
+        {
+            ListItem listItem = (ListItem)args.Object;
+            LabelTablePartCell? cell = (LabelTablePartCell?)listItem.Child;
+            DirectoryRowJournal? row = (DirectoryRowJournal?)listItem.Item;
+            if (cell != null && row != null)
+                (row.Update["Назва"] = ()=> cell.SetText(row.Fields["Назва"])).Invoke();
+        };
+        ColumnViewColumn column = ColumnViewColumn.New("Назва", factory);
+        column.Resizable = true;
+        
+        form.Grid.AppendColumn(column);
+    }
+    
+    */
+
+    /// <summary>
+    /// Набір функцій для оновлення даних.
+    /// 
+    /// Кожна ячейка має свою функцію оновлення даних, яка записується в словник Dictionary<string, Action> Update
+    /// Коли дані змінилися - викликається функція OnUpdate яка в свою чергу в циклі викликає оновлення для всіх ячейок
+    /// </summary>
+    public Dictionary<string, Action> Update { get; set; } = [];
+
+    /// <summary>
+    /// Виклик оновлення цілого рядка.
+    /// </summary>
+    public void OnUpdate()
+    {
+        foreach (var item in Update.Select(x => x.Value))
+            item.Invoke();
+    }
+
+    #endregion
 }

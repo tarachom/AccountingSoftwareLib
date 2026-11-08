@@ -3091,6 +3091,10 @@ namespace AccountingSoftware
                     nodeVisible.InnerText = field.Value.Visible.ToString();
                     nodeTabularListAdditionalField.AppendChild(nodeVisible);
 
+                    /**
+                    Додати перевірку унікальності назви поля!
+                    */
+
                     XmlElement nodeName = xmlConfDocument.CreateElement("Name");
                     nodeName.InnerText = field.Key;
                     nodeTabularListAdditionalField.AppendChild(nodeName);

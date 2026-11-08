@@ -63,4 +63,18 @@ public partial class RegisterInformationRowJournal : IRowSubclassJournal
     /// Колекція полів
     /// </summary>
     public Dictionary<string, string?> Fields { get; set; } = [];
+
+    /// <summary>
+    /// Функції оновлення. Див DirectoryHierarchicalRow.cs
+    /// </summary>
+    public Dictionary<string, Action> Update { get; set; } = [];
+
+    /// <summary>
+    /// Оновлення даних
+    /// </summary>
+    public void OnUpdate()
+    {
+        foreach (var item in Update.Select(x => x.Value))
+            item.Invoke();
+    }
 }
