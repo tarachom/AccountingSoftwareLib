@@ -128,7 +128,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     /// Кожна ячейка має свою функцію оновлення даних, яка записується в словник Dictionary<string, Action> Update
     /// Коли дані змінилися - викликається функція OnUpdate яка в свою чергу в циклі викликає оновлення для всіх ячейок
     /// </summary>
-    public Dictionary<string, Action> Update { get; set; } = [];
+    public Dictionary<string, Action?> Update { get; set; } = [];
 
     /// <summary>
     /// Виклик оновлення цілого рядка.
@@ -136,7 +136,7 @@ public partial class DirectoryHierarchicalRow : IRowSubclassJournal
     public void OnUpdate()
     {
         foreach (var item in Update.Select(x => x.Value))
-            item.Invoke();
+            item?.Invoke();
     }
 
     #endregion

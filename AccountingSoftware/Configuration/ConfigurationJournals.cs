@@ -55,6 +55,11 @@ namespace AccountingSoftware
         public List<string> AllowDocuments { get; private set; } = [];
 
         /// <summary>
+        /// 
+        /// </summary>
+        public List<ConfigurationJournalFieldMapping> FieldMapping { get; private set; } = [];
+
+        /// <summary>
         /// Табличні списки
         /// </summary>
         public Dictionary<string, ConfigurationTabularList> TabularList { get; set; } = [];
@@ -73,6 +78,11 @@ namespace AccountingSoftware
 
             foreach (ConfigurationJournalField field in Fields.Values)
                 newJournal.AppendField(field.Copy());
+
+            newJournal.AllowDocuments.AddRange(this.AllowDocuments);
+
+            foreach (ConfigurationTabularList list in TabularList.Values)
+                newJournal.AppendTableList(list.Copy());
 
             return newJournal;
         }

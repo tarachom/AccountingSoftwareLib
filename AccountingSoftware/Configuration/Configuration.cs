@@ -3735,6 +3735,8 @@ namespace AccountingSoftware
                 SaveJournalAllowDocument(Conf, journal.Value.AllowDocuments, xmlConfDocument, nodeJournal);
 
                 SaveJournalTabularList(Conf, journal.Value.Fields, journal.Value.TabularList, xmlConfDocument, nodeJournal);
+
+                
             }
         }
 
@@ -3767,6 +3769,8 @@ namespace AccountingSoftware
                 }
             }
         }
+
+
 
         /// <summary>
         /// Зберегти документи

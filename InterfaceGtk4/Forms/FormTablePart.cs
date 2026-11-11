@@ -78,6 +78,26 @@ public abstract partial class FormTablePart : Form
     public abstract Task SaveRecords();
     public abstract Task<bool> NewRecord();
 
+    /// <summary>
+    /// Оновлення всіх рядків одним пакетом
+    /// </summary>
+    /// <param name="rows">Масив рядків</param>
+    protected virtual void UpdateStore(GObject.Object[] rows)
+    {
+        //Пошук виділених рядків
+        Bitset bitset = Grid.Model.GetSelection();
+        List<uint> selection = [];
+        for (uint i = bitset.GetMinimum(); i <= bitset.GetMaximum(); i++)
+            if (Grid.Model.IsSelected(i)) selection.Add(i);
+
+        //Оновлення всіх рядків
+        Store.Splice(0, Store.GetNItems(), rows, (uint)rows.Length);
+
+        //Виділення рядків після оновлення
+        foreach (var position in selection)
+            Grid.Model.SelectItem(position, false);
+    }
+
     #endregion
 
     #region Toolbar

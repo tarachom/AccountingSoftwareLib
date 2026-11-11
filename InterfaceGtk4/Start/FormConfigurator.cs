@@ -96,7 +96,7 @@ public abstract partial class FormConfigurator : Window
     public virtual async Task PageDocument(bool isNew, ConfigurationDocuments? document = null) { }
     public virtual async Task PageField(bool isNew, Dictionary<string, ConfigurationField> fields, ConfigurationField? field = null, ConfiguratorItemOwner? owner = null) { }
     public virtual async Task PageTablePart(bool isNew, Dictionary<string, ConfigurationTablePart> tabularParts, ConfigurationTablePart? tablePart = null, ConfiguratorItemOwner? owner = null) { }
-    protected virtual async Task PageJournal(string name, bool isNew = false) { } //!
+    public virtual async Task PageJournal(bool isNew = false, ConfigurationJournals? journal = null) { }
     public virtual async Task PageEnum(bool isNew, ConfigurationEnums? enums = null) { }
     public virtual async Task PageEnumField(bool isNew, Dictionary<string, ConfigurationEnumField> fields, ConfigurationEnumField? field = null) { }
     public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
@@ -622,41 +622,88 @@ public abstract partial class FormConfigurator : Window
 
         async void Activate(ConfiguratorItemRow row)
         {
+            bool hide = false;
             switch (row.Group)
             {
-                case "Journals":
+                case "Journals" when row.Obj is ConfigurationJournals journal:
                     {
-                        await PageJournal(row.Name);
-                        return;
+                        await PageJournal(false, journal);
+                        hide = true;
+                        break;
                     }
                 case "Field":
                     {
 
-                        return;
+                        break;
                     }
                 default:
-                    return;
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        async void Add()
+        {
+            await PageJournal(true);
+            popover.Hide();
+        }
+
+        async Task Copy(ConfiguratorItemRow row)
+        {
+            bool hide = false;
+            switch (row?.Group)
+            {
+                case "Journals" when row.Obj is ConfigurationJournals journal:
+                    {
+                        ConfigurationJournals newJournal = journal.Copy();
+                        newJournal.Name += Configuration.GetNewRandomName();
+
+                        await PageJournal(true, newJournal);
+                        hide = true;
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            if (hide) popover.Hide();
+        }
+
+        void Delete(ConfiguratorItemRow row)
+        {
+            switch (row?.Group)
+            {
+                case "Journals" when row.Obj is ConfigurationJournals journal:
+                    {
+                        Kernel.Conf.Journals.Remove(journal.Name);
+                        break;
+                    }
+                default:
+                    break;
             }
         }
 
         Box getbox() => new ConfiguratorJournalsTree(Kernel.Conf, Activate, new ConfiguratorTree.ToolbarAction()
         {
-            Add = async (_, _) =>
-            {
-                await PageJournal("", true);
-            },
+            Add = async (_, _) => Add(),
             Edit = (_, rows) =>
             {
                 foreach (var row in rows)
                     Activate(row);
             },
-            Copy = (_, rows) =>
+            Copy = async (_, rows) =>
             {
-
+                foreach (var row in rows)
+                    await Copy(row);
             },
-            Delete = (_, rows) =>
+            Delete = async (_, rows) =>
             {
-
+                if (await Message.Request(NotebookFunc.BasicForm, "Питання", $"Видалити?") == Message.YesNo.Yes)
+                {
+                    foreach (var row in rows)
+                        Delete(row);
+                }
             },
             OpenNewTab = (_) =>
             {

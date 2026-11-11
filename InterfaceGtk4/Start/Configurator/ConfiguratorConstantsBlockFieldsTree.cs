@@ -69,6 +69,7 @@ public class ConfiguratorConstantsBlockFieldsTree(ConfigurationConstantsBlock bl
 
         string group = itemRow.Group;
         object? obj = itemRow.Obj;
+        object? parentObj = itemRow.ParentObj;
 
         Gio.ListStore store = Gio.ListStore.New(ConfiguratorItemRow.GetGType());
 
@@ -125,7 +126,7 @@ public class ConfiguratorConstantsBlockFieldsTree(ConfigurationConstantsBlock bl
 
                     return store;
                 }
-            case "TablePart" when obj is ConfigurationTablePart tablePart:
+            case "TablePart" when parentObj is ConfigurationConstants constant && obj is ConfigurationTablePart tablePart:
                 {
                     //Для табличної частини заповнюю поля
                     foreach (ConfigurationField field in tablePart.Fields.Values)

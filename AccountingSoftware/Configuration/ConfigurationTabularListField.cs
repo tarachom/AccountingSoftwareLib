@@ -116,7 +116,7 @@ namespace AccountingSoftware
         /// <summary>
         /// Поля для журналу документів, так як даний клас використовується і в журналах
         /// </summary>
-        public string DocField { get; set; } = "";
+        public string DocField { get; set; } = ""; //!!! Буде устарівше
 
         #endregion
     }
