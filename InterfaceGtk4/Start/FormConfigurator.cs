@@ -102,6 +102,7 @@ public abstract partial class FormConfigurator : Window
     public virtual async Task PageRegisterInformation(bool isNew, ConfigurationRegistersInformation? register = null) { }
     public virtual async Task PageRegisterAccumulation(bool isNew, ConfigurationRegistersAccumulation? register = null) { }
     protected virtual async Task PageSettings() { }
+    protected virtual async Task Processing() { }
     protected virtual async Task PageSaveConfiguration() { }
     protected virtual async Task PageConfigurationInfo() { }
 
@@ -244,6 +245,7 @@ public abstract partial class FormConfigurator : Window
         Add("Регістри інформації", "Регістри інформації", RegistersInformation, "register.png");
         Add("Регістри накопичення", "Регістри накопичення", RegistersAccumulation, "register.png");
         Add("Налаштування", "Налаштування", async (_) => await PageSettings(), "preferences.png");
+        Add("Обробки", "Обробки", async (_) => await Processing(), "working.png");
 
         hbox.Append(scroll);
     }

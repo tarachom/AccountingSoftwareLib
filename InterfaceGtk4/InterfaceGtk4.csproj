@@ -14,8 +14,8 @@
   <ItemGroup>
     <PackageReference Include="GirCore.Gtk-4.0" Version="0.9.0-preview.1" />
     <!-- AI -->
-    <PackageReference Include="Microsoft.Extensions.AI" Version="10.11.0" />
-    <PackageReference Include="Google.GenAI" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="11.0.0" />
+    <PackageReference Include="Google.GenAI" Version="2.1.0" />
     <!--<PackageReference Include="OllamaSharp" Version="5.4.30" />-->
   </ItemGroup>
 
@@ -27,6 +27,10 @@
   <ItemGroup>
     <Content Include="MsysSettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <!--
+  Вставити стиль як ресур
+  -->
 
   <ItemGroup>
     <None Remove="**\*.ui" />

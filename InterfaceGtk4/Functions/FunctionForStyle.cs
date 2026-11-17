@@ -51,6 +51,7 @@ public static class FunctionForStyle
             if (File.Exists(styleDefaultFile))
             {
                 CssProvider provider = CssProvider.New();
+                // !!! Зчитати стиль з ресурсів
                 provider.LoadFromPath(styleDefaultFile);
                 StyleContext.AddProviderForDisplay(display, provider, 800);
             }
