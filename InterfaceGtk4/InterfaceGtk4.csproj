@@ -15,7 +15,7 @@
     <PackageReference Include="GirCore.Gtk-4.0" Version="0.9.0-preview.1" />
     <!-- AI -->
     <PackageReference Include="Microsoft.Extensions.AI" Version="11.0.0" />
-    <PackageReference Include="Google.GenAI" Version="2.1.0" />
+    <PackageReference Include="Google.GenAI" Version="2.2.0" />
     <!--<PackageReference Include="OllamaSharp" Version="5.4.30" />-->
   </ItemGroup>
 
