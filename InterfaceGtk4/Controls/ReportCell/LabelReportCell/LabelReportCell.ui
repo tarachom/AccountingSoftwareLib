@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="LabelReportCell" parent="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="valign">start</property>
+        <style>
+            <class name="base" />
+        </style>
+
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                
+                <child>
+                    <object class="GtkLabel" id="label" />
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="ReportPage" parent="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+
+        <!-- Верхній тулбар -->
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <style>
+                    <class name="toolbar" />
+                </style>
+                <child>
+                    <object class="GtkButton" id="button_action">
+                        <property name="icon-name">view-sort-descending</property>
+                        <property name="tooltip-text">Дія</property>
+                        <style>
+                            <class name="flat" />
+                        </style>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <!-- ScrolledWindow з порожнім ColumnView -->
+        <child>
+            <object class="GtkScrolledWindow">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="child">
+                    <object class="GtkColumnView" id="column_view" />
+                </property>
+            </object>
+        </child>
+
+    </template>
+</interface>
