@@ -23,6 +23,7 @@ limitations under the License.
 
 using Gtk;
 using GObject;
+using AccountingSoftware;
 
 namespace InterfaceGtk4;
 
@@ -31,8 +32,25 @@ public partial class PointerReportCell : LabelReportCell
 {
     public static new PointerReportCell New() => NewWithProperties([]);
 
+    public static PointerReportCell NewWithType(string type)
+    {
+        PointerReportCell w = NewWithProperties([]);
+        w.Type = type;
+        return w;
+    }
+
+    public string Type { get; set; } = "";
+
+    public UuidAndText? UuidText { get; set; } = null;
+
     public override void SetValue(params object?[]? p)
     {
-        label.SetText("pointer");
+        if (p is { Length: > 0 } && p[0] is UuidAndText uuidText)
+        {
+            UuidText = uuidText;
+            label.SetText(uuidText.Text);
+        }
+        else
+            label.SetText(string.Empty);
     }
 }

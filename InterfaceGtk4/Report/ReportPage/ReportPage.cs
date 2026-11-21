@@ -41,6 +41,7 @@ namespace InterfaceGtk4;
 public abstract partial class ReportPage : Box
 {
     [Connect("button_action")] Button buttonAction;
+    [Connect("vbox_head")] Box vBoxHead;
     [Connect("column_view")] ColumnView columnView;
 
     public abstract Kernel Kernel { get; init; }

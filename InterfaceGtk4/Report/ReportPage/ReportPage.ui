@@ -2,7 +2,7 @@
 <interface>
     <template class="ReportPage" parent="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
+        <property name="spacing">10</property>
         <property name="margin-start">6</property>
         <property name="margin-end">6</property>
         <property name="margin-top">6</property>
@@ -22,6 +22,19 @@
                         <style>
                             <class name="flat" />
                         </style>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <!-- Шапка звіту -->
+        <child>
+            <object class="GtkBox" id="vbox_head">
+                <property name="orientation">vertical</property>
+                <child>
+                    <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Інформація для звіту</property>
                     </object>
                 </child>
             </object>

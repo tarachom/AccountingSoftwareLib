@@ -37,6 +37,11 @@ public partial class LabelReportCell : Box, IReportCell
 
     public static LabelReportCell New() => NewWithProperties([]);
 
-    public virtual void SetValue(params object?[]? p) =>
-        label.SetText(p is { Length: > 0 } ? p[0]?.ToString() ?? string.Empty : string.Empty);
+    public virtual void SetValue(params object?[]? p)
+    {
+        if (p is { Length: > 0 } && p[0] is string text)
+            label.SetText(text);
+        else
+            label.SetText(string.Empty);
+    }
 }

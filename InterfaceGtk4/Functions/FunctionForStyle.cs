@@ -53,7 +53,7 @@ public static class FunctionForStyle
                 CssProvider provider = CssProvider.New();
                 // !!! Зчитати стиль з ресурсів
                 provider.LoadFromPath(styleDefaultFile);
-                StyleContext.AddProviderForDisplay(display, provider, 800);
+                StyleContext.AddProviderForDisplay(display, provider, 600);
             }
         }
     }
