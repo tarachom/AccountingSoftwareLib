@@ -29,6 +29,7 @@ limitations under the License.
 
 using Gtk;
 using Gdk;
+using System.Text;
 
 namespace InterfaceGtk4;
 
@@ -47,13 +48,23 @@ public static class FunctionForStyle
             iconTheme.AddSearchPath(Path.Combine(AppContext.BaseDirectory, "images"));
 
             //Css
-            string styleDefaultFile = Path.Combine(AppContext.BaseDirectory, "StyleCss/Default.css");
-            if (File.Exists(styleDefaultFile))
             {
                 CssProvider provider = CssProvider.New();
-                // !!! Зчитати стиль з ресурсів
-                provider.LoadFromPath(styleDefaultFile);
-                StyleContext.AddProviderForDisplay(display, provider, 600);
+                using GLib.Bytes bytes = AssemblyResource.Load("Default.css");
+
+                //Для старшої версії Gtk
+                if (Gtk.Functions.CheckVersion(4, 12, 0) != null)
+                {
+                    string css = Encoding.UTF8.GetString(bytes.GetRegionSpan<byte>(0, bytes.GetSize()));
+                    provider.LoadFromData(css, -1);
+                }
+                else
+                {
+                    //Метод для 4.12+
+                    provider.LoadFromBytes(bytes);
+                }
+
+                StyleContext.AddProviderForDisplay(display, provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
             }
         }
     }

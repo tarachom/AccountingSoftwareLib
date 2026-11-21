@@ -25,13 +25,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Налаштування шляху до бібліотек Msys (тільки для Windows) -->
     <Content Include="MsysSettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!--
-  Вставити стиль як ресур
-  -->
+  <!-- Стиль *.css -->
+  <ItemGroup>
+    <None Remove="**\*.css" />
+    <EmbeddedResource Include="**\*.css">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 
+  <!-- Файли інтерфейсу *.ui -->
   <ItemGroup>
     <None Remove="**\*.ui" />
     <EmbeddedResource Include="**\*.ui">
